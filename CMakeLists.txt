@@ -22,8 +22,12 @@ target_include_directories(frinode PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_link_libraries(frinode FRI::fri)
 ament_target_dependencies(frinode rclcpp std_msgs)
 
-#install(TARGETS
-#  frinode
-#  DESTINATION lib/${PROJECT_NAME})
+add_executable(publisher src/publisher.cpp)
+ament_target_dependencies(publisher rclcpp std_msgs)
+
+install(TARGETS
+ frinode
+ publisher
+ DESTINATION lib/${PROJECT_NAME})
 
 ament_package()
