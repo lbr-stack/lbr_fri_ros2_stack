@@ -48,32 +48,15 @@ class ClientROSApplication : public rclcpp::Node {
 
             std::memcpy(in, msg->data.data(), sizeof(double)*LBRState::NUMBER_OF_JOINTS);
 
+            bool success = true;
+
+            // RCLCPP_INFO(this->get_logger(), "%f", in[0]);
+
             // Send msg via UDP to LBR
-            // bool success = send(in, out);
-
-            // Publish robot state
-            // std::memcpy(out, msg->data.data(), sizeof(double)*LBRState::NUMBER_OF_JOINTS);
-        }
-
-        bool connect(int port, const char *remoteHost = NULL) {
-            if (connection_.isOpen()) 
-            {
-                printf("Warning: client application already connected!\n");
-                return true;
-            }
-            
-            return connection_.open(port, remoteHost);
-        };
-        
-        void disconnect() {
-            if (connection_.isOpen()) connection_.close();
-        };
-
-        bool send(double* in, double* out) {
             if (!connection_.isOpen())
             {
                 printf("Error: client application is not connected!\n");
-                return false;
+                success = false;
             }
 
             // **************************************************************************
@@ -84,12 +67,12 @@ class ClientROSApplication : public rclcpp::Node {
             if (size <= 0)
             {  // TODO: size == 0 -> connection closed (maybe go to IDLE instead of stopping?)
                 printf("Error: failed while trying to receive monitoring message!\n");
-                return false;
+                success = false;
             }
             
             if (!data_->decoder.decode(data_->receiveBuffer, size))
             {
-                return false;
+                success = false;
             }
             
             // check message type (so that our wrappers match)
@@ -98,7 +81,7 @@ class ClientROSApplication : public rclcpp::Node {
                 printf("Error: incompatible IDs for received message (got: %d expected %d)!\n",
                         (int)data_->monitoringMsg.header.messageIdentifier,
                         (int)data_->expectedMonitorMsgID);
-                return false;
+                success = false;
             }   
             
             // **************************************************************************
@@ -130,7 +113,7 @@ class ClientROSApplication : public rclcpp::Node {
                     break;
                 case IDLE:
                 default:
-                    return true; // nothing to send back
+                    break;
             }
 
             // **************************************************************************
@@ -150,17 +133,34 @@ class ClientROSApplication : public rclcpp::Node {
                 
                 if (!data_->encoder.encode(data_->sendBuffer, size))
                 {
-                    return false;
+                    success = false;
                 }
                 
                 if (!connection_.send(data_->sendBuffer, size))
                 {
                     printf("Error: failed while trying to send command message!\n");
-                    return false;
+                    success = false;
                 }
             }
+
+            printf((success ? "\nsent message" : "\nfailed to sent message"));
+
+            // Publish robot state
+            std::memcpy(out, msg->data.data(), sizeof(double)*LBRState::NUMBER_OF_JOINTS);
+        }
+
+        bool connect(int port, const char *remoteHost = NULL) {
+            if (connection_.isOpen()) 
+            {
+                printf("Warning: client application already connected!\n");
+                return true;
+            }
             
-            return true;
+            return connection_.open(port, remoteHost);
+        };
+        
+        void disconnect() {
+            if (connection_.isOpen()) connection_.close();
         };
 
         // FRI

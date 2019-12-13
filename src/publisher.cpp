@@ -23,7 +23,7 @@ class Publisher : public rclcpp::Node {
             timer_ = this->create_wall_timer(5ms, std::bind(&Publisher::timer_callback, this));   
 
             // copy KUKA's example
-            _stepWidth = 2 * M_PI * _freqHz * 5; // robotState().getSampleTime();
+            _stepWidth = 2 * M_PI * _freqHz * 0.005; // robotState().getSampleTime();
         }
 
     private:
