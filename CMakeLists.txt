@@ -14,11 +14,16 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 
-add_executable(frinode src/fri_node.cpp)
+
+add_subdirectory(third_party/FastRobotInterface)
+
+add_executable(frinode src/fri_node.cpp src/lbr_servo.cpp)
+target_include_directories(frinode PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_link_libraries(frinode FRI::fri)
 ament_target_dependencies(frinode rclcpp std_msgs)
 
-install(TARGETS
-  frinode
-  DESTINATION lib/${PROJECT_NAME})
+#install(TARGETS
+#  frinode
+#  DESTINATION lib/${PROJECT_NAME})
 
 ament_package()
