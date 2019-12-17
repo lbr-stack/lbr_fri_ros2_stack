@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CtrlParam xsi:noNamespaceSchemaLocation="/Roboter/Config/System/Common/Schemes/NGCtrlUser.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <Version Label="1">
+      <Info Version="KUKA V8.3"/>
+      <Schema Version="1"/>
+   </Version>
+   
+   <!-- Azyklische Reglerparameter fuer den modellbasierten Regler -->
+   <GlobalParameter Name="Inertia" Type="Mada" Index="0" MinValue="0.0" MaxValue="0.0" EvalBoundary="Off" Access="rwv" Value="1000.0"/>
+   <GlobalParameter Name="ViscousFrictionMotor" Type="Mada" Index="1" MinValue="0.0" MaxValue="0.0" EvalBoundary="Off" Access="rwv" Value="0.0"/>
+   <GlobalParameter Name="StaticFrictionMotor" Type="Mada" Index="2" MinValue="0.0" MaxValue="0.0" EvalBoundary="Off" Access="rwv" Value="0.0"/>
+   <GlobalParameter Name="SteepnessMotor" Type="Mada" Index="3" MinValue="0.0" MaxValue="0.0" EvalBoundary="Off" Access="rwv" Value="0.0"/>
+   <GlobalParameter Name="GearDamping" Type="Mada" Index="4" MinValue="0.0" MaxValue="0.0" EvalBoundary="Off" Access="rwv" Value="0.0"/>
+   <GlobalParameter Name="Stiffness" Type="Mada" Index="5" MinValue="0.0" MaxValue="0.0" EvalBoundary="Off" Access="rwv" Value="1000000.0"/>
+   <GlobalParameter Name="ViscousFrictionArm" Type="Mada" Index="6" MinValue="0.0" MaxValue="0.0" EvalBoundary="Off" Access="rwv" Value="0.0"/>
+   <GlobalParameter Name="StaticFrictionArm" Type="Mada" Index="7" MinValue="0.0" MaxValue="0.0" EvalBoundary="Off" Access="rwv" Value="0.0"/>
+   <GlobalParameter Name="SteepnessArm" Type="Mada" Index="8" MinValue="0.0" MaxValue="0.0" EvalBoundary="Off" Access="rwv" Value="0.0"/>
+   <GlobalParameter Name="MotorAxisRatio" Type="Mada" Index="9" MinValue="0.0" MaxValue="0.0" EvalBoundary="Off" Access="rwv" Value="1.0"/>
+   
+</CtrlParam>

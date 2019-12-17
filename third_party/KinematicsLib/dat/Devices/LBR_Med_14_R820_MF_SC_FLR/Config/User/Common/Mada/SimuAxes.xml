@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SimuAxes xsi:noNamespaceSchemaLocation="/Roboter/Config/System/Common/Schemes/SimuAxes.xsd"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <Version Label="">
+      <Info Version="KUKA V8.2"/>
+      <Schema Version="1"/>
+   </Version>   
+   <Axes>
+      <Axis ID="1" 
+         ConfigFile="Mada/SimuAxis/A1.xml"/>
+      <Axis ID="2" 
+         ConfigFile="Mada/SimuAxis/A2.xml"/>
+      <Axis ID="3" 
+         ConfigFile="Mada/SimuAxis/A3.xml"/>
+      <Axis ID="4" 
+         ConfigFile="Mada/SimuAxis/A4.xml"/>
+      <Axis ID="5" 
+         ConfigFile="Mada/SimuAxis/A5.xml"/>
+      <Axis ID="6" 
+         ConfigFile="Mada/SimuAxis/A6.xml"/>
+      <Axis ID="7" 
+         ConfigFile="Mada/SimuAxis/E1.xml"/>
+   </Axes>
+   <FastMeasuring>
+      <!-- Channel ID="1"/>
+      <Channel ID="2"/>
+      <Channel ID="3"/>
+      <Channel ID="4"/>
+      <Channel ID="5"/>
+      <Channel ID="6"/>
+      <Channel ID="7"/>
+      <Channel ID="8"/-->
+   </FastMeasuring>   
+</SimuAxes>

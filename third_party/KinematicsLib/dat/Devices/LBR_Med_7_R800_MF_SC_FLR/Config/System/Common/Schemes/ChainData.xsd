@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:element name="DynDat">
+		<xs:complexType>
+			<xs:sequence>
+    			<xs:element name="Chain" minOccurs="1" maxOccurs="7">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="ChainInWorld">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element ref="Frame"/>
+									</xs:sequence>
+									<xs:attribute name="Reference" type="xs:string" use="optional"/>
+								</xs:complexType>
+							</xs:element>
+							<xs:element ref="Link" maxOccurs="12" minOccurs="1"/>
+							<xs:element name="ChainToFlange">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element ref="Frame"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+						<xs:attribute name="Number" type="xs:unsignedLong" use="optional"/>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!-- Declaration of the various sub elements -->
+	<xs:element name="Link">
+	  <xs:annotation>
+	    <xs:documentation>configuration of kinematic chain</xs:documentation>
+	  </xs:annotation>
+	  <xs:complexType>
+	    <xs:sequence>
+	      <xs:element ref="Frame"/>
+	    </xs:sequence>
+	    <xs:attribute name="AxisID" type="xs:integer" use="required"/>
+	  </xs:complexType>
+	</xs:element>
+	<xs:element name="Frame">
+		<xs:annotation>
+			<xs:documentation>length in mm; angles in deg</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:attribute name="x" type="xs:double" use="required"/>
+			<xs:attribute name="y" type="xs:double" use="required"/>
+			<xs:attribute name="z" type="xs:double" use="required"/>
+			<xs:attribute name="a" type="xs:double" use="required"/>
+			<xs:attribute name="b" type="xs:double" use="required"/>
+			<xs:attribute name="c" type="xs:double" use="required"/>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>
+
+
+
+
+

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DriveTech xsi:noNamespaceSchemaLocation="/Roboter/Config/System/Common/Schemes/NextGenDriveTech.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<Version Label="">
+		<Info Version="KUKA V8.3" />
+		<Schema Version="3" />
+	</Version>
+	<AxisConfig>
+		<Axis ID="1" SupplyChannel="1" ConfigFile="Mada/NGAxis/A1.xml" />
+		<Axis ID="2" SupplyChannel="1" ConfigFile="Mada/NGAxis/A2.xml" />
+		<Axis ID="3" SupplyChannel="1" ConfigFile="Mada/NGAxis/E1.xml" />
+		<Axis ID="4" SupplyChannel="2" ConfigFile="Mada/NGAxis/A3.xml" />
+		<Axis ID="5" SupplyChannel="2" ConfigFile="Mada/NGAxis/A4.xml" />
+		<Axis ID="6" SupplyChannel="2" ConfigFile="Mada/NGAxis/A5.xml" /> 
+		<Axis ID="7" SupplyChannel="2" ConfigFile="Mada/NGAxis/A6.xml" />
+	</AxisConfig>
+	<SensorConfig>
+    </SensorConfig>
+	<SupplyConfig>
+		<Supply>Supply/Supply_LBR5_A1_A2_E1.xml</Supply>
+		<Supply>Supply/Supply_LBR5_A3_A4_A5_A6.xml</Supply>
+	</SupplyConfig>
+	<FastMeasuring>
+		
+	</FastMeasuring>
+   <CommonConfig SdoPollIntervall="2.0"/>
+</DriveTech>

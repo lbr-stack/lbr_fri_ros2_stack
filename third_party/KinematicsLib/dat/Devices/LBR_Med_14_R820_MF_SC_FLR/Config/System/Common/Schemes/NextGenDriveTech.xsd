@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:include schemaLocation="Version.xsd"/>
+  <xs:element name="CommonConfig">
+    <xs:complexType>
+      <xs:attribute name="SdoPollIntervall" use="optional" default="2.0">
+        <xs:simpleType>
+          <xs:restriction base="xs:double">
+            <xs:minInclusive value="0.5"/>
+            <xs:maxInclusive value="10.0"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Axis">
+    <xs:complexType>
+      <xs:attribute name="ID" use="required">
+        <xs:simpleType>
+          <xs:restriction base="xs:int">
+            <xs:minInclusive value="1"/>
+            <xs:maxInclusive value="255"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="SupplyChannel" use="required">
+        <xs:simpleType>
+          <xs:restriction base="xs:int">
+            <xs:minInclusive value="1"/>
+            <xs:maxInclusive value="16"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="ConfigFile" type="xs:string" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="tSensor">
+    <xs:attribute name="ID" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:int">
+          <xs:minInclusive value="1"/>
+          <xs:maxInclusive value="255"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="ConfigFile" type="xs:string" use="required"/>
+  </xs:complexType>
+  <xs:element name="AxisConfig">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="Axis" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="tSensorConfig">
+      <xs:sequence>
+         <xs:element name="Sensor" type="tSensor" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  <xs:element name="DriveTech">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="Version"/>
+        <xs:element ref="AxisConfig"/>
+        <xs:element name="SensorConfig" type="tSensorConfig" minOccurs="0"/>
+        <xs:element name="SupplyConfig">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Supply" minOccurs="0" maxOccurs="10">
+               <xs:complexType>
+                  <xs:simpleContent>
+                     <xs:extension base="xs:string">
+                        <xs:attribute name="Capacity" type="xs:double"/>
+                        <xs:attribute name="ConfigFile" type="xs:string"/>
+                     </xs:extension>
+                  </xs:simpleContent>
+               </xs:complexType>
+            </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="FastMeasuring">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Channel" minOccurs="0" maxOccurs="8">
+                <xs:complexType>
+                  <xs:simpleContent>
+                    <xs:extension base="xs:string">
+                      <xs:attribute name="ID" use="required">
+                        <xs:simpleType>
+                          <xs:restriction base="xs:integer">
+                            <xs:minInclusive value="1"/>
+                          </xs:restriction>
+                        </xs:simpleType>
+                      </xs:attribute>
+                      <xs:attribute name="Description" type="xs:string" use="required"/>
+                    </xs:extension>
+                  </xs:simpleContent>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element ref="CommonConfig" minOccurs="0"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

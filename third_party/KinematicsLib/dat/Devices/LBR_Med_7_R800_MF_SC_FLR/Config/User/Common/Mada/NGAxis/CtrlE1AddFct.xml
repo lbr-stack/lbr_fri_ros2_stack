@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<AdditionalFunctions xsi:noNamespaceSchemaLocation="/Roboter/Config/System/Common/Schemes/NGCtrlAdditionalFunctions.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <Version Label="1">
+      <Info Version="KUKA V8.2"/>
+      <Schema Version="1"/>
+   </Version>
+   <AdditionalCtrlFiles>
+   <AdditionalCtrlFile FileName="Ctrl_MDL_DAT.xml" isActive="true"/>
+      <AdditionalCtrlFile FileName="Ctrl_MDL_A23456.xml" isActive="true"/> 
+   </AdditionalCtrlFiles>
+</AdditionalFunctions>
+

@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:element name="DynDat">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="FlangeLoad" maxOccurs="1" minOccurs="0">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element ref="Mass" />
+							<xs:element ref="CM-Frame" />
+							<xs:element ref="Inertia" />
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="Axis" maxOccurs="12" minOccurs="1">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Geometry">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element ref="Mass" />
+										<xs:element ref="CM-Frame" />
+										<xs:element ref="Inertia" />
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="PassiveGeometry" maxOccurs="1" minOccurs="0">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="CouplingFactor">
+											<xs:complexType>
+												<xs:attribute name="r" use="required">
+													<xs:simpleType>
+														<xs:restriction base="xs:double">
+															<xs:minInclusive value="0.0" />
+															<xs:maxInclusive value="1.0" />
+														</xs:restriction>
+													</xs:simpleType>
+												</xs:attribute>
+											</xs:complexType>
+										</xs:element>
+										<xs:element ref="Mass" />
+										<xs:element ref="CM-Frame" />
+										<xs:element ref="Inertia" />
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="Gear">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="DynamicLimits">
+											<xs:complexType>
+												<xs:attribute name="Mg" use="required">
+													<xs:simpleType>
+														<xs:restriction base="xs:double">
+															<xs:minExclusive value="0.0" />
+														</xs:restriction>
+													</xs:simpleType>
+												</xs:attribute>
+												<xs:attribute name="Mg_EM" use="required">
+													<xs:simpleType>
+														<xs:restriction base="xs:double">
+															<xs:minInclusive value="0.0" />
+														</xs:restriction>
+													</xs:simpleType>
+												</xs:attribute>
+												<xs:attribute name="TrqTol" use="required">
+													<xs:simpleType>
+														<xs:restriction base="xs:double">
+															<xs:minInclusive value="100" />
+														</xs:restriction>
+													</xs:simpleType>
+												</xs:attribute>
+												<xs:attribute name="Jerk" use="required">
+													<xs:simpleType>
+														<xs:restriction base="xs:double">
+															<xs:minExclusive value="0.0" />
+														</xs:restriction>
+													</xs:simpleType>
+												</xs:attribute>
+											</xs:complexType>
+										</xs:element>
+										<xs:element ref="TorqueCharLine" />
+										<xs:element ref="Friction" />
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="Motor">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="DynamicLimits">
+											<xs:complexType>
+												<xs:attribute name="S" use="required">
+													<xs:simpleType>
+														<xs:restriction base="xs:double">
+															<xs:minExclusive value="0.0" />
+															<xs:maxInclusive value="1.0" />
+														</xs:restriction>
+													</xs:simpleType>
+												</xs:attribute>
+												<xs:attribute name="MaxEKin" use="optional">
+													<xs:simpleType>
+														<xs:restriction base="xs:double">
+															<xs:minExclusive value="0.0" />
+														</xs:restriction>
+													</xs:simpleType>
+												</xs:attribute>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="AdditionalLoad" maxOccurs="1" minOccurs="0">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element ref="Mass" />
+										<xs:element ref="CM-Frame" />
+										<xs:element ref="Inertia" />
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+						<xs:attribute name="Number" type="xs:unsignedLong"
+							use="required" />
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<!-- Declaration of the various sub elements -->
+	<xs:element name="CM-Frame">
+		<xs:annotation>
+			<xs:documentation>length in mm; angles in deg</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:attribute name="x" type="xs:double" use="required" />
+			<xs:attribute name="y" type="xs:double" use="required" />
+			<xs:attribute name="z" type="xs:double" use="required" />
+			<xs:attribute name="a" type="xs:double" use="required" />
+			<xs:attribute name="b" type="xs:double" use="required" />
+			<xs:attribute name="c" type="xs:double" use="required" />
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Inertia">
+		<xs:annotation>
+			<xs:documentation>Intertia tensor</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:attribute name="xx" use="required">
+				<xs:simpleType>
+					<xs:restriction base="xs:double">
+						<xs:minInclusive value="0.0" />
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+			<xs:attribute name="yy" use="required">
+				<xs:simpleType>
+					<xs:restriction base="xs:double">
+						<xs:minInclusive value="0.0" />
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+			<xs:attribute name="zz" use="required">
+				<xs:simpleType>
+					<xs:restriction base="xs:double">
+						<xs:minInclusive value="0.0" />
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Mass">
+		<xs:annotation>
+			<xs:documentation>Mass in kg</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:attribute name="m" use="required">
+				<xs:simpleType>
+					<xs:restriction base="xs:double">
+						<xs:minInclusive value="0.0" />
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="TorqueCharLine">
+		<xs:annotation>
+			<xs:documentation>characteristic line</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="x-Axis">
+					<xs:complexType>
+						<xs:attribute name="x1" use="required">
+							<xs:simpleType>
+								<xs:restriction base="xs:double">
+									<xs:minInclusive value="0.0" />
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:attribute>
+						<xs:attribute name="x2" use="optional" default="0.0">
+							<xs:simpleType>
+								<xs:restriction base="xs:double">
+									<xs:minInclusive value="0.0" />
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:attribute>
+						<xs:attribute name="x3" use="optional" default="0.0">
+							<xs:simpleType>
+								<xs:restriction base="xs:double">
+									<xs:minInclusive value="0.0" />
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:attribute>
+						<xs:attribute name="x4" use="optional" default="0.0">
+							<xs:simpleType>
+								<xs:restriction base="xs:double">
+									<xs:minInclusive value="0.0" />
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:attribute>
+						<xs:attribute name="x5" use="optional" default="0.0">
+							<xs:simpleType>
+								<xs:restriction base="xs:double">
+									<xs:minInclusive value="0.0" />
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:attribute>
+						<xs:attribute name="x6" use="optional" default="0.0">
+							<xs:simpleType>
+								<xs:restriction base="xs:double">
+									<xs:minInclusive value="0.0" />
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:attribute>
+						<xs:attribute name="x7" use="optional" default="0.0">
+							<xs:simpleType>
+								<xs:restriction base="xs:double">
+									<xs:minInclusive value="0.0" />
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:attribute>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="y-Axis">
+					<xs:complexType>
+						<xs:attribute name="y1" use="required">
+							<xs:simpleType>
+								<xs:restriction base="xs:double">
+									<xs:minInclusive value="0.0" />
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:attribute>
+						<xs:attribute name="y2" use="optional" default="0.0">
+							<xs:simpleType>
+								<xs:restriction base="xs:double">
+									<xs:minInclusive value="0.0" />
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:attribute>
+						<xs:attribute name="y3" use="optional" default="0.0">
+							<xs:simpleType>
+								<xs:restriction base="xs:double">
+									<xs:minInclusive value="0.0" />
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:attribute>
+						<xs:attribute name="y4" use="optional" default="0.0">
+							<xs:simpleType>
+								<xs:restriction base="xs:double">
+									<xs:minInclusive value="0.0" />
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:attribute>
+						<xs:attribute name="y5" use="optional" default="0.0">
+							<xs:simpleType>
+								<xs:restriction base="xs:double">
+									<xs:minInclusive value="0.0" />
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:attribute>
+						<xs:attribute name="y6" use="optional" default="0.0">
+							<xs:simpleType>
+								<xs:restriction base="xs:double">
+									<xs:minInclusive value="0.0" />
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:attribute>
+						<xs:attribute name="y7" use="optional" default="0.0">
+							<xs:simpleType>
+								<xs:restriction base="xs:double">
+									<xs:minInclusive value="0.0" />
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:attribute>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Friction">
+		<xs:complexType>
+			<xs:attribute name="Rh" use="required">
+				<xs:simpleType>
+					<xs:restriction base="xs:double">
+						<xs:minInclusive value="0.0" />
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+			<xs:attribute name="Rv" use="required">
+				<xs:simpleType>
+					<xs:restriction base="xs:double">
+						<xs:minInclusive value="0.0" />
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+			<xs:attribute name="Rz" use="required">
+				<xs:simpleType>
+					<xs:restriction base="xs:double">
+						<xs:minInclusive value="0.0" />
+						<xs:maxInclusive value="1.0" />
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+			<xs:attribute name="Ad" use="required">
+				<xs:simpleType>
+					<xs:restriction base="xs:double">
+						<xs:minExclusive value="0.0" />
+						<xs:maxInclusive value="1.0" />
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>
+
+

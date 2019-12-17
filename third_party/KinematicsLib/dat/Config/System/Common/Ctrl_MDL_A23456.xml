@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CtrlParam xsi:noNamespaceSchemaLocation="/Roboter/Config/System/Common/Schemes/NGCtrlUser.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <Version Label="1">
+      <Info Version="KUKA V8.3"/>
+      <Schema Version="1"/>
+   </Version>
+   
+   <!-- Notwendige Infrastruktur-Parameter fuer die Matlab/Simulink Anbindung des modellbasierten Reglers -->
+   <GlobalParameter Name="MatlabModelFile" Type="MLI" Index="0" DataType="string" MinValue="0" MaxValue="0" EvalBoundary="Off" Access="ro" Value=""/>
+   <GlobalParameter Name="MatlabModelName" Type="MLI" Index="1" DataType="string" MinValue="0" MaxValue="0" EvalBoundary="Off" Access="ro" Value=""/>
+   <GlobalParameter Name="MatlabModelInstanceAccessSymbol" Type="MLI" Index="2" DataType="string" MinValue="0" MaxValue="0" EvalBoundary="Off" Access="ro" Value=""/>
+   <GlobalParameter Name="MatlabCtrlCycle" Type="MLI" Index="100" MinValue="1.0" MaxValue="16000.0" EvalBoundary="MinMax" Access="ro" Value="1.0"/>
+   <GlobalParameter Name="MatlabCtrlOffset" Type="MLI" Index="101" MinValue="0.0" MaxValue="16000.0" EvalBoundary="MinMax" Access="ro" Value="0.0"/>
+   <GlobalParameter Name="MatlabCycDataThreshold" Type="MLI" Index="21" DataType="int" MinValue="0.0" MaxValue="0.0" EvalBoundary="Off" Access="rwv" Value="1"/>   
+</CtrlParam>

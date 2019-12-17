@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<KRCAxes xsi:noNamespaceSchemaLocation="/Roboter/Config/System/Common/Schemes/KRCAxes.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Version Label="">
+      <Info Version="KUKA V8.3"/>
+      <Schema Version="1"/>
+   </Version>
+   <Axes>
+      <Axis ID="1" Mode="StandAlone" ControlType="PositionTorqueControl">
+         <StandAlone Name="A1"/>
+      </Axis>
+      <Axis ID="2" Mode="StandAlone" ControlType="PositionTorqueControl">
+         <StandAlone Name="A2"/>
+      </Axis>
+      <Axis ID="3" Mode="StandAlone" ControlType="PositionTorqueControl">
+         <StandAlone Name="E1"/>
+      </Axis>
+      <Axis ID="4" Mode="StandAlone" ControlType="PositionTorqueControl">
+         <StandAlone Name="A3"/>
+      </Axis>
+      <Axis ID="5" Mode="StandAlone" ControlType="PositionTorqueControl">
+         <StandAlone Name="A4"/>
+      </Axis>
+      <Axis ID="6" Mode="StandAlone" ControlType="PositionTorqueControl">
+         <StandAlone Name="A5"/>
+      </Axis>
+      <Axis ID="7" Mode="StandAlone" ControlType="PositionTorqueControl">
+         <StandAlone Name="A6"/>
+      </Axis>
+   </Axes>
+   <Sensors>
+<!--
+       <Sensor ID="1" MeasureChannelId="1"/>
+       <Sensor ID="2" MeasureChannelId="2"/>
+ -->
+   </Sensors>
+   <MeasureChannels>
+      <!--MeasureChannel ID="1"/>
+      <MeasureChannel ID="2"/>
+      <MeasureChannel ID="3"/>
+      <MeasureChannel ID="4"/>
+      <MeasureChannel ID="5"/>
+      <MeasureChannel ID="6"/>
+      <MeasureChannel ID="7"/>
+      <MeasureChannel ID="8"/-->
+   </MeasureChannels>
+</KRCAxes>

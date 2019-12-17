@@ -1,0 +1,6 @@
+EXPORTS
+getForward
+getInverse
+getNumberOfAxes
+getRobotType
+init

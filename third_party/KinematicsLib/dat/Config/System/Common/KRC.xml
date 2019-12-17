@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<KRC  xsi:noNamespaceSchemaLocation="/Roboter/Config/System/Common/Schemes/KRC.xsd"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <Version Label="">
+      <Info Version="KUKA V8.3"/>
+      <Schema Version="4"/>
+   </Version>   
+
+   <!-- main thread tKRC -->
+   <Thread
+      Priority="low"
+      CycleTime="4000"/>
+
+   <!-- auxiliary thread tKRCClock -->
+   <ClockThread
+      Priority="highest"
+      CycleTime="1000"/>
+
+   <DrivesOn
+      Timeout="5000000"/>
+   <PowerOff
+      DelayTime="3000000"/>
+   <EmergencyStop
+      Timeout="2200000"/>
+
+   <Scheduling>
+      <Layer ID="0" CycleTime= "1000"/>   <!-- Layer 0 -->
+      <Layer ID="1" CycleTime= "4000"/>   <!-- Layer 1 -->
+      <Layer ID="2" CycleTime="12000"/>   <!-- Layer 2 -->
+      <Layer ID="3" CycleTime="12000"/>   <!-- Layer 3 -->
+      <Layer ID="4" CycleTime="12000"/>   <!-- Layer 4 -->
+      <Layer ID="5" CycleTime="12000"/>   <!-- Layer 5 -->
+      <Layer ID="6" CycleTime="12000"/>   <!-- Layer 6 -->
+      <Layer ID="7" CycleTime="12000"/>   <!-- Layer 7 -->
+      <Layer ID="8" CycleTime="12000"/>   <!-- Layer 8 -->
+      <Layer ID="9" CycleTime="12000"/>   <!-- Layer 9 -->
+      <Timing RobotIntQuota      = "30"
+              SubmitIntQuota     = "4"
+              ExtSubmitInt1Quota = "1"
+              ExtSubmitInt2Quota = "1"
+              ExtSubmitInt3Quota = "1"
+              ExtSubmitInt4Quota = "1"
+              ExtSubmitInt5Quota = "1"
+              ExtSubmitInt6Quota = "1"
+              ExtSubmitInt7Quota = "1"              
+              RobotIntDelay      = "1"
+              SubmitIntDelay     = "1"
+              ExtSubmitInt1Delay = "1"
+              ExtSubmitInt2Delay = "1"
+              ExtSubmitInt3Delay = "1"
+              ExtSubmitInt4Delay = "1"
+              ExtSubmitInt5Delay = "1"
+              ExtSubmitInt6Delay = "1"
+              ExtSubmitInt7Delay = "1"
+              ExprIntQuota       = "5"
+              ExprIntDelay       = "1"/>
+   </Scheduling>
+   
+   <MultiSubmit Enable="false"/>
+
+   <AllowDoubleDollarVar Enable="false"/>
+
+   <Axes ConfigFile="Mada/KRCAxes.xml"/>
+   
+   <PcFanCheck
+      Enable="false"
+      ImpulsesPerRevolution="2"
+      WarningRevolution="5200"
+      AlarmRevolution="4800"/>
+
+   <CabinetFanCheck
+      Enable="false"
+      ImpulsesPerRevolution="2"
+      WarningRevolution="5200"
+      AlarmRevolution="4800"/>
+
+   <InfoHandlerThread
+      CycleTime="200000"
+      PowerOffDelayTime="1000000"/>
+
+   <!-- FctCallChannel
+      ; CWrite to $FCT_CALL Channel
+      ; Enable=true    - Channel is valid (Task tFct_Call spawned)
+      ; Enable=false   - Channel invalid  (Task tFct_Call not spawned)
+      ; TaskStackBytes - Task-Stack for tFctCall Task  -->
+   <FctCallChannel
+      Enable="true" 
+      TaskStackBytes="140960"/>
+ 
+  <!-- ************ -->
+  <!-- ADS Settings -->
+  <!-- ************ -->
+  <ADS_TCP_IP>  
+    <!-- Data port -->
+    <ADS_DATENPORT Value="54100" />
+  </ADS_TCP_IP>
+
+  <!-- ***************************************** -->
+  <!-- Port Configuration for Cooperating-Robots -->
+  <!-- ***************************************** -->
+  <CRPORTS>
+    <!-- Motion cooperation port -->
+    <MOTIONSYNC_PORT Value="5002" />
+    <!-- Workspace sharing port -->
+    <WORKSPACE_PORT  Value="5003" />
+    <!-- Program sync and remote command port -->
+    <PROGSYNC_PORT   Value="5004" />
+    <!-- Collision Avoidance port -->
+    <COLLAVOID_PORT  Value="5020" />
+  </CRPORTS>
+
+</KRC>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Drive xsi:noNamespaceSchemaLocation="/Roboter/Config/System/Common/Schemes/NextGen.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <Version Label="">
+      <Info Version="KUKA V8.3"/>
+      <Schema Version="1"/>
+   </Version>
+   <Thread Priority="high" CycleTime="1000" DelayTime="0"/>
+   <SimpleAsyncThread Priority="215"/>
+   <DriveTech ConfigFile="Mada/NextGenDriveTech.xml"/>
+   <ControllerFramework ID="0"/>
+   <MasteringData>
+      <Mastering Type="EMD">
+         <RawData BufferSize="20000.0" SignalPropagationDelay="5.0" ConversionFactor="0.00008742" InContactThreshold="5000"/>
+         <Filter Order="4" Cut-Off-Frequency="40"/>
+         <RangeMonitoring MinRawValue="1" MaxRawValue="65536"/>
+         <RelChangeMonitoring MinRelChange="-5.0" MaxRelChange="10.0"/>
+         <NotchLengthMonitoring MaxLengthNotchGround="30.0"/>
+         <NotchDetection MinNotchDepth="0.3">
+            <Factor>0.1</Factor>
+            <Factor>0.5</Factor>
+         </NotchDetection>
+         <HotConnect>
+            <EMD ProductCode="50" VendorID="24776"/>
+            <RDC ProductCode="48" VendorID="24776" EMD-Port="2"/>
+         </HotConnect>
+      </Mastering>
+   </MasteringData>
+   <PositionRangeData>
+     <PositionRange Type="MMD">
+        <SensorData MinValue="0" MaxValue="4000" ZeroValue="2000" ZeroLimit="500"/>
+     </PositionRange>
+   </PositionRangeData>
+   <FanControl CycleTime="1000.0" WarningOffset="5.0" ErrorOffset="3.0" MinControlTemp="303.0" MinFanRequest="10"/>
+   <Extrapolation BusDelayFactor="2" DelayKSP="-0.076" DelayKSPsr="0.0" DelayRDC="0.044"/>
+   <Position TimeSlot="10000.0"/>
+</Drive>

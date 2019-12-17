@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CompoundConfig>
+	<DeviceList>	
+		<Device ConfigPath="Devices/LBR_Med_7_R800_MF_SC_FLR/Config" MadaPath="Devices/LBR_Med_7_R800_MF_SC_FLR" Name="LBR_Med_7_R800_MF_SC_FLR"/>
+      <Device ConfigPath="Devices/LBR_Med_14_R820_MF_SC_FLR/Config" MadaPath="Devices/LBR_Med_14_R820_MF_SC_FLR" Name="LBR_Med_14_R820_MF_SC_FLR"/>
+	</DeviceList>
+</CompoundConfig>
