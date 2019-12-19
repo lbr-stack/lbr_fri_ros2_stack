@@ -24,30 +24,26 @@ auto main(int argc, char** argv) -> int {
 	init(Device::LBR7KG);
 
 	// compute initial cartesian position
-	double x[7] = { 0., 0., 0., 0., 0., 0., 0. };
+	double A[7] = { 0., 0., 0., 0., 0., 0., 0. };
 	int status;
 	int turn;
-	if (!getForward(q_init, x, &status, &turn, NULL, NULL)) {
+	if (!getForward(q_init, A, &status, &turn, NULL, NULL)) {
 		printf("forward kinematics did not converge\n");
 		std::exit(EXIT_FAILURE);
 	}
 
 	for (int i = 0; i < 7; i++) {
-		printf("%f\n", x[i]);
+		printf("%f\n", A[i]);
 	}
 	system("pause");
 
-	// move by A in mm
-	double A[7] = { 0., 0., -100., 0., 0., 0., 0. };
+	// move from A to B by x and ensure same orientation
 	double B[7] = { 0., 0., 0., 0., 0., 0., 0. };
-	for (int i = 0; i < DOF; i++) {
-		B[i] = x[i] + A[i];
-		A[i] = x[i];
+	double x[7] = { 0., 0., -100., 0., 0., 0., 0. };
+	for (int i = 0; i < 7; i++) {
+		B[i] = A[i] + x[i];
 	}
-	for (int i = DOF; i < 7; i++) {
-		A[i] = x[i];
-		B[i] = x[i];
-	}
+
 	for (int i = 0; i < 7; i++) {
 		printf("A: %f, B: %f\n", A[i], B[i]);
 	}
@@ -64,10 +60,13 @@ auto main(int argc, char** argv) -> int {
 	std::ofstream out;
 	out.open("trajectory.csv");
 	for (const auto& row : trajectory) {
-		for (const auto& col : row) {
-			out << col << ", ";
-		}
-		out << "\n";
+			out << row[0] << ", "
+				<< row[1] << ", "
+				<< row[2] << ", "
+				<< row[3] << ", "
+				<< row[4] << ", "
+				<< row[5] << ", "
+				<< row[6] << "\n";
 	}
 	out.close();
 	system("pause");
