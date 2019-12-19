@@ -15,7 +15,7 @@
 
 using namespace std::chrono_literals;
 
-auto PTP(double* q_start, const double* q_end, double dt = 0.005, double a = .1, double vmax = .1) -> std::vector<std::vector<double>> {
+auto PTP(double* q_start, const double* q_end, double dt = 0.005, double a = 1., double vmax = 2.) -> std::vector<std::vector<double>> {
 
 	double dq[KUKA::FRI::LBRState::NUMBER_OF_JOINTS]; // defaults zero
 
@@ -86,7 +86,7 @@ class PTPPublisher : public rclcpp::Node {
 
             // read in linear motion
             std::fstream in_file;
-            in_file.open("/home/maritn/Documents/dev_ws/src/fast_robot_interface_ros2/vscode/trajectory.csv");
+            in_file.open("/home/maritn/Documents/dev_ws/src/fast_robot_interface_ros2/vscode/trajectory_0_30_0_60_0_30_0_down.csv");
             lin_ = read_from_file(in_file);
             in_file.close();
 
