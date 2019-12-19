@@ -1,5 +1,7 @@
 #include <chrono>
 #include <math.h>
+#include <fstream>
+#include <sstream>
 
 #include "rclcpp/rclcpp.hpp"
 #include "std_msgs/msg/float64_multi_array.hpp"
@@ -50,6 +52,27 @@ auto PTP(double* q_start, const double* q_end, double dt = 0.005, double a = .1,
 	return trajectory;
 }
 
+// read from csv
+std::vector<std::vector<double>> read_from_file(std::fstream& in) {
+    std::vector<std::vector<double>> table;
+    std::vector<double> row;
+
+    std::string line, element;
+
+    while (std::getline(in, line)) {
+        row.clear();
+        std::stringstream s(line);
+
+        while (std::getline(s, element, ',')) {
+            row.push_back(std::stod(element)*DEG2RAD);
+        }
+        table.push_back(row);
+    }
+
+    return table;
+}
+
+
 class PTPPublisher : public rclcpp::Node {
 
     public:
@@ -58,15 +81,29 @@ class PTPPublisher : public rclcpp::Node {
             pub_ = this->create_publisher<std_msgs::msg::Float64MultiArray>("/lbr_joint_angles_in", 10);
             timer_ = this->create_wall_timer(5ms, std::bind(&PTPPublisher::timer_callback, this));
             double q_start[7] = {0., 0., 0., 0., 0., 0., 0.};
-            double q_end[7] = {0., 60.*DEG2RAD, 0., -60*DEG2RAD, 0., 60.*DEG2RAD, 0.};
-            traj_ = PTP(q_start, q_end, 0.005); 
+            double q_end[7] = {0., 30.*DEG2RAD, 0., 60*DEG2RAD, 0., 30.*DEG2RAD, 0.};
+            ptp_ = PTP(q_start, q_end, 0.005); 
+
+            // read in linear motion
+            std::fstream in_file;
+            in_file.open("/home/maritn/Documents/dev_ws/src/fast_robot_interface_ros2/vscode/trajectory.csv");
+            lin_ = read_from_file(in_file);
+            in_file.close();
+
             counter_ = 0;
             
         }
 
     private:
         void timer_callback() {
-            std::vector<double> out = traj_[counter_];
+            // perform ptp motion
+            std::vector<double> out;
+            if (counter_ < ptp_.size()) {
+                out = ptp_[counter_];
+            }
+            else {
+                out = lin_[counter_ - ptp_.size()];
+            }
             counter_++;
 
             RCLCPP_INFO(this->get_logger(), "publishing joint angle (%f, %f, %f, %f, %f, %f, %f,)", 
@@ -93,7 +130,8 @@ class PTPPublisher : public rclcpp::Node {
 
         rclcpp::TimerBase::SharedPtr timer_;
         rclcpp::Publisher<std_msgs::msg::Float64MultiArray>::SharedPtr pub_;
-        std::vector<std::vector<double>> traj_;
+        std::vector<std::vector<double>> ptp_;
+        std::vector<std::vector<double>> lin_;
         int counter_;
 };
 
