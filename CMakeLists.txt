@@ -24,6 +24,10 @@ ament_target_dependencies(frinode rclcpp std_msgs)
 add_executable(publisher src/publisher.cpp)
 ament_target_dependencies(publisher rclcpp std_msgs)
 
+add_executable(ptp_publisher src/ptp_publisher.cpp)
+target_include_directories(ptp_publisher PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/src)
+ament_target_dependencies(ptp_publisher rclcpp std_msgs)
+
 add_executable(santa_publisher src/santa_publisher.cpp)
 target_include_directories(santa_publisher PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_link_libraries(santa_publisher FRI::fri)
@@ -32,6 +36,7 @@ ament_target_dependencies(santa_publisher rclcpp std_msgs)
 install(TARGETS
  frinode
  publisher
+ ptp_publisher
  santa_publisher
  DESTINATION lib/${PROJECT_NAME})
 
