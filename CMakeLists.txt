@@ -14,7 +14,6 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 
-
 add_subdirectory(third_party/FastRobotInterface)
 
 add_executable(frinode src/fri_node.cpp src/lbr_servo.cpp)
@@ -25,9 +24,15 @@ ament_target_dependencies(frinode rclcpp std_msgs)
 add_executable(publisher src/publisher.cpp)
 ament_target_dependencies(publisher rclcpp std_msgs)
 
+add_executable(santa_publisher src/santa_publisher.cpp)
+target_include_directories(santa_publisher PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/src)
+target_link_libraries(santa_publisher FRI::fri)
+ament_target_dependencies(santa_publisher rclcpp std_msgs)
+
 install(TARGETS
  frinode
  publisher
+ santa_publisher
  DESTINATION lib/${PROJECT_NAME})
 
 ament_package()
