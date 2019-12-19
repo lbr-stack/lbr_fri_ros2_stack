@@ -13,7 +13,7 @@ const int DOF = 3;
 const double dt = 0.005; // s
 double q_init[N_JOINTS] = { 0., 0., 0., 0., 0., 0., 0. };
 
-// no singularity at 10. 30. 10. 30. 10. 30. 10.
+// no singularity at 0. 60. 0. 60. 0. 60. 0.
 // create point cloud for santas house
 using point = std::tuple<double, double>;
 using point_cloud = std::vector<point>;
