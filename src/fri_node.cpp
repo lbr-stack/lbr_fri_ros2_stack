@@ -1,5 +1,6 @@
 #include <memory>
 #include <cstring>
+#include <chrono> // from timed publisher
 
 // FRI
 #include <fri/friClientIf.h>
@@ -14,6 +15,7 @@
 #include "rclcpp/rclcpp.hpp"
 #include "std_msgs/msg/float64_multi_array.hpp"
 
+using namespace std::chrono_literals;
 
 namespace KUKA {
 namespace FRI {
@@ -28,9 +30,14 @@ class ClientROSApplication : public rclcpp::Node {
             data_ = client_->createData();
             this->connect(30200);
 
+            timer_ = this->create_wall_timer(5ms, std::bind(&ClientROSApplication::timer_callback, this)); // create timed published to close loop
+
             // Create subscription to the joint angle topic
             sub_ = this->create_subscription<std_msgs::msg::Float64MultiArray>(
-                "/lbr_joint_angle_in", 10, std::bind(&ClientROSApplication::callback, this, std::placeholders::_1)
+                "/lbr_joint_angles_in", 10, std::bind(&ClientROSApplication::callback, this, std::placeholders::_1)
+            );
+            pub_ = this->create_publisher<std_msgs::msg::Float64MultiArray>(
+                "/lbr_joint_angles_out", 10
             );
         }
 
@@ -43,6 +50,7 @@ class ClientROSApplication : public rclcpp::Node {
     private:
         void callback(const std_msgs::msg::Float64MultiArray::SharedPtr msg) const {
             // Read msg from subscription
+            RCLCPP_INFO(this->get_logger(), "callback in fri_node");
             double in[LBRState::NUMBER_OF_JOINTS];
             double out[LBRState::NUMBER_OF_JOINTS];
 
@@ -143,11 +151,40 @@ class ClientROSApplication : public rclcpp::Node {
                 }
             }
 
-            printf((success ? "\nsent message" : "\nfailed to sent message"));
+            // printf((success ? "\nsent message" : "\nfailed to sent message"));
 
             // Publish robot state
             std::memcpy(out, msg->data.data(), sizeof(double)*LBRState::NUMBER_OF_JOINTS);
         }
+
+
+
+        void timer_callback() {
+            // Read out position, how does this all connect?
+            tRepeatedDoubleArguments *values =
+                    (tRepeatedDoubleArguments*)data_->monitoringMsg.monitorData.measuredJointPosition.value.arg;
+
+            // TODO publish from within the subscriber, should rather be implemented as action server!
+            std::vector<double> vals{values->value[0], 
+                values->value[1], 
+                values->value[2], 
+                values->value[3], 
+                values->value[4], 
+                values->value[5], 
+                values->value[6]
+            };
+
+            auto rply = std_msgs::msg::Float64MultiArray();
+            rply.layout.dim.push_back(std_msgs::msg::MultiArrayDimension());
+            rply.layout.dim[0].size = KUKA::FRI::LBRState::NUMBER_OF_JOINTS;
+            rply.layout.dim[0].stride = 1;
+            rply.layout.dim[0].label = "i";
+
+            rply.data.clear();
+            rply.data.insert(rply.data.end(), vals.begin(), vals.end());
+
+            pub_->publish(rply);
+        };
 
         bool connect(int port, const char *remoteHost = NULL) {
             if (connection_.isOpen()) 
@@ -169,7 +206,9 @@ class ClientROSApplication : public rclcpp::Node {
         ClientData* data_;
 
         // ROS
+        rclcpp::TimerBase::SharedPtr timer_;
         rclcpp::Subscription<std_msgs::msg::Float64MultiArray>::SharedPtr sub_;
+        rclcpp::Publisher<std_msgs::msg::Float64MultiArray>::SharedPtr pub_;
 
 };
 

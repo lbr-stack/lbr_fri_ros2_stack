@@ -19,7 +19,7 @@ class Publisher : public rclcpp::Node {
               _offset(0.0),
               _phi(0.0),
               _stepWidth(0.0) {
-            pub_ = this->create_publisher<std_msgs::msg::Float64MultiArray>("/lbr_joint_angle_in", 10);
+            pub_ = this->create_publisher<std_msgs::msg::Float64MultiArray>("/lbr_joint_angles_in", 10);
             timer_ = this->create_wall_timer(5ms, std::bind(&Publisher::timer_callback, this));   
 
             // copy KUKA's example
