@@ -10,30 +10,31 @@
 
 // FRI
 #include <fri/friLBRState.h>
+#include <fri/friLBRClient.h>
 
 // custom
 #include <ramp_function.h>
 
 using namespace std::chrono_literals;
 
-auto PTP(double* q_start, double* q_end, double dt, double a, double vmax) -> std::vector<std::vector<double>> {
+auto PTP(double* q_start, double* q_end, double dt = 0.005, double a = .1, double vmax = .1) -> std::vector<std::vector<double>> {
 
-	double dq[KUKA::FRI::NUMBER_OF_JOINTS]; // defaults zero
+	double dq[KUKA::FRI::LBRState::NUMBER_OF_JOINTS]; // defaults zero
 
-	for (int i = 0; i < KUKA::FRI::NUMBER_OF_JOINTS; i++) {
-		dq = q_start - q_end;
+
+
+	for (int i = 0; i < KUKA::FRI::LBRState::NUMBER_OF_JOINTS; i++) {
+		dq[i] = q_start[i] - q_end[i];
 	}
 
 	// find longest for scaling ptp motion
 	double longest = 0.;
-	for (int i = 0; i < KUKA::FRI::NUMBER_OF_JOINTS; i++) {
+	for (int i = 0; i < KUKA::FRI::LBRState::NUMBER_OF_JOINTS; i++) {
 		if (std::abs(dq[i]) > longest) {
 			longest = std::abs(dq[i]);
 		}
 	}
 
-	double a = 0.;
-	double vmax = 0.;
 	RampFunction rf(longest, a, vmax);
 
 	double tend = rf.getEndTime();
@@ -41,7 +42,7 @@ auto PTP(double* q_start, double* q_end, double dt, double a, double vmax) -> st
 	std::vector<std::vector<double>> trajectory;
 
 	for (double t = 0.; t < tend; t+=dt) {
-		for (int i = 0; i < KUKA::FRI::NUMBER_OF_JOINTS; i++) {
+		for (int i = 0; i < KUKA::FRI::LBRState::NUMBER_OF_JOINTS; i++) {
 			q[i] = q_start[i] + dq[i]/longest*rf.s(t);
 		}
 		trajectory.push_back(q);
@@ -77,7 +78,7 @@ class Publisher : public rclcpp::Node, public LBRClient {
 
 
 			// collect output joint angles
-            std::vector<double> out{_offset, 0., 0., 0., 0., 0., 0.};
+            std::vector<double> out{0., 0., 0., 0., 0., 0., 0.};
 
 			// prepare output joint angles as multiarraz message
             auto msg = std_msgs::msg::Float64MultiArray();
@@ -106,7 +107,7 @@ class Publisher : public rclcpp::Node, public LBRClient {
 int main(int argc, char** argv) {
 
     rclcpp::init(argc, argv);
-    rclcpp::spin(std::make_shared<Publisher>());
+    rclcpp::spin(std::make_shared<KUKA::FRI::Publisher>());
     rclcpp::shutdown();
     return 0;
 }
