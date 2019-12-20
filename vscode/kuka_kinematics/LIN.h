@@ -10,7 +10,7 @@
 // create LIN motion
 class LIN {
 public:
-	LIN(const double* x_start, const double* x_end, const double* q_init, const int n_joints, const double a = 5./*mm/s^2*/, const double vmax = 10. /*mm/s*/, const double dt = 0.005) : n_joints_(n_joints), dt_(dt) {
+	LIN(const double* x_start, const double* x_end, const double* q_init, const int n_joints, const int status, const int turn, const double a = 5./*mm/s^2*/, const double vmax = 10. /*mm/s*/, const double dt = 0.005) : n_joints_(n_joints), status_(status), turn_(turn), dt_(dt) {
 		q_ = new double[n_joints];
 		x_ = new double[7];
 		x_start_ = new double[7];
@@ -60,11 +60,8 @@ public:
 				x_[i] = x_start_[i] + (x_end_[i] - x_start_[i]) / distance * rf_->s(t);
 			}
 
-			int status = 2;
-			int turn = 6;
-
 			// inverse kinematics
-			if (!getInverse(x_, status, turn, q_ /*update*/, q_ /*previous*/, NULL, NULL)) {
+			if (!getInverse(x_, status_, turn_, q_ /*update*/, q_ /*previous*/, NULL, NULL)) {
 				printf("could not invert\n");
 				system("pause");
 				success = false;
@@ -107,11 +104,13 @@ public:
 		rf_->update(distance);
 	}; // update target
 private:
-	const int n_joints_;
 	double* q_;
 	double* x_;
 	double* x_start_;
 	double* x_end_;
+	const int n_joints_;
+	const int status_;
+	const int turn_;
 	const double dt_;
 
 	RampFunction* rf_;

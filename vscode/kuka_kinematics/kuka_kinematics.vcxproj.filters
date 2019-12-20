@@ -23,7 +23,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="lin_santa_move.cpp">
+    <ClCompile Include="lin_rvim_move.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
