@@ -19,15 +19,15 @@ using point = std::tuple<double, double>;
 using point_cloud = std::vector<point>;
 
 point_cloud santas_house = { // in x-y plane
-	std::make_tuple<double, double>( 0.,   0.),// 1
-	std::make_tuple<double, double>( 0., -20.),// 2
-	std::make_tuple<double, double>(40., -20.),// 3
-	std::make_tuple<double, double>( 0.,   0.),// 4
-	std::make_tuple<double, double>(40.,   0.),// 5
-	std::make_tuple<double, double>(40., -20.),// 6
-	std::make_tuple<double, double>(50., -10.),// 7
-	std::make_tuple<double, double>(40.,   0.),// 8
-	std::make_tuple<double, double>( 0., -20.),// 9
+	std::make_tuple<double, double>(  0.,   0.),// 1
+	std::make_tuple<double, double>(  0., -40.),// 2
+	std::make_tuple<double, double>( 80., -40.),// 3
+	std::make_tuple<double, double>(  0.,   0.),// 4
+	std::make_tuple<double, double>( 80.,   0.),// 5
+	std::make_tuple<double, double>( 80., -40.),// 6
+	std::make_tuple<double, double>(100., -20.),// 7
+	std::make_tuple<double, double>( 80.,   0.),// 8
+	std::make_tuple<double, double>(  0., -40.),// 9
 }; // in units of mm, defined in initial plane
 
 auto main(int argc, char** argv) -> int {
