@@ -15,7 +15,7 @@
 
 using namespace std::chrono_literals;
 
-auto PTP(double* q_start, const double* q_end, double dt = 0.005, double a = 1., double vmax = 2.) -> std::vector<std::vector<double>> {
+auto PTP(double* q_start, const double* q_end, double dt = 0.005, double a = 0.1, double vmax = 0.2) -> std::vector<std::vector<double>> {
 
 	double dq[KUKA::FRI::LBRState::NUMBER_OF_JOINTS]; // defaults zero
 
@@ -80,15 +80,20 @@ class PTPPublisher : public rclcpp::Node {
             : Node("fri_test_publisher") {
             pub_ = this->create_publisher<std_msgs::msg::Float64MultiArray>("/lbr_joint_angles_in", 10);
             timer_ = this->create_wall_timer(5ms, std::bind(&PTPPublisher::timer_callback, this));
-            double q_start[7] = {0., 0., 0., 0., 0., 0., 0.};
-            double q_end[7] = {0., 30.*DEG2RAD, 0., 60*DEG2RAD, 0., 30.*DEG2RAD, 0.};
-            ptp_ = PTP(q_start, q_end, 0.005); 
 
             // read in linear motion
             std::fstream in_file;
-            in_file.open("/home/maritn/Documents/dev_ws/src/fast_robot_interface_ros2/vscode/trajectory_0_30_0_60_0_30_0_down.csv");
+            in_file.open("/home/maritn/Documents/dev_ws/src/fast_robot_interface_ros2/vscode/trajectory_rvim.csv");
             lin_ = read_from_file(in_file);
             in_file.close();
+
+            // create ptp motion
+            double q_start[7] = {0., 0., 0., 0., 0., 0., 0.};
+            double q_end[7] = {0., 0., 0., 0., 0., 0., 0.};
+            for (int i = 0; i < lin_[0].size(); i++) {
+                q_end[i] = lin_[0][i];
+            }
+            ptp_ = PTP(q_start, q_end, 0.005); 
 
             counter_ = 0;
             
