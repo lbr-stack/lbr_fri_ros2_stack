@@ -50,6 +50,8 @@ auto main(int argc, char** argv) -> int {
 		std::exit(EXIT_FAILURE);
 	}
 
+	printf("turn: %d, status: %d\n", turn, status);
+
 	for (int i = 0; i < 7; i++) {
 		printf("%f\n", x[i]);
 	}

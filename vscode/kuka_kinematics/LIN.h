@@ -60,8 +60,8 @@ public:
 				x_[i] = x_start_[i] + (x_end_[i] - x_start_[i]) / distance * rf_->s(t);
 			}
 
-			int status = 0;
-			int turn = 2;
+			int status = 2;
+			int turn = 6;
 
 			// inverse kinematics
 			if (!getInverse(x_, status, turn, q_ /*update*/, q_ /*previous*/, NULL, NULL)) {

@@ -181,7 +181,7 @@ xcopy /y /d /s "C:\Program Files (x86)\KUKA\ROBOTER" "$(OutDir)"</Command>
     <ClInclude Include="RampFunction.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="lin_move.cpp" />
+    <ClCompile Include="lin_santa_move.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
