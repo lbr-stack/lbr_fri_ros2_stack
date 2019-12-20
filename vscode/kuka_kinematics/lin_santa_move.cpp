@@ -18,16 +18,16 @@ double q_init[N_JOINTS] = { 0., 0., 0., 0., 0., 0., 0. };
 using point = std::tuple<double, double>;
 using point_cloud = std::vector<point>;
 
-point_cloud santas_house = {
-	std::make_tuple<double, double>(0.,  0.),// 1
-	std::make_tuple<double, double>(20.,  0.),// 2
-	std::make_tuple<double, double>(20., 40.),// 3
-	std::make_tuple<double, double>(0.,  0.),// 4
-	std::make_tuple<double, double>(0., 40.),// 5
-	std::make_tuple<double, double>(20., 40.),// 6
-	std::make_tuple<double, double>(10., 50.),// 7
-	std::make_tuple<double, double>(0., 40.),// 8
-	std::make_tuple<double, double>(20.,  0.),// 9
+point_cloud santas_house = { // in x-y plane
+	std::make_tuple<double, double>( 0.,   0.),// 1
+	std::make_tuple<double, double>( 0., -20.),// 2
+	std::make_tuple<double, double>(40., -20.),// 3
+	std::make_tuple<double, double>( 0.,   0.),// 4
+	std::make_tuple<double, double>(40.,   0.),// 5
+	std::make_tuple<double, double>(40., -20.),// 6
+	std::make_tuple<double, double>(50., -10.),// 7
+	std::make_tuple<double, double>(40.,   0.),// 8
+	std::make_tuple<double, double>( 0., -20.),// 9
 }; // in units of mm, defined in initial plane
 
 auto main(int argc, char** argv) -> int {
@@ -74,11 +74,11 @@ auto main(int argc, char** argv) -> int {
 
 	// perform a linear motion from A to B
 	for (int i = 0; i < santas_house.size() - 1; i++) {
-		// update points in y-z plane
-		A[1] = x[1] + std::get<0>(santas_house[i]);
-		A[2] = x[2] + std::get<1>(santas_house[i]);
-		B[1] = x[1] + std::get<0>(santas_house[i + 1]);
-		B[2] = x[2] + std::get<1>(santas_house[i + 1]);
+		// update points in x-y plane
+		A[0] = x[0] + std::get<0>(santas_house[i]);
+		A[1] = x[1] + std::get<1>(santas_house[i]);
+		B[0] = x[0] + std::get<0>(santas_house[i + 1]);
+		B[1] = x[1] + std::get<1>(santas_house[i + 1]);
 
 
 		LIN lin(A, B, q_init, N_JOINTS);

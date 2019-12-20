@@ -10,7 +10,7 @@
 // create LIN motion
 class LIN {
 public:
-	LIN(const double* x_start, const double* x_end, const double* q_init, const int n_joints, const double a = 10./*mm/s^2*/, const double vmax = 20. /*mm/s*/, const double dt = 0.005) : n_joints_(n_joints), dt_(dt) {
+	LIN(const double* x_start, const double* x_end, const double* q_init, const int n_joints, const double a = 5./*mm/s^2*/, const double vmax = 10. /*mm/s*/, const double dt = 0.005) : n_joints_(n_joints), dt_(dt) {
 		q_ = new double[n_joints];
 		x_ = new double[7];
 		x_start_ = new double[7];
