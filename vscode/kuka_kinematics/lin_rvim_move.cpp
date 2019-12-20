@@ -39,11 +39,17 @@ point_cloud rvim_logo = { // in x-y-z plane
 
 	{-2., 5., 0.}, // 10
 	{ 0., 5., 0.}, // 11
+
+	{ 0., 5., 1.}, // transition
+	{ 0., 6., 1.}, // transition
+
 	{ 0., 6., 0.}, // 12
 	{-2., 6., 0.}, // 13
 	{-1., 7., 0.}, // 14
 	{-2., 8., 0.}, // 15
 	{ 0., 8., 0.}, // 16
+
+	{ 0., 8., 1.}, // up move
 }; // in units of mm, defined in initial plane
 
 auto main(int argc, char** argv) -> int {
