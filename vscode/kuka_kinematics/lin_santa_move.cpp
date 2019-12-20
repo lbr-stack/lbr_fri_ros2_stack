@@ -98,10 +98,13 @@ auto main(int argc, char** argv) -> int {
 		printf("length %d\n", trajectory.size());
 
 		for (const auto& row : trajectory) {
-			for (const auto& col : row) {
-				out << col << ", ";
-			}
-			out << "\n";
+			out << row[0] << ", "
+				<< row[1] << ", "
+				<< row[2] << ", "
+				<< row[3] << ", "
+				<< row[4] << ", "
+				<< row[5] << ", "
+				<< row[6] << "\n";
 		}
 	}
 
