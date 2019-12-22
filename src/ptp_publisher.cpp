@@ -88,7 +88,7 @@ class PTPPublisher : public rclcpp::Node {
             // read in linear motion
             std::fstream in_file;
             // in_file.open("/home/maritn/Documents/dev_ws/src/fast_robot_interface_ros2/vscode/trajectory_rvim.csv");
-            in_file.open("/home/maritn/Documents/dev_ws/src/fast_robot_interface_ros2/vscode/trajectory_merry_christmas.csv");
+            in_file.open("/home/maritn/Documents/dev_ws/src/fast_robot_interface_ros2/vscode/trajectory_merry_christmas_fast.csv");
             lin_ = read_from_file(in_file);
             in_file.close();
 
@@ -114,7 +114,7 @@ class PTPPublisher : public rclcpp::Node {
             q_end[5] = -77.3*DEG2RAD;
             q_end[6] = -24.4*DEG2RAD;
 
-            ptp_watch_camera_ = PTP(q_start, q_end, 0.005, 0.4, 0.8); 
+            ptp_watch_camera_ = PTP(q_start, q_end, true /*hold still*/, 1. /*for 10 seconds*/, 0.005, 0.2, 0.4); 
 
             // watch letter ptp motion
             for (int i = 0; i < lin_[0].size(); i++) {
@@ -125,11 +125,11 @@ class PTPPublisher : public rclcpp::Node {
             q_end[1] =   42.2*DEG2RAD;
             q_end[2] =   20.9*DEG2RAD;
             q_end[3] = - 72.9*DEG2RAD;
-            q_end[4] =  127*DEG2RAD;
+            q_end[4] =  127.0*DEG2RAD;
             q_end[5] = - 66.3*DEG2RAD;
-            q_end[6] = -24.4*DEG2RAD;
+            q_end[6] = - 24.4*DEG2RAD;
 
-            ptp_watch_letter_ = PTP(q_start, q_end, true /*hold still*/, 2. /*for 10 seconds*/, 0.005, 0.4, 0.8); 
+            ptp_watch_letter_ = PTP(q_start, q_end, true /*hold still*/, 2. /*for 10 seconds*/, 0.005, 0.2, 0.4); 
 
             // init counter
             counter_ = 0;
