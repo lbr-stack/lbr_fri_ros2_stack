@@ -15,7 +15,7 @@
 
 using namespace std::chrono_literals;
 
-auto PTP(double* q_start, const double* q_end, double dt = 0.005, double a = 0.1, double vmax = 0.2) -> std::vector<std::vector<double>> {
+auto PTP(double* q_start, const double* q_end, bool hold, double hold_time = 10., double dt = 0.005, double a = 0.1, double vmax = 0.2) -> std::vector<std::vector<double>> {
 
 	double dq[KUKA::FRI::LBRState::NUMBER_OF_JOINTS]; // defaults zero
 
@@ -31,22 +31,26 @@ auto PTP(double* q_start, const double* q_end, double dt = 0.005, double a = 0.1
 		}
 	}
 
-
 	RampFunction rf(longest, a, vmax);
 
 	double tend = rf.getEndTime();
 	std::vector<double> q(KUKA::FRI::LBRState::NUMBER_OF_JOINTS, 0.);
 	std::vector<std::vector<double>> trajectory;
 
-    for (double t = 0.; t < 10.; t+=dt) { // do nothin for 10 seconds
-        trajectory.push_back(std::vector<double>(KUKA::FRI::LBRState::NUMBER_OF_JOINTS, 0.));
+    if (hold) {
+        for (double t = 0.; t < hold_time; t+=dt) { // do nothin for hold_time seconds
+            for (int i = 0; i < KUKA::FRI::LBRState::NUMBER_OF_JOINTS; i++) {
+			    q[i] = q_start[i];
+		    }
+            trajectory.push_back(q);
+        }
     }
 
 	for (double t = 0.; t < tend; t+=dt) {
 		for (int i = 0; i < KUKA::FRI::LBRState::NUMBER_OF_JOINTS; i++) {
 			q[i] = q_start[i] + dq[i]/longest*rf.s(t);
 		}
-		trajectory.push_back(q);
+        trajectory.push_back(q);
 	}
 
 	return trajectory;
@@ -83,7 +87,8 @@ class PTPPublisher : public rclcpp::Node {
 
             // read in linear motion
             std::fstream in_file;
-            in_file.open("/home/maritn/Documents/dev_ws/src/fast_robot_interface_ros2/vscode/trajectory_rvim.csv");
+            // in_file.open("/home/maritn/Documents/dev_ws/src/fast_robot_interface_ros2/vscode/trajectory_rvim.csv");
+            in_file.open("/home/maritn/Documents/dev_ws/src/fast_robot_interface_ros2/vscode/trajectory_merry_christmas.csv");
             lin_ = read_from_file(in_file);
             in_file.close();
 
@@ -93,21 +98,59 @@ class PTPPublisher : public rclcpp::Node {
             for (int i = 0; i < lin_[0].size(); i++) {
                 q_end[i] = lin_[0][i];
             }
-            ptp_ = PTP(q_start, q_end, 0.005); 
+            ptp_ = PTP(q_start, q_end, true /*hold still*/, 10. /*for 10 seconds*/, 0.005); 
 
+            // watch camera ptp motion
+            int last = lin_.size() - 1;
+            for (int i = 0; i < lin_[0].size(); i++) {
+                q_start[i] = lin_[last][i];
+            }
+
+            q_end[0] =  18.0*DEG2RAD;
+            q_end[1] =  53.5*DEG2RAD;
+            q_end[2] = - 3.8*DEG2RAD;
+            q_end[3] = -72.5*DEG2RAD;
+            q_end[4] =  55.7*DEG2RAD;
+            q_end[5] = -77.3*DEG2RAD;
+            q_end[6] = -24.4*DEG2RAD;
+
+            ptp_watch_camera_ = PTP(q_start, q_end, 0.005, 0.4, 0.8); 
+
+            // watch letter ptp motion
+            for (int i = 0; i < lin_[0].size(); i++) {
+                q_start[i] = q_end[i];
+            }
+
+            q_end[0] =   18.0*DEG2RAD;
+            q_end[1] =   42.2*DEG2RAD;
+            q_end[2] =   20.9*DEG2RAD;
+            q_end[3] = - 72.9*DEG2RAD;
+            q_end[4] =  127*DEG2RAD;
+            q_end[5] = - 66.3*DEG2RAD;
+            q_end[6] = -24.4*DEG2RAD;
+
+            ptp_watch_letter_ = PTP(q_start, q_end, true /*hold still*/, 2. /*for 10 seconds*/, 0.005, 0.4, 0.8); 
+
+            // init counter
             counter_ = 0;
             
         }
 
     private:
         void timer_callback() {
-            // perform ptp motion
+            // perform ptp motion to start
             std::vector<double> out;
             if (counter_ < ptp_.size()) {
                 out = ptp_[counter_];
             }
-            else {
+            else if (counter_ - ptp_.size() < lin_.size()) {
                 out = lin_[counter_ - ptp_.size()];
+            }
+            else if (counter_ - ptp_.size() - lin_.size() < ptp_watch_camera_.size()) { // watch camera
+                out = ptp_watch_camera_[counter_ - ptp_.size() - lin_.size()];
+            }
+            else if (counter_ - ptp_.size() - lin_.size() - ptp_watch_camera_.size() < ptp_watch_letter_.size()) { // watch letter
+                out = ptp_watch_letter_[counter_ - ptp_.size() - lin_.size() - ptp_watch_camera_.size()];
             }
             counter_++;
 
@@ -135,8 +178,10 @@ class PTPPublisher : public rclcpp::Node {
 
         rclcpp::TimerBase::SharedPtr timer_;
         rclcpp::Publisher<std_msgs::msg::Float64MultiArray>::SharedPtr pub_;
-        std::vector<std::vector<double>> ptp_;
         std::vector<std::vector<double>> lin_;
+        std::vector<std::vector<double>> ptp_;
+        std::vector<std::vector<double>> ptp_watch_camera_;
+        std::vector<std::vector<double>> ptp_watch_letter_;
         int counter_;
 };
 
