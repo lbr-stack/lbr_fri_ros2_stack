@@ -1,0 +1,35 @@
+iiwa_controller:
+  # Publish all joint states -----------------------------------
+  joint_state_controller:
+    type: joint_state_controller/JointStateController
+    publish_rate: 50
+
+  # Position Controllers --------------------------------------
+    A1_position_controller:
+      type: effort_controllers/JointPositionController
+      joint: A1
+      pid: {p: 100.0, i: 0.01, d: 10.0}
+    A2_position_controller:
+      type: effort_controllers/JointPositionController
+      joint: A2
+      pid: {p: 100.0, i: 0.01, d: 10.0}
+    A3_position_controller:
+      type: effort_controllers/JointPositionController
+      joint: A3
+      pid: {p: 100.0, i: 0.01, d: 10.0}
+    A4_position_controller:
+      type: effort_controllers/JointPositionController
+      joint: A4
+      pid: {p: 100.0, i: 0.01, d: 10.0}
+    A5_position_controller:
+      type: effort_controllers/JointPositionController
+      joint: A5
+      pid: {p: 100.0, i: 0.01, d: 10.0}
+    A6_position_controller:
+      type: effort_controllers/JointPositionController
+      joint: A6
+      pid: {p: 100.0, i: 0.01, d: 10.0}
+    A7_position_controller:
+      type: effort_controllers/JointPositionController
+      joint: A7
+      pid: {p: 100.0, i: 0.01, d: 10.0}
