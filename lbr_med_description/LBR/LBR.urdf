@@ -1,0 +1,301 @@
+<?xml version="1.0" ?>
+<robot name="LBR">
+<link name="base_link">
+  <inertial>
+    <origin rpy="0 0 0" xyz="-0.0018958727522859222 -8.736009549202623e-09 0.07626305487275586"/>
+    <mass value="46.20540698229506"/>
+    <inertia ixx="0.250291" ixy="-0.0" ixz="-0.004435" iyy="0.255257" iyz="-0.0" izz="0.351803"/>
+  </inertial>
+  <visual>
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <geometry>
+      <mesh filename="package://fusion2urdf/LBR/bin_stl/base_link_m-binary.stl"/>
+    </geometry>
+    <material name="silver">
+      <color rgba="1 0 0 1"/>
+    </material>
+  </visual>
+  <collision>
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <geometry>
+      <mesh filename="package://fusion2urdf/LBR/bin_stl/base_link_m-binary.stl"/>
+    </geometry>
+  </collision>
+</link>
+<link name="link_1_1">
+  <inertial>
+    <origin rpy="0 0 0" xyz="5.010328793588479e-08 -0.03481903813472808 0.12329857163085542"/>
+    <mass value="21.161828997118327"/>
+    <inertia ixx="0.133324" ixy="-0.0" ixz="0.0" iyy="0.127214" iyz="0.023673" izz="0.047155"/>
+  </inertial>
+  <visual>
+    <origin rpy="0 0 0" xyz="-0.0 0.0 -0.1475"/>
+    <geometry>
+      <mesh filename="package://fusion2urdf/LBR/bin_stl/link_1_1_m-binary.stl"/>
+    </geometry>
+    <material name="silver">
+      <color rgba="1 0 0 1"/>
+    </material>
+  </visual>
+  <collision>
+    <origin rpy="0 0 0" xyz="-0.0 0.0 -0.1475"/>
+    <geometry>
+      <mesh filename="package://fusion2urdf/LBR/bin_stl/link_1_1_m-binary.stl"/>
+    </geometry>
+  </collision>
+</link>
+<link name="link_2_1">
+  <inertial>
+    <origin rpy="0 0 0" xyz="2.958275959973659e-08 0.03979295468456965 0.08694361150855662"/>
+    <mass value="25.13966081800886"/>
+    <inertia ixx="0.19763" ixy="-0.0" ixz="0.0" iyy="0.187553" iyz="0.036718" izz="0.060269"/>
+  </inertial>
+  <visual>
+    <origin rpy="0 0 0" xyz="0.0 0.0105 -0.34"/>
+    <geometry>
+      <mesh filename="package://fusion2urdf/LBR/bin_stl/link_2_1_m-binary.stl"/>
+    </geometry>
+    <material name="silver">
+      <color rgba="1 0 0 1"/>
+    </material>
+  </visual>
+  <collision>
+    <origin rpy="0 0 0" xyz="0.0 0.0105 -0.34"/>
+    <geometry>
+      <mesh filename="package://fusion2urdf/LBR/bin_stl/link_2_1_m-binary.stl"/>
+    </geometry>
+  </collision>
+</link>
+<link name="link_3_1">
+  <inertial>
+    <origin rpy="0 0 0" xyz="-5.010330962930412e-08 0.03481903813473644 0.1232985716309013"/>
+    <mass value="21.1618289971097"/>
+    <inertia ixx="0.133324" ixy="-0.0" ixz="-0.0" iyy="0.127214" iyz="-0.023673" izz="0.047155"/>
+  </inertial>
+  <visual>
+    <origin rpy="0 0 0" xyz="0.0 -0.0 -0.5475"/>
+    <geometry>
+      <mesh filename="package://fusion2urdf/LBR/bin_stl/link_3_1_m-binary.stl"/>
+    </geometry>
+    <material name="silver">
+      <color rgba="1 0 0 1"/>
+    </material>
+  </visual>
+  <collision>
+    <origin rpy="0 0 0" xyz="0.0 -0.0 -0.5475"/>
+    <geometry>
+      <mesh filename="package://fusion2urdf/LBR/bin_stl/link_3_1_m-binary.stl"/>
+    </geometry>
+  </collision>
+</link>
+<link name="link_4_1">
+  <inertial>
+    <origin rpy="0 0 0" xyz="-3.025230048709993e-08 -0.03979329512443697 0.08694363375610437"/>
+    <mass value="25.139648831600116"/>
+    <inertia ixx="0.197618" ixy="-0.0" ixz="-0.0" iyy="0.187546" iyz="-0.036716" izz="0.060263"/>
+  </inertial>
+  <visual>
+    <origin rpy="0 0 0" xyz="-0.0 -0.0105 -0.74"/>
+    <geometry>
+      <mesh filename="package://fusion2urdf/LBR/bin_stl/link_4_1_m-binary.stl"/>
+    </geometry>
+    <material name="silver">
+      <color rgba="1 0 0 1"/>
+    </material>
+  </visual>
+  <collision>
+    <origin rpy="0 0 0" xyz="-0.0 -0.0105 -0.74"/>
+    <geometry>
+      <mesh filename="package://fusion2urdf/LBR/bin_stl/link_4_1_m-binary.stl"/>
+    </geometry>
+  </collision>
+</link>
+<link name="link_5_1">
+  <inertial>
+    <origin rpy="0 0 0" xyz="3.887174133882675e-08 -0.02982428408876193 0.07626701716135398"/>
+    <mass value="9.534880920206515"/>
+    <inertia ixx="0.052905" ixy="0.0" ixz="-0.0" iyy="0.044495" iyz="0.017493" izz="0.023991"/>
+  </inertial>
+  <visual>
+    <origin rpy="0 0 0" xyz="0.0 0.0 -0.9475"/>
+    <geometry>
+      <mesh filename="package://fusion2urdf/LBR/bin_stl/link_5_1_m-binary.stl"/>
+    </geometry>
+    <material name="silver">
+      <color rgba="1 0 0 1"/>
+    </material>
+  </visual>
+  <collision>
+    <origin rpy="0 0 0" xyz="0.0 0.0 -0.9475"/>
+    <geometry>
+      <mesh filename="package://fusion2urdf/LBR/bin_stl/link_5_1_m-binary.stl"/>
+    </geometry>
+  </collision>
+</link>
+<link name="link_6_1">
+  <inertial>
+    <origin rpy="0 0 0" xyz="-7.073221144775636e-07 0.07101990943401648 0.004952526180360017"/>
+    <mass value="14.987109331100873"/>
+    <inertia ixx="0.044068" ixy="-0.0" ixz="1e-06" iyy="0.042427" iyz="0.001941" izz="0.028865"/>
+  </inertial>
+  <visual>
+    <origin rpy="0 0 0" xyz="0.0 0.0707 -1.14"/>
+    <geometry>
+      <mesh filename="package://fusion2urdf/LBR/bin_stl/link_6_1_m-binary.stl"/>
+    </geometry>
+    <material name="silver">
+      <color rgba="1 0 0 1"/>
+    </material>
+  </visual>
+  <collision>
+    <origin rpy="0 0 0" xyz="0.0 0.0707 -1.14"/>
+    <geometry>
+      <mesh filename="package://fusion2urdf/LBR/bin_stl/link_6_1_m-binary.stl"/>
+    </geometry>
+  </collision>
+</link>
+<link name="link_7_1">
+  <inertial>
+    <origin rpy="0 0 0" xyz="3.1218274599808524e-06 -1.6358155634513969e-06 0.013782295521067356"/>
+    <mass value="1.6178339975962697"/>
+    <inertia ixx="0.001066" ixy="0.0" ixz="-0.0" iyy="0.001066" iyz="0.0" izz="0.001864"/>
+  </inertial>
+  <visual>
+    <origin rpy="0 0 0" xyz="-0.0 -0.0 -1.231"/>
+    <geometry>
+      <mesh filename="package://fusion2urdf/LBR/bin_stl/link_7_1_m-binary.stl"/>
+    </geometry>
+    <material name="silver">
+      <color rgba="1 0 0 1"/>
+    </material>
+  </visual>
+  <collision>
+    <origin rpy="0 0 0" xyz="-0.0 -0.0 -1.231"/>
+    <geometry>
+      <mesh filename="package://fusion2urdf/LBR/bin_stl/link_7_1_m-binary.stl"/>
+    </geometry>
+  </collision>
+</link>
+<joint name="Rev2" type="revolute">
+  <origin rpy="0 0 0" xyz="0.0 0.0 0.1475"/>
+  <parent link="base_link"/>
+  <child link="link_1_1"/>
+  <axis xyz="0.0 0.0 0.01"/>
+  <limit effort="100" lower="-2.96706" upper="2.96706" velocity="100"/>
+</joint>
+<transmission name="Rev2_tran">
+  <type>transmission_interface/SimpleTransmission</type>
+  <joint name="Rev2">
+    <hardwareInterface>PositionJointInterface</hardwareInterface>
+  </joint>
+  <actuator name="Rev2_actr">
+    <hardwareInterface>PositionJointInterface</hardwareInterface>
+    <mechanicalReduction>1</mechanicalReduction>
+  </actuator>
+</transmission>
+<joint name="Rev3" type="revolute">
+  <origin rpy="0 0 0" xyz="-0.0 -0.0105 0.1925"/>
+  <parent link="link_1_1"/>
+  <child link="link_2_1"/>
+  <axis xyz="0.0 0.01 0.0"/>
+  <limit effort="100" lower="-2.094395" upper="2.094395" velocity="100"/>
+</joint>
+<transmission name="Rev3_tran">
+  <type>transmission_interface/SimpleTransmission</type>
+  <joint name="Rev3">
+    <hardwareInterface>PositionJointInterface</hardwareInterface>
+  </joint>
+  <actuator name="Rev3_actr">
+    <hardwareInterface>PositionJointInterface</hardwareInterface>
+    <mechanicalReduction>1</mechanicalReduction>
+  </actuator>
+</transmission>
+<joint name="Rev4" type="revolute">
+  <origin rpy="0 0 0" xyz="0.0 0.0105 0.2075"/>
+  <parent link="link_2_1"/>
+  <child link="link_3_1"/>
+  <axis xyz="0.0 0.0 0.01"/>
+  <limit effort="100" lower="-2.96706" upper="2.96706" velocity="100"/>
+</joint>
+<transmission name="Rev4_tran">
+  <type>transmission_interface/SimpleTransmission</type>
+  <joint name="Rev4">
+    <hardwareInterface>PositionJointInterface</hardwareInterface>
+  </joint>
+  <actuator name="Rev4_actr">
+    <hardwareInterface>PositionJointInterface</hardwareInterface>
+    <mechanicalReduction>1</mechanicalReduction>
+  </actuator>
+</transmission>
+<joint name="Rev5" type="revolute">
+  <origin rpy="0 0 0" xyz="0.0 0.0105 0.1925"/>
+  <parent link="link_3_1"/>
+  <child link="link_4_1"/>
+  <axis xyz="0.0 -0.01 0.0"/>
+  <limit effort="100" lower="-2.094395" upper="2.094395" velocity="100"/>
+</joint>
+<transmission name="Rev5_tran">
+  <type>transmission_interface/SimpleTransmission</type>
+  <joint name="Rev5">
+    <hardwareInterface>PositionJointInterface</hardwareInterface>
+  </joint>
+  <actuator name="Rev5_actr">
+    <hardwareInterface>PositionJointInterface</hardwareInterface>
+    <mechanicalReduction>1</mechanicalReduction>
+  </actuator>
+</transmission>
+<joint name="Rev6" type="revolute">
+  <origin rpy="0 0 0" xyz="-0.0 -0.0105 0.2075"/>
+  <parent link="link_4_1"/>
+  <child link="link_5_1"/>
+  <axis xyz="0.0 0.0 0.01"/>
+  <limit effort="100" lower="-2.96706" upper="2.96706" velocity="100"/>
+</joint>
+<transmission name="Rev6_tran">
+  <type>transmission_interface/SimpleTransmission</type>
+  <joint name="Rev6">
+    <hardwareInterface>PositionJointInterface</hardwareInterface>
+  </joint>
+  <actuator name="Rev6_actr">
+    <hardwareInterface>PositionJointInterface</hardwareInterface>
+    <mechanicalReduction>1</mechanicalReduction>
+  </actuator>
+</transmission>
+<joint name="Rev7" type="revolute">
+  <origin rpy="0 0 0" xyz="0.0 -0.0707 0.1925"/>
+  <parent link="link_5_1"/>
+  <child link="link_6_1"/>
+  <axis xyz="0.0 0.01 0.0"/>
+  <limit effort="100" lower="-2.094395" upper="2.094395" velocity="100"/>
+</joint>
+<transmission name="Rev7_tran">
+  <type>transmission_interface/SimpleTransmission</type>
+  <joint name="Rev7">
+    <hardwareInterface>PositionJointInterface</hardwareInterface>
+  </joint>
+  <actuator name="Rev7_actr">
+    <hardwareInterface>PositionJointInterface</hardwareInterface>
+    <mechanicalReduction>1</mechanicalReduction>
+  </actuator>
+</transmission>
+<joint name="Rev8" type="revolute">
+  <origin rpy="0 0 0" xyz="0.0 0.0707 0.091"/>
+  <parent link="link_6_1"/>
+  <child link="link_7_1"/>
+  <axis xyz="0.0 0.0 0.01"/>
+  <limit effort="100" lower="-3.054326" upper="3.054326" velocity="100"/>
+</joint>
+<transmission name="Rev8_tran">
+  <type>transmission_interface/SimpleTransmission</type>
+  <joint name="Rev8">
+    <hardwareInterface>PositionJointInterface</hardwareInterface>
+  </joint>
+  <actuator name="Rev8_actr">
+    <hardwareInterface>PositionJointInterface</hardwareInterface>
+    <mechanicalReduction>1</mechanicalReduction>
+  </actuator>
+</transmission>
+<gazebo>
+  <plugin filename="libgazebo_ros_control.so" name="control"/>
+</gazebo>
+</robot>
