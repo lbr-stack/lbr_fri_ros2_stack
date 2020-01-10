@@ -9,7 +9,7 @@
   <visual>
     <origin rpy="0 0 0" xyz="0 0 0"/>
     <geometry>
-      <mesh filename="package://fusion2urdf/lbr_description/meshes/iiwa7/base_link_m-binary.stl"/>
+      <mesh filename="package://fusion2urdf/lbr_description/meshes/iiwa7/base_link.stl"/>
     </geometry>
     <material name="silver">
       <color rgba="1 0 0 1"/>
@@ -18,11 +18,11 @@
   <collision>
     <origin rpy="0 0 0" xyz="0 0 0"/>
     <geometry>
-      <mesh filename="package://fusion2urdf/lbr_description/meshes/iiwa7/base_link_m-binary.stl"/>
+      <mesh filename="package://fusion2urdf/lbr_description/meshes/iiwa7/base_link.stl"/>
     </geometry>
   </collision>
 </link>
-<link name="link_1_1">
+<link name="link_1">
   <inertial>
     <origin rpy="0 0 0" xyz="4.9980243666546455e-08 -0.0347335291089292 0.12351608478142942"/>
     <mass value="21.213926420791886"/>
@@ -31,7 +31,7 @@
   <visual>
     <origin rpy="0 0 0" xyz="-0.0 0.0 -0.1475"/>
     <geometry>
-      <mesh filename="package://fusion2urdf/lbr_description/meshes/iiwa7/link_1_1_m-binary.stl"/>
+      <mesh filename="package://fusion2urdf/lbr_description/meshes/iiwa7/link_1.stl"/>
     </geometry>
     <material name="silver">
       <color rgba="1 0 0 1"/>
@@ -40,11 +40,11 @@
   <collision>
     <origin rpy="0 0 0" xyz="-0.0 0.0 -0.1475"/>
     <geometry>
-      <mesh filename="package://fusion2urdf/lbr_description/meshes/iiwa7/link_1_1_m-binary.stl"/>
+      <mesh filename="package://fusion2urdf/lbr_description/meshes/iiwa7/link_1.stl"/>
     </geometry>
   </collision>
 </link>
-<link name="link_2_1">
+<link name="link_2">
   <inertial>
     <origin rpy="0 0 0" xyz="4.0558428502019873e-08 0.04491581578298656 0.06732515284873997"/>
     <mass value="21.39756651772542"/>
@@ -53,7 +53,7 @@
   <visual>
     <origin rpy="0 0 0" xyz="0.0 0.0105 -0.3405"/>
     <geometry>
-      <mesh filename="package://fusion2urdf/lbr_description/meshes/iiwa7/link_2_1_m-binary.stl"/>
+      <mesh filename="package://fusion2urdf/lbr_description/meshes/iiwa7/link_2.stl"/>
     </geometry>
     <material name="silver">
       <color rgba="1 0 0 1"/>
@@ -62,11 +62,11 @@
   <collision>
     <origin rpy="0 0 0" xyz="0.0 0.0105 -0.3405"/>
     <geometry>
-      <mesh filename="package://fusion2urdf/lbr_description/meshes/iiwa7/link_2_1_m-binary.stl"/>
+      <mesh filename="package://fusion2urdf/lbr_description/meshes/iiwa7/link_2.stl"/>
     </geometry>
   </collision>
 </link>
-<link name="link_3_1">
+<link name="link_3">
   <inertial>
     <origin rpy="0 0 0" xyz="-5.881068064938613e-09 0.02956361869175564 0.1365034185434154"/>
     <mass value="24.923667110884463"/>
@@ -75,7 +75,7 @@
   <visual>
     <origin rpy="0 0 0" xyz="0.0 0.0 -0.515"/>
     <geometry>
-      <mesh filename="package://fusion2urdf/lbr_description/meshes/iiwa7/link_3_1_m-binary.stl"/>
+      <mesh filename="package://fusion2urdf/lbr_description/meshes/iiwa7/link_3.stl"/>
     </geometry>
     <material name="silver">
       <color rgba="1 0 0 1"/>
@@ -84,11 +84,11 @@
   <collision>
     <origin rpy="0 0 0" xyz="0.0 0.0 -0.515"/>
     <geometry>
-      <mesh filename="package://fusion2urdf/lbr_description/meshes/iiwa7/link_3_1_m-binary.stl"/>
+      <mesh filename="package://fusion2urdf/lbr_description/meshes/iiwa7/link_3.stl"/>
     </geometry>
   </collision>
 </link>
-<link name="link_4_1">
+<link name="link_4">
   <inertial>
     <origin rpy="0 0 0" xyz="-4.1344813497116265e-08 -0.044916218629510306 0.06732501840381"/>
     <mass value="21.39755453189086"/>
@@ -97,7 +97,7 @@
   <visual>
     <origin rpy="0 0 0" xyz="0.0 -0.0105 -0.7405"/>
     <geometry>
-      <mesh filename="package://fusion2urdf/lbr_description/meshes/iiwa7/link_4_1_m-binary.stl"/>
+      <mesh filename="package://fusion2urdf/lbr_description/meshes/iiwa7/link_4.stl"/>
     </geometry>
     <material name="silver">
       <color rgba="1 0 0 1"/>
@@ -106,11 +106,11 @@
   <collision>
     <origin rpy="0 0 0" xyz="0.0 -0.0105 -0.7405"/>
     <geometry>
-      <mesh filename="package://fusion2urdf/lbr_description/meshes/iiwa7/link_4_1_m-binary.stl"/>
+      <mesh filename="package://fusion2urdf/lbr_description/meshes/iiwa7/link_4.stl"/>
     </geometry>
   </collision>
 </link>
-<link name="link_5_1">
+<link name="link_5">
   <inertial>
     <origin rpy="0 0 0" xyz="2.416002990197734e-08 -0.021386601078580914 0.085468591256322"/>
     <mass value="13.296700832855965"/>
@@ -119,7 +119,7 @@
   <visual>
     <origin rpy="0 0 0" xyz="0.0 0.0 -0.915"/>
     <geometry>
-      <mesh filename="package://fusion2urdf/lbr_description/meshes/iiwa7/link_5_1_m-binary.stl"/>
+      <mesh filename="package://fusion2urdf/lbr_description/meshes/iiwa7/link_5.stl"/>
     </geometry>
     <material name="silver">
       <color rgba="1 0 0 1"/>
@@ -128,11 +128,11 @@
   <collision>
     <origin rpy="0 0 0" xyz="0.0 0.0 -0.915"/>
     <geometry>
-      <mesh filename="package://fusion2urdf/lbr_description/meshes/iiwa7/link_5_1_m-binary.stl"/>
+      <mesh filename="package://fusion2urdf/lbr_description/meshes/iiwa7/link_5.stl"/>
     </geometry>
   </collision>
 </link>
-<link name="link_6_1">
+<link name="link_6">
   <inertial>
     <origin rpy="0 0 0" xyz="-9.07120004240837e-08 0.0709871260349443 0.002115721730276743"/>
     <mass value="14.421451173118493"/>
@@ -141,7 +141,7 @@
   <visual>
     <origin rpy="0 0 0" xyz="0.0 0.0707 -1.1405"/>
     <geometry>
-      <mesh filename="package://fusion2urdf/lbr_description/meshes/iiwa7/link_6_1_m-binary.stl"/>
+      <mesh filename="package://fusion2urdf/lbr_description/meshes/iiwa7/link_6.stl"/>
     </geometry>
     <material name="silver">
       <color rgba="1 0 0 1"/>
@@ -150,11 +150,11 @@
   <collision>
     <origin rpy="0 0 0" xyz="0.0 0.0707 -1.1405"/>
     <geometry>
-      <mesh filename="package://fusion2urdf/lbr_description/meshes/iiwa7/link_6_1_m-binary.stl"/>
+      <mesh filename="package://fusion2urdf/lbr_description/meshes/iiwa7/link_6.stl"/>
     </geometry>
   </collision>
 </link>
-<link name="link_7_1">
+<link name="link_7">
   <inertial>
     <origin rpy="0 0 0" xyz="4.535378460217862e-06 -1.7615872956281168e-08 0.009883270430701696"/>
     <mass value="2.113113203151399"/>
@@ -163,7 +163,7 @@
   <visual>
     <origin rpy="0 0 0" xyz="0.0 0.0002 -1.2314"/>
     <geometry>
-      <mesh filename="package://fusion2urdf/lbr_description/meshes/iiwa7/link_7_1_m-binary.stl"/>
+      <mesh filename="package://fusion2urdf/lbr_description/meshes/iiwa7/link_7.stl"/>
     </geometry>
     <material name="silver">
       <color rgba="1 0 0 1"/>
@@ -172,14 +172,14 @@
   <collision>
     <origin rpy="0 0 0" xyz="0.0 0.0002 -1.2314"/>
     <geometry>
-      <mesh filename="package://fusion2urdf/lbr_description/meshes/iiwa7/link_7_1_m-binary.stl"/>
+      <mesh filename="package://fusion2urdf/lbr_description/meshes/iiwa7/link_7.stl"/>
     </geometry>
   </collision>
 </link>
 <joint name="A1" type="revolute">
   <origin rpy="0 0 0" xyz="0.0 0.0 0.1475"/>
   <parent link="base_link"/>
-  <child link="link_1_1"/>
+  <child link="link_1"/>
   <axis xyz="0.0 0.0 0.01"/>
   <limit effort="100" lower="-2.96706" upper="2.96706" velocity="1.71042267"/>
 </joint>
@@ -195,8 +195,8 @@
 </transmission>
 <joint name="A2" type="revolute">
   <origin rpy="0 0 0" xyz="-0.0 -0.0105 0.193"/>
-  <parent link="link_1_1"/>
-  <child link="link_2_1"/>
+  <parent link="link_1"/>
+  <child link="link_2"/>
   <axis xyz="0.0 0.01 0.0"/>
   <limit effort="100" lower="-2.094395" upper="2.094395" velocity="1.71042267"/>
 </joint>
@@ -212,8 +212,8 @@
 </transmission>
 <joint name="A3" type="revolute">
   <origin rpy="0 0 0" xyz="0.0 0.0105 0.1745"/>
-  <parent link="link_2_1"/>
-  <child link="link_3_1"/>
+  <parent link="link_2"/>
+  <child link="link_3"/>
   <axis xyz="0.0 0.0 0.01"/>
   <limit effort="100" lower="-2.96706" upper="2.96706" velocity="1.74532925"/>
 </joint>
@@ -229,8 +229,8 @@
 </transmission>
 <joint name="A4" type="revolute">
   <origin rpy="0 0 0" xyz="0.0 0.0105 0.2255"/>
-  <parent link="link_3_1"/>
-  <child link="link_4_1"/>
+  <parent link="link_3"/>
+  <child link="link_4"/>
   <axis xyz="0.0 -0.01 0.0"/>
   <limit effort="100" lower="-2.094395" upper="2.094395" velocity="2.26892803"/>
 </joint>
@@ -246,8 +246,8 @@
 </transmission>
 <joint name="A5" type="revolute">
   <origin rpy="0 0 0" xyz="0.0 -0.0105 0.1745"/>
-  <parent link="link_4_1"/>
-  <child link="link_5_1"/>
+  <parent link="link_4"/>
+  <child link="link_5"/>
   <axis xyz="0.0 0.0 0.01"/>
   <limit effort="100" lower="-2.96706" upper="2.96706" velocity="2.44346095"/>
 </joint>
@@ -263,8 +263,8 @@
 </transmission>
 <joint name="A6" type="revolute">
   <origin rpy="0 0 0" xyz="0.0 -0.0707 0.2255"/>
-  <parent link="link_5_1"/>
-  <child link="link_6_1"/>
+  <parent link="link_5"/>
+  <child link="link_6"/>
   <axis xyz="0.0 0.01 0.0"/>
   <limit effort="100" lower="-2.094395" upper="2.094395" velocity="3.14159265"/>
 </joint>
@@ -280,8 +280,8 @@
 </transmission>
 <joint name="A7" type="revolute">
   <origin rpy="0 0 0" xyz="0.0 0.0705 0.0909"/>
-  <parent link="link_6_1"/>
-  <child link="link_7_1"/>
+  <parent link="link_6"/>
+  <child link="link_7"/>
   <axis xyz="0.0 0.0 0.01"/>
   <limit effort="100" lower="-3.054326" upper="3.054326" velocity="3.14159265"/>
 </joint>
