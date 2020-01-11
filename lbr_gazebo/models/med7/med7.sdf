@@ -1,0 +1,396 @@
+<sdf version='1.6'>
+  <model name='med7'>
+    <link name='base_link'>
+      <pose frame=''>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose frame=''>-0.001896 -0 0.076263 0 -0 0</pose>
+        <mass>46.2054</mass>
+        <inertia>
+          <ixx>0.250291</ixx>
+          <ixy>-0</ixy>
+          <ixz>-0.004435</ixz>
+          <iyy>0.255257</iyy>
+          <iyz>-0</iyz>
+          <izz>0.351803</izz>
+        </inertia>
+      </inertial>
+      <collision name='base_link_collision'>
+        <pose frame=''>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://fusion2urdf/lbr_description/meshes/med7/base_link.stl</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='base_link_visual'>
+        <pose frame=''>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://fusion2urdf/lbr_description/meshes/med7/base_link.stl</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <link name='link_1'>
+      <pose frame=''>0 0 0.1475 0 -0 0</pose>
+      <inertial>
+        <pose frame=''>0 -0.034819 0.123299 0 -0 0</pose>
+        <mass>21.1618</mass>
+        <inertia>
+          <ixx>0.133324</ixx>
+          <ixy>-0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.127214</iyy>
+          <iyz>0.023673</iyz>
+          <izz>0.047155</izz>
+        </inertia>
+      </inertial>
+      <collision name='link_1_collision'>
+        <pose frame=''>-0 0 -0.1475 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://fusion2urdf/lbr_description/meshes/med7/link_1.stl</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='link_1_visual'>
+        <pose frame=''>-0 0 -0.1475 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://fusion2urdf/lbr_description/meshes/med7/link_1.stl</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='A1' type='revolute'>
+      <child>link_1</child>
+      <parent>base_link</parent>
+      <axis>
+        <xyz>0 0 0.01</xyz>
+        <limit>
+          <lower>-2.96706</lower>
+          <upper>2.96706</upper>
+          <effort>100</effort>
+          <velocity>1.71042</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+        <use_parent_model_frame>1</use_parent_model_frame>
+      </axis>
+    </joint>
+    <link name='link_2'>
+      <pose frame=''>0 -0.0105 0.34 0 -0 0</pose>
+      <inertial>
+        <pose frame=''>0 0.039793 0.086944 0 -0 0</pose>
+        <mass>25.1397</mass>
+        <inertia>
+          <ixx>0.19763</ixx>
+          <ixy>-0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.187553</iyy>
+          <iyz>0.036718</iyz>
+          <izz>0.060269</izz>
+        </inertia>
+      </inertial>
+      <collision name='link_2_collision'>
+        <pose frame=''>0 0.0105 -0.34 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://fusion2urdf/lbr_description/meshes/med7/link_2.stl</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='link_2_visual'>
+        <pose frame=''>0 0.0105 -0.34 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://fusion2urdf/lbr_description/meshes/med7/link_2.stl</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='A2' type='revolute'>
+      <child>link_2</child>
+      <parent>link_1</parent>
+      <axis>
+        <xyz>0 0.01 0</xyz>
+        <limit>
+          <lower>-2.0944</lower>
+          <upper>2.0944</upper>
+          <effort>100</effort>
+          <velocity>1.71042</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+        <use_parent_model_frame>1</use_parent_model_frame>
+      </axis>
+    </joint>
+    <link name='link_3'>
+      <pose frame=''>0 0 0.5475 0 -0 0</pose>
+      <inertial>
+        <pose frame=''>-0 0.034819 0.123299 0 -0 0</pose>
+        <mass>21.1618</mass>
+        <inertia>
+          <ixx>0.133324</ixx>
+          <ixy>-0</ixy>
+          <ixz>-0</ixz>
+          <iyy>0.127214</iyy>
+          <iyz>-0.023673</iyz>
+          <izz>0.047155</izz>
+        </inertia>
+      </inertial>
+      <collision name='link_3_collision'>
+        <pose frame=''>0 -0 -0.5475 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://fusion2urdf/lbr_description/meshes/med7/link_3.stl</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='link_3_visual'>
+        <pose frame=''>0 -0 -0.5475 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://fusion2urdf/lbr_description/meshes/med7/link_3.stl</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='A3' type='revolute'>
+      <child>link_3</child>
+      <parent>link_2</parent>
+      <axis>
+        <xyz>0 0 0.01</xyz>
+        <limit>
+          <lower>-2.96706</lower>
+          <upper>2.96706</upper>
+          <effort>100</effort>
+          <velocity>1.74533</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+        <use_parent_model_frame>1</use_parent_model_frame>
+      </axis>
+    </joint>
+    <link name='link_4'>
+      <pose frame=''>0 0.0105 0.74 0 -0 0</pose>
+      <inertial>
+        <pose frame=''>-0 -0.039793 0.086944 0 -0 0</pose>
+        <mass>25.1396</mass>
+        <inertia>
+          <ixx>0.197618</ixx>
+          <ixy>-0</ixy>
+          <ixz>-0</ixz>
+          <iyy>0.187546</iyy>
+          <iyz>-0.036716</iyz>
+          <izz>0.060263</izz>
+        </inertia>
+      </inertial>
+      <collision name='link_4_collision'>
+        <pose frame=''>-0 -0.0105 -0.74 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://fusion2urdf/lbr_description/meshes/med7/link_4.stl</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='link_4_visual'>
+        <pose frame=''>-0 -0.0105 -0.74 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://fusion2urdf/lbr_description/meshes/med7/link_4.stl</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='A4' type='revolute'>
+      <child>link_4</child>
+      <parent>link_3</parent>
+      <axis>
+        <xyz>0 -0.01 0</xyz>
+        <limit>
+          <lower>-2.0944</lower>
+          <upper>2.0944</upper>
+          <effort>100</effort>
+          <velocity>2.26893</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+        <use_parent_model_frame>1</use_parent_model_frame>
+      </axis>
+    </joint>
+    <link name='link_5'>
+      <pose frame=''>0 0 0.9475 0 -0 0</pose>
+      <inertial>
+        <pose frame=''>0 -0.029824 0.076267 0 -0 0</pose>
+        <mass>9.53488</mass>
+        <inertia>
+          <ixx>0.052905</ixx>
+          <ixy>0</ixy>
+          <ixz>-0</ixz>
+          <iyy>0.044495</iyy>
+          <iyz>0.017493</iyz>
+          <izz>0.023991</izz>
+        </inertia>
+      </inertial>
+      <collision name='link_5_collision'>
+        <pose frame=''>0 0 -0.9475 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://fusion2urdf/lbr_description/meshes/med7/link_5.stl</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='link_5_visual'>
+        <pose frame=''>0 0 -0.9475 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://fusion2urdf/lbr_description/meshes/med7/link_5.stl</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='A5' type='revolute'>
+      <child>link_5</child>
+      <parent>link_4</parent>
+      <axis>
+        <xyz>0 0 0.01</xyz>
+        <limit>
+          <lower>-2.96706</lower>
+          <upper>2.96706</upper>
+          <effort>100</effort>
+          <velocity>2.44346</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+        <use_parent_model_frame>1</use_parent_model_frame>
+      </axis>
+    </joint>
+    <link name='link_6'>
+      <pose frame=''>0 -0.0707 1.14 0 -0 0</pose>
+      <inertial>
+        <pose frame=''>-1e-06 0.07102 0.004953 0 -0 0</pose>
+        <mass>14.9871</mass>
+        <inertia>
+          <ixx>0.044068</ixx>
+          <ixy>-0</ixy>
+          <ixz>1e-06</ixz>
+          <iyy>0.042427</iyy>
+          <iyz>0.001941</iyz>
+          <izz>0.028865</izz>
+        </inertia>
+      </inertial>
+      <collision name='link_6_collision'>
+        <pose frame=''>0 0.0707 -1.14 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://fusion2urdf/lbr_description/meshes/med7/link_6.stl</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='link_6_visual'>
+        <pose frame=''>0 0.0707 -1.14 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://fusion2urdf/lbr_description/meshes/med7/link_6.stl</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='A6' type='revolute'>
+      <child>link_6</child>
+      <parent>link_5</parent>
+      <axis>
+        <xyz>0 0.01 0</xyz>
+        <limit>
+          <lower>-2.0944</lower>
+          <upper>2.0944</upper>
+          <effort>100</effort>
+          <velocity>3.14159</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+        <use_parent_model_frame>1</use_parent_model_frame>
+      </axis>
+    </joint>
+    <link name='link_7'>
+      <pose frame=''>0 0 1.231 0 -0 0</pose>
+      <inertial>
+        <pose frame=''>3e-06 -2e-06 0.013782 0 -0 0</pose>
+        <mass>1.61783</mass>
+        <inertia>
+          <ixx>0.001066</ixx>
+          <ixy>0</ixy>
+          <ixz>-0</ixz>
+          <iyy>0.001066</iyy>
+          <iyz>0</iyz>
+          <izz>0.001864</izz>
+        </inertia>
+      </inertial>
+      <collision name='link_7_collision'>
+        <pose frame=''>-0 -0 -1.231 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://fusion2urdf/lbr_description/meshes/med7/link_7.stl</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='link_7_visual'>
+        <pose frame=''>-0 -0 -1.231 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://fusion2urdf/lbr_description/meshes/med7/link_7.stl</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='A7' type='revolute'>
+      <child>link_7</child>
+      <parent>link_6</parent>
+      <axis>
+        <xyz>0 0 0.01</xyz>
+        <limit>
+          <lower>-3.05433</lower>
+          <upper>3.05433</upper>
+          <effort>100</effort>
+          <velocity>3.14159</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+        <use_parent_model_frame>1</use_parent_model_frame>
+      </axis>
+    </joint>
+    <static>0</static>
+    <plugin name='control' filename='libgazebo_ros_control.so'/>
+  </model>
+</sdf>
