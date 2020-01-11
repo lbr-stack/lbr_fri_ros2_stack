@@ -283,7 +283,7 @@
   <parent link="link_6"/>
   <child link="link_7"/>
   <axis xyz="0.0 0.0 0.01"/>
-  <limit effort="100" lower="0.0" upper="3.054326" velocity="2.35619449"/>
+  <limit effort="100" lower="-3.054326" upper="3.054326" velocity="2.35619449"/>
 </joint>
 <transmission name="A7_tran">
   <type>transmission_interface/SimpleTransmission</type>
