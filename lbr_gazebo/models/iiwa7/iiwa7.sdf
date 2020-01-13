@@ -19,7 +19,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://iiwa7/meshes/base_link.stl</uri>
+            <uri>model://fusion2urdf/lbr_description/meshes/iiwa7/base_link.stl</uri>
           </mesh>
         </geometry>
       </collision>
@@ -28,11 +28,15 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://iiwa7/meshes/base_link.stl</uri>
+            <uri>model://fusion2urdf/lbr_description/meshes/iiwa7/base_link.stl</uri>
           </mesh>
         </geometry>
       </visual>
     </link>
+    <joint name='world_iiwa7_joint' type='fixed'>
+      <child>base_link</child>
+      <parent>world</parent>
+    </joint>
     <link name='link_1'>
       <pose frame=''>0 0 0.1475 0 -0 0</pose>
       <inertial>
@@ -52,7 +56,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://iiwa7/meshes/link_1.stl</uri>
+            <uri>model://fusion2urdf/lbr_description/meshes/iiwa7/link_1.stl</uri>
           </mesh>
         </geometry>
       </collision>
@@ -61,7 +65,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://iiwa7/meshes/link_1.stl</uri>
+            <uri>model://fusion2urdf/lbr_description/meshes/iiwa7/link_1.stl</uri>
           </mesh>
         </geometry>
       </visual>
@@ -103,7 +107,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://iiwa7/meshes/link_2.stl</uri>
+            <uri>model://fusion2urdf/lbr_description/meshes/iiwa7/link_2.stl</uri>
           </mesh>
         </geometry>
       </collision>
@@ -112,7 +116,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://iiwa7/meshes/link_2.stl</uri>
+            <uri>model://fusion2urdf/lbr_description/meshes/iiwa7/link_2.stl</uri>
           </mesh>
         </geometry>
       </visual>
@@ -154,7 +158,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://iiwa7/meshes/link_3.stl</uri>
+            <uri>model://fusion2urdf/lbr_description/meshes/iiwa7/link_3.stl</uri>
           </mesh>
         </geometry>
       </collision>
@@ -163,7 +167,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://iiwa7/meshes/link_3.stl</uri>
+            <uri>model://fusion2urdf/lbr_description/meshes/iiwa7/link_3.stl</uri>
           </mesh>
         </geometry>
       </visual>
@@ -205,7 +209,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://iiwa7/meshes/link_4.stl</uri>
+            <uri>model://fusion2urdf/lbr_description/meshes/iiwa7/link_4.stl</uri>
           </mesh>
         </geometry>
       </collision>
@@ -214,7 +218,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://iiwa7/meshes/link_4.stl</uri>
+            <uri>model://fusion2urdf/lbr_description/meshes/iiwa7/link_4.stl</uri>
           </mesh>
         </geometry>
       </visual>
@@ -256,7 +260,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://iiwa7/meshes/link_5.stl</uri>
+            <uri>model://fusion2urdf/lbr_description/meshes/iiwa7/link_5.stl</uri>
           </mesh>
         </geometry>
       </collision>
@@ -265,7 +269,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://iiwa7/meshes/link_5.stl</uri>
+            <uri>model://fusion2urdf/lbr_description/meshes/iiwa7/link_5.stl</uri>
           </mesh>
         </geometry>
       </visual>
@@ -307,7 +311,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://iiwa7/meshes/link_6.stl</uri>
+            <uri>model://fusion2urdf/lbr_description/meshes/iiwa7/link_6.stl</uri>
           </mesh>
         </geometry>
       </collision>
@@ -316,7 +320,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://iiwa7/meshes/link_6.stl</uri>
+            <uri>model://fusion2urdf/lbr_description/meshes/iiwa7/link_6.stl</uri>
           </mesh>
         </geometry>
       </visual>
@@ -358,7 +362,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://iiwa7/meshes/link_7.stl</uri>
+            <uri>model://fusion2urdf/lbr_description/meshes/iiwa7/link_7.stl</uri>
           </mesh>
         </geometry>
       </collision>
@@ -367,7 +371,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://iiwa7/meshes/link_7.stl</uri>
+            <uri>model://fusion2urdf/lbr_description/meshes/iiwa7/link_7.stl</uri>
           </mesh>
         </geometry>
       </visual>

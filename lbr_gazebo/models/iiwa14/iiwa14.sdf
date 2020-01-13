@@ -1,5 +1,5 @@
 <sdf version='1.6'>
-  <model name='iiwa'>
+  <model name='iiwa14'>
     <link name='base_link'>
       <pose frame=''>0 0 0 0 -0 0</pose>
       <inertial>
@@ -19,7 +19,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://iiwa14/meshes/base_link.stl</uri>
+            <uri>model://fusion2urdf/lbr_description/meshes/iiwa14/base_link.stl</uri>
           </mesh>
         </geometry>
       </collision>
@@ -28,11 +28,15 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://iiwa14/meshes/base_link.stl</uri>
+            <uri>model://fusion2urdf/lbr_description/meshes/iiwa14/base_link.stl</uri>
           </mesh>
         </geometry>
       </visual>
     </link>
+    <joint name='world_iiwa7_joint' type='fixed'>
+      <child>base_link</child>
+      <parent>world</parent>
+    </joint>
     <link name='link_1'>
       <pose frame=''>0 0 0.1475 0 -0 0</pose>
       <inertial>
@@ -52,7 +56,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://iiwa14/meshes/link_1.stl</uri>
+            <uri>model://fusion2urdf/lbr_description/meshes/iiwa14/link_1.stl</uri>
           </mesh>
         </geometry>
       </collision>
@@ -61,7 +65,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://iiwa14/meshes/link_1.stl</uri>
+            <uri>model://fusion2urdf/lbr_description/meshes/iiwa14/link_1.stl</uri>
           </mesh>
         </geometry>
       </visual>
@@ -75,7 +79,7 @@
           <lower>-2.96706</lower>
           <upper>2.96706</upper>
           <effort>100</effort>
-          <velocity>1.48353</velocity>
+          <velocity>100</velocity>
         </limit>
         <dynamics>
           <spring_reference>0</spring_reference>
@@ -103,7 +107,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://iiwa14/meshes/link_2.stl</uri>
+            <uri>model://fusion2urdf/lbr_description/meshes/iiwa14/link_2.stl</uri>
           </mesh>
         </geometry>
       </collision>
@@ -112,7 +116,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://iiwa14/meshes/link_2.stl</uri>
+            <uri>model://fusion2urdf/lbr_description/meshes/iiwa14/link_2.stl</uri>
           </mesh>
         </geometry>
       </visual>
@@ -126,7 +130,262 @@
           <lower>-2.0944</lower>
           <upper>2.0944</upper>
           <effort>100</effort>
-          <velocity>1.48353</velocity>
+          <velocity>100</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+        <use_parent_model_frame>1</use_parent_model_frame>
+      </axis>
+    </joint>
+    <link name='link_3'>
+      <pose frame=''>0 0 0.5545 0 -0 0</pose>
+      <inertial>
+        <pose frame=''>-0 0.029564 0.136503 0 -0 0</pose>
+        <mass>24.9237</mass>
+        <inertia>
+          <ixx>0.196866</ixx>
+          <ixy>-0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.186889</iyy>
+          <iyz>-0.038259</iyz>
+          <izz>0.059722</izz>
+        </inertia>
+      </inertial>
+      <collision name='link_3_collision'>
+        <pose frame=''>-0 0 -0.5545 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://fusion2urdf/lbr_description/meshes/iiwa14/link_3.stl</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='link_3_visual'>
+        <pose frame=''>-0 0 -0.5545 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://fusion2urdf/lbr_description/meshes/iiwa14/link_3.stl</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='A3' type='revolute'>
+      <child>link_3</child>
+      <parent>link_2</parent>
+      <axis>
+        <xyz>0 0 0.01</xyz>
+        <limit>
+          <lower>-2.96706</lower>
+          <upper>2.96706</upper>
+          <effort>100</effort>
+          <velocity>100</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+        <use_parent_model_frame>1</use_parent_model_frame>
+      </axis>
+    </joint>
+    <link name='link_4'>
+      <pose frame=''>0 0.0105 0.78 0 -0 0</pose>
+      <inertial>
+        <pose frame=''>-0 -0.044764 0.067419 0 -0 0</pose>
+        <mass>21.5044</mass>
+        <inertia>
+          <ixx>0.135049</ixx>
+          <ixy>-0</ixy>
+          <ixz>-0</ixz>
+          <iyy>0.128699</iyy>
+          <iyz>-0.022352</iyz>
+          <izz>0.048185</izz>
+        </inertia>
+      </inertial>
+      <collision name='link_4_collision'>
+        <pose frame=''>0 -0.0105 -0.78 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://fusion2urdf/lbr_description/meshes/iiwa14/link_4.stl</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='link_4_visual'>
+        <pose frame=''>0 -0.0105 -0.78 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://fusion2urdf/lbr_description/meshes/iiwa14/link_4.stl</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='A4' type='revolute'>
+      <child>link_4</child>
+      <parent>link_3</parent>
+      <axis>
+        <xyz>0 -0.01 0</xyz>
+        <limit>
+          <lower>-2.0944</lower>
+          <upper>2.0944</upper>
+          <effort>100</effort>
+          <velocity>100</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+        <use_parent_model_frame>1</use_parent_model_frame>
+      </axis>
+    </joint>
+    <link name='link_5'>
+      <pose frame=''>0 0 0.9545 0 -0 0</pose>
+      <inertial>
+        <pose frame=''>-0.00012 -0.02139 0.085475 0 -0 0</pose>
+        <mass>13.2946</mass>
+        <inertia>
+          <ixx>0.079116</ixx>
+          <ixy>1.2e-05</ixy>
+          <ixz>-6e-06</ixz>
+          <iyy>0.06831</iyy>
+          <iyz>0.024259</iyz>
+          <izz>0.035078</izz>
+        </inertia>
+      </inertial>
+      <collision name='link_5_collision'>
+        <pose frame=''>-0 0 -0.9545 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://fusion2urdf/lbr_description/meshes/iiwa14/link_5.stl</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='link_5_visual'>
+        <pose frame=''>-0 0 -0.9545 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://fusion2urdf/lbr_description/meshes/iiwa14/link_5.stl</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='A5' type='revolute'>
+      <child>link_5</child>
+      <parent>link_4</parent>
+      <axis>
+        <xyz>0 0 0.01</xyz>
+        <limit>
+          <lower>-2.96706</lower>
+          <upper>2.96706</upper>
+          <effort>100</effort>
+          <velocity>100</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+        <use_parent_model_frame>1</use_parent_model_frame>
+      </axis>
+    </joint>
+    <link name='link_6'>
+      <pose frame=''>0 -0.0707 1.18 0 -0 0</pose>
+      <inertial>
+        <pose frame=''>-0 0.071038 0.000566 0 -0 0</pose>
+        <mass>14.1984</mass>
+        <inertia>
+          <ixx>0.038424</ixx>
+          <ixy>-0</ixy>
+          <ixz>-0</ixz>
+          <iyy>0.036784</iyy>
+          <iyz>0.001919</iyz>
+          <izz>0.027998</izz>
+        </inertia>
+      </inertial>
+      <collision name='link_6_collision'>
+        <pose frame=''>0 0.0707 -1.18 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://fusion2urdf/lbr_description/meshes/iiwa14/link_6.stl</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='link_6_visual'>
+        <pose frame=''>0 0.0707 -1.18 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://fusion2urdf/lbr_description/meshes/iiwa14/link_6.stl</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='A6' type='revolute'>
+      <child>link_6</child>
+      <parent>link_5</parent>
+      <axis>
+        <xyz>0 0.01 0</xyz>
+        <limit>
+          <lower>-2.0944</lower>
+          <upper>2.0944</upper>
+          <effort>100</effort>
+          <velocity>100</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+        <use_parent_model_frame>1</use_parent_model_frame>
+      </axis>
+    </joint>
+    <link name='link_7'>
+      <pose frame=''>0 0 1.2511 0 -0 0</pose>
+      <inertial>
+        <pose frame=''>4e-06 -0 0.027187 0 -0 0</pose>
+        <mass>2.4183</mass>
+        <inertia>
+          <ixx>0.001719</ixx>
+          <ixy>-0</ixy>
+          <ixz>-0</ixz>
+          <iyy>0.001692</iyy>
+          <iyz>0</iyz>
+          <izz>0.002627</izz>
+        </inertia>
+      </inertial>
+      <collision name='link_7_collision'>
+        <pose frame=''>0 0 -1.2511 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://fusion2urdf/lbr_description/meshes/iiwa14/link_7.stl</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='link_7_visual'>
+        <pose frame=''>0 0 -1.2511 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://fusion2urdf/lbr_description/meshes/iiwa14/link_7.stl</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='A7' type='revolute'>
+      <child>link_7</child>
+      <parent>link_6</parent>
+      <axis>
+        <xyz>0 0 0.01</xyz>
+        <limit>
+          <lower>-3.05433</lower>
+          <upper>3.05433</upper>
+          <effort>100</effort>
+          <velocity>100</velocity>
         </limit>
         <dynamics>
           <spring_reference>0</spring_reference>

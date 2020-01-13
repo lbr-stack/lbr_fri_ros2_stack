@@ -33,6 +33,10 @@
         </geometry>
       </visual>
     </link>
+    <joint name='world_iiwa7_joint' type='fixed'>
+      <child>base_link</child>
+      <parent>world</parent>
+    </joint>
     <link name='link_1'>
       <pose frame=''>0 0 0.1475 0 -0 0</pose>
       <inertial>
