@@ -1,12 +1,7 @@
 cmake_minimum_required(VERSION 3.5)
 project(lbr_gazebo)
 
-# Default to C99
-if(NOT CMAKE_C_STANDARD)
-  set(CMAKE_C_STANDARD 99)
-endif()
-
-# Default to C++14
+# default to C++14
 if(NOT CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_STANDARD 14)
 endif()
@@ -17,10 +12,13 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
+find_package(gazebo_ros_pkgs REQUIRED)
 
 # install
 install(DIRECTORY launch models worlds
-  DESTINATION share/${PROJECT_NAME}
+  DESTINATION share/${PROJECT_NAME}/
 )
 
+# ament macros
+ament_export_dependencies(gazebo_ros_pkgs)
 ament_package()
