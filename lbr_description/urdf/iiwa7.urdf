@@ -1,5 +1,6 @@
 <?xml version="1.0" ?>
 <robot name="iiwa7">
+<link name="world"/>
 <link name="base_link">
   <inertial>
     <origin rpy="0 0 0" xyz="-0.01283618494463161 4.904567390585061e-08 0.07010682239932087"/>
@@ -176,6 +177,11 @@
     </geometry>
   </collision>
 </link>
+<joint name="world_iiwa7_joint" type="fixed"> <!-- joint between world and robot -->
+  <origin rpy="0 0 0" xyz="0.0 0.0 0.0"/>
+  <parent link="world"/>
+  <child link="base_link"/>
+</joint>
 <joint name="A1" type="revolute">
   <origin rpy="0 0 0" xyz="0.0 0.0 0.1475"/>
   <parent link="base_link"/>
