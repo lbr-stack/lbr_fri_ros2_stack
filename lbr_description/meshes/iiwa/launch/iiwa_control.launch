@@ -1,0 +1,7 @@
+<launch>
+  <rosparam command="load" file="$(find fusion2urdf)/launch/iiwa_controller.yaml"/>
+  <node args="A1_position_controller A2_position_controller A5_position_controller A6_position_controller A7_position_controller A3_position_controller A4_position_controller joint_state_controller" name="controller_spawner" ns="iiwa" output="screen" pkg="controller_manager" respawn="false" type="spawner"/>
+  <node name="robot_state_publisher" output="screen" pkg="robot_state_publisher" respawn="false" type="robot_state_publisher">
+    <remap from="/joint_states" to="/iiwa/joint_states"/>
+  </node>
+</launch>
