@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<robot name="iiwa">
+<robot name="iiwa14">
 <link name="base_link">
   <inertial>
     <origin rpy="0 0 0" xyz="-0.0128215344957798 -7.86364415362405e-08 0.07150661827888387"/>
@@ -68,12 +68,12 @@
 </link>
 <link name="link_3">
   <inertial>
-    <origin rpy="0 0 0" xyz="0.0 0.0 -0.5545"/>
-    <mass value="0.0"/>
-    <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
+    <origin rpy="0 0 0" xyz="-5.974614313346012e-09 0.029563618732667742 0.13650341869763982"/>
+    <mass value="24.923667076480577"/>
+    <inertia ixx="0.196866" ixy="-0.0" ixz="0.0" iyy="0.186889" iyz="-0.038259" izz="0.059722"/>
   </inertial>
   <visual>
-    <origin rpy="0 0 0" xyz="0.0 -0.0 -0.5545"/>
+    <origin rpy="0 0 0" xyz="-0.0 0.0 -0.5545"/>
     <geometry>
       <mesh filename="package://fusion2urdf/lbr_description/meshes/iiwa14/link_3.stl"/>
     </geometry>
@@ -82,7 +82,7 @@
     </material>
   </visual>
   <collision>
-    <origin rpy="0 0 0" xyz="0.0 -0.0 -0.5545"/>
+    <origin rpy="0 0 0" xyz="-0.0 0.0 -0.5545"/>
     <geometry>
       <mesh filename="package://fusion2urdf/lbr_description/meshes/iiwa14/link_3.stl"/>
     </geometry>
@@ -112,8 +112,8 @@
 </link>
 <link name="link_5">
   <inertial>
-    <origin rpy="0 0 0" xyz="-0.00012008657208039619 -0.0213900232457279 0.0854754261653966"/>
-    <mass value="13.294575666066379"/>
+    <origin rpy="0 0 0" xyz="-0.00012008657208039079 -0.021390023245727908 0.0854754261653966"/>
+    <mass value="13.29457566606638"/>
     <inertia ixx="0.079116" ixy="1.2e-05" ixz="-6e-06" iyy="0.06831" iyz="0.024259" izz="0.035078"/>
   </inertial>
   <visual>
@@ -156,7 +156,7 @@
 </link>
 <link name="link_7">
   <inertial>
-    <origin rpy="0 0 0" xyz="3.963019849314055e-06 -1.5392768444635913e-08 0.027186686478491096"/>
+    <origin rpy="0 0 0" xyz="3.963019849314055e-06 -1.5392768444664745e-08 0.027186686478491096"/>
     <mass value="2.4182992945540933"/>
     <inertia ixx="0.001719" ixy="-0.0" ixz="-0.0" iyy="0.001692" iyz="0.0" izz="0.002627"/>
   </inertial>
@@ -181,7 +181,7 @@
   <parent link="base_link"/>
   <child link="link_1"/>
   <axis xyz="0.0 0.0 0.01"/>
-  <limit effort="100" lower="-2.96706" upper="2.96706" velocity="1.48352986"/>
+  <limit effort="100" lower="-2.96706" upper="2.96706" velocity="100"/>
 </joint>
 <transmission name="A1_tran">
   <type>transmission_interface/SimpleTransmission</type>
@@ -198,7 +198,7 @@
   <parent link="link_1"/>
   <child link="link_2"/>
   <axis xyz="0.0 0.01 0.0"/>
-  <limit effort="100" lower="-2.094395" upper="2.094395" velocity="1.48352986"/>
+  <limit effort="100" lower="-2.094395" upper="2.094395" velocity="100"/>
 </joint>
 <transmission name="A2_tran">
   <type>transmission_interface/SimpleTransmission</type>
@@ -211,11 +211,11 @@
   </actuator>
 </transmission>
 <joint name="A3" type="revolute">
-  <origin rpy="0 0 0" xyz="-0.0 0.01 0.1945"/>
+  <origin rpy="0 0 0" xyz="0.0 0.01 0.1945"/>
   <parent link="link_2"/>
   <child link="link_3"/>
   <axis xyz="0.0 0.0 0.01"/>
-  <limit effort="100" lower="-2.96706" upper="2.96706" velocity="1.74532925"/>
+  <limit effort="100" lower="-2.96706" upper="2.96706" velocity="100"/>
 </joint>
 <transmission name="A3_tran">
   <type>transmission_interface/SimpleTransmission</type>
@@ -228,11 +228,11 @@
   </actuator>
 </transmission>
 <joint name="A4" type="revolute">
-  <origin rpy="0 0 0" xyz="0.0 0.0105 0.2255"/>
+  <origin rpy="0 0 0" xyz="-0.0 0.0105 0.2255"/>
   <parent link="link_3"/>
   <child link="link_4"/>
   <axis xyz="0.0 -0.01 0.0"/>
-  <limit effort="100" lower="-2.094395" upper="2.094395" velocity="1.30899694"/>
+  <limit effort="100" lower="-2.094395" upper="2.094395" velocity="100"/>
 </joint>
 <transmission name="A4_tran">
   <type>transmission_interface/SimpleTransmission</type>
@@ -249,7 +249,7 @@
   <parent link="link_4"/>
   <child link="link_5"/>
   <axis xyz="0.0 0.0 0.01"/>
-  <limit effort="100" lower="-2.96706" upper="2.96706" velocity="2.26892803"/>
+  <limit effort="100" lower="-2.96706" upper="2.96706" velocity="100"/>
 </joint>
 <transmission name="A5_tran">
   <type>transmission_interface/SimpleTransmission</type>
@@ -266,7 +266,7 @@
   <parent link="link_5"/>
   <child link="link_6"/>
   <axis xyz="0.0 0.01 0.0"/>
-  <limit effort="100" lower="-2.094395" upper="2.094395" velocity="2.35619449"/>
+  <limit effort="100" lower="-2.094395" upper="2.094395" velocity="100"/>
 </joint>
 <transmission name="A6_tran">
   <type>transmission_interface/SimpleTransmission</type>
@@ -283,7 +283,7 @@
   <parent link="link_6"/>
   <child link="link_7"/>
   <axis xyz="0.0 0.0 0.01"/>
-  <limit effort="100" lower="-3.054326" upper="3.054326" velocity="2.35619449"/>
+  <limit effort="100" lower="-3.054326" upper="3.054326" velocity="100"/>
 </joint>
 <transmission name="A7_tran">
   <type>transmission_interface/SimpleTransmission</type>

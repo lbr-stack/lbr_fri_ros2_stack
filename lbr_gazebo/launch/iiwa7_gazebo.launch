@@ -1,5 +1,5 @@
 <launch>
-  <param name="robot_description" textfile="$(find fusion2urdf)/iiwa7/iiwa7.urdf"/>
+  <param name="robot_description" textfile="$(find fusion2urdf)/lbr_description/urdf/iiwa7.urdf"/>
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
     <arg name="paused" value="false"/>
     <arg name="use_sim_time" value="true"/>
