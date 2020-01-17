@@ -19,7 +19,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://iiwa14/meshes/base_link.stl</uri>
+            <uri>model://iiwa14/meshes/collision/base_link.stl</uri>
           </mesh>
         </geometry>
       </collision>
@@ -28,7 +28,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://iiwa14/meshes/base_link.stl</uri>
+            <uri>model://iiwa14/meshes/visual/base_link.stl</uri>
           </mesh>
         </geometry>
       </visual>
@@ -56,7 +56,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://iiwa14/meshes/link_1.stl</uri>
+            <uri>model://iiwa14/meshes/collision/link_1.stl</uri>
           </mesh>
         </geometry>
       </collision>
@@ -65,7 +65,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://iiwa14/meshes/link_1.stl</uri>
+            <uri>model://iiwa14/meshes/visual/link_1.stl</uri>
           </mesh>
         </geometry>
       </visual>
@@ -79,7 +79,7 @@
           <lower>-2.96706</lower>
           <upper>2.96706</upper>
           <effort>100</effort>
-          <velocity>100</velocity>
+          <velocity>1.48353</velocity>
         </limit>
         <dynamics>
           <spring_reference>0</spring_reference>
@@ -107,7 +107,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://iiwa14/meshes/link_2.stl</uri>
+            <uri>model://iiwa14/meshes/collision/link_2.stl</uri>
           </mesh>
         </geometry>
       </collision>
@@ -116,7 +116,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://iiwa14/meshes/link_2.stl</uri>
+            <uri>model://iiwa14/meshes/visual/link_2.stl</uri>
           </mesh>
         </geometry>
       </visual>
@@ -130,7 +130,7 @@
           <lower>-2.0944</lower>
           <upper>2.0944</upper>
           <effort>100</effort>
-          <velocity>100</velocity>
+          <velocity>1.48353</velocity>
         </limit>
         <dynamics>
           <spring_reference>0</spring_reference>
@@ -158,7 +158,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://iiwa14/meshes/link_3.stl</uri>
+            <uri>model://iiwa14/meshes/collision/link_3.stl</uri>
           </mesh>
         </geometry>
       </collision>
@@ -167,7 +167,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://iiwa14/meshes/link_3.stl</uri>
+            <uri>model://iiwa14/meshes/visual/link_3.stl</uri>
           </mesh>
         </geometry>
       </visual>
@@ -181,7 +181,7 @@
           <lower>-2.96706</lower>
           <upper>2.96706</upper>
           <effort>100</effort>
-          <velocity>100</velocity>
+          <velocity>1.74533</velocity>
         </limit>
         <dynamics>
           <spring_reference>0</spring_reference>
@@ -209,7 +209,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://iiwa14/meshes/link_4.stl</uri>
+            <uri>model://iiwa14/meshes/collision/link_4.stl</uri>
           </mesh>
         </geometry>
       </collision>
@@ -218,7 +218,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://iiwa14/meshes/link_4.stl</uri>
+            <uri>model://iiwa14/meshes/visual/link_4.stl</uri>
           </mesh>
         </geometry>
       </visual>
@@ -232,7 +232,7 @@
           <lower>-2.0944</lower>
           <upper>2.0944</upper>
           <effort>100</effort>
-          <velocity>100</velocity>
+          <velocity>1.309</velocity>
         </limit>
         <dynamics>
           <spring_reference>0</spring_reference>
@@ -260,7 +260,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://iiwa14/meshes/link_5.stl</uri>
+            <uri>model://iiwa14/meshes/collision/link_5.stl</uri>
           </mesh>
         </geometry>
       </collision>
@@ -269,7 +269,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://iiwa14/meshes/link_5.stl</uri>
+            <uri>model://iiwa14/meshes/visual/link_5.stl</uri>
           </mesh>
         </geometry>
       </visual>
@@ -283,7 +283,7 @@
           <lower>-2.96706</lower>
           <upper>2.96706</upper>
           <effort>100</effort>
-          <velocity>100</velocity>
+          <velocity>2.26893</velocity>
         </limit>
         <dynamics>
           <spring_reference>0</spring_reference>
@@ -311,7 +311,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://iiwa14/meshes/link_6.stl</uri>
+            <uri>model://iiwa14/meshes/collision/link_6.stl</uri>
           </mesh>
         </geometry>
       </collision>
@@ -320,7 +320,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://iiwa14/meshes/link_6.stl</uri>
+            <uri>model://iiwa14/meshes/visual/link_6.stl</uri>
           </mesh>
         </geometry>
       </visual>
@@ -334,7 +334,7 @@
           <lower>-2.0944</lower>
           <upper>2.0944</upper>
           <effort>100</effort>
-          <velocity>100</velocity>
+          <velocity>2.35619</velocity>
         </limit>
         <dynamics>
           <spring_reference>0</spring_reference>
@@ -362,7 +362,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://iiwa14/meshes/link_7.stl</uri>
+            <uri>model://iiwa14/meshes/collision/link_7.stl</uri>
           </mesh>
         </geometry>
       </collision>
@@ -371,7 +371,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://iiwa14/meshes/link_7.stl</uri>
+            <uri>model://iiwa14/meshes/visual/link_7.stl</uri>
           </mesh>
         </geometry>
       </visual>
@@ -385,7 +385,7 @@
           <lower>-3.05433</lower>
           <upper>3.05433</upper>
           <effort>100</effort>
-          <velocity>100</velocity>
+          <velocity>2.35619</velocity>
         </limit>
         <dynamics>
           <spring_reference>0</spring_reference>
@@ -394,7 +394,5 @@
         <use_parent_model_frame>1</use_parent_model_frame>
       </axis>
     </joint>
-    <static>0</static>
-    <plugin name='control' filename='libgazebo_ros_control.so'/>
   </model>
 </sdf>
