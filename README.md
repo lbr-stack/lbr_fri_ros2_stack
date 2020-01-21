@@ -4,7 +4,7 @@ This folder will contain a lightweight ROS wrapper for KUKA's Fast Robot Interfa
 
 # Build
 
-```
+```shell
 mkdir -p fri_ws/src
 cd fri_ws/src
 wget https://raw.githubusercontent.com/KCL-BMEIS/fri_ros2/master/fri_ros2.repos # works once public
