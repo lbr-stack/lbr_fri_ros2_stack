@@ -2,8 +2,8 @@ repositories:
   fri_ros2:
     type: git
     url: https://github.com/KCL-BMEIS/fri_ros2.git
-    version: dev
+    version: master
   fri:
     type: git
     url: https://github.com/KCL-BMEIS/fri.git
-    version: ros_dev
+    version: ros2
