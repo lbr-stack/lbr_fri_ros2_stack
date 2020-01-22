@@ -3,13 +3,14 @@
 <package format="3">
   <name>lbr_gazebo</name>
   <version>0.0.0</version>
-  <description>TODO: Package description</description>
-  <maintainer email="m.huber_1994@hotmail.de">martin</maintainer>
+  <description>KUKA LBR Gazebo files</description>
+  <maintainer email="m.huber_1994@hotmail.de">mhubii</maintainer>
   <license>TODO: License declaration</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
   <depend>gazebo_ros_pkgs</depend>
+
   <export>
     <build_type>ament_cmake</build_type>
   </export>
