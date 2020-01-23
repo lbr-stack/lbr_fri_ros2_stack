@@ -15,4 +15,5 @@ rosidl_generate_interfaces(lbr_msgs
     DEPENDENCIES builtin_interfaces
 )
 
+ament_export_dependencies(rosidl_default_runtime)
 ament_package()
