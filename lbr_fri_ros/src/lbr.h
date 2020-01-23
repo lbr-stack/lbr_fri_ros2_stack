@@ -19,13 +19,13 @@ class LBR {
             return commanded_state_;
         };
 
-        auto set_current_state(lbr_msgs::msg::LBRState& s) -> void {
+        auto set_current_state(const lbr_msgs::msg::LBRState& s) -> void {
             std::lock_guard<std::mutex> lk(current_mutex_);
 
             current_state_ = s;
         };
 
-        auto set_commanded_state(lbr_msgs::msg::LBRState& s) {
+        auto set_commanded_state(const lbr_msgs::msg::LBRState& s) {
             std::lock_guard<std::mutex> lk(commanded_mutex_);
 
             commanded_state_ = s;
