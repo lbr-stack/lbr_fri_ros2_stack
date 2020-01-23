@@ -9,7 +9,9 @@ endif()
 
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(Eigen3 REQUIRED)
 find_package(fri REQUIRED)
+find_package(lbr_msgs REQUIRED)
 
 # Add targets
 add_executable(lbr_fri_ros
@@ -23,7 +25,7 @@ target_include_directories(lbr_fri_ros
 )
 
 # Link against dependencies
-ament_target_dependencies(lbr_fri_ros rclcpp fri)
+ament_target_dependencies(lbr_fri_ros rclcpp Eigen3 fri lbr_msgs)
 
 # Export target
 ament_export_interfaces(export_lbr_fri_ros)
