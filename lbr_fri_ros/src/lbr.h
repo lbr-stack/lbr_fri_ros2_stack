@@ -16,14 +16,18 @@ class LBR {
         /**
          * @brief Returns the current state of this LBR
         **/
-        inline auto get_current_state() const -> const lbr_msgs::msg::LBRState& {
+        inline auto get_current_state() -> const lbr_msgs::msg::LBRState& {
+            std::lock_guard<std::mutex> lk(this->current_mutex_);
+
             return this->current_state_;
         };
 
         /**
          * @brief Returns the commanded state of this LBR
         **/
-        inline auto get_commanded_state() const -> const lbr_msgs::msg::LBRState& {
+        inline auto get_commanded_state() -> const lbr_msgs::msg::LBRState& {
+            std::lock_guard<std::mutex> lk(this->commanded_mutex_);
+            
             return this->commanded_state_;
         };
 
