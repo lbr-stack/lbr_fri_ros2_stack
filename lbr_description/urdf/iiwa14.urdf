@@ -57,7 +57,7 @@
     <collision>
       <origin rpy="0 0 0" xyz="-0.0 0.0 -0.1475"/>
       <geometry>
-        <mesh filename="package://lbr_description/meshes/iiwa14/collisionink_1.stl"/>
+        <mesh filename="package://lbr_description/meshes/iiwa14/collision/link_1.stl"/>
       </geometry>
     </collision>
   </link>
@@ -88,7 +88,7 @@
     <collision>
       <origin rpy="0 0 0" xyz="-0.0 0.01 -0.36"/>
       <geometry>
-        <mesh filename="package://lbr_description/meshes/iiwa14/collisionink_2.stl"/>
+        <mesh filename="package://lbr_description/meshes/iiwa14/collision/link_2.stl"/>
       </geometry>
     </collision>
   </link>
@@ -119,7 +119,7 @@
     <collision>
       <origin rpy="0 0 0" xyz="-0.0 0.0 -0.5545"/>
       <geometry>
-        <mesh filename="package://lbr_description/meshes/iiwa14/collisionink_3.stl"/>
+        <mesh filename="package://lbr_description/meshes/iiwa14/collision/link_3.stl"/>
       </geometry>
     </collision>
   </link>
@@ -150,7 +150,7 @@
     <collision>
       <origin rpy="0 0 0" xyz="0.0 -0.0105 -0.78"/>
       <geometry>
-        <mesh filename="package://lbr_description/meshes/iiwa14/collisionink_4.stl"/>
+        <mesh filename="package://lbr_description/meshes/iiwa14/collision/link_4.stl"/>
       </geometry>
     </collision>
   </link>
@@ -181,7 +181,7 @@
     <collision>
       <origin rpy="0 0 0" xyz="-0.0 0.0 -0.9545"/>
       <geometry>
-        <mesh filename="package://lbr_description/meshes/iiwa14/collisionink_5.stl"/>
+        <mesh filename="package://lbr_description/meshes/iiwa14/collision/link_5.stl"/>
       </geometry>
     </collision>
   </link>
@@ -212,7 +212,7 @@
     <collision>
       <origin rpy="0 0 0" xyz="0.0 0.0707 -1.18"/>
       <geometry>
-        <mesh filename="package://lbr_description/meshes/iiwa14/collisionink_6.stl"/>
+        <mesh filename="package://lbr_description/meshes/iiwa14/collision/link_6.stl"/>
       </geometry>
     </collision>
   </link>
@@ -243,7 +243,7 @@
     <collision>
       <origin rpy="0 0 0" xyz="0.0 0.0 -1.2511"/>
       <geometry>
-        <mesh filename="package://lbr_description/meshes/iiwa14/collisionink_7.stl"/>
+        <mesh filename="package://lbr_description/meshes/iiwa14/collision/link_7.stl"/>
       </geometry>
     </collision>
   </link>
