@@ -6,6 +6,7 @@ from launch import LaunchDescription
 from launch.substitutions import ThisLaunchFileDir
 from launch.actions import ExecuteProcess
 from launch.substitutions import LaunchConfiguration
+from launch_ros.actions import Node
 
 def generate_launch_description():
     models_dir = os.path.join(get_package_share_directory('lbr_gazebo'), 'models')
@@ -18,7 +19,9 @@ def generate_launch_description():
     use_sim_time = LaunchConfiguration('use_sim_time', default='True')
     world_file_name = 'iiwa14.world'
     world = os.path.join(get_package_share_directory('lbr_gazebo'), 'worlds', world_file_name)
-    launch_file_dir = os.path.join(get_package_share_directory('lbr_gazebo'), 'launch')
+
+    urdf_file_name = 'iiwa14.urdf'
+    urdf = os.path.join(get_package_share_directory('lbr_description'), 'urdf', urdf_file_name)
 
     return LaunchDescription([
         ExecuteProcess(
@@ -28,6 +31,11 @@ def generate_launch_description():
         ExecuteProcess(
             cmd=['ros2', 'param', 'set', '/gazebo', 'use_sim_time', use_sim_time],
             output='screen'),
+
+        Node(
+            package='robot_state_publisher',
+            node_executable='robot_state_publisher',
+            arguments=[urdf])
     ])
 
 
