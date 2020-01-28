@@ -11,7 +11,7 @@
  * @brief Implements a LBRClient that communicates to the real robot via the Fast Robot Interface
  * @param lbr A shared pointer to a LBR object
  * 
- * The LBRClient updates the state of the shared LBR object via update_state(), and sends desired
+ * The LBRClient updates the state of the shared LBR object via update_lbr(), and sends desired
  * commands from the LBR object to the real robot via command(). The shared LBR object is also
  * accessed by the FriRos node and, therefore, to communicate to the real robot via ROS2.
 **/
@@ -30,14 +30,14 @@ class LBRClient : public KUKA::FRI::LBRClient {
          * @brief Callback if the real robot is in KUKA::FRI::ESessionState MONITORING_READY
         **/
         auto monitor() -> void override {
-            update_state();
+            update_lbr();
         };
 
         /**
          * @brief Callback if the real robot is in KUKA::FRI::ESessionState COMMANDING_WAIT
         **/
         auto waitForCommand() -> void override {
-            update_state();
+            update_lbr();
             KUKA::FRI::LBRClient::waitForCommand();
         };
 
@@ -45,18 +45,18 @@ class LBRClient : public KUKA::FRI::LBRClient {
          * @brief Callback if the real robot is in KUKA::FRI::ESessionState COMMANDING_ACTIVE
         **/
         auto command() -> void override {
-            update_state();
+            update_lbr();
 
             switch (robotState().getClientCommandMode()) {
                 case KUKA::FRI::POSITION:
-                    if (!lbr_->get_commanded_state().joint_positions.empty())
-                        robotCommand().setJointPosition(lbr_->get_commanded_state().joint_positions.data());
+                    if (!lbr_->get_commanded_state().position.empty())
+                        robotCommand().setJointPosition(lbr_->get_commanded_state().position.data());
                     else
                         KUKA::FRI::LBRClient::command();
                     break;
                 case KUKA::FRI::TORQUE:
-                    if (!lbr_->get_commanded_state().torques.empty())
-                        robotCommand().setTorque(lbr_->get_commanded_state().torques.data());
+                    if (!lbr_->get_commanded_state().torque.empty())
+                        robotCommand().setTorque(lbr_->get_commanded_state().torque.data());
                     else
                         KUKA::FRI::LBRClient::command();
                     break;
@@ -70,12 +70,13 @@ class LBRClient : public KUKA::FRI::LBRClient {
         /**
          * @brief Reads the real robot state via the Fast Robot Interface and updates the shared LBR object
         **/
-        auto update_state() -> void {
-            const double* ja = robotState().getMeasuredJointPosition();
-            state_.joint_positions.assign(ja, ja+KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
+        auto update_lbr() -> void {
+            state_.stamp.sec = (builtin_interfaces::msg::Time::_sec_type)robotState().getTimestampSec();
+            state_.stamp.nanosec = (builtin_interfaces::msg::Time::_nanosec_type)robotState().getTimestampNanoSec();
+            const double* jp = robotState().getMeasuredJointPosition();
+            state_.position.assign(jp, jp+KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
             const double* t = robotState().getMeasuredTorque();
-            state_.torques.assign(t, t+KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
-            state_.time_stamp = robotState().getTimestampNanoSec();
+            state_.torque.assign(t, t+KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
 
             lbr_->set_current_state(state_);
         }

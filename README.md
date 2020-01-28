@@ -11,6 +11,34 @@ wget https://raw.githubusercontent.com/KCL-BMEIS/fri_ros2/master/fri_ros2.repos?
 vcs import < fri_ros2.repos --workers=1 # limit workers due to private repos
 ```
 
+```shell
+source /opt/ros/dashing/setup.bash # or different ROS2 distribution
+cd fri_ws
+colcon build
+```
+
+# Launch
+## Gazebo
+
+```shell
+source fri_ws/install/setup.bash
+ros2 launch lbr_gazebo med7.launch.py
+```
+
+## Real Robot
+
+```shell
+source fri_ws/install/setup.bash
+ros2 launch lbr_bringup lbr.launch.py
+```
+
+## Rviz2
+
+```shell
+source fri_ws/install/setup.bash
+ros2 launch lbr_bringup lbr_rviz.launch.py
+```
+
 # Notes
 iiwa stack https://github.com/IFL-CAMP/iiwa_stack
 turtlebot3 https://github.com/ROBOTIS-GIT/turtlebot3

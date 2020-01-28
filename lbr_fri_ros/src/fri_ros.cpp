@@ -2,6 +2,7 @@
 #include <chrono>
 
 #include <rclcpp/rclcpp.hpp>
+#include <sensor_msgs/msg/joint_state.hpp>
 #include <lbr_msgs/msg/lbr_state.hpp>
 #include <fri/friLBRState.h>
 #include <fri/friUdpConnection.h>
@@ -21,10 +22,10 @@ class FriRos : public rclcpp::Node {
     public:
         FriRos(std::shared_ptr<LBR> lbr) : Node("fri_ros"), lbr_(lbr) {
             using namespace std::chrono_literals;
-            publisher_ = this->create_publisher<lbr_msgs::msg::LBRState>("fri_ros/get_state", 10);
+            publisher_ = this->create_publisher<sensor_msgs::msg::JointState>("/joint_states", 10);
             timer_ = this->create_wall_timer(100ms, std::bind(&FriRos::timer_callback, this));
             subscription_ = this->create_subscription<lbr_msgs::msg::LBRState>(
-                "fri_ros/set_state", 10, std::bind(&FriRos::topic_callback, this, std::placeholders::_1));
+                "/command_states", 10, std::bind(&FriRos::topic_callback, this, std::placeholders::_1));
         };
 
     private:
@@ -32,10 +33,12 @@ class FriRos : public rclcpp::Node {
          * @brief Periodic callback that publishes the shared state of the LBR object to ROS2
         **/
         auto timer_callback() -> void {
-            auto msg = lbr_msgs::msg::LBRState();
-            msg.joint_positions = lbr_->get_current_state().joint_positions;
-            msg.torques = lbr_->get_current_state().torques;
-            msg.time_stamp = lbr_->get_current_state().time_stamp;
+            auto msg = sensor_msgs::msg::JointState();
+            
+            msg.header.stamp.sec = lbr_->get_current_state().stamp.sec;
+            msg.header.stamp.nanosec = lbr_->get_current_state().stamp.nanosec;
+            msg.position = lbr_->get_current_state().position;
+
             publisher_->publish(msg);
         };
 
@@ -49,7 +52,7 @@ class FriRos : public rclcpp::Node {
 
         std::shared_ptr<LBR> lbr_;
 
-        rclcpp::Publisher<lbr_msgs::msg::LBRState>::SharedPtr publisher_;
+        rclcpp::Publisher<sensor_msgs::msg::JointState>::SharedPtr publisher_;
         rclcpp::Subscription<lbr_msgs::msg::LBRState>::SharedPtr subscription_;
 
         rclcpp::TimerBase::SharedPtr timer_;
@@ -124,27 +127,27 @@ int main(int argc, char** argv) {
     // // test lbr struct... test with multiple threads
     // std::vector<double> el(7, 0);
     // lbr_msgs::msg::LBRState s;
-    // s.joint_positions = el;
-    // s.torques = el;
-    // s.time_stamp = 0;
+    // s.position = el;
+    // s.torque = el;
+    // s.stamp.nanosec = 0;
 
-    // if (lbr->get_current_state().joint_positions.empty()) {
+    // if (lbr->get_current_state().position.empty()) {
     //     std::cout << "not init yet" << std::endl;
     // }
 
-    // if (!lbr->get_current_state().joint_positions.data())
+    // if (!lbr->get_current_state().position.data())
     //     std::cout << "not init yet" << std::endl;
 
 
-    // s.joint_positions[0] = 1.;
+    // s.position[0] = 1.;
     // lbr->set_current_state(s);
-    // for (int i = 0; i < lbr->get_current_state().joint_positions.size(); i++) {
-    //     std::cout << "set state: " << lbr->get_current_state().joint_positions[i] << " " << s.joint_positions[i] << std::endl;
+    // for (int i = 0; i < lbr->get_current_state().position.size(); i++) {
+    //     std::cout << "set state: " << lbr->get_current_state().position[i] << " " << s.position[i] << std::endl;
     // }
 
-    // s.joint_positions[0] = 2.;
-    // for (int i = 0; i < lbr->get_current_state().joint_positions.size(); i++) {
-    //     std::cout << "externally manipulated state: " << lbr->get_current_state().joint_positions[i] << " " << s.joint_positions[i] << std::endl;
+    // s.position[0] = 2.;
+    // for (int i = 0; i < lbr->get_current_state().position.size(); i++) {
+    //     std::cout << "externally manipulated state: " << lbr->get_current_state().position[i] << " " << s.position[i] << std::endl;
     // }
 
 
