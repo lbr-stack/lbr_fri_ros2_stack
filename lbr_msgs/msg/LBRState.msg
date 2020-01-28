@@ -1,3 +1,3 @@
-float64[] joint_positions
-float64[] torques
-uint64 time_stamp
+builtin_interfaces/Time stamp
+float64[] position
+float64[] torque
