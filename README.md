@@ -22,7 +22,7 @@ colcon build
 
 ```shell
 source fri_ws/install/setup.bash
-ros2 launch lbr_gazebo med7.launch.py
+ros2 launch lbr_gazebo lbr_gazebo.launch.py --model MODEL # available models: iiwa7, iiwa14, med7, med14
 ```
 
 ## Real Robot
