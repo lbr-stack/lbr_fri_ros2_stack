@@ -27,13 +27,9 @@ target_include_directories(lbr_fri_ros
 # Link against dependencies
 ament_target_dependencies(lbr_fri_ros rclcpp fri lbr_msgs sensor_msgs)
 
-# Export target
-ament_export_interfaces(export_lbr_fri_ros)
-
 install(
     TARGETS lbr_fri_ros
-    EXPORT export_lbr_fri_ros
-    RUNTIME DESTINATION bin
+    DESTINATION lib/lbr_fri_ros
 )
 
 ament_package()
