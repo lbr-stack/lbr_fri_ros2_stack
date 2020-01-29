@@ -73,6 +73,7 @@ class LBRClient : public KUKA::FRI::LBRClient {
         auto update_lbr() -> void {
             state_.stamp.sec = (builtin_interfaces::msg::Time::_sec_type)robotState().getTimestampSec();
             state_.stamp.nanosec = (builtin_interfaces::msg::Time::_nanosec_type)robotState().getTimestampNanoSec();
+            state_.sample_time = robotState().getSampleTime();
             const double* jp = robotState().getMeasuredJointPosition();
             state_.position.assign(jp, jp+KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
             const double* t = robotState().getMeasuredTorque();
