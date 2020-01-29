@@ -59,9 +59,9 @@ class FriRos : public rclcpp::Node {
 };
 
 /**
- * @brief Runs a FriRos in a seperated thread. Notifies lbr_client_thread() on exit
+ * @brief Runs a ClientApplication in a seperated thread
 **/
-auto fri_ros_thread(std::shared_ptr<LBR> lbr) -> void {
+auto fri_thread(std::shared_ptr<LBR> lbr) -> void {
     LBRClient lbr_client(lbr);
     KUKA::FRI::UdpConnection connection;
 
@@ -69,94 +69,27 @@ auto fri_ros_thread(std::shared_ptr<LBR> lbr) -> void {
     app.connect(30200 /*default port id*/, NULL /*host name*/);
 
     bool succes = true;
-    while (succes) {
+    while (succes && !rclcpp::ok()) {
         succes = app.step();
     }
     app.disconnect();
 };
 
-/**
- * @brief Runs a LBRClient in a seperated thread. Notifies fri_ros_thread() on exit
-**/
-auto lbr_client_thread(std::shared_ptr<LBR> lbr) -> void {
-    rclcpp::spin(std::make_shared<FriRos>(lbr));
-};
-
 int main(int argc, char** argv) {
+
     rclcpp::init(argc, argv);
 
     auto lbr = std::make_shared<LBR>();
     
-    std::thread thread1(lbr_client_thread, lbr);
-    std::thread thread2(fri_ros_thread, lbr); 
+    // start thread that connects to the robot via the Fast Robot Interface
+    std::thread thread(fri_thread, lbr); 
 
-    thread1.join();
-    thread2.join();
+    // start a thread that reads and write to the lbr object
+    rclcpp::spin(std::make_shared<FriRos>(lbr));
 
+    // shutdown
     rclcpp::shutdown();
-
-
-
-
-
-
-
-
-
-
-// TODO: add tests for 2 threads that access and manipulate the data LBR class
-//       test size of joints angles and torque
-//       test get and set without threads
-
-    // rclcpp::init(argc, argv);
-
-    // rclcpp::spin(std::make_shared<FriRos>(lbr));
-
-
-
-    // 2 threads, finish when quit or error
-    // notify the other on quit
-
-
-
-
-
-
-    // rclcpp::shutdown();
-
-    // // test lbr struct... test with multiple threads
-    // std::vector<double> el(7, 0);
-    // lbr_msgs::msg::LBRState s;
-    // s.position = el;
-    // s.torque = el;
-    // s.stamp.nanosec = 0;
-
-    // if (lbr->get_current_state().position.empty()) {
-    //     std::cout << "not init yet" << std::endl;
-    // }
-
-    // if (!lbr->get_current_state().position.data())
-    //     std::cout << "not init yet" << std::endl;
-
-
-    // s.position[0] = 1.;
-    // lbr->set_current_state(s);
-    // for (int i = 0; i < lbr->get_current_state().position.size(); i++) {
-    //     std::cout << "set state: " << lbr->get_current_state().position[i] << " " << s.position[i] << std::endl;
-    // }
-
-    // s.position[0] = 2.;
-    // for (int i = 0; i < lbr->get_current_state().position.size(); i++) {
-    //     std::cout << "externally manipulated state: " << lbr->get_current_state().position[i] << " " << s.position[i] << std::endl;
-    // }
-
-
-    
-    // setup connection as usual
-
-    // auto state = lbr->get_state(); // get state and feed to ros
-    // lbr->set_state(state); // take state from ros and set it
-    // // lbr.set_state();
+    thread.join();
 
     return 0;
 }
