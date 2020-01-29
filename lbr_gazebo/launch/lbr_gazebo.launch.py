@@ -17,9 +17,11 @@ def get_args():
     return parser.parse_args(sys.argv[4:])
 
 def generate_launch_description():
+    # read arguments from shell, e.g. the model
     args = get_args()
     model = args.model
 
+    # export the models directory as environment variable for Gazebo
     models_dir = os.path.join(get_package_share_directory('lbr_gazebo'), 'models')
 
     if 'GAZEBO_MODEL_PATH' in os.environ:
@@ -27,6 +29,7 @@ def generate_launch_description():
     else:
         os.environ['GAZEBO_MODEL_PATH'] = models_dir
 
+    # launch Gazebo with model and the robot_state_publisher to turn joint positions to transforms
     use_sim_time = LaunchConfiguration('use_sim_time', default='True')
     world_file_name = model + '.world'
     world = os.path.join(get_package_share_directory('lbr_gazebo'), 'worlds', world_file_name)
