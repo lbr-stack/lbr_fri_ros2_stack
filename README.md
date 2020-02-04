@@ -8,7 +8,8 @@ This folder will contain a lightweight ROS wrapper for KUKA's Fast Robot Interfa
 source /opt/ros/melodic/setup.bash
 mkdir -p fri_ws/src
 cd fri_ws/src
-git clone --recursive https://github.com/KCL-BMEIS/fri_ros2.git
+git clone --recursive --branch melodic https://github.com/KCL-BMEIS/fri_ros2.git
+cd ..
 catkin_make
 ```
 
