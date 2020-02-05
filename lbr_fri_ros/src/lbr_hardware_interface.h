@@ -4,6 +4,7 @@
 #include <hardware_interface/joint_command_interface.h>
 #include <hardware_interface/joint_state_interface.h>
 #include <hardware_interface/robot_hw.h>
+#include <ros/ros.h>
 
 #include <fri/friLBRState.h>
 #include <lbr.h>
@@ -12,60 +13,45 @@
 class LBRHardwareInterface : public hardware_interface::RobotHW
 {
 public:
-    LBRHardwareInterface(std::shared_ptr<LBR> lbr) try :
-        lbr_(lbr),
-        pos_(KUKA::FRI::LBRState::NUMBER_OF_JOINTS, 0.), 
-        vel_(KUKA::FRI::LBRState::NUMBER_OF_JOINTS, 0.), 
-        eff_(KUKA::FRI::LBRState::NUMBER_OF_JOINTS, 0.), 
-        cmd_pos_(KUKA::FRI::LBRState::NUMBER_OF_JOINTS, 0.), 
-        cmd_eff_(KUKA::FRI::LBRState::NUMBER_OF_JOINTS, 0.) {
+    LBRHardwareInterface(std::shared_ptr<LBR> lbr) : lbr_(lbr) {   };
 
-        // Load urdf file from parameter server
-        if (!urdf_.initParam("robot_description")) {
-            ROS_ERROR("Could not initialize URDF file from robot_description parameter server.");
-            throw std::runtime_error("Could not initialize URDF file from robot_description parameter server.");
-        };
-
-        // Read joint names from urdf file
-        for (auto key : urdf_.joints_) {
-            if (urdf_.joints_[key.first]->parent_link_name != "world")
-                j_.push_back(key.first);
-            else
-                continue;
+    auto init(ros::NodeHandle& nh) -> bool {
+        // Get joints names
+        if (!nh.getParam("joints", joint_names_)) {
+            ROS_ERROR("Could not get joints from parameter server.");
+            return false;
         }
 
-        if (j_.size() != KUKA::FRI::LBRState::NUMBER_OF_JOINTS) {
-            ROS_ERROR("Wrong number of joints provided through URDF file from /robot_description.");
-            throw std::runtime_error("Wrong number of joints provided through URDF file from robot_description.");
+        pos_.resize(KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
+        vel_.resize(KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
+        eff_.resize(KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
+        cmd_pos_.resize(KUKA::FRI::LBRState::NUMBER_OF_JOINTS); 
+        cmd_eff_.resize(KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
+
+        if (joint_names_.size() != KUKA::FRI::LBRState::NUMBER_OF_JOINTS) {
+            ROS_ERROR("Number of joints has to equal %d, got %d.", KUKA::FRI::LBRState::NUMBER_OF_JOINTS, (int)joint_names_.size());
+            return false;
         }
-      
+
         // Register the state handles
         for (int i = 0; i < KUKA::FRI::LBRState::NUMBER_OF_JOINTS; i++) {
-            hardware_interface::JointStateHandle state_handle(j_[i], &pos_[i], &vel_[i], &eff_[i]);
+            hardware_interface::JointStateHandle state_handle(joint_names_[i], &pos_[i], &vel_[i], &eff_[i]);
             jsi_.registerHandle(state_handle);
             
-            hardware_interface::JointHandle pos_handle(jsi_.getHandle(j_[i]), &cmd_pos_[i]);
+            // Position
+            hardware_interface::JointHandle pos_handle(jsi_.getHandle(joint_names_[i]), &cmd_pos_[i]);
             pji_.registerHandle(pos_handle);
             
-            hardware_interface::JointHandle eff_handle(jsi_.getHandle(j_[i]), &cmd_eff_[i]);
+            // Effort
+            hardware_interface::JointHandle eff_handle(jsi_.getHandle(joint_names_[i]), &cmd_eff_[i]);
             eji_.registerHandle(eff_handle);
         }
 
-        registerInterface(&jsi_);
-        registerInterface(&pji_);
-        registerInterface(&eji_);
+        this->registerInterface(&jsi_);
+        this->registerInterface(&pji_);
+        this->registerInterface(&eji_);
 
-        init();
-    } catch (std::exception& e) {
-        std::cout << "Exception: " << e.what() << std::endl;
-    };
-
-    auto init() -> void {
-        auto state = lbr_->get_current_state();
-
-        time_ = state.stamp.data.toSec();
-        pos_ = state.position;
-        eff_ = state.torque;
+        return true;
     }
 
     auto read() -> void {
@@ -83,22 +69,24 @@ public:
 
     auto write() -> void {
         lbr_msgs::LBRState state;
-        state.position = pos_;
-        state.torque = eff_;
+        state.position = cmd_pos_;
+        state.torque = cmd_eff_;
         lbr_->set_commanded_state(state);
     };
 
 private:
-    std::shared_ptr<LBR> lbr_;
-    std::vector<std::string> j_;
-    std::vector<double> pos_, vel_, eff_;
-    std::vector<double> cmd_pos_, cmd_eff_;
-    double time_;
-
     // Interfaces
     hardware_interface::JointStateInterface jsi_;
     hardware_interface::PositionJointInterface pji_;
     hardware_interface::EffortJointInterface eji_;
 
-    urdf::Model urdf_;
+    std::vector<std::string> joint_names_;
+
+    // States
+    std::vector<double> pos_, vel_, eff_;
+    std::vector<double> cmd_pos_, cmd_eff_;
+    double time_;
+
+    // Robot
+    std::shared_ptr<LBR> lbr_;
 };
