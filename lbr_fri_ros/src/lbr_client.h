@@ -2,10 +2,10 @@
 
 #include <memory>
 
-#include <rclcpp/rclcpp.hpp>
+#include <ros/ros.h>
 #include <fri/friLBRClient.h>
 #include <lbr.h>
-#include <lbr_msgs/msg/lbr_state.hpp>
+#include <lbr_msgs/LBRState.h>
 
 /**
  * @brief Implements a LBRClient that communicates to the real robot via the Fast Robot Interface
@@ -71,8 +71,8 @@ class LBRClient : public KUKA::FRI::LBRClient {
          * @brief Reads the real robot state via the Fast Robot Interface and updates the shared LBR object
         **/
         auto update_lbr() -> void {
-            state_.stamp.sec = (builtin_interfaces::msg::Time::_sec_type)robotState().getTimestampSec();
-            state_.stamp.nanosec = (builtin_interfaces::msg::Time::_nanosec_type)robotState().getTimestampNanoSec();
+            state_.stamp.data.sec = robotState().getTimestampSec();
+            state_.stamp.data.nsec = robotState().getTimestampNanoSec();
             state_.sample_time = robotState().getSampleTime();
             const double* jp = robotState().getMeasuredJointPosition();
             state_.position.assign(jp, jp+KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
@@ -105,5 +105,5 @@ class LBRClient : public KUKA::FRI::LBRClient {
 
     private:
         std::shared_ptr<LBR> lbr_;
-        lbr_msgs::msg::LBRState state_;
+        lbr_msgs::LBRState state_;
 };

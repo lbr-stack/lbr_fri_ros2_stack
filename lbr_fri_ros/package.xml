@@ -1,20 +1,18 @@
 <?xml version="1.0"?>
-<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
-<package format="3">
+<package format="2">
   <name>lbr_fri_ros</name>
   <version>1.0.0</version>
   <description>ROS2 wrapper for KUKA fast robot interface</description>
   <maintainer email="m.huber_1994@hotmail.de">mhubii</maintainer>
   <license>TODO: add license</license>
 
-  <buildtool_depend>ament_cmake</buildtool_depend>
+  <buildtool_depend>catkin</buildtool_depend>
 
-  <depend>rclcpp</depend>
+  <depend>roscpp</depend>
+  <depend>urdf</depend>
+  <depend>hardware_interface</depend>
+  <depend>controller_manager</depend>
   <depend>fri</depend>
   <depend>lbr_msgs</depend>
   <depend>sensor_msgs</depend>
-
-  <export>
-    <build_type>ament_cmake</build_type>
-  </export>
 </package>
