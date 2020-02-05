@@ -1,0 +1,18 @@
+<launch>
+    <rosparam file="$(find lbr_fri_ros)/config/controllers.yaml" command="load"/>
+    <rosparam file="$(find lbr_fri_ros)/config/hardware.yaml" command="load"/>
+
+    <param name="robot_description" textfile="$(find lbr_description)/urdf/med7.urdf"/>
+
+    <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen"
+        args="
+        joint_state_controller
+        trajectory
+    "/>
+
+    <node name="lbr_fri_ros_node" pkg="lbr_fri_ros" type="lbr_fri_ros_node" output="screen"/>
+
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"
+        respawn="false" output="screen">  
+    </node>
+</launch>
