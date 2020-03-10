@@ -17,7 +17,7 @@ import com.kuka.roboticsAPI.motionModel.controlModeModel.PositionControlMode;
 /**
  * Creates a FRI Session.
  */
-public class Servo extends RoboticsAPIApplication
+public class LBRClient extends RoboticsAPIApplication
 {
     private Controller _lbrController;
     private LBR _lbr;
@@ -82,7 +82,7 @@ public class Servo extends RoboticsAPIApplication
      */
     public static void main(final String[] args)
     {
-        final Servo app = new Servo();
+        final LBRClient app = new LBRClient();
         app.runApplication();
     }
 
