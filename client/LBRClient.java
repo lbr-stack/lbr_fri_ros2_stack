@@ -1,6 +1,7 @@
 package com.kuka.connectivity.fri.example;
 
 import static com.kuka.roboticsAPI.motionModel.BasicMotions.ptp;
+import static com.kuka.roboticsAPI.motionModel.BasicMotions.positionHold;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -11,15 +12,17 @@ import com.kuka.connectivity.fastRobotInterface.FRISession;
 import com.kuka.roboticsAPI.applicationModel.RoboticsAPIApplication;
 import com.kuka.roboticsAPI.controllerModel.Controller;
 import com.kuka.roboticsAPI.deviceModel.LBR;
+import com.kuka.roboticsAPI.motionModel.controlModeModel.PositionControlMode;
 
 /**
  * Creates a FRI Session.
  */
-public class LBRClient extends RoboticsAPIApplication
+public class Servo extends RoboticsAPIApplication
 {
     private Controller _lbrController;
     private LBR _lbr;
     private String _clientName;
+    private PositionControlMode _controlMode;
 
     @Override
     public void initialize()
@@ -30,6 +33,7 @@ public class LBRClient extends RoboticsAPIApplication
         // *** change next line to the FRIClient's IP address                 ***
         // **********************************************************************
         _clientName = "172.31.1.148";
+        _controlMode = new PositionControlMode();
     }
 
     @Override
@@ -61,20 +65,10 @@ public class LBRClient extends RoboticsAPIApplication
         getLogger().info("FRI connection established.");
 
         // move to start pose
-        _lbr.move(.0, .0, .0, .0, .0, .0, .0));
+        _lbr.move(ptp(.0, .0, .0, .0, .0, .0, .0));
 
-        // async move with overlay ...
-        _lbr.moveAsync(ptp(.0, .0, .0, .0, .0, .0, .0)
-                .setJointVelocityRel(0.2)
-                .addMotionOverlay(jointOverlay)
-                .setBlendingRel(0.1)
-                );
-
-        // ... blending into sync move with overlay
-        _lbr.move(ptp(.0, .0, .0, .0, .0, .0, .0)
-                .setJointVelocityRel(0.2)
-                .addMotionOverlay(jointOverlay)
-                );
+        // start positionHold with overlay
+        _lbr.move(positionHold(_controlMode, -1, TimeUnit.SECONDS).addMotionOverlay(jointOverlay));
 
         // done
         friSession.close();
@@ -88,7 +82,7 @@ public class LBRClient extends RoboticsAPIApplication
      */
     public static void main(final String[] args)
     {
-        final LBRClient app = new LBRClient();
+        final Servo app = new Servo();
         app.runApplication();
     }
 
