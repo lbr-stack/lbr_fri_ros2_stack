@@ -19,8 +19,8 @@
       <geometry>
         <mesh filename="package://lbr_description/meshes/med14/visual/base_link.stl"/>
       </geometry>
-      <material name="silver">
-        <color rgba="1 0 0 1"/>
+      <material name="white">
+        <color rgba="1.0 1.0 1.0 1.0"/>
       </material>
     </visual>
     <collision>
@@ -50,8 +50,8 @@
       <geometry>
         <mesh filename="package://lbr_description/meshes/med14/visual/link_1.stl"/>
       </geometry>
-      <material name="silver">
-        <color rgba="1 0 0 1"/>
+      <material name="white">
+        <color rgba="1.0 1.0 1.0 1.0"/>
       </material>
     </visual>
     <collision>
@@ -81,8 +81,8 @@
       <geometry>
         <mesh filename="package://lbr_description/meshes/med14/visual/link_2.stl"/>
       </geometry>
-      <material name="silver">
-        <color rgba="1 0 0 1"/>
+      <material name="white">
+        <color rgba="1.0 1.0 1.0 1.0"/>
       </material>
     </visual>
     <collision>
@@ -112,8 +112,8 @@
       <geometry>
         <mesh filename="package://lbr_description/meshes/med14/visual/link_3.stl"/>
       </geometry>
-      <material name="silver">
-        <color rgba="1 0 0 1"/>
+      <material name="white">
+        <color rgba="1.0 1.0 1.0 1.0"/>
       </material>
     </visual>
     <collision>
@@ -143,8 +143,8 @@
       <geometry>
         <mesh filename="package://lbr_description/meshes/med14/visual/link_4.stl"/>
       </geometry>
-      <material name="silver">
-        <color rgba="1 0 0 1"/>
+      <material name="white">
+        <color rgba="1.0 1.0 1.0 1.0"/>
       </material>
     </visual>
     <collision>
@@ -174,8 +174,8 @@
       <geometry>
         <mesh filename="package://lbr_description/meshes/med14/visual/link_5.stl"/>
       </geometry>
-      <material name="silver">
-        <color rgba="1 0 0 1"/>
+      <material name="white">
+        <color rgba="1.0 1.0 1.0 1.0"/>
       </material>
     </visual>
     <collision>
@@ -205,8 +205,8 @@
       <geometry>
         <mesh filename="package://lbr_description/meshes/med14/visual/link_6.stl"/>
       </geometry>
-      <material name="silver">
-        <color rgba="1 0 0 1"/>
+      <material name="white">
+        <color rgba="1.0 1.0 1.0 1.0"/>
       </material>
     </visual>
     <collision>
@@ -237,7 +237,7 @@
         <mesh filename="package://lbr_description/meshes/med14/visual/link_7.stl"/>
       </geometry>
       <material name="silver">
-        <color rgba="1 0 0 1"/>
+        <color rgba="0.7 0.7 0.7 1.0"/>
       </material>
     </visual>
     <collision>

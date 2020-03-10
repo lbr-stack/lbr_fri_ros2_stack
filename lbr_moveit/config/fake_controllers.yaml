@@ -1,5 +1,5 @@
 controller_list:
-  - name: fake_lbr_controller
+  - name: fake_med7_controller
     joints:
       - A1
       - A2

@@ -10,11 +10,19 @@
 
   <license>BSD</license>
 
-  <url type="website">http://lbr_moveit.ros.org/</url>
-  <url type="bugtracker">https://github.com/ros-planning/lbr_moveit/issues</url>
-  <url type="repository">https://github.com/ros-planning/lbr_moveit</url>
+  <url type="website">http://moveit.ros.org/</url>
+  <url type="bugtracker">https://github.com/ros-planning/moveit/issues</url>
+  <url type="repository">https://github.com/ros-planning/moveit</url>
 
   <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>roscpp</build_depend>
+  <build_depend>moveit_ros_planning_interface</build_depend>
+  <build_depend>geometry_msgs</build_depend>
+
+  <run_depend>roscpp</run_depend>
+  <run_depend>moveit_ros_planning_interface</run_depend>
+  <run_depend>geometry_msgs</run_depend>
 
   <run_depend>moveit_ros_move_group</run_depend>
   <run_depend>moveit_fake_controller_manager</run_depend>

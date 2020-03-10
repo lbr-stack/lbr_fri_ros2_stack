@@ -1,10 +1,10 @@
 <launch>
   <!-- Set the parameters for the warehouse and run the mongodb server. -->
 
-  <!-- The default DB port for lbr_moveit (not default MongoDB port to avoid potential conflicts) -->
+  <!-- The default DB port for moveit (not default MongoDB port to avoid potential conflicts) -->
   <arg name="moveit_warehouse_port" default="33829" />
 
-  <!-- The default DB host for lbr_moveit -->
+  <!-- The default DB host for moveit -->
   <arg name="moveit_warehouse_host" default="localhost" />
 
   <!-- Set parameters for the warehouse -->

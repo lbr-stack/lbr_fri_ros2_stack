@@ -1,8 +1,11 @@
 joint_state_controller:
   type: joint_state_controller/JointStateController
   publish_rate: 50
-trajectory:
-  type: effort_controllers/JointTrajectoryController
+joint_position_controller: # https://answers.ros.org/question/331384/building-a-custom-hardware-interface-for-moveit/
+  type: position_controllers/JointPositionController
+  joint: A1
+follow_joint_trajectory: # https://ros-planning.github.io/moveit_tutorials/doc/controller_configuration/controller_configuration_tutorial.html
+  type: position_controllers/JointTrajectoryController
   joints:
     - A1
     - A2
@@ -12,10 +15,12 @@ trajectory:
     - A6
     - A7
   gains:
-    A1: {p: 30.0, i: 1, d: 0, i_clamp_min: -1, i_clamp_max: 1}
-    A2: {p: 30.0, i: 1, d: 0, i_clamp_min: -1, i_clamp_max: 1}
-    A3: {p: 30.0, i: 1, d: 0, i_clamp_min: -1, i_clamp_max: 1}
-    A4: {p: 30.0, i: 1, d: 0, i_clamp_min: -1, i_clamp_max: 1}
-    A5: {p: 30.0, i: 1, d: 0, i_clamp_min: -1, i_clamp_max: 1}
-    A6: {p: 30.0, i: 1, d: 0, i_clamp_min: -1, i_clamp_max: 1}
-    A7: {p: 30.0, i: 1, d: 0, i_clamp_min: -1, i_clamp_max: 1}
+    A1: {p: 10, d: 1, i: 1, i_clamp: 1}
+    A2: {p: 10, d: 1, i: 1, i_clamp: 1}
+    A3: {p: 10, d: 1, i: 1, i_clamp: 1}
+    A4: {p: 10, d: 1, i: 1, i_clamp: 1}
+    A5: {p: 10, d: 1, i: 1, i_clamp: 1}
+    A6: {p: 10, d: 1, i: 1, i_clamp: 1}
+    A7: {p: 10, d: 1, i: 1, i_clamp: 1}
+  
+

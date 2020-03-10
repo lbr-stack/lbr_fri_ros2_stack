@@ -7,8 +7,10 @@
     <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen"
         args="
         joint_state_controller
-        trajectory
+        follow_joint_trajectory
     "/>
+
+    <!-- joint_position_controller and follow_joint_trajectory -->
 
     <node name="lbr_fri_ros_node" pkg="lbr_fri_ros" type="lbr_fri_ros_node" output="screen"/>
 

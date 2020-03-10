@@ -23,50 +23,15 @@ joint_state_controller:
   type: joint_state_controller/JointStateController
   publish_rate: 50
 controller_list:
-  []
-lbr_control:
-  type: position_controllers/JointPositionController
-  joints:
-    - A1
-    - A2
-    - A3
-    - A4
-    - A5
-    - A6
-    - A7
-  gains:
-    A1:
-      p: 100
-      d: 1
-      i: 1
-      i_clamp: 1
-    A2:
-      p: 100
-      d: 1
-      i: 1
-      i_clamp: 1
-    A3:
-      p: 100
-      d: 1
-      i: 1
-      i_clamp: 1
-    A4:
-      p: 100
-      d: 1
-      i: 1
-      i_clamp: 1
-    A5:
-      p: 100
-      d: 1
-      i: 1
-      i_clamp: 1
-    A6:
-      p: 100
-      d: 1
-      i: 1
-      i_clamp: 1
-    A7:
-      p: 100
-      d: 1
-      i: 1
-      i_clamp: 1
+  - name: follow_joint_trajectory
+    action_ns: follow_joint_trajectory
+    default: True
+    type: FollowJointTrajectory
+    joints:
+      - A1
+      - A2
+      - A3
+      - A4
+      - A5
+      - A6
+      - A7
