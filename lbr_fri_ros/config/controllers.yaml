@@ -1,9 +1,19 @@
 joint_state_controller:
   type: joint_state_controller/JointStateController
-  publish_rate: 50
+  publish_rate: 1000
 joint_position_controller: # https://answers.ros.org/question/331384/building-a-custom-hardware-interface-for-moveit/
   type: position_controllers/JointPositionController
   joint: A1
+joint_group_position_controller:
+  type: position_controllers/JointGroupPositionController
+  joints:
+    - A1
+    - A2
+    - A3
+    - A4
+    - A5
+    - A6
+    - A7
 follow_joint_trajectory: # https://ros-planning.github.io/moveit_tutorials/doc/controller_configuration/controller_configuration_tutorial.html
   type: position_controllers/JointTrajectoryController
   joints:
@@ -22,5 +32,8 @@ follow_joint_trajectory: # https://ros-planning.github.io/moveit_tutorials/doc/c
     A5: {p: 10, d: 1, i: 1, i_clamp: 1}
     A6: {p: 10, d: 1, i: 1, i_clamp: 1}
     A7: {p: 10, d: 1, i: 1, i_clamp: 1}
-  
+joint_effort_controller:
+  type: effort_controllers/JointEffortController
+  joint: A1
+  pid: {p: 0.75, i: 0.5, d: 0.01}
 

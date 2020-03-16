@@ -10,7 +10,7 @@
         follow_joint_trajectory
     "/>
 
-    <!-- joint_position_controller and follow_joint_trajectory -->
+    <!-- joint_position_controller, joint_group_position_controller, follow_joint_trajectory -->
 
     <node name="lbr_fri_ros_node" pkg="lbr_fri_ros" type="lbr_fri_ros_node" output="screen"/>
 
