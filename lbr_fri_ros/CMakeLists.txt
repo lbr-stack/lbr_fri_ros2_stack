@@ -9,7 +9,6 @@ find_package(catkin REQUIRED COMPONENTS
   lbr_msgs
 )
 
-
 catkin_package(
  CATKIN_DEPENDS roscpp fri lbr_msgs hardware_interface controller_manager
 )
