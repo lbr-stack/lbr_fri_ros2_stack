@@ -2,12 +2,13 @@
 
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
 
-    <xacro:macro name="lbr_gazebo" params="robot_name">
+    <xacro:macro name="med_gazebo" params="robot_name">
 
         <!-- ros_control-plugin -->
         <gazebo>
             <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
-            <robotNamespace>/${robot_name}</robotNamespace>
+                <robotNamespace>/${robot_name}</robotNamespace>
+            </plugin>
         </gazebo>
 
         <!-- link 0 -->
@@ -63,9 +64,9 @@
         <gazebo reference="${robot_name}_link_7">
             <mu1>0.2</mu1>
             <mu2>0.2</mu2>
-            <material>Gazebo/White</material>
+            <material>Gazebo/Grey</material>
         </gazebo>
 
-    <xacro:macro>
+    </xacro:macro>
 
 </robot>

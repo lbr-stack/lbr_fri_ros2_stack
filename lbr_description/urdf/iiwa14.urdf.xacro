@@ -4,7 +4,7 @@
 <robot name="iiwa14" xmlns:xacro="http://www.ros.org/wiki/xacro">
 
     <!-- include the lbr iiwa macro -->
-    <xacro:include filename="$(find iiwa_description)/urdf/iiwa14.xacro"/>
+    <xacro:include filename="$(find lbr_description)/urdf/iiwa14.xacro"/>
 
     <xacro:arg name="hardware_interface" default="PositionJointInterface"/>
     <xacro:arg name="robot_name" default="lbr"/>

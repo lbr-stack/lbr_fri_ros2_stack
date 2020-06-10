@@ -3,8 +3,8 @@
 <!-- top level -->
 <robot name="med14" xmlns:xacro="http://www.ros.org/wiki/xacro">
 
-    <!-- include the lbr iiwa macro -->
-    <xacro:include filename="$(find iiwa_description)/urdf/med14.xacro"/>
+    <!-- include the lbr med macro -->
+    <xacro:include filename="$(find lbr_description)/urdf/med14.xacro"/>
 
     <xacro:arg name="hardware_interface" default="PositionJointInterface"/>
     <xacro:arg name="robot_name" default="lbr"/>
@@ -14,7 +14,7 @@
     <!-- fix to world -->
     <link name="world"/>
 
-    <!-- iiwa -->
+    <!-- med -->
     <xacro:med14 hardware_interface="$(arg hardware_interface)" parent="world" robot_name="$(arg robot_name)">
         <origin xyz="$(arg origin_xyz)" rpy="$(arg origin_rpy)" />
     </xacro:med14>
