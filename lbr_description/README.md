@@ -1,1 +1,0 @@
-The URDF file was extracted via the URDF exporter here https://github.com/syuntoku14/fusion2urdf

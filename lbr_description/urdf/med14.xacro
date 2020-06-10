@@ -1,0 +1,322 @@
+<?xml version="1.0"?>
+
+    <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+        <!-- include gazebo specifications -->
+        <xacro:include filename="${find lbr_description}/urdf/lbr.gazebo.xacro"/>
+
+        <!-- include transmission for ros_control -->
+        <xacro:include filename="${find lbr_description}/urdf/lbr.transmission.xacro"/>
+
+        <!-- some constants -->
+        <xacro:property name="safety_controller_k_pos" value="100" />
+        <xacro:property name="safety_controller_k_vel" value="2" /> 
+        <xacro:property name="joint_damping" value="0.5" />
+        <xacro:property name="max_effort" value="300"/>
+        <xacro:property name="max_velocity" value="10"/>
+
+        <!-- robot as extracted via https://github.com/syuntoku14/fusion2urdf -->
+        <xacro:macro name="med14" params="hardware_interface *origin parent robot_name">
+
+            <!--joint between {parent} and link_0-->
+            <joint name="${parent}_${robot_name}_joint" type="fixed">
+                <xacro:insert_block name="origin"/>
+                <parent link="${parent}"/>
+                <child link="${robot_name}_link_0"/>
+            </joint>
+
+            <link name="${robot_name}_link_0">
+                <inertial>
+                <origin rpy="0 0 0" xyz="-0.0018642104260720833 -9.120393625716289e-09 0.07751683665104403"/>
+                <mass value="46.99016031984989"/>
+                <inertia ixx="0.257284" ixy="-0.0" ixz="-0.004545" iyy="0.262253" iyz="0.0" izz="0.357074"/>
+                </inertial>
+                <visual>
+                <origin rpy="0 0 0" xyz="0 0 0"/>
+                <geometry>
+                    <mesh filename="package://lbr_description/meshes/med14/visual/link_0.stl"/>
+                </geometry>
+                <material name="white">
+                    <color rgba="1.0 1.0 1.0 1.0"/>
+                </material>
+                </visual>
+                <collision>
+                <origin rpy="0 0 0" xyz="0 0 0"/>
+                <geometry>
+                    <mesh filename="package://lbr_description/meshes/med14/collision/link_0.stl"/>
+                </geometry>
+                </collision>
+            </link>
+
+            <joint name="${robot_name}_joint_1" type="revolute">
+                <origin rpy="0 0 0" xyz="0.0 0.0 0.147"/>
+                <parent link="${robot_name}_link_0"/>
+                <child link="${robot_name}_link_1"/>
+                <axis xyz="0.0 0.0 0.01"/>
+                <limit effort="${max_effort}" lower="${-170 * PI / 180}" upper="${170 * PI / 180}" velocity="${max_velocity}"/>
+                <safety_controller 
+                    soft_lower_limit="${-168 * PI / 180}"
+                    soft_upper_limit="${168 * PI / 180}"
+                    k_position="${safety_controller_k_pos}"
+                    k_velocity="${safety_controller_k_vel}"
+                /> 
+                <dynamics damping="${joint_damping}"/>
+            </joint>
+
+            <link name="${robot_name}_link_1">
+                <inertial>
+                <origin rpy="0 0 0" xyz="9.307232415315581e-08 -0.033795431550791004 0.13240370669453896"/>
+                <mass value="32.252499792432545"/>
+                <inertia ixx="0.258906" ixy="-0.0" ixz="-0.0" iyy="0.261201" iyz="0.038666" izz="0.096765"/>
+                </inertial>
+                <visual>
+                <origin rpy="0 0 0" xyz="-0.0 -0.0 -0.147"/>
+                <geometry>
+                    <mesh filename="package://lbr_description/meshes/med14/visual/link_1.stl"/>
+                </geometry>
+                <material name="white">
+                    <color rgba="1.0 1.0 1.0 1.0"/>
+                </material>
+                </visual>
+                <collision>
+                <origin rpy="0 0 0" xyz="-0.0 -0.0 -0.147"/>
+                <geometry>
+                    <mesh filename="package://lbr_description/meshes/med14/collision/link_1.stl"/>
+                </geometry>
+                </collision>
+            </link>
+
+            <joint name="${robot_name}_joint_2" type="revolute">
+                <origin rpy="0 0 0" xyz="0.0 -0.01 0.2125"/>
+                <parent link="${robot_name}_link_1"/>
+                <child link="${robot_name}_link_2"/>
+                <axis xyz="0.0 0.01 0.0"/>
+                <limit effort="${max_effort}" lower="${-120 * PI / 180}" upper="${120 * PI / 180}" velocity="${max_velocity}"/>
+                <safety_controller 
+                    soft_lower_limit="${-118 * PI / 180}"
+                    soft_upper_limit="${118 * PI / 180}"
+                    k_position="${safety_controller_k_pos}"
+                    k_velocity="${safety_controller_k_vel}"
+                /> 
+                <dynamics damping="${joint_damping}"/>
+            </joint>
+
+            <link name="${robot_name}_link_2">
+                <inertial>
+                <origin rpy="0 0 0" xyz="0.0001358226533474577 0.0475476440926152 0.07632205850106144"/>
+                <mass value="34.68757984100769"/>
+                <inertia ixx="0.336472" ixy="-0.0002" ixz="0.000342" iyy="0.329156" iyz="0.06118" izz="0.100748"/>
+                </inertial>
+                <visual>
+                <origin rpy="0 0 0" xyz="-0.0 0.01 -0.3595"/>
+                <geometry>
+                    <mesh filename="package://lbr_description/meshes/med14/visual/link_2.stl"/>
+                </geometry>
+                <material name="white">
+                    <color rgba="1.0 1.0 1.0 1.0"/>
+                </material>
+                </visual>
+                <collision>
+                <origin rpy="0 0 0" xyz="-0.0 0.01 -0.3595"/>
+                <geometry>
+                    <mesh filename="package://lbr_description/meshes/med14/collision/link_2.stl"/>
+                </geometry>
+                </collision>
+            </link>
+
+            <joint name="${robot_name}_joint_3" type="revolute">
+                <origin rpy="0 0 0" xyz="-0.0 0.01 0.228"/>
+                <parent link="${robot_name}_link_2"/>
+                <child link="${robot_name}_link_3"/>
+                <axis xyz="0.0 0.0 0.01"/>
+                <limit effort="${max_effort}" lower="${-170 * PI / 180}" upper="${170 * PI / 180}" velocity="${max_velocity}"/>
+                <safety_controller 
+                    soft_lower_limit="${-168 * PI / 180}"
+                    soft_upper_limit="${168 * PI / 180}"
+                    k_position="${safety_controller_k_pos}"
+                    k_velocity="${safety_controller_k_vel}"
+                /> 
+                <dynamics damping="${joint_damping}"/>
+            </joint>
+
+            <link name="${robot_name}_link_3">
+                <inertial>
+                <origin rpy="0 0 0" xyz="5.689213978259012e-08 0.03491265072974692 0.12310820658934007"/>
+                <mass value="21.104680740321076"/>
+                <inertia ixx="0.132439" ixy="-0.0" ixz="0.0" iyy="0.126397" iyz="-0.023446" izz="0.046954"/>
+                </inertial>
+                <visual>
+                <origin rpy="0 0 0" xyz="0.0 -0.0 -0.5875"/>
+                <geometry>
+                    <mesh filename="package://lbr_description/meshes/med14/visual/link_3.stl"/>
+                </geometry>
+                <material name="white">
+                    <color rgba="1.0 1.0 1.0 1.0"/>
+                </material>
+                </visual>
+                <collision>
+                <origin rpy="0 0 0" xyz="0.0 -0.0 -0.5875"/>
+                <geometry>
+                    <mesh filename="package://lbr_description/meshes/med14/collision/link_3.stl"/>
+                </geometry>
+                </collision>
+            </link>
+
+            <joint name="${robot_name}_joint_4" type="revolute">
+                <origin rpy="0 0 0" xyz="0.0 0.0105 0.192"/>
+                <parent link="${robot_name}_link_3"/>
+                <child link="${robot_name}_link_4"/>
+                <axis xyz="0.0 -0.01 0.0"/>
+                <limit effort="${max_effort}" lower="${-120 * PI / 180}" upper="${120 * PI / 180}" velocity="${max_velocity}"/>
+                <safety_controller 
+                    soft_lower_limit="${-118 * PI / 180}"
+                    soft_upper_limit="${118 * PI / 180}"
+                    k_position="${safety_controller_k_pos}"
+                    k_velocity="${safety_controller_k_vel}"
+                /> 
+                <dynamics damping="${joint_damping}"/>
+            </joint>
+
+            <link name="${robot_name}_link_4">
+                <inertial>
+                <origin rpy="0 0 0" xyz="-3.025185496951432e-08 -0.03979329512420171 0.08694364647762443"/>
+                <mass value="25.13964883334753"/>
+                <inertia ixx="0.197617" ixy="-0.0" ixz="-0.0" iyy="0.187546" iyz="-0.036716" izz="0.060263"/>
+                </inertial>
+                <visual>
+                <origin rpy="0 0 0" xyz="0.0 -0.0105 -0.7795"/>
+                <geometry>
+                    <mesh filename="package://lbr_description/meshes/med14/visual/link_4.stl"/>
+                </geometry>
+                <material name="white">
+                    <color rgba="1.0 1.0 1.0 1.0"/>
+                </material>
+                </visual>
+                <collision>
+                <origin rpy="0 0 0" xyz="0.0 -0.0105 -0.7795"/>
+                <geometry>
+                    <mesh filename="package://lbr_description/meshes/med14/collision/link_4.stl"/>
+                </geometry>
+                </collision>
+            </link>
+
+            <joint name="${robot_name}_joint_5" type="revolute">
+                <origin rpy="0 0 0" xyz="0.0 -0.0105 0.2075"/>
+                <parent link="${robot_name}_link_4"/>
+                <child link="${robot_name}_link_5"/>
+                <axis xyz="0.0 0.0 0.01"/>
+                <limit effort="${max_effort}" lower="${-170 * PI / 180}" upper="${170 * PI / 180}" velocity="${max_velocity}"/>
+                <safety_controller 
+                    soft_lower_limit="${-168 * PI / 180}"
+                    soft_upper_limit="${168 * PI / 180}"
+                    k_position="${safety_controller_k_pos}"
+                    k_velocity="${safety_controller_k_vel}"
+                /> 
+                <dynamics damping="${joint_damping}"/>
+            </joint>
+
+            <link name="${robot_name}_link_5">
+                <inertial>
+                <origin rpy="0 0 0" xyz="3.8871741664391765e-08 -0.029824284088761824 0.07626701716135809"/>
+                <mass value="9.534880920206561"/>
+                <inertia ixx="0.052905" ixy="0.0" ixz="-0.0" iyy="0.044495" iyz="0.017493" izz="0.023991"/>
+                </inertial>
+                <visual>
+                <origin rpy="0 0 0" xyz="-0.0 0.0 -0.987"/>
+                <geometry>
+                    <mesh filename="package://lbr_description/meshes/med14/visual/link_5.stl"/>
+                </geometry>
+                <material name="white">
+                    <color rgba="1.0 1.0 1.0 1.0"/>
+                </material>
+                </visual>
+                <collision>
+                <origin rpy="0 0 0" xyz="-0.0 0.0 -0.987"/>
+                <geometry>
+                    <mesh filename="package://lbr_description/meshes/med14/collision/link_5.stl"/>
+                </geometry>
+                </collision>
+            </link>
+
+            <joint name="${robot_name}_joint_6" type="revolute">
+                <origin rpy="0 0 0" xyz="0.0 -0.0707 0.1925"/>
+                <parent link="${robot_name}_link_5"/>
+                <child link="${robot_name}_link_6"/>
+                <axis xyz="0.0 0.01 0.0"/>
+                <limit effort="${max_effort}" lower="${-120 * PI / 180}" upper="${120 * PI / 180}" velocity="${max_velocity}"/>
+                <safety_controller 
+                    soft_lower_limit="${-118 * PI / 180}"
+                    soft_upper_limit="${118 * PI / 180}"
+                    k_position="${safety_controller_k_pos}"
+                    k_velocity="${safety_controller_k_vel}"
+                /> 
+                <dynamics damping="${joint_damping}"/>
+            </joint>
+
+            <link name="${robot_name}_link_6">
+                <inertial>
+                <origin rpy="0 0 0" xyz="-7.073221484902805e-07 0.07101990943401978 0.004952526180380223"/>
+                <mass value="14.987109331085524"/>
+                <inertia ixx="0.044068" ixy="-0.0" ixz="1e-06" iyy="0.042427" iyz="0.001941" izz="0.028865"/>
+                </inertial>
+                <visual>
+                <origin rpy="0 0 0" xyz="-0.0 0.0707 -1.1795"/>
+                <geometry>
+                    <mesh filename="package://lbr_description/meshes/med14/visual/link_6.stl"/>
+                </geometry>
+                <material name="white">
+                    <color rgba="1.0 1.0 1.0 1.0"/>
+                </material>
+                </visual>
+                <collision>
+                <origin rpy="0 0 0" xyz="-0.0 0.0707 -1.1795"/>
+                <geometry>
+                    <mesh filename="package://lbr_description/meshes/med14/collision/link_6.stl"/>
+                </geometry>
+                </collision>
+            </link>
+
+            <joint name="${robot_name}_joint_7" type="revolute">
+                <origin rpy="0 0 0" xyz="0.0 0.0707 0.091"/>
+                <parent link="${robot_name}_link_6"/>
+                <child link="${robot_name}_link_7"/>
+                <axis xyz="0.0 0.0 0.01"/>
+                <limit effort="${max_effort}" lower="${-175 * PI / 180}" upper="${175 * PI / 180}" velocity="${max_velocity}"/>
+                <safety_controller 
+                    soft_lower_limit="${-173 * PI / 180}"
+                    soft_upper_limit="${173 * PI / 180}"
+                    k_position="${safety_controller_k_pos}"
+                    k_velocity="${safety_controller_k_vel}"
+                /> 
+                <dynamics damping="${joint_damping}"/>
+            </joint>
+
+            <link name="${robot_name}_link_7">
+                <inertial>
+                <origin rpy="0 0 0" xyz="3.121827460016089e-06 -1.635815563460264e-06 0.0137822955218736"/>
+                <mass value="1.617833997596271"/>
+                <inertia ixx="0.001066" ixy="0.0" ixz="-0.0" iyy="0.001066" iyz="0.0" izz="0.001864"/>
+                </inertial>
+                <visual>
+                <origin rpy="0 0 0" xyz="-0.0 -0.0 -1.2705"/>
+                <geometry>
+                    <mesh filename="package://lbr_description/meshes/med14/visual/link_7.stl"/>
+                </geometry>
+                <material name="silver">
+                    <color rgba="0.7 0.7 0.7 1.0"/>
+                </material>
+                </visual>
+                <collision>
+                <origin rpy="0 0 0" xyz="-0.0 -0.0 -1.2705"/>
+                <geometry>
+                    <mesh filename="package://lbr_description/meshes/med14/collision/link_7.stl"/>
+                </geometry>
+                </collision>
+            </link>
+
+            <!-- extensions -->
+            <xacro:iiwa_gazebo robot_name="${robot_name}" />
+            <xacro:iiwa_transmission hardware_interface="${hardware_interface}" robot_name="${robot_name}"/>
+        </xacro:macro>
+
+    </robot>
