@@ -15,14 +15,9 @@ catkin_make
 ```
 
 # Launch
-## Gazebo
+The robot can be launched into via
+```
+source devel/setup.bash
+roslaunch lbr_moveit moveit_planning_execution.launch
+```
 
-
-## Real Robot
-
-
-## Rviz2
-
-
-# Notes
-urdfexport https://github.com/syuntoku14/fusion2urdf
