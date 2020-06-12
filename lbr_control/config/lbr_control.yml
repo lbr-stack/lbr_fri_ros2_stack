@@ -6,42 +6,42 @@ joint_state_controller:
 # Position controllers
 PositionJointInterface_A1_controller:
   type: position_controllers/JointPositionController
-  joint: lbr_joint_1
+  joint: joint_1
 
 PositionJointInterface_A2_controller:
   type: position_controllers/JointPositionController
-  joint: lbr_joint_2
+  joint: joint_2
   
 PositionJointInterface_A3_controller:
   type: position_controllers/JointPositionController
-  joint: lbr_joint_3
+  joint: joint_3
   
 PositionJointInterface_A4_controller:
   type: position_controllers/JointPositionController
-  joint: lbr_joint_4
+  joint: joint_4
   
 PositionJointInterface_A5_controller:
   type: position_controllers/JointPositionController
-  joint: lbr_joint_5
+  joint: joint_5
   
 PositionJointInterface_A6_controller:
   type: position_controllers/JointPositionController
-  joint: lbr_joint_6
+  joint: joint_6
   
 PositionJointInterface_A7_controller:
   type: position_controllers/JointPositionController
-  joint: lbr_joint_7
+  joint: joint_7
 
 PositionJointInterface_trajectory_controller:
   type: position_controllers/JointTrajectoryController
   joints: 
-    - lbr_joint_1
-    - lbr_joint_2
-    - lbr_joint_3
-    - lbr_joint_4
-    - lbr_joint_5
-    - lbr_joint_6
-    - lbr_joint_7
+    - joint_1
+    - joint_2
+    - joint_3
+    - joint_4
+    - joint_5
+    - joint_6
+    - joint_7
 
   constraints:
     goal_time: 0.5                   # Override default
@@ -53,42 +53,42 @@ PositionJointInterface_trajectory_controller:
 # Velocity controllers
 VelocityJointInterface_A1_controller:
   type: velocity_controllers/JointVelocityController
-  joint: lbr_joint_1
+  joint: joint_1
 
 VelocityJointInterface_A2_controller:
   type: velocity_controllers/JointVelocityController
-  joint: lbr_joint_2
+  joint: joint_2
   
 VelocityJointInterface_A3_controller:
   type: velocity_controllers/JointVelocityController
-  joint: lbr_joint_3
+  joint: joint_3
   
 VelocityJointInterface_A4_controller:
   type: velocity_controllers/JointVelocityController
-  joint: lbr_joint_4
+  joint: joint_4
   
 VelocityJointInterface_A5_controller:
   type: velocity_controllers/JointVelocityController
-  joint: lbr_joint_5
+  joint: joint_5
   
 VelocityJointInterface_A6_controller:
   type: velocity_controllers/JointVelocityController
-  joint: lbr_joint_6
+  joint: joint_6
   
 VelocityJointInterface_A7_controller:
   type: velocity_controllers/JointVelocityController
-  joint: lbr_joint_7
+  joint: joint_7
 
 VelocityJointInterface_trajectory_controller:
   type: velocity_controllers/JointTrajectoryController
   joints: 
-    - lbr_joint_1
-    - lbr_joint_2
-    - lbr_joint_3
-    - lbr_joint_4
-    - lbr_joint_5
-    - lbr_joint_6
-    - lbr_joint_7
+    - joint_1
+    - joint_2
+    - joint_3
+    - joint_4
+    - joint_5
+    - joint_6
+    - joint_7
 
   constraints:
     goal_time: 0.5                   # Override default

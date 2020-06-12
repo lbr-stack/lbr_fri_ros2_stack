@@ -9,5 +9,7 @@
   <buildtool_depend>catkin</buildtool_depend>
 
   <depend>controller_manager</depend>
+  <build_depend>rospy</build_depend>
+  <exec_depend>rospy</exec_depend>
 
 </package>
