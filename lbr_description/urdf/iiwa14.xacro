@@ -316,7 +316,7 @@
         </link>
 
         <!-- extensions -->
-        <xacro:iiwa_gazebo/>
+        <xacro:iiwa_gazebo robot_name="${robot_name}"/>
         <xacro:lbr_transmission hardware_interface="${hardware_interface}" robot_name="${robot_name}"/>
     </xacro:macro>
 
