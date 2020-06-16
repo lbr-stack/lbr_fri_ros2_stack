@@ -23,10 +23,10 @@
         <joint name="${parent}_${robot_name}_joint" type="fixed">
             <xacro:insert_block name="origin"/>
             <parent link="${parent}"/>
-            <child link="link_0"/>
+            <child link="${robot_name}_link_0"/>
         </joint>
 
-        <link name="link_0">
+        <link name="${robot_name}_link_0">
             <inertial>
             <origin rpy="0 0 0" xyz="-0.0018642104260720833 -9.120393625716289e-09 0.07751683665104403"/>
             <mass value="46.99016031984989"/>
@@ -49,10 +49,10 @@
             </collision>
         </link>
 
-        <joint name="joint_1" type="revolute">
+        <joint name="${robot_name}_joint_1" type="revolute">
             <origin rpy="0 0 0" xyz="0.0 0.0 0.147"/>
-            <parent link="link_0"/>
-            <child link="link_1"/>
+            <parent link="${robot_name}_link_0"/>
+            <child link="${robot_name}_link_1"/>
             <axis xyz="0.0 0.0 0.01"/>
             <limit effort="${max_effort}" lower="${-170 * PI / 180}" upper="${170 * PI / 180}" velocity="${max_velocity}"/>
             <safety_controller 
@@ -64,7 +64,7 @@
             <dynamics damping="${joint_damping}"/>
         </joint>
 
-        <link name="link_1">
+        <link name="${robot_name}_link_1">
             <inertial>
             <origin rpy="0 0 0" xyz="9.307232415315581e-08 -0.033795431550791004 0.13240370669453896"/>
             <mass value="32.252499792432545"/>
@@ -87,10 +87,10 @@
             </collision>
         </link>
 
-        <joint name="joint_2" type="revolute">
+        <joint name="${robot_name}_joint_2" type="revolute">
             <origin rpy="0 0 0" xyz="0.0 -0.01 0.2125"/>
-            <parent link="link_1"/>
-            <child link="link_2"/>
+            <parent link="${robot_name}_link_1"/>
+            <child link="${robot_name}_link_2"/>
             <axis xyz="0.0 0.01 0.0"/>
             <limit effort="${max_effort}" lower="${-120 * PI / 180}" upper="${120 * PI / 180}" velocity="${max_velocity}"/>
             <safety_controller 
@@ -102,7 +102,7 @@
             <dynamics damping="${joint_damping}"/>
         </joint>
 
-        <link name="link_2">
+        <link name="${robot_name}_link_2">
             <inertial>
             <origin rpy="0 0 0" xyz="0.0001358226533474577 0.0475476440926152 0.07632205850106144"/>
             <mass value="34.68757984100769"/>
@@ -125,10 +125,10 @@
             </collision>
         </link>
 
-        <joint name="joint_3" type="revolute">
+        <joint name="${robot_name}_joint_3" type="revolute">
             <origin rpy="0 0 0" xyz="-0.0 0.01 0.228"/>
-            <parent link="link_2"/>
-            <child link="link_3"/>
+            <parent link="${robot_name}_link_2"/>
+            <child link="${robot_name}_link_3"/>
             <axis xyz="0.0 0.0 0.01"/>
             <limit effort="${max_effort}" lower="${-170 * PI / 180}" upper="${170 * PI / 180}" velocity="${max_velocity}"/>
             <safety_controller 
@@ -140,7 +140,7 @@
             <dynamics damping="${joint_damping}"/>
         </joint>
 
-        <link name="link_3">
+        <link name="${robot_name}_link_3">
             <inertial>
             <origin rpy="0 0 0" xyz="5.689213978259012e-08 0.03491265072974692 0.12310820658934007"/>
             <mass value="21.104680740321076"/>
@@ -163,10 +163,10 @@
             </collision>
         </link>
 
-        <joint name="joint_4" type="revolute">
+        <joint name="${robot_name}_joint_4" type="revolute">
             <origin rpy="0 0 0" xyz="0.0 0.0105 0.192"/>
-            <parent link="link_3"/>
-            <child link="link_4"/>
+            <parent link="${robot_name}_link_3"/>
+            <child link="${robot_name}_link_4"/>
             <axis xyz="0.0 -0.01 0.0"/>
             <limit effort="${max_effort}" lower="${-120 * PI / 180}" upper="${120 * PI / 180}" velocity="${max_velocity}"/>
             <safety_controller 
@@ -178,7 +178,7 @@
             <dynamics damping="${joint_damping}"/>
         </joint>
 
-        <link name="link_4">
+        <link name="${robot_name}_link_4">
             <inertial>
             <origin rpy="0 0 0" xyz="-3.025185496951432e-08 -0.03979329512420171 0.08694364647762443"/>
             <mass value="25.13964883334753"/>
@@ -201,10 +201,10 @@
             </collision>
         </link>
 
-        <joint name="joint_5" type="revolute">
+        <joint name="${robot_name}_joint_5" type="revolute">
             <origin rpy="0 0 0" xyz="0.0 -0.0105 0.2075"/>
-            <parent link="link_4"/>
-            <child link="link_5"/>
+            <parent link="${robot_name}_link_4"/>
+            <child link="${robot_name}_link_5"/>
             <axis xyz="0.0 0.0 0.01"/>
             <limit effort="${max_effort}" lower="${-170 * PI / 180}" upper="${170 * PI / 180}" velocity="${max_velocity}"/>
             <safety_controller 
@@ -216,7 +216,7 @@
             <dynamics damping="${joint_damping}"/>
         </joint>
 
-        <link name="link_5">
+        <link name="${robot_name}_link_5">
             <inertial>
             <origin rpy="0 0 0" xyz="3.8871741664391765e-08 -0.029824284088761824 0.07626701716135809"/>
             <mass value="9.534880920206561"/>
@@ -239,10 +239,10 @@
             </collision>
         </link>
 
-        <joint name="joint_6" type="revolute">
+        <joint name="${robot_name}_joint_6" type="revolute">
             <origin rpy="0 0 0" xyz="0.0 -0.0707 0.1925"/>
-            <parent link="link_5"/>
-            <child link="link_6"/>
+            <parent link="${robot_name}_link_5"/>
+            <child link="${robot_name}_link_6"/>
             <axis xyz="0.0 0.01 0.0"/>
             <limit effort="${max_effort}" lower="${-120 * PI / 180}" upper="${120 * PI / 180}" velocity="${max_velocity}"/>
             <safety_controller 
@@ -254,7 +254,7 @@
             <dynamics damping="${joint_damping}"/>
         </joint>
 
-        <link name="link_6">
+        <link name="${robot_name}_link_6">
             <inertial>
             <origin rpy="0 0 0" xyz="-7.073221484902805e-07 0.07101990943401978 0.004952526180380223"/>
             <mass value="14.987109331085524"/>
@@ -277,10 +277,10 @@
             </collision>
         </link>
 
-        <joint name="joint_7" type="revolute">
+        <joint name="${robot_name}_joint_7" type="revolute">
             <origin rpy="0 0 0" xyz="0.0 0.0707 0.091"/>
-            <parent link="link_6"/>
-            <child link="link_7"/>
+            <parent link="${robot_name}_link_6"/>
+            <child link="${robot_name}_link_7"/>
             <axis xyz="0.0 0.0 0.01"/>
             <limit effort="${max_effort}" lower="${-175 * PI / 180}" upper="${175 * PI / 180}" velocity="${max_velocity}"/>
             <safety_controller 
@@ -292,7 +292,7 @@
             <dynamics damping="${joint_damping}"/>
         </joint>
 
-        <link name="link_7">
+        <link name="${robot_name}_link_7">
             <inertial>
             <origin rpy="0 0 0" xyz="3.121827460016089e-06 -1.635815563460264e-06 0.0137822955218736"/>
             <mass value="1.617833997596271"/>
@@ -315,13 +315,13 @@
             </collision>
         </link>
 
-        <joint name="joint_ee" type="fixed">
-            <parent link="$link_7"/>
-            <child link="$link_ee"/>
+        <joint name="${robot_name}_joint_ee" type="fixed">
+            <parent link="${robot_name}_link_7"/>
+            <child link="${robot_name}_link_ee"/>
             <origin xyz="0 0 0.045" rpy="0 0 0"/>
         </joint>
         
-        <link name="$link_ee">
+        <link name="${robot_name}_link_ee">
         </link>
 
         <!-- extensions -->

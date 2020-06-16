@@ -12,56 +12,56 @@
         </gazebo>
 
         <!-- link 0 -->
-        <gazebo reference="link_0">
+        <gazebo reference="${robot_name}_link_0">
             <mu1>0.2</mu1>
             <mu2>0.2</mu2>
             <material>Gazebo/White</material>
         </gazebo>
 
         <!-- link 1 -->
-        <gazebo reference="link_1">
+        <gazebo reference="${robot_name}_link_1">
             <mu1>0.2</mu1>
             <mu2>0.2</mu2>
             <material>Gazebo/White</material>
         </gazebo>
 
         <!-- link 2 -->
-        <gazebo reference="link_2">
+        <gazebo reference="${robot_name}_link_2">
             <mu1>0.2</mu1>
             <mu2>0.2</mu2>
             <material>Gazebo/White</material>
         </gazebo>
 
         <!-- link 3 -->
-        <gazebo reference="link_3">
+        <gazebo reference="${robot_name}_link_3">
             <mu1>0.2</mu1>
             <mu2>0.2</mu2>
             <material>Gazebo/White</material>
         </gazebo>
 
         <!-- link 4 -->
-        <gazebo reference="link_4">
+        <gazebo reference="${robot_name}_link_4">
             <mu1>0.2</mu1>
             <mu2>0.2</mu2>
             <material>Gazebo/White</material>
         </gazebo>
 
         <!-- link 5 -->
-        <gazebo reference="link_5">
+        <gazebo reference="${robot_name}_link_5">
             <mu1>0.2</mu1>
             <mu2>0.2</mu2>
             <material>Gazebo/White</material>
         </gazebo>
 
         <!-- link 6 -->
-        <gazebo reference="link_6">
+        <gazebo reference="${robot_name}_link_6">
             <mu1>0.2</mu1>
             <mu2>0.2</mu2>
             <material>Gazebo/White</material>
         </gazebo>
 
         <!-- link 7 -->
-        <gazebo reference="link_7">
+        <gazebo reference="${robot_name}_link_7">
             <mu1>0.2</mu1>
             <mu2>0.2</mu2>
             <material>Gazebo/Grey</material>
