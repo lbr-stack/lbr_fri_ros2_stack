@@ -4,11 +4,11 @@ controller_list:
     type: FollowJointTrajectory
     default: true
     joints: 
-      - joint_1
-      - joint_2
-      - joint_3
-      - joint_4
-      - joint_5
-      - joint_6
-      - joint_7
+      - lbr_joint_1
+      - lbr_joint_2
+      - lbr_joint_3
+      - lbr_joint_4
+      - lbr_joint_5
+      - lbr_joint_6
+      - lbr_joint_7
       
