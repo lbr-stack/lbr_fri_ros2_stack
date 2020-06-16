@@ -315,6 +315,15 @@
             </collision>
         </link>
 
+        <joint name="joint_ee" type="fixed">
+            <parent link="$link_7"/>
+            <child link="$link_ee"/>
+            <origin xyz="0 0 0.045" rpy="0 0 0"/>
+        </joint>
+        
+        <link name="$link_ee">
+        </link>
+
         <!-- extensions -->
         <xacro:iiwa_gazebo robot_name="${robot_name}"/>
         <xacro:lbr_transmission hardware_interface="${hardware_interface}" robot_name="${robot_name}"/>
