@@ -24,4 +24,11 @@
         <!-- <include file="$(find lbr_moveit)/launch/moveit_rviz.launch"/> -->
     </group>
 
+    <!-- Spawn controller - simple pose controller -->
+    <group ns="$(arg robot_name)">
+
+        <include file="$(find lbr_control)/launch/cartesian_pose.launch"/>
+
+    </group>        
+
 </launch>
