@@ -6,7 +6,7 @@
     
     <arg name="hardware_interface" default="PositionJointInterface"/>
     <arg name="controllers" default="joint_state_controller PositionJointInterface_trajectory_controller"/>
-    <arg name="robot_name" default="med"/>
+    <arg name="robot_name" default="lbr"/>
     <arg name="model" default="med7"/>
     <arg name="joint_state_frequency" default="100"/>
     <arg name="robot_state_frequency" default="100"/>
