@@ -1,6 +1,6 @@
 # Publish all joint states -----------------------------------
 joint_state_controller:
-  type: lbr_joint_state_controller/JointStateController
+  type: joint_state_controller/JointStateController
   publish_rate: 50  
 
 # Position controllers
