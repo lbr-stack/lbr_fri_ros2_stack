@@ -22,6 +22,7 @@
   <arg name="capabilities" default=""/>
   <arg name="disable_capabilities" default=""/>
   <arg name="hardware_interface" default="PositionJointInterface"/>
+  <arg name="robot_name" default="lbr"/>
   <arg name="model" default="med7"/>
   <!-- load these non-default MoveGroup capabilities (space seperated) -->
   <!--
@@ -42,7 +43,9 @@
   <arg name="load_robot_description" default="true" />
   <!-- load URDF, SRDF and joint_limits configuration -->
   <include file="$(find lbr_moveit)/launch/planning_context.launch">
-    <arg name="load_robot_description" value="$(arg load_robot_description)" />
+    <arg name="load_robot_description" value="$(arg load_robot_description)" />    
+    <arg name="hardware_interface" value="$(arg hardware_interface)"/>
+    <arg name="robot_name" value="$(arg robot_name)"/>
     <arg name="model" value="$(arg model)"/>
   </include>
 

@@ -19,6 +19,7 @@
     <group ns="$(arg robot_name)">
         <include file="$(find lbr_moveit)/launch/move_group.launch">
             <arg name="hardware_interface" value="$(arg hardware_interface)"/>
+            <arg name="robot_name" default="lbr"/>
             <arg name="model" value="$(arg model)"/>
         </include>
         <!-- <include file="$(find lbr_moveit)/launch/moveit_rviz.launch"/> -->

@@ -90,6 +90,15 @@ VelocityJointInterface_trajectory_controller:
     - lbr_joint_6
     - lbr_joint_7
 
+  gains:
+    lbr_joint_1: {p: 100,  d: 1, i: 1, i_clamp: 30}
+    lbr_joint_2: {p: 100,  d: 1, i: 1, i_clamp: 30}
+    lbr_joint_3: {p: 100,  d: 1, i: 1, i_clamp: 30}
+    lbr_joint_4: {p: 100,  d: 1, i: 1, i_clamp: 30}
+    lbr_joint_5: {p: 100,  d: 1, i: 1, i_clamp: 30}
+    lbr_joint_6: {p: 100,  d: 1, i: 1, i_clamp: 30}
+    lbr_joint_7: {p: 100,  d: 1, i: 1, i_clamp: 30}
+
   constraints:
     goal_time: 0.5                   # Override default
 

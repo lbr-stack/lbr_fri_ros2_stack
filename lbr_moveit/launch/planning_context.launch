@@ -1,13 +1,22 @@
 <launch>
   <!-- By default we do not overwrite the URDF. Change the following to true to change the default behavior -->
   <arg name="load_robot_description" default="false"/>
+
+  <arg name="hardware_interface" default="PositionJointInterface"/>
+  <arg name="robot_name" default="lbr"/>
   <arg name="model" default="med7"/>
+
 
   <!-- The name of the parameter under which the URDF is loaded -->
   <arg name="robot_description" default="robot_description"/>
 
-  <!-- Load universal robot description format (URDF) -->
-  <param if="$(arg load_robot_description)" name="$(arg robot_description)" command="xacro  '$(find lbr_description)/urdf/$(arg model).urdf.xacro'"/>
+  <!-- Loads the URDF with the given hardware interface and robot name into the ROS Parameter Server -->
+  <group if="$(arg load_robot_description)">
+    <include file="$(find lbr_description)/launch/$(arg model)_upload.launch">
+      <arg name="hardware_interface" value="$(arg hardware_interface)"/>
+      <arg name="robot_name" value="$(arg robot_name)" />
+    </include>
+  </group>
 
   <!-- The semantic description that corresponds to the URDF -->
   <param name="$(arg robot_description)_semantic" textfile="$(find lbr_moveit)/config/$(arg model).srdf" />

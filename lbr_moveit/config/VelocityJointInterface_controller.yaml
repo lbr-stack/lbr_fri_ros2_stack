@@ -1,4 +1,3 @@
-
 controller_list:
   - name: VelocityJointInterface_trajectory_controller
     action_ns: follow_joint_trajectory
