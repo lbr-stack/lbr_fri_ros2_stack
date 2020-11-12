@@ -1,4 +1,4 @@
-package fri_ros;
+package com.kuka.connectivity.fri.fri_ros;
 
 import static com.kuka.roboticsAPI.motionModel.BasicMotions.ptp;
 import static com.kuka.roboticsAPI.motionModel.BasicMotions.positionHold;
