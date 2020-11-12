@@ -7,25 +7,36 @@ The first steps allow you to use the robot, and to try out some [examples](#exam
 ## Prerequisites
 ### Robot Operating System and Gazebo
 Make sure the Robot Operating System [ROS](http://wiki.ros.org/melodic/Installation) is installed. For simulation support, install [Gazebo](http://gazebosim.org/tutorials?tut=install_ubuntu).
-### Synchronize Client Application (optional)
-
-#### Sunrise Workbench (optional)
-Install Sunrise Workbench on your computer. This step requires Windows as OS. Sunrise Workbench is KUKA's Java IDE that allows you to program the LBR. 
-* Download it from the [RViM shared folder](https://emckclac.sharepoint.com/:u:/s/MT-BMEIS-RVIM/ETBf6gp3Ko5EvtJVziR8MZ4BLdeX8ysF13jTVmVreq0iZA?e=XJyagD) 
-* Extract the .zip file and run the Sunrise Workbench Setup
-* Follow the install instructions
-
 ### Build Fast Robot Interface ROS
-Source ROS e.g. `source /opt/ros/melodic/setup.bash`
+Source your ROS distribution ie in a terminal 
 ```shell
-mkdir -p fri_ws/src
-cd fri_ws/src
+source /opt/ros/melodic/setup.bash` # might differ
+```
+Then
+```shell
+mkdir -p fri_ros_ws/src && cd fri_ros_ws/src
 git clone --recursive https://github.com/KCL-BMEIS/fri_ros.git
 cd ..
 rosdep install --rosdistro melodic --ignore-src --from-paths src
 catkin_make
 ```
-
+### Setup the Controller
+The controller (Sunrise Cabinet) receives commands from the ROS machine via the FRI. Therefore, the server application has to be pushed onto the Sunrise Cabinet.
+- Connect an ethernet cable to port X66 on the Sunrise Cabinet
+- By default, the controller's IP address is `172.31.1.147`, set your IP to `172.31.1.148` and ping the KUKA Sunrise Cabinet
+- [Install Sunrise Workbench](#####install-sunrise-workbench) (Windows required)
+- [Synchronize the Server Application](#####synchronize-the-server-application)
+#### Install Sunrise Workbench
+This step requires Windows as OS. Sunrise Workbench is KUKA's Java IDE that allows you to program the LBR. 
+* Download it from the [RViM shared folder](https://emckclac.sharepoint.com/:u:/s/MT-BMEIS-RVIM/ETBf6gp3Ko5EvtJVziR8MZ4BLdeX8ysF13jTVmVreq0iZA?e=XJyagD) 
+* Extract the .zip file and run the Sunrise Workbench Setup
+* Follow the install instructions
+#### Synchronize the Server Application
+To push the server application that handles the communication to the robot
+ - Create a new project in Sunrise Workbench, File -> New -> Sunrise project
+ - Copy the contents of [server](server) to the `src` folder inside the Sunrise project 
+ - In the Software tab of the StationSetup.cat, tick the `Fast Robot Interface Extension` box
+ - Install settings to the controller, in the Installation tab of the StationSetup.cat, press install
 ## Examples
 
 ### Launch
