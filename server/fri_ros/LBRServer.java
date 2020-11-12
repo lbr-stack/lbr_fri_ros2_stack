@@ -1,4 +1,4 @@
-package com.kuka.connectivity.fri.example;
+package fri_ros;
 
 import static com.kuka.roboticsAPI.motionModel.BasicMotions.ptp;
 import static com.kuka.roboticsAPI.motionModel.BasicMotions.positionHold;
@@ -17,7 +17,7 @@ import com.kuka.roboticsAPI.motionModel.controlModeModel.PositionControlMode;
 /**
  * Creates a FRI Session.
  */
-public class LBRClient extends RoboticsAPIApplication
+public class LBRServer extends RoboticsAPIApplication
 {
     private Controller _lbrController;
     private LBR _lbr;
@@ -82,7 +82,7 @@ public class LBRClient extends RoboticsAPIApplication
      */
     public static void main(final String[] args)
     {
-        final LBRClient app = new LBRClient();
+        final LBRServer app = new LBRServer();
         app.runApplication();
     }
 
