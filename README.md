@@ -37,6 +37,7 @@ To push the server application that handles the communication to the robot
  - Copy the contents of [server](server) to the `src` folder inside the Sunrise project 
  - In the Software tab of the StationSetup.cat, tick the `Fast Robot Interface Extension` box
  - Install settings to the controller, in the Installation tab of the StationSetup.cat, press install
+ - Synchronize the Sunrise project
 ## Examples
 
 ### Launch
