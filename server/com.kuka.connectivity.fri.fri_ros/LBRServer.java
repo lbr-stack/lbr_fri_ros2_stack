@@ -1,6 +1,5 @@
 package com.kuka.connectivity.fri.fri_ros;
 
-import static com.kuka.roboticsAPI.motionModel.BasicMotions.ptp;
 import static com.kuka.roboticsAPI.motionModel.BasicMotions.positionHold;
 
 import java.util.concurrent.TimeUnit;
@@ -63,9 +62,6 @@ public class LBRServer extends RoboticsAPIApplication
         }
 
         getLogger().info("FRI connection established.");
-
-        // move to start pose
-        _lbr.move(ptp(.0, .0, .0, .0, .0, .0, .0));
 
         // start positionHold with overlay
         _lbr.move(positionHold(_controlMode, -1, TimeUnit.SECONDS).addMotionOverlay(jointOverlay));
