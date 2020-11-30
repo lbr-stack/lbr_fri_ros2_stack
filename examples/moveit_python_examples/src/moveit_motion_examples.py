@@ -8,7 +8,7 @@ import copy
 
 # see other examples http://docs.ros.org/en/kinetic/api/moveit_tutorials/html/doc/move_group_python_interface/move_group_python_interface_tutorial.html
 if __name__ == '__main__':
-    rospy.init_node('moveit_ptp_publisher')
+    rospy.init_node('moveit_motion_examples')
 
     name = 'arm'
     group = moveit_commander.MoveGroupCommander(name)
