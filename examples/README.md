@@ -8,7 +8,7 @@ source devel/setup.bash # source this package
 ```
 Launch the robot
 ```shell
-roslaunch lbr_moveit moveit_planning_execution.launch sim:=true # false by default
+roslaunch lbr_moveit moveit_planning_execution.launch sim:=true # true by default
 ```
 In another terminal, launch the moveit example
 ```shell
