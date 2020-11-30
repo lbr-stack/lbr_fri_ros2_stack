@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>moveit_python_examples</name>
+  <version>0.0.0</version>
+  <description>The moveit_python_examples package</description>
+
+  <maintainer email="m.huber_1994@hotmail.de">martin</maintainer>
+  <license>BSD</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>rospy</build_depend>
+  <build_export_depend>rospy</build_export_depend>
+  <exec_depend>rospy</exec_depend>
+
+</package>

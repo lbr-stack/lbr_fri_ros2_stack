@@ -1,0 +1,3 @@
+<launch>
+    <node pkg="moveit_python_examples" name="moveit_motion_examples" type="moveit_motion_examples.py" ns="lbr" output="screen"/>
+</launch>
