@@ -1,3 +1,0 @@
-<launch>
-    <node pkg="moveit_python_examples" name="moveit_ptp_node" type="moveit_ptp_node.py" ns='lbr'/> 
-</launch>
