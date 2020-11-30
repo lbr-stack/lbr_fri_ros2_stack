@@ -14,4 +14,4 @@ In another terminal, launch the moveit example
 ```shell
 roslaunch moveit_python_examples moveit_motion_examples.launch
 ```
-The last command launches a ROS node via a [launch file](launch/moveit_motion_examples.launch). The [ROS node](src/moveit_motion_examples.py) then controls the robot via MoveIt!.
+The last command launches a ROS node via a [launch file](moveit_python_examples/launch/moveit_motion_examples.launch). The [ROS node](moveit_python_examples/src/moveit_motion_examples.py) then controls the robot via MoveIt!.
