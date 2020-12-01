@@ -1,8 +1,8 @@
 joints:
-  - A1
-  - A2
-  - A3
-  - A4
-  - A5
-  - A6
-  - A7
+  - lbr_joint_1
+  - lbr_joint_2
+  - lbr_joint_3
+  - lbr_joint_4
+  - lbr_joint_5
+  - lbr_joint_6
+  - lbr_joint_7

@@ -15,6 +15,15 @@
         </include>
     </group>
 
+    <!-- load real robot -->
+    <group unless="$(arg sim)" ns="$(arg robot_name)">
+        <include file="$(find lbr_fri_ros)/launch/lbr_fri_ros.launch">
+            <arg name="hardware_interface" value="$(arg hardware_interface)" />
+            <arg name="robot_name" value="$(arg robot_name)" />
+            <arg name="model" value="$(arg model)"/>
+        </include>
+    </group>
+
     <!-- load movegroup -->
     <group ns="$(arg robot_name)">
         <include file="$(find lbr_moveit)/launch/move_group.launch">
@@ -22,14 +31,14 @@
             <arg name="robot_name" default="lbr"/>
             <arg name="model" value="$(arg model)"/>
         </include>
-        <!-- <include file="$(find lbr_moveit)/launch/moveit_rviz.launch"/> -->
+        <include file="$(find lbr_moveit)/launch/moveit_rviz.launch"/>
     </group>
 
     <!-- Spawn controller - simple pose controller -->
-    <group ns="$(arg robot_name)">
+    <!-- <group ns="$(arg robot_name)">
 
         <include file="$(find lbr_control)/launch/cartesian_pose.launch"/>
 
-    </group>        
+    </group>         -->
 
 </launch>
