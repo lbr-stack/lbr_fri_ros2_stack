@@ -1,6 +1,5 @@
 #pragma once
 
-#include <mutex>
 #include <lbr_msgs/LBRState.h>
 
 /**
@@ -17,15 +16,13 @@ class LBR {
          * @brief Returns the current state of this LBR
         **/
         inline auto get_current_state() -> const lbr_msgs::LBRState& {
-            std::lock_guard<std::mutex> lk(this->current_mutex_);
             return this->current_state_;
         };
 
         /**
          * @brief Returns the commanded state of this LBR
         **/
-        inline auto get_commanded_state() -> const lbr_msgs::LBRState& {
-            std::lock_guard<std::mutex> lk(this->commanded_mutex_);       
+        inline auto get_commanded_state() -> const lbr_msgs::LBRState& {    
             return this->commanded_state_;
         };
 
@@ -33,23 +30,19 @@ class LBR {
          * @brief Sets the current state of this LBR
         **/
         auto set_current_state(const lbr_msgs::LBRState& s) -> void {
-            std::lock_guard<std::mutex> lk(this->current_mutex_);
             this->current_state_ = s;
         };
         /**
          * @brief Sets the commanded state of this LBR
         **/
-        auto set_commanded_state(const lbr_msgs::LBRState& s) {
-            std::lock_guard<std::mutex> lk(this->commanded_mutex_);
+        auto set_commanded_state(const lbr_msgs::LBRState& s) -> void {
             this->commanded_state_ = s;
         };
 
     private:
         // current
-        std::mutex current_mutex_;
         lbr_msgs::LBRState current_state_;
 
         // commanded
-        std::mutex commanded_mutex_;
         lbr_msgs::LBRState commanded_state_;
 };
