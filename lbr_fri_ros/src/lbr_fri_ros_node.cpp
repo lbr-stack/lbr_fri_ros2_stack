@@ -23,6 +23,12 @@ int main(int argc, char** argv) {
     KUKA::FRI::UdpConnection connection;
     KUKA::FRI::ClientApplication app(connection, lbr_client);
     app.connect(30200 /*default port id*/, NULL /*host name*/);
+    bool success = true;
+
+    ROS_INFO("Awaiting good or excellent connection...");
+    while (lbr_client.robotState().getConnectionQuality() < KUKA::FRI::EConnectionQuality::GOOD) {
+        success = app.step();
+    }
 
     LBRHardwareInterface lbr_hw(lbr);
     if (!lbr_hw.init(nh)) {
@@ -33,17 +39,18 @@ int main(int argc, char** argv) {
     controller_manager::ControllerManager cm(&lbr_hw, nh);
 
     ros::Time time = ros::Time::now();
+    auto period = ros::Duration(lbr_client.robotState().getSampleTime());
 
-    bool success = true;
     while (success && ros::ok()) {
-        auto period = ros::Duration(ros::Time::now() - time);
-        time = ros::Time::now();
-
         success = app.step();
 
-        lbr_hw.read();
-        cm.update(time, period);
-        lbr_hw.write();
+        if (success) {
+            time = ros::Time::now();
+
+            lbr_hw.read();
+            cm.update(time, period);
+            lbr_hw.write();
+        }
     }
 
     app.disconnect();

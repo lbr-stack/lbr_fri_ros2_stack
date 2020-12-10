@@ -1,7 +1,7 @@
 # Publish all joint states -----------------------------------
 joint_state_controller:
   type: joint_state_controller/JointStateController
-  publish_rate: 50  
+  publish_rate: 200 
 
 # Position controllers
 PositionJointInterface_A1_controller:
@@ -46,8 +46,8 @@ PositionJointInterface_trajectory_controller:
   constraints:
     goal_time: 0.5                   # Override default
 
-  state_publish_rate:  25            # Override default
-  action_monitor_rate: 30            # Override default
+  state_publish_rate:  200           # Override default
+  action_monitor_rate: 200           # Override default
   stop_trajectory_duration: 0        # Override default
 
 # Velocity controllers
@@ -102,7 +102,7 @@ VelocityJointInterface_trajectory_controller:
   constraints:
     goal_time: 0.5                   # Override default
 
-  state_publish_rate:  25            # Override default
-  action_monitor_rate: 30            # Override default
+  state_publish_rate:  200           # Override default
+  action_monitor_rate: 200           # Override default
   stop_trajectory_duration: 0        # Override default
 
