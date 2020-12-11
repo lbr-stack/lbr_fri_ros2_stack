@@ -10,6 +10,12 @@
 #include <lbr_client.h>
 #include <lbr.h>
 
+void control_loop(controller_manager::ControllerManager& cm, LBRHardwareInterface& lbr_hw, ros::Time& time, ros::Duration& period, bool state_change=true) {
+    lbr_hw.read();
+    cm.update(time, period, state_change);
+    lbr_hw.write();
+}
+
 int main(int argc, char** argv) {
 
     ros::init(argc, argv, "lbr_fri_ros");
@@ -25,11 +31,6 @@ int main(int argc, char** argv) {
     app.connect(30200 /*default port id*/, NULL /*host name*/);
     bool success = true;
 
-    ROS_INFO("Awaiting good or excellent connection...");
-    while (lbr_client.robotState().getConnectionQuality() < KUKA::FRI::EConnectionQuality::GOOD) {
-        success = app.step();
-    }
-
     LBRHardwareInterface lbr_hw(lbr);
     if (!lbr_hw.init(nh)) {
         ROS_ERROR("Failed to initialize HardwareInterface.");
@@ -39,17 +40,30 @@ int main(int argc, char** argv) {
     controller_manager::ControllerManager cm(&lbr_hw, nh);
 
     ros::Time time = ros::Time::now();
-    auto period = ros::Duration(lbr_client.robotState().getSampleTime());
+    auto last_state = KUKA::FRI::ESessionState::MONITORING_WAIT;
 
     while (success && ros::ok()) {
         success = app.step();
 
-        if (success) {
-            time = ros::Time::now();
-
-            lbr_hw.read();
-            cm.update(time, period);
-            lbr_hw.write();
+        auto period = ros::Duration(lbr_client.robotState().getSampleTime());
+        auto current_state = lbr_client.robotState().getSessionState();
+        switch (current_state) {
+            case KUKA::FRI::ESessionState::MONITORING_WAIT: case KUKA::FRI::ESessionState::MONITORING_READY:
+                time = ros::Time::now();
+                lbr->set_commanded_state(lbr->get_current_state());
+                control_loop(cm, lbr_hw, time, period, (last_state != current_state));
+                last_state = current_state;
+                break;
+            case KUKA::FRI::ESessionState::COMMANDING_WAIT: case KUKA::FRI::ESessionState::COMMANDING_ACTIVE:
+                if (success) {
+                    time = ros::Time::now();
+                    control_loop(cm, lbr_hw, time, period, (last_state != current_state));
+                    last_state = current_state;
+                }
+                break;     
+            case KUKA::FRI::ESessionState::IDLE:
+                success = false;
+                break;  
         }
     }
 
