@@ -12,7 +12,8 @@
     <xacro:property name="PI" value="3.1415926535897931"/>
     <xacro:property name="safety_controller_k_pos" value="100"/>
     <xacro:property name="safety_controller_k_vel" value="2"/> 
-    <xacro:property name="joint_damping" value="0.5"/>
+    <xacro:property name="joint_damping" value="10.0"/>
+    <xacro:property name="joint_friction" value="0.1"/>
     <xacro:property name="max_effort" value="300"/>
     <xacro:property name="max_velocity" value="10"/>
 
@@ -23,7 +24,7 @@
         <joint name="${parent}_${robot_name}_joint" type="fixed">
             <xacro:insert_block name="origin"/>
             <parent link="${parent}"/>
-            <child link="${robot_name}_link_0"/>
+            <child link="${robot_name}_link_0"/>=
         </joint>
 
         <link name="${robot_name}_link_0">
@@ -61,7 +62,7 @@
                 k_position="${safety_controller_k_pos}"
                 k_velocity="${safety_controller_k_vel}"
             /> 
-            <dynamics damping="${joint_damping}"/>
+            <dynamics damping="${joint_damping}" friction="${joint_friction}"/>
         </joint>
 
         <link name="${robot_name}_link_1">
@@ -99,7 +100,7 @@
                 k_position="${safety_controller_k_pos}"
                 k_velocity="${safety_controller_k_vel}"
             /> 
-            <dynamics damping="${joint_damping}"/>
+            <dynamics damping="${joint_damping}" friction="${joint_friction}"/>
         </joint>
 
         <link name="${robot_name}_link_2">
@@ -137,7 +138,7 @@
                 k_position="${safety_controller_k_pos}"
                 k_velocity="${safety_controller_k_vel}"
             /> 
-            <dynamics damping="${joint_damping}"/>
+            <dynamics damping="${joint_damping}" friction="${joint_friction}"/>
         </joint>
 
         <link name="${robot_name}_link_3">
@@ -175,7 +176,7 @@
                 k_position="${safety_controller_k_pos}"
                 k_velocity="${safety_controller_k_vel}"
             /> 
-            <dynamics damping="${joint_damping}"/>
+            <dynamics damping="${joint_damping}" friction="${joint_friction}"/>
         </joint>
 
         <link name="${robot_name}_link_4">
@@ -213,7 +214,7 @@
                 k_position="${safety_controller_k_pos}"
                 k_velocity="${safety_controller_k_vel}"
             /> 
-            <dynamics damping="${joint_damping}"/>
+            <dynamics damping="${joint_damping}" friction="${joint_friction}"/>
         </joint>
 
         <link name="${robot_name}_link_5">
@@ -251,7 +252,7 @@
                 k_position="${safety_controller_k_pos}"
                 k_velocity="${safety_controller_k_vel}"
             /> 
-            <dynamics damping="${joint_damping}"/>
+            <dynamics damping="${joint_damping}" friction="${joint_friction}"/>
         </joint>
 
         <link name="${robot_name}_link_6">
@@ -289,7 +290,7 @@
                 k_position="${safety_controller_k_pos}"
                 k_velocity="${safety_controller_k_vel}"
             /> 
-            <dynamics damping="${joint_damping}"/>
+            <dynamics damping="${joint_damping}" friction="${joint_friction}"/>
         </joint>
 
         <link name="${robot_name}_link_7">
