@@ -8,7 +8,6 @@
 
 #include <ros/ros.h>
 #include <geometry_msgs/Pose.h>
-#include <sensor_msgs/JointState.h>
 #include <trajectory_msgs/JointTrajectoryPoint.h>
 #include <control_msgs/FollowJointTrajectoryAction.h>
 #include <control_msgs/FollowJointTrajectoryActionGoal.h>

@@ -14,6 +14,7 @@ find_package(catkin REQUIRED COMPONENTS
   moveit_ros_planning_interface 
   geometry_msgs
   control_msgs
+  trajectory_msgs
   actionlib
 )
 
