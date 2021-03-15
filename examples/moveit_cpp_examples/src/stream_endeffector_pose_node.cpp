@@ -201,7 +201,6 @@ bool PoseExecutor::executeDeltaToInitialPosition(geometry_msgs::Point point, dou
 
     trajectory_msgs::JointTrajectoryPoint trajectory_point;
     trajectory_point.time_from_start = ros::Duration(time_from_start);
-    std::cout << trajectory_point.time_from_start << std::endl;
     trajectory_point.positions = q;
     
     control_msgs::FollowJointTrajectoryGoal goal;
