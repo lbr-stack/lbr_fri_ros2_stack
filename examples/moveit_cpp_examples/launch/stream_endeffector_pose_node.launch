@@ -1,0 +1,12 @@
+<launch>
+    <arg name="data" default="$(find moveit_cpp_examples)/data/data.csv"/>
+    <arg name="action_server" default="PositionJointInterface_trajectory_controller/follow_joint_trajectory"/>
+    <arg name="planning_group" default="arm"/>
+
+    <group ns="lbr">
+        <node name="stream_endeffector_pose_node" pkg="moveit_cpp_examples" type="stream_endeffector_pose_node" output="screen"/>
+        <param name="data" type="str" value="$(arg data)"/>
+        <param name="action_server" type="str" value="$(arg action_server)"/>
+        <param name="planning_group" type="str" value="$(arg planning_group)"/>
+    </group>
+</launch>
