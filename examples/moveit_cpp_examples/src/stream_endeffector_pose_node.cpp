@@ -4,9 +4,12 @@
 #include <utility> // std::pair
 #include <stdexcept> // std::runtime_error
 #include <sstream> // std::stringstream
+#include <math.h>
 
 #include <ros/ros.h>
 #include <geometry_msgs/Pose.h>
+#include <sensor_msgs/JointState.h>
+#include <trajectory_msgs/JointTrajectoryPoint.h>
 #include <control_msgs/FollowJointTrajectoryAction.h>
 #include <control_msgs/FollowJointTrajectoryActionGoal.h>
 #include <moveit/move_group_interface/move_group_interface.h>
@@ -23,13 +26,10 @@ using CSV = std::vector<COL>;
 CSV read_csv(std::string filename);
 
 
-// // load data
-// // create action client
-// // stream data at rate
 class PoseExecutor {
     public:
-        PoseExecutor(std::string action_server, std::string planning_group);
-        bool executeDeltaToInitialPosition(geometry_msgs::Point point, double timeout=0.1);
+        PoseExecutor(std::string action_server, std::string planning_group, std::vector<double> initial_position);
+        bool executeDeltaToInitialPosition(geometry_msgs::Point point, double time_from_start, double timeout=0.1, bool wait_for_result=false);
 
     private:
         // members
@@ -38,12 +38,16 @@ class PoseExecutor {
         moveit::planning_interface::MoveGroupInterface _group;
 
         geometry_msgs::PoseStamped _initial_pose_stamped;
+        geometry_msgs::PoseStamped _previous_pose_stamped;
 };
 
 
 int main(int argc, char** argv) {
     ros::init(argc, argv, "stream_endeffector_pose_node");
     auto nh = ros::NodeHandle();
+
+    ros::AsyncSpinner spinner(1);
+    spinner.start();
     
     std::string filename, action_server, planning_group;
     nh.getParam("data", filename);
@@ -56,20 +60,31 @@ int main(int argc, char** argv) {
     ROS_INFO("Done.");
 
     // init executor
-    PoseExecutor pose_executor(action_server, planning_group);
+    std::vector<double> initial_position = {0., M_PI/3., 0., -M_PI/3., 0., M_PI/3., 0.};
+    PoseExecutor pose_executor(action_server, planning_group, initial_position);
+    double previous_time = 0.;
+    double time_from_start = 0.;
+
+    ros::Rate rate(int(std::get<1>(data[0]).size()/std::get<1>(data[0])[std::get<1>(data[0]).size() - 1]));
 
     // execute motion
     for (int i=0; i < std::get<1>(data[0]).size(); i++) {
         ROS_INFO("Executing row %d, computing IK...", i);
         geometry_msgs::Point position;
-        // pose.position.x = 
-        // pose.position.y = 
-        // pose.position.z =
-        // pose.orientation = 
+        position.x = std::get<1>(data[1])[i];
+        position.y = std::get<1>(data[2])[i];
+        position.z = std::get<1>(data[3])[i];
 
-        bool success = pose_executor.executeDeltaToInitialPosition(position);
-        ROS_INFO("Success: %s", (success ? "true" : "false"));
+        time_from_start = std::get<1>(data[0])[i] - previous_time;
+        previous_time = std::get<1>(data[0])[i];
+
+        bool success = pose_executor.executeDeltaToInitialPosition(position, time_from_start);
+        ROS_INFO("Success: %s, time: %f", (success ? "true" : "false"), time_from_start);
+        rate.sleep();
     }
+
+    spinner.stop();
+    ros::shutdown();
 
     return 0;
 }
@@ -138,7 +153,7 @@ CSV read_csv(std::string filename) {
     return result;
 };
 
-PoseExecutor::PoseExecutor(std::string action_server, std::string planning_group) 
+PoseExecutor::PoseExecutor(std::string action_server, std::string planning_group, std::vector<double> initial_position) 
     : _planning_group(planning_group),
       _ac(action_server), 
       _group(planning_group) {
@@ -146,17 +161,28 @@ PoseExecutor::PoseExecutor(std::string action_server, std::string planning_group
     _ac.waitForServer();
     ROS_INFO("Done.");
 
+    // initialize pose
+    _group.setJointValueTarget(initial_position);
+    _group.move();
+
     _initial_pose_stamped = _group.getCurrentPose();
+    _previous_pose_stamped = _initial_pose_stamped;
 };
 
-bool PoseExecutor::executeDeltaToInitialPosition(geometry_msgs::Point point, double timeout) {
+bool PoseExecutor::executeDeltaToInitialPosition(geometry_msgs::Point point, double time_from_start, double timeout, bool wait_for_result) {
+    bool success = false;
+    if (time_from_start == 0.) {
+        return success;
+    }
+
+    // see https://ros-planning.github.io/moveit_tutorials/doc/move_group_interface/move_group_interface_tutorial.html#enforce-planning-in-joint-space
     geometry_msgs::Pose pose = _initial_pose_stamped.pose;
     pose.position.x += point.x;
     pose.position.y += point.y;
     pose.position.z += point.z;
 
     auto robot_state = *_group.getCurrentState();
-    bool success = robot_state.setFromIK(
+    success = robot_state.setFromIK(
         robot_state.getJointModelGroup(_planning_group),
         pose,
         timeout
@@ -170,4 +196,21 @@ bool PoseExecutor::executeDeltaToInitialPosition(geometry_msgs::Point point, dou
             joint_states
         );
     }
+
+    std::vector<double> q(joint_states.data(), joint_states.data() + joint_states.size());
+
+
+    trajectory_msgs::JointTrajectoryPoint trajectory_point;
+    trajectory_point.time_from_start = ros::Duration(time_from_start);
+    std::cout << trajectory_point.time_from_start << std::endl;
+    trajectory_point.positions = q;
+    
+    control_msgs::FollowJointTrajectoryGoal goal;
+    goal.trajectory.joint_names = _group.getJointNames();
+    goal.trajectory.points.push_back(trajectory_point);
+
+    _ac.sendGoal(goal);
+    if (wait_for_result) _ac.waitForResult();
+
+    return success;
 };

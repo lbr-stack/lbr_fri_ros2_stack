@@ -1,5 +1,5 @@
 <launch>
-    <arg name="data" default="$(find moveit_cpp_examples)/data/data.csv"/>
+    <arg name="data" default="$(find moveit_cpp_examples)/data/data_in_meter.csv"/>
     <arg name="action_server" default="PositionJointInterface_trajectory_controller/follow_joint_trajectory"/>
     <arg name="planning_group" default="arm"/>
 
