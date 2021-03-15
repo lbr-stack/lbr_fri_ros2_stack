@@ -4,6 +4,7 @@ Collection of examples to control the lbr robot via [MoveIt!](https://moveit.ros
 In this folder, we demonstrate simple motions via MoveIt!, for reference, check the MoveIt! [documentation](http://docs.ros.org/en/kinetic/api/moveit_tutorials/html/doc/move_group_python_interface/move_group_python_interface_tutorial.html). Make sure this package is sourced, always do
 ```shell
 cd fri_ros_ws
+catkin_make
 source devel/setup.bash # source this package
 ```
 Launch the robot
@@ -20,9 +21,10 @@ The last command launches a ROS node via a [launch file](moveit_python_examples/
 In this folder, we demonstrate simple motion view MoveIt! in C++.
 
 ### Pose Streaming Node
-Execute end-effector poses as stored in a `csv` file. To Execute, do
+Execute end-effector poses as stored in a `.csv` file. To execute, do
 ```shell
 cd fri_ros_ws
+catkin_make
 source devel/setup.bash # source this package
 ```
 Launch the robot
