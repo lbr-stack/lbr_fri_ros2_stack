@@ -18,7 +18,7 @@ roslaunch moveit_python_examples moveit_motion_examples.launch
 The last command launches a ROS node via a [launch file](moveit_python_examples/launch/moveit_motion_examples.launch). The [ROS node](moveit_python_examples/src/moveit_motion_examples.py) then controls the robot via MoveIt!.
 
 ## C++
-In this folder, we demonstrate simple motion view MoveIt! in C++.
+In this folder, we demonstrate simple motion via MoveIt! in C++.
 
 ### Pose Streaming Node
 Execute end-effector poses as stored in a `.csv` file. To execute, do
