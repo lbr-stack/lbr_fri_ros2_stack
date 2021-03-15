@@ -78,7 +78,7 @@ int main(int argc, char** argv) {
         previous_time = std::get<1>(data[0])[i];
 
         bool success = pose_executor.executeDeltaToInitialPosition(position, time_from_start);
-        ROS_INFO("Success: %s, time: %f", (success ? "true" : "false"), time_from_start);
+        ROS_INFO("Success: %s", (success ? "true" : "false"));
         rate.sleep();
     }
 
