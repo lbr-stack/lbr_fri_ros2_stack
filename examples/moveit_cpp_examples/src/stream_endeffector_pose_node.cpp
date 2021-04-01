@@ -27,8 +27,10 @@ CSV read_csv(std::string filename);
 
 class PoseExecutor {
     public:
-        PoseExecutor(std::string action_server, std::string planning_group, std::vector<double> initial_position);
+        PoseExecutor(std::string action_server, std::string planning_group, std::vector<double> initial_position, double alpha=0.1);
         bool executeDeltaToInitialPosition(geometry_msgs::Point point, double time_from_start, double timeout=0.1, bool wait_for_result=false);
+
+        inline const double& alpha() const { return _alpha; };
 
     private:
         // members
@@ -38,6 +40,8 @@ class PoseExecutor {
 
         geometry_msgs::PoseStamped _initial_pose_stamped;
         geometry_msgs::PoseStamped _previous_pose_stamped;
+
+        double _alpha;  // velocity sacling
 };
 
 
@@ -49,9 +53,11 @@ int main(int argc, char** argv) {
     spinner.start();
     
     std::string filename, action_server, planning_group;
+    double alpha;
     nh.getParam("data", filename);
     nh.getParam("action_server", action_server);
     nh.getParam("planning_group", planning_group);
+    nh.getParam("alpha", alpha);
 
     // load data
     ROS_INFO("Loading pose data...");
@@ -60,11 +66,11 @@ int main(int argc, char** argv) {
 
     // init executor
     std::vector<double> initial_position = {0., M_PI/3., 0., -M_PI/3., 0., M_PI/3., 0.};
-    PoseExecutor pose_executor(action_server, planning_group, initial_position);
+    PoseExecutor pose_executor(action_server, planning_group, initial_position, alpha);
     double previous_time = 0.;
     double time_from_start = 0.;
 
-    ros::Rate rate(int(std::get<1>(data[0]).size()/std::get<1>(data[0])[std::get<1>(data[0]).size() - 1]));
+    ros::Rate rate(pose_executor.alpha()*std::get<1>(data[0]).size()/(std::get<1>(data[0])[std::get<1>(data[0]).size() - 1] - std::get<1>(data[0])[0]));
 
     // execute motion
     for (int i=0; i < std::get<1>(data[0]).size(); i++) {
@@ -152,15 +158,17 @@ CSV read_csv(std::string filename) {
     return result;
 };
 
-PoseExecutor::PoseExecutor(std::string action_server, std::string planning_group, std::vector<double> initial_position) 
+PoseExecutor::PoseExecutor(std::string action_server, std::string planning_group, std::vector<double> initial_position, double alpha) 
     : _planning_group(planning_group),
       _ac(action_server), 
-      _group(planning_group) {
+      _group(planning_group),
+      _alpha(alpha) {
     ROS_INFO("PoseExecutor: Waiting for server %s...", action_server.c_str());
     _ac.waitForServer();
     ROS_INFO("Done.");
 
     // initialize pose
+    _group.setMaxVelocityScalingFactor(_alpha);
     _group.setJointValueTarget(initial_position);
     _group.move();
 
@@ -200,7 +208,7 @@ bool PoseExecutor::executeDeltaToInitialPosition(geometry_msgs::Point point, dou
 
 
     trajectory_msgs::JointTrajectoryPoint trajectory_point;
-    trajectory_point.time_from_start = ros::Duration(time_from_start);
+    trajectory_point.time_from_start = ros::Duration(time_from_start/_alpha);
     trajectory_point.positions = q;
     
     control_msgs::FollowJointTrajectoryGoal goal;
