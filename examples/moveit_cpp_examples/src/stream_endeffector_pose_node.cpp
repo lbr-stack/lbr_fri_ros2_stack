@@ -29,6 +29,8 @@ class PoseExecutor {
     public:
         PoseExecutor(std::string action_server, std::string planning_group, std::vector<double> initial_position, double alpha=0.1);
         bool executeDeltaToInitialPosition(geometry_msgs::Point point, double time_from_start, double timeout=0.1, bool wait_for_result=false);
+        control_msgs::FollowJointTrajectoryGoal csvToTrajectory(CSV file, double timeout=0.1);
+        void executeTrajectoryGoal(control_msgs::FollowJointTrajectoryGoal trajectory, bool wait_for_result=true);
 
         inline const double& alpha() const { return _alpha; };
 
@@ -54,10 +56,12 @@ int main(int argc, char** argv) {
     
     std::string filename, action_server, planning_group;
     double alpha;
+    bool offline;
     nh.getParam("data", filename);
     nh.getParam("action_server", action_server);
     nh.getParam("planning_group", planning_group);
     nh.getParam("alpha", alpha);
+    nh.getParam("offline", offline);
 
     // load data
     ROS_INFO("Loading pose data...");
@@ -67,25 +71,36 @@ int main(int argc, char** argv) {
     // init executor
     std::vector<double> initial_position = {0., M_PI/3., 0., -M_PI/3., 0., M_PI/3., 0.};
     PoseExecutor pose_executor(action_server, planning_group, initial_position, alpha);
-    double previous_time = 0.;
-    double time_from_start = 0.;
 
-    ros::Rate rate(pose_executor.alpha()*std::get<1>(data[0]).size()/(std::get<1>(data[0])[std::get<1>(data[0]).size() - 1] - std::get<1>(data[0])[0]));
+    if (offline) {
+        // Offline stream
+        ROS_INFO("Running offline stream.");
+        auto trajectory = pose_executor.csvToTrajectory(data);
+        pose_executor.executeTrajectoryGoal(trajectory);
+    }
+    else {
+        // Online stream
+        ROS_INFO("Running online stream.");
+        double previous_time = 0.;
+        double time_from_start = 0.;
 
-    // execute motion
-    for (int i=0; i < std::get<1>(data[0]).size(); i++) {
-        ROS_INFO("Executing row %d, computing IK...", i);
-        geometry_msgs::Point position;
-        position.x = std::get<1>(data[1])[i];
-        position.y = std::get<1>(data[2])[i];
-        position.z = std::get<1>(data[3])[i];
+        ros::Rate rate(pose_executor.alpha()*std::get<1>(data[0]).size()/(std::get<1>(data[0])[std::get<1>(data[0]).size() - 1] - std::get<1>(data[0])[0]));
 
-        time_from_start = std::get<1>(data[0])[i] - previous_time;
-        previous_time = std::get<1>(data[0])[i];
+        // execute motion
+        for (int i=0; i < std::get<1>(data[0]).size(); i++) {
+            ROS_INFO("Executing row %d, computing IK...", i);
+            geometry_msgs::Point position;
+            position.x = std::get<1>(data[1])[i];
+            position.y = std::get<1>(data[2])[i];
+            position.z = std::get<1>(data[3])[i];
 
-        bool success = pose_executor.executeDeltaToInitialPosition(position, time_from_start);
-        ROS_INFO("Success: %s", (success ? "true" : "false"));
-        rate.sleep();
+            time_from_start = std::get<1>(data[0])[i] - previous_time;
+            previous_time = std::get<1>(data[0])[i];
+
+            bool success = pose_executor.executeDeltaToInitialPosition(position, time_from_start);
+            ROS_INFO("Success: %s", (success ? "true" : "false"));
+            rate.sleep();
+        }
     }
 
     spinner.stop();
@@ -220,3 +235,50 @@ bool PoseExecutor::executeDeltaToInitialPosition(geometry_msgs::Point point, dou
 
     return success;
 };
+
+control_msgs::FollowJointTrajectoryGoal PoseExecutor::csvToTrajectory(CSV file, double timeout) {
+
+    auto robot_state = *_group.getCurrentState();
+    control_msgs::FollowJointTrajectoryGoal goal;
+    goal.trajectory.joint_names = _group.getJointNames();
+
+    for (int i=0; i < std::get<1>(file[0]).size(); i++) {
+
+        geometry_msgs::Pose pose = _initial_pose_stamped.pose;
+        pose.position.x += std::get<1>(file[1])[i];
+        pose.position.y += std::get<1>(file[2])[i];
+        pose.position.z += std::get<1>(file[3])[i];
+
+        bool success = robot_state.setFromIK(
+            robot_state.getJointModelGroup(_planning_group),
+            pose,
+            timeout
+        );
+
+        if (!success) continue;
+
+        Eigen::VectorXd joint_states(_group.getActiveJoints().size());
+
+        robot_state.copyJointGroupPositions(
+            robot_state.getJointModelGroup(_planning_group),
+            joint_states
+        );
+
+        std::vector<double> q(joint_states.data(), joint_states.data() + joint_states.size());
+
+
+        trajectory_msgs::JointTrajectoryPoint trajectory_point;
+        double time_from_start = std::get<1>(file[0])[i] - std::get<1>(file[0])[0];
+        trajectory_point.time_from_start = ros::Duration(time_from_start/_alpha);
+        trajectory_point.positions = q;
+        
+        goal.trajectory.points.push_back(trajectory_point);
+    }
+
+    return goal;
+};
+void PoseExecutor::executeTrajectoryGoal(control_msgs::FollowJointTrajectoryGoal trajectory, bool wait_for_result) {
+    _ac.sendGoal(trajectory);
+    if (wait_for_result) _ac.waitForResult();
+};
+
