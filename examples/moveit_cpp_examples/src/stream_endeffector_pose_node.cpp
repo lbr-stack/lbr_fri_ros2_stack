@@ -69,7 +69,9 @@ int main(int argc, char** argv) {
     ROS_INFO("Done.");
 
     // init executor
-    std::vector<double> initial_position = {0., M_PI/3., 0., -M_PI/3., 0., M_PI/3., 0.};
+    // std::vector<double> initial_position = {0., M_PI/3., 0., -M_PI/3., 0., M_PI/3., 0.};
+    std::vector<double> initial_position = {0.0, 0.85, 0.0, -0.92, 0.0, 1.4, 0.0};
+
     PoseExecutor pose_executor(action_server, planning_group, initial_position, alpha);
 
     if (offline) {
