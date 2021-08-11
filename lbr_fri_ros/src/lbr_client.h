@@ -78,6 +78,8 @@ class LBRClient : public KUKA::FRI::LBRClient {
             state_.position.assign(jp, jp+KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
             const double* t = robotState().getMeasuredTorque();
             state_.torque.assign(t, t+KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
+            const double* et = robotState().getExternalTorque();
+            state_.external_torque.assign(et, et+KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
 
             lbr_->set_current_state(state_);
         }
