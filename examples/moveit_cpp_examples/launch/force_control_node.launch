@@ -1,0 +1,5 @@
+<launch>
+    <group ns="lbr">
+        <node name="force_control_node" pkg="moveit_cpp_examples" type="force_control_node" output="screen"/>
+    </group>
+</launch>

@@ -16,6 +16,7 @@ find_package(catkin REQUIRED COMPONENTS
   control_msgs
   trajectory_msgs
   actionlib
+  lbr_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -139,6 +140,7 @@ include_directories(
 # With catkin_make all packages are built within a single CMake context
 # The recommended prefix ensures that target names across packages don't collide
 add_executable(stream_endeffector_pose_node src/stream_endeffector_pose_node.cpp)
+add_executable(force_control_node src/force_control_node.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -154,6 +156,11 @@ add_executable(stream_endeffector_pose_node src/stream_endeffector_pose_node.cpp
 target_link_libraries(stream_endeffector_pose_node
   ${catkin_LIBRARIES}
 )
+
+target_link_libraries(force_control_node
+  ${catkin_LIBRARIES}
+)
+
 
 #############
 ## Install ##
@@ -171,7 +178,7 @@ target_link_libraries(stream_endeffector_pose_node
 
 # Mark executables for installation
 # See http://docs.ros.org/melodic/api/catkin/html/howto/format1/building_executables.html
-install(TARGETS stream_endeffector_pose_node
+install(TARGETS stream_endeffector_pose_node force_control_node
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
@@ -192,7 +199,7 @@ install(TARGETS stream_endeffector_pose_node
 
 # Mark other files for installation (e.g. launch and bag files, etc.)
 install(FILES
-  launch/stream_endeffector_pose_node.launch
+  launch/stream_endeffector_pose_node.launch launch/force_control_node.launch
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )
 
