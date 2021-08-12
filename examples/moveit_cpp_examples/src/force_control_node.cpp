@@ -13,7 +13,7 @@
 // damped least squares solutions: http://graphics.cs.cmu.edu/nsp/course/15-464/Spring11/handouts/iksurvey.pdf
 template <class MatT>
 Eigen::Matrix<typename MatT::Scalar, MatT::ColsAtCompileTime, MatT::RowsAtCompileTime>
-dampedLeastSquares(const MatT &mat, typename MatT::Scalar lambda = typename MatT::Scalar{1e-2}) // choose appropriately
+dampedLeastSquares(const MatT &mat, typename MatT::Scalar lambda = typename MatT::Scalar{2e-1}) // choose appropriately
 {
     typedef typename MatT::Scalar Scalar;
     auto svd = mat.jacobiSvd(Eigen::ComputeFullU | Eigen::ComputeFullV);
@@ -32,7 +32,7 @@ class ForceController {
 public:
     ForceController(
         ros::NodeHandle& nh,
-        double dt=0.01, double alpha=0.1, double exp_smooth=0.02, double th_f=5., double th_tau=1.5,
+        double dt=0.005, double alpha=0.01, double exp_smooth=0.03, double th_f=4., double th_tau=1.5,
         std::string control_client="PositionJointInterface_trajectory_controller/follow_joint_trajectory", 
         std::string state_topic="states", std::string planning_group="arm"
     ) : 
@@ -72,7 +72,7 @@ private:
             j++;
         }
         for (int i = 0; i < 3; i++) {
-            if (std::abs(f_ext[j]) > _th_tau) (f_ext[j] > 0. ? dx[j] = 0.5 : dx[j] = -0.5);
+            if (std::abs(f_ext[j]) > _th_tau) (f_ext[j] > 0. ? dx[j] = 1.0 : dx[j] = -1.0);
             j++;
         }
 
