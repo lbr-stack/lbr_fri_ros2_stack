@@ -72,7 +72,7 @@ private:
             j++;
         }
         for (int i = 0; i < 3; i++) {
-            if (std::abs(f_ext[j]) > _th_f) (f_ext[j] > 0. ? dx[j] = 0.5 : dx[j] = -0.5);
+            if (std::abs(f_ext[j]) > _th_tau) (f_ext[j] > 0. ? dx[j] = 0.5 : dx[j] = -0.5);
             j++;
         }
 
