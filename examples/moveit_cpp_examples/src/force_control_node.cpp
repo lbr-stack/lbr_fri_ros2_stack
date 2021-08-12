@@ -1,5 +1,7 @@
 #include <ros/ros.h>
 #include <moveit/move_group_interface/move_group_interface.h>
+#include <actionlib/client/simple_action_client.h>
+#include <control_msgs/FollowJointTrajectoryAction.h>
 #include <Eigen/Core>
 
 #include <lbr_msgs/LBRState.h>
@@ -28,37 +30,99 @@ dampedLeastSquares(const MatT &mat, typename MatT::Scalar lambda = typename MatT
 class ForceController {
 
 public:
-    ForceController(ros::NodeHandle& nh, double ctrl_int=0.005, std::string state_topic="states", std::string planning_group="arm") :
-        nh_(nh), 
-        move_group_(planning_group),
-        control_timer_(nh_.createTimer(ros::Duration(ctrl_int), &ForceController::controlCB, this)),
-        state_sub_(nh.subscribe(state_topic, 1, &ForceController::stateCB, this)) {
-
+    ForceController(
+        ros::NodeHandle& nh,
+        double dt=0.01, double alpha=0.1, double exp_smooth=0.02, double th_f=5., double th_tau=1.5,
+        std::string control_client="PositionJointInterface_trajectory_controller/follow_joint_trajectory", 
+        std::string state_topic="states", std::string planning_group="arm"
+    ) : 
+        _nh(nh), 
+        _move_group(planning_group),
+        _ac(nh, control_client, false),
+        _control_client(control_client),
+        _dt(dt), _alpha(alpha), _exp_smooth(exp_smooth), _th_f(th_f), _th_tau(th_tau),
+        _dq(_move_group.getActiveJoints().size(), 0.),
+        _control_timer(_nh.createTimer(ros::Duration(_dt), &ForceController::controlCB_, this)),
+        _state_sub(nh.subscribe(state_topic, 1, &ForceController::_stateCB, this)) {
+            ROS_INFO("ForceController: Waiting for action server under %s...", _control_client.c_str());
+            _ac.waitForServer();
+            ROS_INFO("Done.");
     };
 
     ~ForceController() {    };
 
 private:
-    auto controlCB(const ros::TimerEvent&) -> void {
-        auto robot_state = move_group_.getCurrentState();
+    auto controlCB_(const ros::TimerEvent&) -> void {
+        auto robot_state = _move_group.getCurrentState();
 
-        // robot_state->getJacobian(
+        auto J = robot_state->getJacobian(
+            robot_state->getJointModelGroup(_move_group.getName())
+        );
+        auto q = _move_group.getCurrentJointValues();
 
-        // );
+        auto tau_ext = Eigen::VectorXd::Map(_state.external_torque.data(), _state.external_torque.size());
+        Eigen::VectorXd f_ext = dampedLeastSquares(J.transpose())*tau_ext;
+
+        // Velocity in direction of force -> hand-guiding
+        Eigen::VectorXd dx = Eigen::VectorXd::Zero(J.rows());
+
+        int j = 0;
+        for (int i = 0; i < 3; i++) {
+            if (std::abs(f_ext[j]) > _th_f) (f_ext[j] > 0. ? dx[j] = 0.1 : dx[j] = -0.1);
+            j++;
+        }
+        for (int i = 0; i < 3; i++) {
+            if (std::abs(f_ext[j]) > _th_f) (f_ext[j] > 0. ? dx[j] = 0.5 : dx[j] = -0.5);
+            j++;
+        }
+
+        // Compute update
+        Eigen::VectorXd dq = dampedLeastSquares(J)*dx;
+
+        for (int i = 0; i < q.size(); i++) {
+            _dq[i] = (1-_exp_smooth)*_dq[i] + _exp_smooth*dq[i];
+            q[i] += _dq[i];
+        }
+
+        // Send joint position goal
+        auto status = _executeGoal(q);
     };
 
-    auto stateCB(const lbr_msgs::LBRStateConstPtr& msg) -> void {
-        state_ = *msg;
+    auto _stateCB(const lbr_msgs::LBRStateConstPtr& msg) -> void {
+        _state = *msg;
+    };
+
+    auto _executeGoal(std::vector<double> q, bool wait_for_result=false) -> actionlib::SimpleClientGoalState {
+        // See for example http://wiki.ros.org/pr2_controllers/Tutorials/Moving%20the%20arm%20using%20the%20Joint%20Trajectory%20Action
+        
+        // Execute motion on client
+        trajectory_msgs::JointTrajectoryPoint point;
+        point.time_from_start = ros::Duration(_dt/_alpha);
+        point.positions = q;
+
+        control_msgs::FollowJointTrajectoryGoal goal;
+        goal.trajectory.joint_names = _move_group.getJointNames();
+        goal.trajectory.points.push_back(point);
+
+        _ac.sendGoal(goal);
+        if (wait_for_result) _ac.waitForResult();
+
+        return _ac.getState();
     };
 
 
 
-    ros::NodeHandle nh_;
-    moveit::planning_interface::MoveGroupInterface move_group_;
+    ros::NodeHandle _nh;
+    moveit::planning_interface::MoveGroupInterface _move_group;
+    actionlib::SimpleActionClient<control_msgs::FollowJointTrajectoryAction> _ac;
 
-    ros::Timer control_timer_;
-    ros::Subscriber state_sub_;
-    lbr_msgs::LBRState state_;
+    std::string _control_client;
+    double _dt, _alpha, _exp_smooth, _th_f, _th_tau;
+    std::vector<double> _dq;
+
+    ros::Timer _control_timer;
+    ros::Subscriber _state_sub;
+    lbr_msgs::LBRState _state;
 
 };
 
