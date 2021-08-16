@@ -1,0 +1,13 @@
+# moveit topics
+control_client: "PositionJointInterface_trajectory_controller/follow_joint_trajectory"
+state_topic: "states"
+planning_group: "arm"
+
+# low level controls
+dt: 0.005         # control interval
+alpha: 0.01       # velocity scaling in [0, 1]
+exp_smooth: 0.03  # exponential smoothing, 1.0 means no smoothing is applied
+
+# force control
+th_f: 4.    # force threshold below which no motion is computed
+th_tau: 1.5 # torque threshold below which no motion is computed

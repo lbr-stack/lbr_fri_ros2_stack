@@ -47,6 +47,9 @@ public:
             ROS_INFO("ForceController: Waiting for action server under %s...", _control_client.c_str());
             _ac.waitForServer();
             ROS_INFO("Done.");
+
+            if (_dt == 0.) ROS_ERROR("ForceController: Received invalid argument dt %f", _dt); std::exit(-1);
+            if (_alpha == 0.) ROS_ERROR("ForceController: Received invalid argument alpha %f", _alpha); std::exit(-1);
     };
 
     ~ForceController() {    };
@@ -76,6 +79,8 @@ private:
             j++;
         }
 
+        std::cout << f_ext.transpose() << std::endl;
+
         // Compute update
         Eigen::VectorXd dq = dampedLeastSquares(J)*dx;
 
@@ -85,7 +90,7 @@ private:
         }
 
         // Send joint position goal
-        auto status = _executeGoal(q);
+        // auto status = _executeGoal(q);
     };
 
     auto _stateCB(const lbr_msgs::LBRStateConstPtr& msg) -> void {
@@ -127,34 +132,32 @@ private:
 };
 
 
-
-
 int main(int argc, char** argv) {
     ros::init(argc, argv, "force_control_node");
     ros::NodeHandle nh;
+
+    double dt, alpha, exp_smooth, th_f, th_tau;
+    std::string control_client, state_topic, planning_group;
+
+    nh.getParam("dt", dt);
+    nh.getParam("alpha", alpha);
+    nh.getParam("exp_smooth", exp_smooth);
+    nh.getParam("th_f", th_f);
+    nh.getParam("th_tau", th_tau);
+    nh.getParam("control_client", control_client);
+    nh.getParam("state_topic", state_topic);
+    nh.getParam("planning_group", planning_group);
+
     ros::AsyncSpinner spinner(2);
     spinner.start();
 
-    ForceController force_controller(nh);
+    ForceController force_controller(
+        nh,
+        dt, alpha, exp_smooth, th_f, th_tau,
+        control_client, state_topic, planning_group
+    );
 
     ros::waitForShutdown();
 
     return 0;
 };
-
-
-
-
-
-// read external torques
-
-// obtain externally applied generalized force through jacobian
-
-// compute velocity command opposite to acting force
-
-// feedback joint position update through pseudo inverse jacobian
-
-// exponential smoothing
-
-
-
