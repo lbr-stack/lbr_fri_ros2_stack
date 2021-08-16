@@ -48,11 +48,15 @@ public:
             _ac.waitForServer();
             ROS_INFO("Done.");
 
-            if (_dt == 0.) ROS_ERROR("ForceController: Received invalid argument dt %f", _dt); std::exit(-1);
-            if (_alpha == 0.) ROS_ERROR("ForceController: Received invalid argument alpha %f", _alpha); std::exit(-1);
+            if (_dt == 0.) { ROS_ERROR("ForceController: Received invalid argument dt %f", _dt); std::exit(-1); };
+            if (_alpha == 0.) { ROS_ERROR("ForceController: Received invalid argument alpha %f", _alpha); std::exit(-1); };
     };
 
-    ~ForceController() {    };
+    ~ForceController() {
+        _ac.cancelAllGoals();
+        _control_timer.stop();
+        _state_sub.shutdown();
+    };
 
 private:
     auto controlCB_(const ros::TimerEvent&) -> void {
@@ -79,8 +83,6 @@ private:
             j++;
         }
 
-        std::cout << f_ext.transpose() << std::endl;
-
         // Compute update
         Eigen::VectorXd dq = dampedLeastSquares(J)*dx;
 
@@ -90,7 +92,7 @@ private:
         }
 
         // Send joint position goal
-        // auto status = _executeGoal(q);
+        auto status = _executeGoal(q);
     };
 
     auto _stateCB(const lbr_msgs::LBRStateConstPtr& msg) -> void {
