@@ -1,5 +1,6 @@
 # moveit topics
 control_client: "PositionJointInterface_trajectory_controller/follow_joint_trajectory"
+ee: "lbr_link_ee"
 state_topic: "states"
 planning_group: "arm"
 
@@ -11,3 +12,10 @@ exp_smooth: 0.03  # exponential smoothing, 1.0 means no smoothing is applied
 # force control
 th_f: 4.    # force threshold below which no motion is computed
 th_tau: 1.5 # torque threshold below which no motion is computed
+
+# tool definition
+tool_m: 0.0            # mass [kg]
+tool_com: [0., 0., 0.] # center of mass, in end-effector frame [m]
+
+# physics
+gravity: [0., 0., -9.81]

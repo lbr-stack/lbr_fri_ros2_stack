@@ -33,17 +33,21 @@ public:
     ForceController(
         ros::NodeHandle& nh,
         double dt=0.005, double alpha=0.01, double exp_smooth=0.03, double th_f=4., double th_tau=1.5,
-        std::string control_client="PositionJointInterface_trajectory_controller/follow_joint_trajectory", 
-        std::string state_topic="states", std::string planning_group="arm"
+        std::string control_client="PositionJointInterface_trajectory_controller/follow_joint_trajectory", std::string ee="link_ee", 
+        std::string state_topic="states", std::string planning_group="arm",
+        double tool_m=0., std::vector<double> tool_com=std::vector<double>(3, 0.), std::vector<double> gravity={0., 0., -9.81}
     ) : 
         _nh(nh), 
         _move_group(planning_group),
         _ac(nh, control_client, false),
-        _control_client(control_client),
+        _control_client(control_client), _ee(ee),
         _dt(dt), _alpha(alpha), _exp_smooth(exp_smooth), _th_f(th_f), _th_tau(th_tau),
         _dq(_move_group.getActiveJoints().size(), 0.),
         _control_timer(_nh.createTimer(ros::Duration(_dt), &ForceController::controlCB_, this)),
-        _state_sub(nh.subscribe(state_topic, 1, &ForceController::_stateCB, this)) {
+        _state_sub(nh.subscribe(state_topic, 1, &ForceController::_stateCB, this)),
+        _tool_m(tool_m),
+        _tool_com(Eigen::Vector3d::Map(tool_com.data())),
+        _gravity(Eigen::Vector3d::Map(gravity.data())) {
             ROS_INFO("ForceController: Waiting for action server under %s...", _control_client.c_str());
             _ac.waitForServer();
             ROS_INFO("Done.");
@@ -59,8 +63,9 @@ public:
     };
 
 private:
+    // Methods
     auto controlCB_(const ros::TimerEvent&) -> void {
-        auto robot_state = _move_group.getCurrentState();
+        const auto robot_state = _move_group.getCurrentState();
 
         auto J = robot_state->getJacobian(
             robot_state->getJointModelGroup(_move_group.getName())
@@ -68,7 +73,13 @@ private:
         auto q = _move_group.getCurrentJointValues();
 
         auto tau_ext = Eigen::VectorXd::Map(_state.external_torque.data(), _state.external_torque.size());
-        Eigen::VectorXd f_ext = dampedLeastSquares(J.transpose())*tau_ext;
+        auto J_pseudo_inv = dampedLeastSquares(J);
+        Eigen::VectorXd f_ext = J_pseudo_inv.transpose()*tau_ext;
+        // std::cout << "f_ext:       " << f_ext.transpose() << std::endl;
+
+        // Compensate tool force
+        f_ext -= _computeToolForce(robot_state);
+        // std::cout << "f_ext_prime: " << f_ext.transpose() << std::endl;
 
         // Velocity in direction of force -> hand-guiding
         Eigen::VectorXd dx = Eigen::VectorXd::Zero(J.rows());
@@ -84,7 +95,7 @@ private:
         }
 
         // Compute update
-        Eigen::VectorXd dq = dampedLeastSquares(J)*dx;
+        Eigen::VectorXd dq = J_pseudo_inv*dx;
 
         for (int i = 0; i < q.size(); i++) {
             _dq[i] = (1-_exp_smooth)*_dq[i] + _exp_smooth*dq[i];
@@ -117,13 +128,24 @@ private:
         return _ac.getState();
     };
 
+    auto _computeToolForce(const moveit::core::RobotStatePtr robot_state) -> Eigen::VectorXd {
+        auto base_tf = robot_state->getGlobalLinkTransform(_ee);
 
+        Eigen::VectorXd f(6);
 
+        f <<
+            _tool_m*_gravity,
+            _tool_m*(base_tf.rotation()*_tool_com).cross(_gravity);
+
+        return f;
+    };
+
+    // Members
     ros::NodeHandle _nh;
     moveit::planning_interface::MoveGroupInterface _move_group;
     actionlib::SimpleActionClient<control_msgs::FollowJointTrajectoryAction> _ac;
 
-    std::string _control_client;
+    std::string _control_client, _ee;
     double _dt, _alpha, _exp_smooth, _th_f, _th_tau;
     std::vector<double> _dq;
 
@@ -131,6 +153,8 @@ private:
     ros::Subscriber _state_sub;
     lbr_msgs::LBRState _state;
 
+    double _tool_m;
+    Eigen::Vector3d _tool_com, _gravity;
 };
 
 
@@ -139,7 +163,9 @@ int main(int argc, char** argv) {
     ros::NodeHandle nh;
 
     double dt, alpha, exp_smooth, th_f, th_tau;
-    std::string control_client, state_topic, planning_group;
+    std::string control_client, ee, state_topic, planning_group;
+    double tool_m;
+    std::vector<double> tool_com, gravity;
 
     nh.getParam("dt", dt);
     nh.getParam("alpha", alpha);
@@ -147,8 +173,12 @@ int main(int argc, char** argv) {
     nh.getParam("th_f", th_f);
     nh.getParam("th_tau", th_tau);
     nh.getParam("control_client", control_client);
+    nh.getParam("ee", ee);
     nh.getParam("state_topic", state_topic);
     nh.getParam("planning_group", planning_group);
+    nh.getParam("tool_m", tool_m);
+    nh.getParam("tool_com", tool_com);
+    nh.getParam("gravity", gravity);
 
     ros::AsyncSpinner spinner(2);
     spinner.start();
@@ -156,7 +186,8 @@ int main(int argc, char** argv) {
     ForceController force_controller(
         nh,
         dt, alpha, exp_smooth, th_f, th_tau,
-        control_client, state_topic, planning_group
+        control_client, ee, state_topic, planning_group,
+        tool_m, tool_com, gravity
     );
 
     ros::waitForShutdown();
