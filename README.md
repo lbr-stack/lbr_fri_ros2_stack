@@ -10,7 +10,7 @@ Make sure the Robot Operating System [ROS](http://wiki.ros.org/melodic/Installat
 ### Build Fast Robot Interface ROS
 Source your ROS distribution ie in a terminal 
 ```shell
-source /opt/ros/melodic/setup.bash` # might differ
+source /opt/ros/melodic/setup.bash # might differ
 ```
 Then
 ```shell
