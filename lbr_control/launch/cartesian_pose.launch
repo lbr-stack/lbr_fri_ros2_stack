@@ -1,3 +1,0 @@
-<launch>
-    <node pkg="lbr_control" name="cartesian_pose_node" type="cartesian_pose_node.py"/>
-</launch>

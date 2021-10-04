@@ -1,9 +1,0 @@
-<launch>
-    <group ns="lbr">
-        <!-- load parameters -->
-        <rosparam command="load" file="$(find moveit_cpp_examples)/config/force_control.yml"/>
-
-        <!-- run force control node -->
-        <node name="force_control_node" pkg="moveit_cpp_examples" type="force_control_node" output="screen"/>
-    </group>
-</launch>

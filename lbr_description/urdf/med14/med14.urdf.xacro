@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+
+<!-- top level -->
+<robot name="med14" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+    <!-- include materials -->
+    <xacro:include filename="$(find lbr_description)/urdf/materials.urdf.xacro"/>
+
+    <!-- include the lbr med macro -->
+    <xacro:include filename="$(find lbr_description)/urdf/med14/med14_description.urdf.xacro"/>
+
+    <xacro:arg name="robot_name" default="lbr"/>
+    <xacro:arg name="origin_xyz" default="0 0 0"/>
+    <xacro:arg name="origin_rpy" default="0 0 0"/>
+    <xacro:arg name="sim" default="true"/>
+
+    <!-- fix to world -->
+    <link name="world"/>
+
+    <!-- med -->
+    <xacro:med14 parent="world" robot_name="$(arg robot_name)" sim="$(arg sim)">
+        <origin xyz="$(arg origin_xyz)" rpy="$(arg origin_rpy)" />
+    </xacro:med14>
+</robot>
