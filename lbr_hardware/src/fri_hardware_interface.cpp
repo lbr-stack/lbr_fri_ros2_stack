@@ -18,7 +18,7 @@ hardware_interface::return_type FRIHardwareInterface::configure(const hardware_i
     // other hardware parameters
     hw_operation_mode_ = info_.hardware_parameters["operation_mode"];
     hw_port_ = std::stoul(info_.hardware_parameters["port"]);
-    info_.hardware_parameters["remote_host"].length() == 0 ? hw_remote_host_ = NULL : hw_remote_host_ = info_.hardware_parameters["remote_host"].c_str();
+    info_.hardware_parameters["remote_host"] == "INADDR_ANY" ? hw_remote_host_ = NULL : hw_remote_host_ = info_.hardware_parameters["remote_host"].c_str();
 
     if (hw_operation_mode_ != "TEST_MODE_1" &&
         hw_operation_mode_ != "TEST_MODE_2" &&
@@ -154,12 +154,16 @@ hardware_interface::return_type FRIHardwareInterface::start() {
 
     // await connection quality
     RCLCPP_INFO(rclcpp::get_logger(FRI_HW_LOGGER), "Awaiting FRI connection to reach GOOD or EXCELLENT...");
-    rclcpp::sleep_for(std::chrono::seconds(1)); // as parameter? or loop TODO
+    rclcpp::sleep_for(std::chrono::seconds(10)); // as parameter? or loop TODO
     if (robotState().getConnectionQuality() < KUKA::FRI::EConnectionQuality::GOOD) {
         RCLCPP_ERROR(rclcpp::get_logger(FRI_HW_LOGGER), "Failed to establish connection in time.");
-        throw std::runtime_error("Failed to establish connection in time.");
+        // TODO: throw error?
+        // throw std::runtime_error("Failed to establish connection in time.");
+        return hardware_interface::return_type::ERROR;
     }
     RCLCPP_INFO(rclcpp::get_logger(FRI_HW_LOGGER), "Connection established.");
+
+    RCLCPP_INFO(rclcpp::get_logger(FRI_HW_LOGGER), "Found robot in mode %s", fri_e_operation_mode_to_string_(robotState().getOperationMode()).c_str());
 
     if (fri_e_operation_mode_to_string_(robotState().getOperationMode()) != hw_operation_mode_) {
         RCLCPP_FATAL(
@@ -168,7 +172,9 @@ hardware_interface::return_type FRIHardwareInterface::start() {
             hw_operation_mode_.c_str(),
             fri_e_operation_mode_to_string_(robotState().getOperationMode()).c_str()
         );
-        throw std::runtime_error("Found robot in unexpected operation mode.");
+        // TODO: throw error?
+        // throw std::runtime_error("Found robot in unexpected operation mode.");
+        return hardware_interface::return_type::ERROR;
     };
     
     status_ = hardware_interface::status::STARTED;
