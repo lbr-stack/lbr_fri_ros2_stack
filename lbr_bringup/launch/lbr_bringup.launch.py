@@ -69,6 +69,8 @@ def launch_setup(context, *args, **kwargs):
         ), 
         launch_arguments=[
             ("robot_description", robot_description_content),
+            ("moveit_controller_configurations_package", LaunchConfiguration("moveit_controller_configurations_package")),
+            ("moveit_controller_configurations", LaunchConfiguration("moveit_controller_configurations")),
             ("model", LaunchConfiguration("model")),
             ("sim", LaunchConfiguration("sim"))
         ]
@@ -114,6 +116,14 @@ def generate_launch_description():
 
     launch_args.append(
         DeclareLaunchArgument(
+            name="controller",
+            default_value="position_trajectory_controller",
+            description="Robot controller."
+        )
+    )
+
+    launch_args.append(
+        DeclareLaunchArgument(
             name="controller_configurations",
             default_value="config/lbr_controllers.yml",
             description="Relative path to controller configurations YAML file. Note that the joints in the controllers must be named according to the robot_name."
@@ -122,9 +132,17 @@ def generate_launch_description():
 
     launch_args.append(
         DeclareLaunchArgument(
-            name="controller",
-            default_value="position_trajectory_controller",
-            description="Robot controller."
+            name="moveit_controller_configurations_package",
+            default_value="lbr_moveit",
+            description="Package that contains MoveIt! controller configurations."
+        )
+    )
+
+    launch_args.append(
+        DeclareLaunchArgument(
+            name="moveit_controller_configurations",
+            default_value="config/lbr_controllers.yml",
+            description="Relative path to MoveIt! controller configurations YAML file. Note that the joints in the controllers must be named according to the robot_name."
         )
     )
 

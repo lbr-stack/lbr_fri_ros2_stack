@@ -78,8 +78,10 @@ def launch_setup(context, *args, **kwargs):
                             "moveit_manage_controllers": True}
 
     # Controllers
-    controllers_yaml = load_yaml("lbr_moveit",
-                                 "config/lbr_controllers.yml")
+    controllers_yaml = load_yaml(
+        LaunchConfiguration("moveit_controller_configurations_package").perform(context),
+        LaunchConfiguration("moveit_controller_configurations").perform(context)
+    )
 
     moveit_controllers = {"moveit_simple_controller_manager": controllers_yaml,
                           "moveit_controller_manager": "moveit_simple_controller_manager/MoveItSimpleControllerManager"}
@@ -129,33 +131,6 @@ def launch_setup(context, *args, **kwargs):
         ]
     )
 
-    # # RViz
-    # launch_args.append(DeclareLaunchArgument(
-    #     name="description_package",
-    #     default_value="lbr_description",
-    #     description="Description package."
-    # ))
-
-    # launch_args.append(DeclareLaunchArgument(
-    #     name="description_file",
-    #     default_value="urdf/iiwa7/iiwa7.urdf.xacro",
-    #     description="Path to URDF file, relative to description_package."
-    # ))
-
-    # launch_args.append(DeclareLaunchArgument(
-    #     name="rviz_config",
-    #     default_value="config/config.rviz",
-    #     description="Rviz configuration relative to description_package."
-    # ))
-
-    # rviz = Node(
-    #     package="rviz2",
-    #     executable="rviz2",
-    #     parameters=[{"config": PathJoinSubstitution(
-    #         [FindPackageShare(LaunchConfiguration("description_package")), LaunchConfiguration("rviz_config")]
-    #     )}]
-    # )
-
     return [
         move_group_node,
         rviz
@@ -178,6 +153,22 @@ def generate_launch_description():
             name="model",
             default_value="iiwa7",
             description="Desired LBR model. Use model:=iiwa7/iiwa14/med7/med14."
+        )
+    )
+
+    launch_args.append(
+        DeclareLaunchArgument(
+            name="moveit_controller_configurations_package",
+            default_value="lbr_moveit",
+            description="Package that contains MoveIt! controller configurations."
+        )
+    )
+
+    launch_args.append(
+        DeclareLaunchArgument(
+            name="moveit_controller_configurations",
+            default_value="config/lbr_controllers.yml",
+            description="Relative path to MoveIt! controller configurations YAML file. Note that the joints in the controllers must be named according to the robot_name."
         )
     )
 
