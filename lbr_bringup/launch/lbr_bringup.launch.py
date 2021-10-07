@@ -142,7 +142,7 @@ def generate_launch_description():
         DeclareLaunchArgument(
             name="moveit_controller_configurations",
             default_value="config/lbr_controllers.yml",
-            description="Relative path to MoveIt! controller configurations YAML file. Note that the joints in the controllers must be named according to the robot_name."
+            description="Relative path to MoveIt! controller configurations YAML file. Note that the joints in the controllers must be named according to the robot_name. This file lists controllers that are loaded through the controller_configurations file."
         )
     )
 
