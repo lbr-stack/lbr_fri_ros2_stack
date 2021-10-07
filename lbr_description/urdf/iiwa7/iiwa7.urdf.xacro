@@ -10,15 +10,11 @@
     <xacro:include filename="$(find lbr_description)/urdf/iiwa7/iiwa7_description.urdf.xacro"/>
 
     <xacro:arg name="robot_name" default="lbr"/>
-    <xacro:arg name="origin_xyz" default="0 0 0"/>
-    <xacro:arg name="origin_rpy" default="0 0 0"/>
     <xacro:arg name="sim" default="true"/>
 
     <!-- fix to world -->
     <link name="world"/>
 
     <!-- iiwa -->
-    <xacro:iiwa7 parent="world" robot_name="$(arg robot_name)" sim="$(arg sim)">
-        <origin xyz="$(arg origin_xyz)" rpy="$(arg origin_rpy)" />
-    </xacro:iiwa7>
+    <xacro:iiwa7 parent="world" robot_name="$(arg robot_name)" sim="$(arg sim)"/>
 </robot>

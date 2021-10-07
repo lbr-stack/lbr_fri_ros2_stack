@@ -18,7 +18,5 @@
     <link name="world"/>
 
     <!-- med -->
-    <xacro:med7 parent="world" robot_name="$(arg robot_name)" sim="$(arg sim)">
-        <origin xyz="$(arg origin_xyz)" rpy="$(arg origin_rpy)" />
-    </xacro:med7>
+    <xacro:med7 parent="world" robot_name="$(arg robot_name)" sim="$(arg sim)"/>
 </robot>

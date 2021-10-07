@@ -11,13 +11,11 @@ def generate_launch_description():
     # Launch arguments
     launch_args = []
 
-    launch_args.append(
-        DeclareLaunchArgument(
-            name="entity",
-            default_value="lbr",
-            description="Name of entity to spawn."
-        )
-    )
+    launch_args.append(DeclareLaunchArgument(
+        name="robot_name",
+        default_value="lbr",
+        description="Set robot name."
+    ))
 
     # Launch Gazebo
     gazebo = IncludeLaunchDescription(
@@ -39,7 +37,7 @@ def generate_launch_description():
         executable="spawn_entity.py",
         arguments=[
             "-topic", "robot_description",
-            "-entity", LaunchConfiguration("entity")
+            "-entity", LaunchConfiguration("robot_name")
         ],
         output="screen"
     )
