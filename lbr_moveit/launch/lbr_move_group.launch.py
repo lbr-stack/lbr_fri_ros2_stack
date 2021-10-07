@@ -10,16 +10,6 @@ from launch_ros.substitutions import FindPackageShare
 from ament_index_python import get_package_share_directory
 
 
-# moveit launch file
-# https://github.com/AndrejOrsula/panda_moveit2_config/blob/master/launch/move_group_action_server.launch.py
-# moveit tutorial
-# https://github.com/ros-planning/moveit2/tree/main/moveit_demo_nodes/run_move_group
-# launch file including controllers
-# https://github.com/ros-planning/moveit2/blob/main/moveit_demo_nodes/run_move_group/launch/run_lbr_move_group.launch.py
-
-# check move it node executable
-
-
 def load_yaml(package_name: str, file_path: str):
     package_path = get_package_share_directory(package_name)
     absolute_file_path = os.path.join(package_path, file_path)
@@ -49,8 +39,6 @@ def launch_setup(context, *args, **kwargs):
 
     # Configure robot_description
     robot_description = {"robot_description": LaunchConfiguration("robot_description")}
-
-    print(robot_description)
 
     # Robot semantics SRDF
     robot_description_semantic = {
@@ -90,9 +78,6 @@ def launch_setup(context, *args, **kwargs):
                             "moveit_manage_controllers": True}
 
     # Controllers
-    # pandas loading controllers: https://github.com/ros-planning/moveit_resources/blob/ca3f7930c630581b5504f3b22c40b4f82ee6369d/panda_moveit_config/launch/demo.launch.py#L81
-    # loading these controllers: https://github.com/ros-planning/moveit_resources/blob/ros2/panda_moveit_config/config/panda_controllers.yaml
-
     controllers_yaml = load_yaml("lbr_moveit",
                                  "config/lbr_controllers.yml")
 
@@ -108,15 +93,40 @@ def launch_setup(context, *args, **kwargs):
     # Time configuration
     use_sim_time = {"use_sime_time": LaunchConfiguration("sim")}
 
+    # Prepare move group node
+    move_group_node = Node(
+        package="moveit_ros_move_group",
+        executable="move_group",
+        output="screen",
+        arguments=["--ros-args"],
+        parameters=[
+            robot_description,
+            robot_description_semantic,
+            kinematics_yaml,
+            robot_description_planning,
+            ompl_yaml,
+            planning,
+            trajectory_execution,
+            moveit_controllers,
+            planning_scene_monitor_parameters,
+            use_sim_time
+        ]
+    )
+
     # RViz
+    rviz_config = {"config": PathJoinSubstitution([FindPackageShare("lbr_description"), "config/config.rviz"])}
+
     rviz = Node(
         package="rviz2",
         executable="rviz2",
-        parameters=[robot_description,
-                    robot_description_semantic,
-                    kinematics_yaml,
-                    # planning]
-                    use_sim_time]
+        parameters=[
+            rviz_config,
+            robot_description,
+            robot_description_semantic,
+            kinematics_yaml,
+            planning,
+            use_sim_time
+        ]
     )
 
     # # RViz
@@ -147,24 +157,7 @@ def launch_setup(context, *args, **kwargs):
     # )
 
     return [
-        Node(
-            package="moveit_ros_move_group",
-            executable="move_group",
-            output="screen",
-            arguments=["--ros-args"],
-            parameters=[
-                robot_description,
-                robot_description_semantic,
-                kinematics_yaml,
-                robot_description_planning,
-                ompl_yaml,
-                planning,
-                trajectory_execution,
-                moveit_controllers,
-                planning_scene_monitor_parameters,
-                use_sim_time
-            ]
-        ),
+        move_group_node,
         rviz
     ]
 
