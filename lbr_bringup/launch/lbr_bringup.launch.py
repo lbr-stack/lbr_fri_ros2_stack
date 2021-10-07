@@ -116,17 +116,17 @@ def generate_launch_description():
 
     launch_args.append(
         DeclareLaunchArgument(
-            name="controller",
-            default_value="position_trajectory_controller",
-            description="Robot controller."
+            name="controller_configurations",
+            default_value="config/lbr_controllers.yml",
+            description="Relative path to controller configurations YAML file. Note that the joints in the controllers must be named according to the robot_name."
         )
     )
 
     launch_args.append(
         DeclareLaunchArgument(
-            name="controller_configurations",
-            default_value="config/lbr_controllers.yml",
-            description="Relative path to controller configurations YAML file. Note that the joints in the controllers must be named according to the robot_name."
+            name="controller",
+            default_value="position_trajectory_controller",
+            description="Robot controller."
         )
     )
 
