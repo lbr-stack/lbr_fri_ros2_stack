@@ -1,5 +1,6 @@
 #include <lbr_hardware/fri_hardware_interface.h>
 
+
 namespace LBR {
 
 hardware_interface::return_type FRIHardwareInterface::configure(const hardware_interface::HardwareInfo& system_info) {
@@ -12,20 +13,12 @@ hardware_interface::return_type FRIHardwareInterface::configure(const hardware_i
     hw_effort_.resize(KUKA::FRI::LBRState::NUMBER_OF_JOINTS, std::numeric_limits<double>::quiet_NaN());
 
     // command interface references
-    hw_position_command.resize(KUKA::FRI::LBRState::NUMBER_OF_JOINTS, std::numeric_limits<double>::quiet_NaN());
-    hw_effort_command.resize(KUKA::FRI::LBRState::NUMBER_OF_JOINTS, std::numeric_limits<double>::quiet_NaN());
+    hw_position_command_.resize(KUKA::FRI::LBRState::NUMBER_OF_JOINTS, std::numeric_limits<double>::quiet_NaN());
+    hw_effort_command_.resize(KUKA::FRI::LBRState::NUMBER_OF_JOINTS, std::numeric_limits<double>::quiet_NaN());
 
     // other hardware parameters
-    hw_operation_mode_ = info_.hardware_parameters["operation_mode"];
     hw_port_ = std::stoul(info_.hardware_parameters["port"]);
     info_.hardware_parameters["remote_host"] == "INADDR_ANY" ? hw_remote_host_ = NULL : hw_remote_host_ = info_.hardware_parameters["remote_host"].c_str();
-
-    if (hw_operation_mode_ != "TEST_MODE_1" &&
-        hw_operation_mode_ != "TEST_MODE_2" &&
-        hw_operation_mode_ != "AUTOMATIC_MODE") {
-        RCLCPP_FATAL(rclcpp::get_logger(FRI_HW_LOGGER), "Received invalid operation mode: %s.", hw_operation_mode_);
-        return hardware_interface::return_type::ERROR;
-    }
 
     if (30200 > hw_port_ || 
         30209 < hw_port_
@@ -113,12 +106,12 @@ std::vector<hardware_interface::CommandInterface> FRIHardwareInterface::export_c
     for (std::size_t i = 0; i < info_.joints.size(); i++) {
         // position interface
         command_interfaces.emplace_back(
-            info_.joints[i].name, hardware_interface::HW_IF_POSITION, &hw_position_command[i]
+            info_.joints[i].name, hardware_interface::HW_IF_POSITION, &hw_position_command_[i]
         );
 
         // effort interface
         command_interfaces.emplace_back(
-            info_.joints[i].name, hardware_interface::HW_IF_EFFORT, &hw_effort_command[i]
+            info_.joints[i].name, hardware_interface::HW_IF_EFFORT, &hw_effort_command_[i]
         );
     }
 
@@ -146,37 +139,7 @@ hardware_interface::return_type FRIHardwareInterface::prepare_command_mode_switc
 }
 
 hardware_interface::return_type FRIHardwareInterface::start() {
-
-    // lbr_state_->getControlMode TODO
-    app_.connect(hw_port_, hw_remote_host_);
-    fri_thread_ = std::thread(&FRIHardwareInterface::step, this);
-    fri_thread_.detach(); // thread stops when rclcpp::ok() == false or app_.step() == false
-
-    // await connection quality
-    RCLCPP_INFO(rclcpp::get_logger(FRI_HW_LOGGER), "Awaiting FRI connection to reach GOOD or EXCELLENT...");
-    rclcpp::sleep_for(std::chrono::seconds(10)); // as parameter? or loop TODO
-    if (robotState().getConnectionQuality() < KUKA::FRI::EConnectionQuality::GOOD) {
-        RCLCPP_ERROR(rclcpp::get_logger(FRI_HW_LOGGER), "Failed to establish connection in time.");
-        // TODO: throw error?
-        // throw std::runtime_error("Failed to establish connection in time.");
-        return hardware_interface::return_type::ERROR;
-    }
-    RCLCPP_INFO(rclcpp::get_logger(FRI_HW_LOGGER), "Connection established.");
-
-    RCLCPP_INFO(rclcpp::get_logger(FRI_HW_LOGGER), "Found robot in mode %s", fri_e_operation_mode_to_string_(robotState().getOperationMode()).c_str());
-
-    if (fri_e_operation_mode_to_string_(robotState().getOperationMode()) != hw_operation_mode_) {
-        RCLCPP_FATAL(
-            rclcpp::get_logger(FRI_HW_LOGGER),
-            "Expected robot in operation mode: %s. Found robot in operation mode %s.",
-            hw_operation_mode_.c_str(),
-            fri_e_operation_mode_to_string_(robotState().getOperationMode()).c_str()
-        );
-        // TODO: throw error?
-        // throw std::runtime_error("Found robot in unexpected operation mode.");
-        return hardware_interface::return_type::ERROR;
-    };
-    
+    app_.connect(hw_port_, hw_remote_host_);    
     status_ = hardware_interface::status::STARTED;
     return hardware_interface::return_type::OK;
 }
@@ -202,7 +165,10 @@ hardware_interface::return_type FRIHardwareInterface::read() {
 }
 
 hardware_interface::return_type FRIHardwareInterface::write() {
-    // commands periodically executed in FRIHardwareInterface::command()
+    // commands periodically executed in FRIHardwareInterface::command() through app_.step()
+    if (!app_.step()) {
+        return hardware_interface::return_type::ERROR;
+    }
     return hardware_interface::return_type::OK;
 }
 
@@ -215,8 +181,16 @@ void FRIHardwareInterface::onStateChange(KUKA::FRI::ESessionState old_state, KUK
         fri_e_session_state_to_string_(new_state).c_str()
     );
 
-    if (new_state == KUKA::FRI::ESessionState::IDLE) {
+    if (old_state == KUKA::FRI::ESessionState::COMMANDING_ACTIVE) {
+        RCLCPP_INFO(rclcpp::get_logger(FRI_HW_LOGGER), "Controller manager does not allow resets. Command interfaces can't be updated to current state. Shutting down.");
         this->stop();
+        rclcpp::shutdown();
+    }
+
+    if (new_state == KUKA::FRI::ESessionState::IDLE) {
+        RCLCPP_INFO(rclcpp::get_logger(FRI_HW_LOGGER), "FRI stoppped. Shutting down.");
+        this->stop();
+        rclcpp::shutdown();
     }
 }
 
@@ -226,19 +200,19 @@ void FRIHardwareInterface::command() {
             RCLCPP_FATAL(rclcpp::get_logger(FRI_HW_LOGGER), "No client command mode available.");
             break;
         case KUKA::FRI::EClientCommandMode::POSITION:
-            if (std::isnan(hw_position_command[0])) { 
+            if (std::isnan(hw_position_command_[0])) { 
                 KUKA::FRI::LBRClient::command();
             }
             else {
-                robotCommand().setJointPosition(hw_position_command.data());
+                robotCommand().setJointPosition(hw_position_command_.data()); // control manager stores internal value, which needs to be updated
             }
             break;
         case KUKA::FRI::EClientCommandMode::TORQUE:
-            if (std::isnan(hw_effort_command[0])) {
+            if (std::isnan(hw_effort_command_[0])) {
                 KUKA::FRI::LBRClient::command();
             } 
             else {
-                robotCommand().setTorque(hw_effort_command.data());
+                robotCommand().setTorque(hw_effort_command_.data());
             }
             break;
         case KUKA::FRI::EClientCommandMode::WRENCH:
@@ -248,18 +222,6 @@ void FRIHardwareInterface::command() {
         default:
             KUKA::FRI::LBRClient::command();
             break;
-    }
-}
-
-void FRIHardwareInterface::step() {
-
-    auto success = true;
-    while (rclcpp::ok() && success) {
-        success = app_.step();
-    }
-
-    if (rclcpp::ok()) {
-        RCLCPP_INFO(rclcpp::get_logger(FRI_HW_LOGGER), "Exited client application loop.");
     }
 }
 
@@ -278,20 +240,6 @@ std::string FRIHardwareInterface::fri_e_session_state_to_string_(const KUKA::FRI
         default:
             RCLCPP_FATAL(rclcpp::get_logger(FRI_HW_LOGGER), "Received unknown state.");
             throw std::runtime_error("Reveived unknown state.");
-    }
-}
-
-std::string FRIHardwareInterface::fri_e_operation_mode_to_string_(const KUKA::FRI::EOperationMode& mode) {
-    switch (mode) {
-        case KUKA::FRI::EOperationMode::TEST_MODE_1:
-            return "TEST_MODE_1";
-        case KUKA::FRI::EOperationMode::TEST_MODE_2:
-            return "TEST_MODE_2";
-        case KUKA::FRI::EOperationMode::AUTOMATIC_MODE:
-            return "AUTOMATIC_MODE";
-        default:
-            RCLCPP_FATAL(rclcpp::get_logger(FRI_HW_LOGGER), "Received unknown operation mode.");
-            throw std::runtime_error("Received unknown mode.");
     }
 }
 

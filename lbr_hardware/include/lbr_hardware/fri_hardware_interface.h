@@ -3,7 +3,6 @@
 #include <string>
 #include <vector>
 #include <memory>
-#include <thread>
 
 #include <rclcpp/rclcpp.hpp>
 #include <hardware_interface/base_interface.hpp>
@@ -52,10 +51,7 @@ class FRIHardwareInterface : public hardware_interface::BaseInterface<hardware_i
 
         // FRI
         void onStateChange(KUKA::FRI::ESessionState old_state, KUKA::FRI::ESessionState new_state) override;
-        // void monitor() override; // possibly publish full state to topic?
-        // void waitForCommand() override;
         void command() override;
-        void step();
 
     private:
         std::string FRI_HW_LOGGER = "FRIHardwareInterface";
@@ -65,25 +61,20 @@ class FRIHardwareInterface : public hardware_interface::BaseInterface<hardware_i
         std::vector<double> hw_effort_;        // accessible through FRI
 
         // commands
-        std::vector<double> hw_position_command;  // supported by FRI
-        std::vector<double> hw_effort_command;    // supported by FRI
+        std::vector<double> hw_position_command_;  // supported by FRI
+        std::vector<double> hw_effort_command_;    // supported by FRI
 
         // FRI
         KUKA::FRI::UdpConnection connection_;
         KUKA::FRI::ClientApplication app_;
 
-        std::string hw_operation_mode_;
         std::uint16_t hw_port_;
         const char* hw_remote_host_;
 
         // track command mode as FRI does not support switches
         bool command_mode_init_;
 
-        // Communication thread
-        std::thread fri_thread_;
-
         std::string fri_e_session_state_to_string_(const KUKA::FRI::ESessionState& state);
-        std::string fri_e_operation_mode_to_string_(const KUKA::FRI::EOperationMode& mode);
 };
 
 } // end of name space LBR

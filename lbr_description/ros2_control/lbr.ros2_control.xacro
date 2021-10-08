@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
-    <xacro:macro name="lbr_hardware_interface" params="sim:=^|true operation_mode:=^|TEST_MODE_1 remote_host:=^|INADDR_ANY port:=^|30200 robot_name:=^|lbr">
+    <xacro:macro name="lbr_hardware_interface" params="sim:=^|true remote_host:=^|INADDR_ANY port:=^|30200 robot_name:=^|lbr">
         <!-- arg for control mode -->
 
         <ros2_control name="lbr_hardware_interface" type="system">
@@ -13,7 +13,6 @@
             <xacro:unless value="${sim}">
                 <hardware>
                     <plugin>LBR::FRIHardwareInterface</plugin>
-                    <param name="operation_mode">${operation_mode}</param>
                     <param name="remote_host">${remote_host}</param>
                     <param name="port">${port}</param>
                 </hardware>

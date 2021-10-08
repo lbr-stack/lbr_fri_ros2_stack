@@ -116,18 +116,20 @@ def launch_setup(context, *args, **kwargs):
     )
 
     # RViz
-    rviz_config = {"config": PathJoinSubstitution([FindPackageShare("lbr_description"), "config/config.rviz"])}
+    rviz_config = PathJoinSubstitution([FindPackageShare("lbr_description"), "config/config.rviz"])
 
     rviz = Node(
         package="rviz2",
         executable="rviz2",
         parameters=[
-            rviz_config,
             robot_description,
             robot_description_semantic,
             kinematics_yaml,
             planning,
             use_sim_time
+        ],
+        arguments=[
+            '-d', rviz_config
         ]
     )
 
