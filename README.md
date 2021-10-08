@@ -5,7 +5,7 @@ ROS2 packages for the KUKA LBR, including communication to the real robot via th
 To get going, build this repository
 ```shell
 mkdir -p lbr_fri_ros2_stack_ws/src && cd lbr_fri_ros2_stack_ws/src
-git clone https://github.com/KCL-BMEIS/lbr_fri_ros2_stack.git && cd ..
+git clone --recursive https://github.com/KCL-BMEIS/lbr_fri_ros2_stack.git && cd ..
 colcon build
 ```
 Next, launch an example via
