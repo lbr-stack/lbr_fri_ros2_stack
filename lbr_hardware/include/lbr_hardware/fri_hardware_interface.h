@@ -2,31 +2,17 @@
 
 #include <string>
 #include <vector>
-#include <memory>
 
 #include <rclcpp/rclcpp.hpp>
 #include <hardware_interface/base_interface.hpp>
 #include <hardware_interface/system_interface.hpp>
-#include <hardware_interface/handle.hpp>
 #include <hardware_interface/types/hardware_interface_type_values.hpp>
 #include <hardware_interface/types/hardware_interface_status_values.hpp>
-#include <fri/friLBRState.h>
+
 #include <fri/friLBRClient.h>
 #include <fri/friUdpConnection.h>
 #include <fri/friClientApplication.h>
-#include <controller_manager/controller_manager.hpp>
 
-// add thread?
-// load basic plugin
-// pluginlib https://docs.ros.org/en/foxy/Tutorials/Pluginlib.html
-
-// todo: visibility control for windows compilation
-// see #include <hardware_interface/system.hpp> -> HARDWARE_INTERFACE_PUBLIC
-// and https://github.com/ros-controls/ros2_control_demos/blob/master/ros2_control_demo_hardware/include/ros2_control_demo_hardware/rrbot_system_multi_interface.hpp
-// https://jeffzzq.medium.com/designing-a-ros2-robot-7c31a62c535a
-// https://ros-controls.github.io/control.ros.org/getting_started.html#hardware-components
-
-// galactic: http://control.ros.org/ros2_control/hardware_interface/doc/hardware_components_userdoc.html
 
 namespace LBR {
 
