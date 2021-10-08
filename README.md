@@ -1,5 +1,5 @@
 # LBR FRI ROS2 Stack
-ROS2 packages for the KUKA LBR, including communication to the real robot via the Fast Robot Interface ([FRI](https://github.com/KCL-BMEIS/fri)), [MoveIt2](https://moveit.ros.org/) integration and [Gazebo](http://gazebosim.org/) simulation support. To get going, follow the [First Steps](#first-steps).
+ROS2 packages for the KUKA LBR, including communication to the real robot via the Fast Robot Interface ([FRI](https://github.com/KCL-BMEIS/fri)), [MoveIt2](https://moveit.ros.org/) integration and [Gazebo](http://gazebosim.org/) simulation support. Included are the iiwa7/iiwa14/med7/med14. To get going, follow the [First Steps](#first-steps).
 
 # First Steps
 To get going, build this repository
@@ -11,9 +11,13 @@ colcon build
 Next, launch an example via
 ```shell
 source install/setup.bash
-ros2 launch lbr_bringup lbr_bringup.launch.py model:=med7 sim:=true
+ros2 launch lbr_bringup lbr_bringup.launch.py model:=med7 sim:=true # model:=[iiwa7/iiwa14/med7/med14]
 ```
-For execution on the real robot, the steps in [Real Setup](#real-setup) are to be followed.
+For execution on the real robot, the steps in [Real Setup](#real-setup) are to be followed. Once the controller is set up, the LBR can be interfaced via
+```shell
+source install/setup.bash
+ros2 launch lbr_bringup lbr_bringup.launch.py model:=med7 sim:=false # model:=[iiwa7/iiwa14/med7/med14]
+```
 
 # Real Setup
 ## Setup the Controller
