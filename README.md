@@ -1,5 +1,5 @@
 # LBR FRI ROS2 Stack
-ROS2 packages for the KUKA LBR, including communication to the real robot via the Fast Robot Interface ([FRI](https://github.com/KCL-BMEIS/fri)), [MoveIt](https://moveit.ros.org/) integration and [Gazebo](http://gazebosim.org/) simulation support. To get going, follow the [First Steps](#first-steps).
+ROS2 packages for the KUKA LBR, including communication to the real robot via the Fast Robot Interface ([FRI](https://github.com/KCL-BMEIS/fri)), [MoveIt2](https://moveit.ros.org/) integration and [Gazebo](http://gazebosim.org/) simulation support. To get going, follow the [First Steps](#first-steps).
 
 # First Steps
 To get going, build this repository
@@ -44,6 +44,3 @@ Additional resources can be found on the school's [Sharepoint](https://emckclac.
  - Software
     - [KUKA Sunrise.OS Med 1.15, KUKA Sunrise.Workbench Med 1.15, Operating and Programming Instructions for System Integrators](https://emckclac.sharepoint.com/sites/MT-BMEIS-RVIM/Shared%20Documents/docs/inventory/kuka_lbr_med_7_R800/GA_KUKA_SunriseOS_Med_115_en.pdf)
     - [KUKA Sunrise.FRI 1.15](https://emckclac.sharepoint.com/sites/MT-BMEIS-RVIM/Shared%20Documents/docs/inventory/kuka_lbr_med_7_R800/KUKA_SunriseFRI_115_en.pdf)
-
-# Notes
-Note that this repository bases its URDF files on [IIWA Stack](https://github.com/IFL-CAMP/iiwa_stack).
