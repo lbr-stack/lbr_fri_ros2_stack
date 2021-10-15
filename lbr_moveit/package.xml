@@ -11,6 +11,7 @@
 
   <exec_depend>rviz2</exec_depend>
   <exec_depend>moveit_ros_move_group</exec_depend>
+  <exec_depend>moveit_planners</exec_depend>
 
   <export>
     <build_type>ament_cmake</build_type>
