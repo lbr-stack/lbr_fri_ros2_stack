@@ -11,7 +11,8 @@ import com.kuka.connectivity.fastRobotInterface.FRISession;
 import com.kuka.roboticsAPI.applicationModel.RoboticsAPIApplication;
 import com.kuka.roboticsAPI.controllerModel.Controller;
 import com.kuka.roboticsAPI.deviceModel.LBR;
-import com.kuka.roboticsAPI.motionModel.controlModeModel.CartesianImpedanceControlMode;
+import com.kuka.roboticsAPI.motionModel.controlModeModel.PositionControlMode;
+// import com.kuka.roboticsAPI.motionModel.controlModeModel.CartesianImpedanceControlMode;
 
 /**
  * Creates a FRI Session.
@@ -21,7 +22,8 @@ public class LBRServer extends RoboticsAPIApplication
     private Controller _lbrController;
     private LBR _lbr;
     private String _clientName;
-    private CartesianImpedanceControlMode _controlMode;
+    private PositionControlMode _controlMode;
+    // private CartesianImpedanceControlMode _controlMode;
 
     @Override
     public void initialize()
@@ -32,7 +34,8 @@ public class LBRServer extends RoboticsAPIApplication
         // *** change next line to the FRIClient's IP address                 ***
         // **********************************************************************
         _clientName = "172.31.1.148";
-        _controlMode = new CartesianImpedanceControlMode();
+        _controlMode = new PositionControlMode();
+        // _controlMode = new CartesianImpedanceControlMode();
     }
 
     @Override
