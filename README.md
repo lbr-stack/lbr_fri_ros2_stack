@@ -14,7 +14,7 @@ Next, launch an example via
 source install/setup.bash
 ros2 launch lbr_bringup lbr_bringup.launch.py model:=med7 sim:=true # model:=[iiwa7/iiwa14/med7/med14]
 ```
-For execution on the real robot, the steps in [Real Setup](#real-setup) are to be followed. Once the controller is set up, the LBR can be interfaced via
+For execution on the real robot, the steps in [Real Setup](#real-setup) are to be followed. Once the controller is set up, run the `LBRServer` app on the KUKA smartPAD. Once running, establish a connection via
 ```shell
 source install/setup.bash
 ros2 launch lbr_bringup lbr_bringup.launch.py model:=med7 sim:=false # model:=[iiwa7/iiwa14/med7/med14]
