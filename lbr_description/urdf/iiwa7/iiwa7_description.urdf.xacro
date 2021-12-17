@@ -4,8 +4,6 @@
 
     <!-- some constants -->
     <xacro:property name="PI" value="3.1415926535897931"/>
-    <xacro:property name="safety_controller_k_pos" value="100"/>
-    <xacro:property name="safety_controller_k_vel" value="2"/> 
     <xacro:property name="joint_damping" value="10.0"/>
     <xacro:property name="joint_friction" value="0.1"/>
     <xacro:property name="max_effort" value="300"/>
@@ -49,14 +47,8 @@
             <origin rpy="0 0 0" xyz="0.0 0.0 0.1475"/>
             <parent link="${robot_name}_link_0"/>
             <child link="${robot_name}_link_1"/>
-            <axis xyz="0.0 0.0 0.01"/>
+            <axis xyz="0.0 0.0 1.0"/>
             <limit effort="${max_effort}" lower="${-170 * PI / 180}" upper="${170 * PI / 180}" velocity="${max_velocity}"/>
-            <safety_controller 
-                soft_lower_limit="${-168 * PI / 180}"
-                soft_upper_limit="${168 * PI / 180}"
-                k_position="${safety_controller_k_pos}"
-                k_velocity="${safety_controller_k_vel}"
-            /> 
             <dynamics damping="${joint_damping}" friction="${joint_friction}"/>
         </joint>
 
@@ -85,14 +77,8 @@
             <origin rpy="0 0 0" xyz="-0.0 -0.0105 0.193"/>
             <parent link="${robot_name}_link_1"/>
             <child link="${robot_name}_link_2"/>
-            <axis xyz="0.0 0.01 0.0"/>
+            <axis xyz="0.0 1.0 0.0"/>
             <limit effort="${max_effort}" lower="${-120 * PI / 180}" upper="${120 * PI / 180}" velocity="${max_velocity}"/>
-            <safety_controller 
-                soft_lower_limit="${-118 * PI / 180}"
-                soft_upper_limit="${118 * PI / 180}"
-                k_position="${safety_controller_k_pos}"
-                k_velocity="${safety_controller_k_vel}"
-            /> 
             <dynamics damping="${joint_damping}" friction="${joint_friction}"/>
         </joint>
 
@@ -121,14 +107,8 @@
             <origin rpy="0 0 0" xyz="0.0 0.0105 0.1745"/>
             <parent link="${robot_name}_link_2"/>
             <child link="${robot_name}_link_3"/>
-            <axis xyz="0.0 0.0 0.01"/>
+            <axis xyz="0.0 0.0 1.0"/>
             <limit effort="${max_effort}" lower="${-170 * PI / 180}" upper="${170 * PI / 180}" velocity="${max_velocity}"/>
-            <safety_controller 
-                soft_lower_limit="${-168 * PI / 180}"
-                soft_upper_limit="${168 * PI / 180}"
-                k_position="${safety_controller_k_pos}"
-                k_velocity="${safety_controller_k_vel}"
-            /> 
             <dynamics damping="${joint_damping}" friction="${joint_friction}"/>
         </joint>
 
@@ -157,14 +137,8 @@
             <origin rpy="0 0 0" xyz="0.0 0.0105 0.2255"/>
             <parent link="${robot_name}_link_3"/>
             <child link="${robot_name}_link_4"/>
-            <axis xyz="0.0 -0.01 0.0"/>
+            <axis xyz="0.0 -1.0 0.0"/>
             <limit effort="${max_effort}" lower="${-120 * PI / 180}" upper="${120 * PI / 180}" velocity="${max_velocity}"/>
-            <safety_controller 
-                soft_lower_limit="${-118 * PI / 180}"
-                soft_upper_limit="${118 * PI / 180}"
-                k_position="${safety_controller_k_pos}"
-                k_velocity="${safety_controller_k_vel}"
-            /> 
             <dynamics damping="${joint_damping}" friction="${joint_friction}"/>
         </joint>
 
@@ -193,14 +167,8 @@
             <origin rpy="0 0 0" xyz="0.0 -0.0105 0.1745"/>
             <parent link="${robot_name}_link_4"/>
             <child link="${robot_name}_link_5"/>
-            <axis xyz="0.0 0.0 0.01"/>
+            <axis xyz="0.0 0.0 1.0"/>
             <limit effort="${max_effort}" lower="${-170 * PI / 180}" upper="${170 * PI / 180}" velocity="${max_velocity}"/>
-            <safety_controller 
-                soft_lower_limit="${-168 * PI / 180}"
-                soft_upper_limit="${168 * PI / 180}"
-                k_position="${safety_controller_k_pos}"
-                k_velocity="${safety_controller_k_vel}"
-            /> 
             <dynamics damping="${joint_damping}" friction="${joint_friction}"/>
         </joint>
 
@@ -229,14 +197,8 @@
             <origin rpy="0 0 0" xyz="0.0 -0.0707 0.2255"/>
             <parent link="${robot_name}_link_5"/>
             <child link="${robot_name}_link_6"/>
-            <axis xyz="0.0 0.01 0.0"/>
+            <axis xyz="0.0 1.0 0.0"/>
             <limit effort="${max_effort}" lower="${-120 * PI / 180}" upper="${120 * PI / 180}" velocity="${max_velocity}"/>
-            <safety_controller 
-                soft_lower_limit="${-118 * PI / 180}"
-                soft_upper_limit="${118 * PI / 180}"
-                k_position="${safety_controller_k_pos}"
-                k_velocity="${safety_controller_k_vel}"
-            /> 
             <dynamics damping="${joint_damping}" friction="${joint_friction}"/>
         </joint>
 
@@ -266,14 +228,8 @@
             <origin rpy="0 0 0" xyz="0.0 0.0705 0.0909"/>
             <parent link="${robot_name}_link_6"/>
             <child link="${robot_name}_link_7"/>
-            <axis xyz="0.0 0.0 0.01"/>
+            <axis xyz="0.0 0.0 1.0"/>
             <limit effort="${max_effort}" lower="${-175 * PI / 180}" upper="${175 * PI / 180}" velocity="${max_velocity}"/>
-            <safety_controller 
-                soft_lower_limit="${-173 * PI / 180}"
-                soft_upper_limit="${173 * PI / 180}"
-                k_position="${safety_controller_k_pos}"
-                k_velocity="${safety_controller_k_vel}"
-            /> 
             <dynamics damping="${joint_damping}" friction="${joint_friction}"/>
         </joint>
 
