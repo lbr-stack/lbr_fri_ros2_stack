@@ -12,6 +12,7 @@ import com.kuka.roboticsAPI.applicationModel.RoboticsAPIApplication;
 import com.kuka.roboticsAPI.controllerModel.Controller;
 import com.kuka.roboticsAPI.deviceModel.LBR;
 import com.kuka.roboticsAPI.motionModel.controlModeModel.PositionControlMode;
+// import com.kuka.roboticsAPI.motionModel.controlModeModel.CartesianImpedanceControlMode;
 
 /**
  * Creates a FRI Session.
@@ -22,6 +23,7 @@ public class LBRServer extends RoboticsAPIApplication
     private LBR _lbr;
     private String _clientName;
     private PositionControlMode _controlMode;
+    // private CartesianImpedanceControlMode _controlMode;
 
     @Override
     public void initialize()
@@ -33,6 +35,7 @@ public class LBRServer extends RoboticsAPIApplication
         // **********************************************************************
         _clientName = "172.31.1.148";
         _controlMode = new PositionControlMode();
+        // _controlMode = new CartesianImpedanceControlMode();
     }
 
     @Override
