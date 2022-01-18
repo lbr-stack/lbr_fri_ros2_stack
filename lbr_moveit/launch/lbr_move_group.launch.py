@@ -93,7 +93,7 @@ def launch_setup(context, *args, **kwargs):
                                          "publish_transforms_updates": True}
 
     # Time configuration
-    use_sim_time = {"use_sime_time": LaunchConfiguration("sim")}
+    use_sim_time = {"use_sim_time": LaunchConfiguration("sim")}
 
     # Prepare move group node
     move_group_node = Node(
