@@ -4,33 +4,39 @@
 #include <vector>
 
 #include <rclcpp/rclcpp.hpp>
-#include <hardware_interface/base_interface.hpp>
+//#include <hardware_interface/base_interface.hpp>
 #include <hardware_interface/system_interface.hpp>
-#include <hardware_interface/types/hardware_interface_type_values.hpp>
-#include <hardware_interface/types/hardware_interface_status_values.hpp>
+//#include <hardware_interface/types/hardware_interface_type_values.hpp>
+//#include <hardware_interface/types/hardware_interface_status_values.hpp>
+#include <hardware_interface/hardware_info.hpp>
+#include <hardware_interface/handle.hpp>
 
 #include <fri/friLBRClient.h>
 #include <fri/friUdpConnection.h>
 #include <fri/friClientApplication.h>
 
+#include <rclcpp/logger.hpp>
+#include <rclcpp/macros.hpp>
+#include <rclcpp/rclcpp.hpp>
+#include <rclcpp_lifecycle/state.hpp>
 
 namespace LBR {
 
-class FRIHardwareInterface : public hardware_interface::BaseInterface<hardware_interface::SystemInterface>, public KUKA::FRI::LBRClient {
+class FRIHardwareInterface : public hardware_interface::SystemInterface, public KUKA::FRI::LBRClient {
 
     public:
         FRIHardwareInterface() : app_(connection_, *this) { };
         ~FRIHardwareInterface() = default;
 
         // hardware interface
-        hardware_interface::return_type configure(const hardware_interface::HardwareInfo& system_info) override;  // check ros2 control and set status
+        CallbackReturn on_init(const hardware_interface::HardwareInfo & info) override; // check ros2 control and set status
         std::vector<hardware_interface::StateInterface> export_state_interfaces() override;
         std::vector<hardware_interface::CommandInterface> export_command_interfaces() override;
 
         hardware_interface::return_type prepare_command_mode_switch(const std::vector<std::string>& start_interfaces, const std::vector<std::string>& stop_interfaces) override;  // not supported in FRI
 
-        hardware_interface::return_type start() override;
-        hardware_interface::return_type stop() override;
+        CallbackReturn on_activate(const rclcpp_lifecycle::State & previous_state) override;
+        CallbackReturn on_deactivate(const rclcpp_lifecycle::State & previous_state) override;
 
         hardware_interface::return_type read() override;
         hardware_interface::return_type write() override;
