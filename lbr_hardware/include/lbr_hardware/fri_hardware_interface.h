@@ -65,8 +65,8 @@ class FRIHardwareInterface : public hardware_interface::BaseInterface<hardware_i
         std::vector<double> hw_effort_;        // accessible through FRI
 
         // commands
-        std::vector<double> hw_position_command;  // supported by FRI
-        std::vector<double> hw_effort_command;    // supported by FRI
+        std::vector<double> hw_position_command_;  // supported by FRI
+        std::vector<double> hw_effort_command_;    // supported by FRI
 
         // FRI
         KUKA::FRI::UdpConnection connection_;

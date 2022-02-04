@@ -12,8 +12,8 @@ hardware_interface::return_type FRIHardwareInterface::configure(const hardware_i
     hw_effort_.resize(KUKA::FRI::LBRState::NUMBER_OF_JOINTS, std::numeric_limits<double>::quiet_NaN());
 
     // command interface references
-    hw_position_command.resize(KUKA::FRI::LBRState::NUMBER_OF_JOINTS, std::numeric_limits<double>::quiet_NaN());
-    hw_effort_command.resize(KUKA::FRI::LBRState::NUMBER_OF_JOINTS, std::numeric_limits<double>::quiet_NaN());
+    hw_position_command_.resize(KUKA::FRI::LBRState::NUMBER_OF_JOINTS, std::numeric_limits<double>::quiet_NaN());
+    hw_effort_command_.resize(KUKA::FRI::LBRState::NUMBER_OF_JOINTS, std::numeric_limits<double>::quiet_NaN());
 
     // other hardware parameters
     hw_operation_mode_ = info_.hardware_parameters["operation_mode"];
@@ -113,12 +113,12 @@ std::vector<hardware_interface::CommandInterface> FRIHardwareInterface::export_c
     for (std::size_t i = 0; i < info_.joints.size(); i++) {
         // position interface
         command_interfaces.emplace_back(
-            info_.joints[i].name, hardware_interface::HW_IF_POSITION, &hw_position_command[i]
+            info_.joints[i].name, hardware_interface::HW_IF_POSITION, &hw_position_command_[i]
         );
 
         // effort interface
         command_interfaces.emplace_back(
-            info_.joints[i].name, hardware_interface::HW_IF_EFFORT, &hw_effort_command[i]
+            info_.joints[i].name, hardware_interface::HW_IF_EFFORT, &hw_effort_command_[i]
         );
     }
 
@@ -226,19 +226,19 @@ void FRIHardwareInterface::command() {
             RCLCPP_FATAL(rclcpp::get_logger(FRI_HW_LOGGER), "No client command mode available.");
             break;
         case KUKA::FRI::EClientCommandMode::POSITION:
-            if (std::isnan(hw_position_command[0])) { 
+            if (std::isnan(hw_position_command_[0])) { 
                 KUKA::FRI::LBRClient::command();
             }
             else {
-                robotCommand().setJointPosition(hw_position_command.data());
+                robotCommand().setJointPosition(hw_position_command_.data());
             }
             break;
         case KUKA::FRI::EClientCommandMode::TORQUE:
-            if (std::isnan(hw_effort_command[0])) {
+            if (std::isnan(hw_effort_command_[0])) {
                 KUKA::FRI::LBRClient::command();
             } 
             else {
-                robotCommand().setTorque(hw_effort_command.data());
+                robotCommand().setTorque(hw_effort_command_.data());
             }
             break;
         case KUKA::FRI::EClientCommandMode::WRENCH:
