@@ -20,6 +20,7 @@ find_package(fri REQUIRED)
 add_library(
   ${PROJECT_NAME}
   SHARED
+  src/fri_hardware_interface_client_application.cpp
   src/fri_hardware_interface.cpp
 )
 

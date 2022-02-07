@@ -21,7 +21,7 @@ hardware_interface::return_type FRIHardwareInterface::configure(const hardware_i
     info_.hardware_parameters["remote_host"] == "INADDR_ANY" ? hw_remote_host_ = NULL : hw_remote_host_ = info_.hardware_parameters["remote_host"].c_str();
 
     if (30200 > hw_port_ || 
-        30209 < hw_port_
+        30209 <= hw_port_
     ) {
         RCLCPP_FATAL(rclcpp::get_logger(FRI_HW_LOGGER), "Expected port in [30200, 30209]. Found %d.", hw_port_);
         return hardware_interface::return_type::ERROR;
@@ -155,7 +155,14 @@ hardware_interface::return_type FRIHardwareInterface::stop() {
     return hardware_interface::return_type::OK;
 }
 
-hardware_interface::return_type FRIHardwareInterface::read() { 
+hardware_interface::return_type FRIHardwareInterface::read() {
+    // read incoming data from controller
+    if (!app_.receiveAndDecode()) {
+        RCLCPP_ERROR(rclcpp::get_logger(FRI_HW_LOGGER), "Failed to receive and decode data from controller.");
+        return hardware_interface::return_type::ERROR;  
+    };
+
+    // get the position and efforts and share them with exposed state interfaces
     const double* position = robotState().getMeasuredJointPosition();
     hw_position_.assign(position, position+KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
     const double* effort = robotState().getMeasuredTorque();
@@ -165,10 +172,13 @@ hardware_interface::return_type FRIHardwareInterface::read() {
 }
 
 hardware_interface::return_type FRIHardwareInterface::write() {
-    // commands periodically executed in FRIHardwareInterface::command() through app_.step()
-    if (!app_.step()) {
+    // callback callst LBRClient's (this) method, e.g. onStateChange(), command()
+    app_.callback();
+    if (!app_.encodeAndSend()) {
+        RCLCPP_ERROR(rclcpp::get_logger(FRI_HW_LOGGER), "Failed to encode and send data to controller.");
         return hardware_interface::return_type::ERROR;
-    }
+    };
+
     return hardware_interface::return_type::OK;
 }
 
