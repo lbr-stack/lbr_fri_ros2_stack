@@ -62,10 +62,7 @@ class FRIHardwareInterface : public hardware_interface::BaseInterface<hardware_i
         // track command mode as FRI does not support switches
         bool command_mode_init_;
 
-<<<<<<< HEAD
-=======
         // utilities
->>>>>>> foxy-standalone
         std::string fri_e_session_state_to_string_(const KUKA::FRI::ESessionState& state);
 };
 
