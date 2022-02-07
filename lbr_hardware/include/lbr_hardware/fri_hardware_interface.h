@@ -11,30 +11,21 @@
 #include <hardware_interface/handle.hpp>
 #include <hardware_interface/types/hardware_interface_type_values.hpp>
 #include <hardware_interface/types/hardware_interface_status_values.hpp>
-#include <fri/friLBRState.h>
-#include <fri/friLBRClient.h>
+
 #include <fri/friUdpConnection.h>
-#include <fri/friClientApplication.h>
+#include <fri/friClientData.h>
+#include <fri/friLBRState.h>
+#include <fri/friLBRCommand.h>
+
 #include <controller_manager/controller_manager.hpp>
 
-// add thread?
-// load basic plugin
-// pluginlib https://docs.ros.org/en/foxy/Tutorials/Pluginlib.html
-
-// todo: visibility control for windows compilation
-// see #include <hardware_interface/system.hpp> -> HARDWARE_INTERFACE_PUBLIC
-// and https://github.com/ros-controls/ros2_control_demos/blob/master/ros2_control_demo_hardware/include/ros2_control_demo_hardware/rrbot_system_multi_interface.hpp
-// https://jeffzzq.medium.com/designing-a-ros2-robot-7c31a62c535a
-// https://ros-controls.github.io/control.ros.org/getting_started.html#hardware-components
-
-// galactic: http://control.ros.org/ros2_control/hardware_interface/doc/hardware_components_userdoc.html
 
 namespace LBR {
 
-class FRIHardwareInterface : public hardware_interface::BaseInterface<hardware_interface::SystemInterface>, public KUKA::FRI::LBRClient {
+class FRIHardwareInterface : public hardware_interface::BaseInterface<hardware_interface::SystemInterface> {
 
     public:
-        FRIHardwareInterface() : app_(connection_, *this) { };
+        FRIHardwareInterface();
         ~FRIHardwareInterface() = default;
 
         // hardware interface
@@ -50,13 +41,6 @@ class FRIHardwareInterface : public hardware_interface::BaseInterface<hardware_i
         hardware_interface::return_type read() override;
         hardware_interface::return_type write() override;
 
-        // FRI
-        void onStateChange(KUKA::FRI::ESessionState old_state, KUKA::FRI::ESessionState new_state) override;
-        // void monitor() override; // possibly publish full state to topic?
-        // void waitForCommand() override;
-        void command() override;
-        void step();
-
     private:
         std::string FRI_HW_LOGGER = "FRIHardwareInterface";
 
@@ -70,7 +54,12 @@ class FRIHardwareInterface : public hardware_interface::BaseInterface<hardware_i
 
         // FRI
         KUKA::FRI::UdpConnection connection_;
-        KUKA::FRI::ClientApplication app_;
+
+        std::unique_ptr<KUKA::FRI::ClientData> lbr_data_;
+        std::shared_ptr<KUKA::FRI::LBRState> lbr_state_;      // points to data in lbr_data_
+        std::shared_ptr<KUKA::FRI::LBRCommand> lbr_command_;  // points to data in lbr_data_
+
+        int buffer_size_;  // number of bits received from controller
 
         std::string hw_operation_mode_;
         std::uint16_t hw_port_;
@@ -79,11 +68,13 @@ class FRIHardwareInterface : public hardware_interface::BaseInterface<hardware_i
         // track command mode as FRI does not support switches
         bool command_mode_init_;
 
-        // Communication thread
-        std::thread fri_thread_;
-
+        // utilities
         std::string fri_e_session_state_to_string_(const KUKA::FRI::ESessionState& state);
         std::string fri_e_operation_mode_to_string_(const KUKA::FRI::EOperationMode& mode);
+
+        hardware_interface::return_type receive_and_decode();  // mimics decoding in KUKA::FRI::ClientApplication::step()
+        hardware_interface::return_type encode_and_send();     // mimics encoding in KUKA::FRI::ClientApplication::step()
+        void fri_callback();
 };
 
 } // end of name space LBR
