@@ -2,18 +2,6 @@
 
 namespace LBR {
 
-FRIHardwareInterface::FRIHardwareInterface() {
-    // see KUKA::FRI::LBRClient::createData()
-    lbr_data_ = std::make_unique<KUKA::FRI::ClientData>(KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
-    lbr_state_ = std::make_shared<KUKA::FRI::LBRState>(&lbr_data_->monitoringMsg);
-    lbr_command_ = std::make_shared<KUKA::FRI::LBRCommand>(&lbr_data_->commandMsg, &lbr_data_->monitoringMsg);
-
-    lbr_data_->expectedMonitorMsgID = lbr_state_->LBRMONITORMESSAGEID;
-    lbr_data_->commandMsg.header.messageIdentifier = lbr_command_->LBRCOMMANDMESSAGEID;
-
-    buffer_size_ = 0;
-}
-
 hardware_interface::return_type FRIHardwareInterface::configure(const hardware_interface::HardwareInfo& system_info) {
     if (this->configure_default(system_info) != hardware_interface::return_type::OK) {
         return hardware_interface::return_type::ERROR;
@@ -158,24 +146,14 @@ hardware_interface::return_type FRIHardwareInterface::prepare_command_mode_switc
 }
 
 hardware_interface::return_type FRIHardwareInterface::start() {
-    if (connection_.isOpen()) {
-        RCLCPP_WARN(rclcpp::get_logger(FRI_HW_LOGGER), "Client application already connected.");
-    }
-
-    RCLCPP_INFO(rclcpp::get_logger(FRI_HW_LOGGER), "Trying to connect to controller with IP %s at port %d.", hw_remote_host_ ? hw_remote_host_ : "INADDR_ANY", hw_port_);
-    if (!connection_.open(hw_port_, hw_remote_host_)) {
-        RCLCPP_FATAL(rclcpp::get_logger(FRI_HW_LOGGER), "Could not connect to controller with IP %s at port %d.", hw_remote_host_ ? hw_remote_host_ : "INADDR_ANY", hw_port_);
-        return hardware_interface::return_type::ERROR;
-    }
-    RCLCPP_INFO(rclcpp::get_logger(FRI_HW_LOGGER), "Connection to controller established.");
-    
+    app_.connect(hw_port_, hw_remote_host_);    
     status_ = hardware_interface::status::STARTED;
     return hardware_interface::return_type::OK;
 }
 
 hardware_interface::return_type FRIHardwareInterface::stop() {
     RCLCPP_INFO(rclcpp::get_logger(FRI_HW_LOGGER), "Disconnecting FRI...");
-    if (connection_.isOpen()) connection_.close();
+    app_.disconnect();
     RCLCPP_INFO(rclcpp::get_logger(FRI_HW_LOGGER), "Done.");
 
     command_mode_init_ = false;
@@ -184,29 +162,84 @@ hardware_interface::return_type FRIHardwareInterface::stop() {
     return hardware_interface::return_type::OK;
 }
 
-hardware_interface::return_type FRIHardwareInterface::read() { 
-    if (!(this->receive_and_decode() == hardware_interface::return_type::OK)) {
-        RCLCPP_ERROR(rclcpp::get_logger(FRI_HW_LOGGER), "Failed to receive and decode message.");
-        return hardware_interface::return_type::ERROR;
+hardware_interface::return_type FRIHardwareInterface::read() {
+    // read incoming data from controller
+    if (!app_.receiveAndDecode()) {
+        RCLCPP_ERROR(rclcpp::get_logger(FRI_HW_LOGGER), "Failed to receive and decode data from controller.");
+        return hardware_interface::return_type::ERROR;  
     };
 
     // get the position and efforts and share them with exposed state interfaces
-    // (lbr_state_ shares data with lbr_data_)
-    const double* position = lbr_state_->getMeasuredJointPosition();
+    const double* position = robotState().getMeasuredJointPosition();
     hw_position_.assign(position, position+KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
-    const double* effort = lbr_state_->getMeasuredTorque();
+    const double* effort = robotState().getMeasuredTorque();
     hw_effort_.assign(effort, effort+KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
 
-    return this->callbacks();
+    return hardware_interface::return_type::OK;
 }
 
 hardware_interface::return_type FRIHardwareInterface::write() {
-    if (!(this->encode_and_send() == hardware_interface::return_type::OK)) {
-        RCLCPP_ERROR(rclcpp::get_logger(FRI_HW_LOGGER), "Failed to encode and send message.");
+    // callback callst LBRClient's (this) method, e.g. onStateChange(), command()
+    app_.callback();
+    if (!app_.encodeAndSend()) {
+        RCLCPP_ERROR(rclcpp::get_logger(FRI_HW_LOGGER), "Failed to encode and send data to controller.");
         return hardware_interface::return_type::ERROR;
     };
 
     return hardware_interface::return_type::OK;
+}
+
+// FRI
+void FRIHardwareInterface::onStateChange(KUKA::FRI::ESessionState old_state, KUKA::FRI::ESessionState new_state) {
+    RCLCPP_INFO(
+        rclcpp::get_logger(FRI_HW_LOGGER), 
+        "LBR switched from %s to %s.",
+        fri_e_session_state_to_string_(old_state).c_str(),
+        fri_e_session_state_to_string_(new_state).c_str()
+    );
+
+    if (old_state == KUKA::FRI::ESessionState::COMMANDING_ACTIVE) {
+        RCLCPP_INFO(rclcpp::get_logger(FRI_HW_LOGGER), "Controller manager does not allow resets. Command interfaces can't be updated to current state. Shutting down.");
+        this->stop();
+        rclcpp::shutdown();
+    }
+
+    if (new_state == KUKA::FRI::ESessionState::IDLE) {
+        RCLCPP_INFO(rclcpp::get_logger(FRI_HW_LOGGER), "FRI stoppped. Shutting down.");
+        this->stop();
+        rclcpp::shutdown();
+    }
+}
+
+void FRIHardwareInterface::command() {
+    switch (robotState().getClientCommandMode()) {
+        case KUKA::FRI::EClientCommandMode::NO_COMMAND_MODE:
+            RCLCPP_FATAL(rclcpp::get_logger(FRI_HW_LOGGER), "No client command mode available.");
+            break;
+        case KUKA::FRI::EClientCommandMode::POSITION:
+            if (std::isnan(hw_position_command_[0])) { 
+                KUKA::FRI::LBRClient::command();
+            }
+            else {
+                robotCommand().setJointPosition(hw_position_command_.data()); // control manager stores internal value, which needs to be updated
+            }
+            break;
+        case KUKA::FRI::EClientCommandMode::TORQUE:
+            if (std::isnan(hw_effort_command_[0])) {
+                KUKA::FRI::LBRClient::command();
+            } 
+            else {
+                robotCommand().setTorque(hw_effort_command_.data());
+            }
+            break;
+        case KUKA::FRI::EClientCommandMode::WRENCH:
+            RCLCPP_ERROR(rclcpp::get_logger(FRI_HW_LOGGER), "Wrench command mode not supported through hardware interface.");
+            KUKA::FRI::LBRClient::command();
+            break;
+        default:
+            KUKA::FRI::LBRClient::command();
+            break;
+    }
 }
 
 std::string FRIHardwareInterface::fri_e_session_state_to_string_(const KUKA::FRI::ESessionState& state) {
@@ -225,175 +258,6 @@ std::string FRIHardwareInterface::fri_e_session_state_to_string_(const KUKA::FRI
             RCLCPP_FATAL(rclcpp::get_logger(FRI_HW_LOGGER), "Received unknown state.");
             throw std::runtime_error("Reveived unknown state.");
     }
-}
-
-std::string FRIHardwareInterface::fri_e_operation_mode_to_string_(const KUKA::FRI::EOperationMode& mode) {
-    switch (mode) {
-        case KUKA::FRI::EOperationMode::TEST_MODE_1:
-            return "TEST_MODE_1";
-        case KUKA::FRI::EOperationMode::TEST_MODE_2:
-            return "TEST_MODE_2";
-        case KUKA::FRI::EOperationMode::AUTOMATIC_MODE:
-            return "AUTOMATIC_MODE";
-        default:
-            RCLCPP_FATAL(rclcpp::get_logger(FRI_HW_LOGGER), "Received unknown operation mode.");
-            throw std::runtime_error("Received unknown mode.");
-    }
-}
-
-hardware_interface::return_type FRIHardwareInterface::receive_and_decode() {
-    // **************************************************************************
-    // Receive and decode new monitoring message, see KUKA::FRI::ClientApplication::step
-    // **************************************************************************
-    if (!connection_.isOpen()) {
-        RCLCPP_FATAL(rclcpp::get_logger(FRI_HW_LOGGER), "Connection to controller with IP %s at port %d lost.", hw_remote_host_ ? hw_remote_host_ : "INADDR_ANY", hw_port_);
-        return hardware_interface::return_type::ERROR;
-    }
-
-    buffer_size_ = connection_.receive(lbr_data_->receiveBuffer, KUKA::FRI::FRI_MONITOR_MSG_MAX_SIZE);
-
-    if (buffer_size_ <= 0) {  // TODO: buffer_size_ == 0 -> connection closed (maybe go to IDLE instead of stopping?)
-        RCLCPP_ERROR(rclcpp::get_logger(FRI_HW_LOGGER), "Failed while trying to receive monitoring message.");
-        return hardware_interface::return_type::ERROR;
-    }
-
-    if (!lbr_data_->decoder.decode(lbr_data_->receiveBuffer, buffer_size_)) {
-        return hardware_interface::return_type::ERROR;
-    }
-
-    // check message type (so that our wrappers match)
-    if (lbr_data_->expectedMonitorMsgID != lbr_data_->monitoringMsg.header.messageIdentifier) {
-        RCLCPP_ERROR(rclcpp::get_logger(FRI_HW_LOGGER), 
-            "Incompatible IDs for received message, got: %d, expected %d.",
-            (int)lbr_data_->monitoringMsg.header.messageIdentifier,
-            (int)lbr_data_->expectedMonitorMsgID
-        );
-        return hardware_interface::return_type::ERROR;
-    }
-
-    return hardware_interface::return_type::OK;
-}
-
-hardware_interface::return_type FRIHardwareInterface::callbacks() {
-    // **************************************************************************
-    // callbacks
-    // **************************************************************************
-    // reset commmand message before callbacks
-    lbr_data_->resetCommandMessage();
-
-    // callbacks for robot client
-    KUKA::FRI::ESessionState currentState = (KUKA::FRI::ESessionState)lbr_data_->monitoringMsg.connectionInfo.sessionState;
-
-    if (lbr_data_->lastState != currentState) {
-        this->on_state_change(lbr_data_->lastState, currentState);
-        lbr_data_->lastState = currentState;
-    }
-
-    switch (currentState) {
-        case KUKA::FRI::MONITORING_WAIT:
-        case KUKA::FRI::MONITORING_READY:
-            return this->monitor();
-        case KUKA::FRI::COMMANDING_WAIT:
-            return this->wait_for_command();
-        case KUKA::FRI::COMMANDING_ACTIVE:
-            return this->command();
-        case KUKA::FRI::IDLE:
-        default:
-            return hardware_interface::return_type::OK; // nothing to send back
-    }
-}
-
-hardware_interface::return_type FRIHardwareInterface::encode_and_send() {
-    // **************************************************************************
-    // Encode and send command message, see KUKA::FRI::ClientApplication::step
-    // **************************************************************************
-
-    lbr_data_->lastSendCounter++;
-    // check if its time to send an answer
-    if (lbr_data_->lastSendCounter >= lbr_data_->monitoringMsg.connectionInfo.receiveMultiplier) {
-        lbr_data_->lastSendCounter = 0;
-
-        // set sequence counters
-        lbr_data_->commandMsg.header.sequenceCounter = lbr_data_->sequenceCounter++;
-        lbr_data_->commandMsg.header.reflectedSequenceCounter = lbr_data_->monitoringMsg.header.sequenceCounter;
-
-        if (!lbr_data_->encoder.encode(lbr_data_->sendBuffer, buffer_size_)) {
-            RCLCPP_ERROR(rclcpp::get_logger(FRI_HW_LOGGER), "Failed to encode data.");
-            return hardware_interface::return_type::ERROR;
-        }
-
-        if (!connection_.send(lbr_data_->sendBuffer, buffer_size_)) {
-            RCLCPP_ERROR(rclcpp::get_logger(FRI_HW_LOGGER), "Failed while trying to send command message.");
-            return hardware_interface::return_type::ERROR;
-        }
-    }
-
-    return hardware_interface::return_type::OK;
-}
-
-void FRIHardwareInterface::on_state_change(KUKA::FRI::ESessionState old_state, KUKA::FRI::ESessionState new_state) {
-    RCLCPP_INFO(
-        rclcpp::get_logger(FRI_HW_LOGGER), 
-        "LBR switched from %s to %s.",
-        fri_e_session_state_to_string_(old_state).c_str(),
-        fri_e_session_state_to_string_(new_state).c_str()
-    );
-
-    if (old_state == KUKA::FRI::ESessionState::COMMANDING_ACTIVE) {
-        RCLCPP_INFO(rclcpp::get_logger(FRI_HW_LOGGER), "Controller manager does not allow resets. Command interfaces can't be updated to current state. Shutting down.");
-        this->stop();
-        rclcpp::shutdown();
-    }
-
-    if (new_state == KUKA::FRI::ESessionState::IDLE) {
-        this->stop();
-        rclcpp::shutdown();
-    }
-}
-
-hardware_interface::return_type FRIHardwareInterface::monitor() {
-    lbr_command_->setJointPosition(lbr_state_->getCommandedJointPosition());
-    return hardware_interface::return_type::OK;
-}
-
-hardware_interface::return_type FRIHardwareInterface::wait_for_command() {
-    lbr_command_->setJointPosition(lbr_state_->getIpoJointPosition());
-    return hardware_interface::return_type::OK;
-}
-
-hardware_interface::return_type FRIHardwareInterface::command() {
-    // get values from command interfaces and set lbr_command_ with them
-    // (lbr_command_ in turn shares data with lbr_data_)
-    switch (lbr_state_->getClientCommandMode()) {
-        case KUKA::FRI::EClientCommandMode::NO_COMMAND_MODE:
-            RCLCPP_ERROR(rclcpp::get_logger(FRI_HW_LOGGER), "No client command mode available.");
-            return hardware_interface::return_type::ERROR;
-        case KUKA::FRI::EClientCommandMode::POSITION:
-            if (std::isnan(hw_position_command_[0])) { 
-                lbr_command_->setJointPosition(lbr_state_->getIpoJointPosition());
-            }
-            else {
-                lbr_command_->setJointPosition(hw_position_command_.data());
-            }
-            break;
-        case KUKA::FRI::EClientCommandMode::TORQUE:
-            if (std::isnan(hw_effort_command_[0])) {
-                lbr_command_->setTorque(lbr_state_->getMeasuredTorque());
-            } 
-            else {
-                lbr_command_->setTorque(hw_effort_command_.data());
-            }
-            break;
-        case KUKA::FRI::EClientCommandMode::WRENCH:
-            RCLCPP_ERROR(rclcpp::get_logger(FRI_HW_LOGGER), "Wrench command mode not supported through hardware interface.");
-            lbr_command_->setJointPosition(lbr_state_->getIpoJointPosition());
-            return hardware_interface::return_type::ERROR;
-        default:
-            lbr_command_->setJointPosition(lbr_state_->getIpoJointPosition());
-            break;
-    }
-
-    return hardware_interface::return_type::OK;
 }
 
 } // end of namespace LBR

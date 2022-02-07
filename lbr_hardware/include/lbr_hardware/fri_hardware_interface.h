@@ -2,8 +2,6 @@
 
 #include <string>
 #include <vector>
-#include <memory>
-#include <thread>
 
 #include <rclcpp/rclcpp.hpp>
 #include <hardware_interface/base_interface.hpp>
@@ -11,21 +9,20 @@
 #include <hardware_interface/handle.hpp>
 #include <hardware_interface/types/hardware_interface_type_values.hpp>
 #include <hardware_interface/types/hardware_interface_status_values.hpp>
+#include <controller_manager/controller_manager.hpp>
 
 #include <fri/friUdpConnection.h>
-#include <fri/friClientData.h>
-#include <fri/friLBRState.h>
-#include <fri/friLBRCommand.h>
+#include <fri/friLBRClient.h>
 
-#include <controller_manager/controller_manager.hpp>
+#include <lbr_hardware/fri_hardware_interface_client_application.h>
 
 
 namespace LBR {
 
-class FRIHardwareInterface : public hardware_interface::BaseInterface<hardware_interface::SystemInterface> {
+class FRIHardwareInterface : public hardware_interface::BaseInterface<hardware_interface::SystemInterface>, KUKA::FRI::LBRClient {
 
     public:
-        FRIHardwareInterface();
+        FRIHardwareInterface() : app_(connection_, *this) { };
         ~FRIHardwareInterface() = default;
 
         // hardware interface
@@ -41,6 +38,10 @@ class FRIHardwareInterface : public hardware_interface::BaseInterface<hardware_i
         hardware_interface::return_type read() override;
         hardware_interface::return_type write() override;
 
+        // FRI
+        void onStateChange(KUKA::FRI::ESessionState old_state, KUKA::FRI::ESessionState new_state) override;
+        void command() override;
+
     private:
         std::string FRI_HW_LOGGER = "FRIHardwareInterface";
 
@@ -54,12 +55,7 @@ class FRIHardwareInterface : public hardware_interface::BaseInterface<hardware_i
 
         // FRI
         KUKA::FRI::UdpConnection connection_;
-
-        std::unique_ptr<KUKA::FRI::ClientData> lbr_data_;
-        std::shared_ptr<KUKA::FRI::LBRState> lbr_state_;      // points to data in lbr_data_
-        std::shared_ptr<KUKA::FRI::LBRCommand> lbr_command_;  // points to data in lbr_data_
-
-        int buffer_size_;  // number of bits received from controller
+        KUKA::FRI::FRIHardwareInterfaceClientApplication app_;
 
         std::string hw_operation_mode_;
         std::uint16_t hw_port_;
@@ -71,15 +67,6 @@ class FRIHardwareInterface : public hardware_interface::BaseInterface<hardware_i
         // utilities
         std::string fri_e_session_state_to_string_(const KUKA::FRI::ESessionState& state);
         std::string fri_e_operation_mode_to_string_(const KUKA::FRI::EOperationMode& mode);
-
-        hardware_interface::return_type receive_and_decode();  // mimics decoding in KUKA::FRI::ClientApplication::step()
-        hardware_interface::return_type callbacks();                                      // mimics callbacks in KUKA::FRI::ClientApplication::step()
-        hardware_interface::return_type encode_and_send();     // mimics encoding in KUKA::FRI::ClientApplication::step()
-
-        void on_state_change(KUKA::FRI::ESessionState old_state, KUKA::FRI::ESessionState new_state);  // mimics LBRClient::onStateChange()
-        hardware_interface::return_type monitor();                                                                                // mimics LBRClient::monitor()
-        hardware_interface::return_type wait_for_command();                                                                       // mimics LBRClient::waitForCommand()
-        hardware_interface::return_type command();                                                                                // mimics LBRClient::command()
 };
 
 } // end of name space LBR
