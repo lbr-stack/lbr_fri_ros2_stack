@@ -61,8 +61,8 @@ def generate_launch_description():
 
     # Prepare controller manager and other required nodes
     controller_manager = Node(
-        package="controller_manager",
-        executable="ros2_control_node",
+        package="lbr_hardware",
+        executable="fri_ros2_control_node",
         parameters=[robot_description, controller_configurations],
         output="screen",
         condition=UnlessCondition(LaunchConfiguration("sim")),
