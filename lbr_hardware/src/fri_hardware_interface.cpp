@@ -174,13 +174,13 @@ hardware_interface::return_type FRIHardwareInterface::start() {
 }
 
 hardware_interface::return_type FRIHardwareInterface::stop() {
-    // RCLCPP_INFO(rclcpp::get_logger(FRI_HW_LOGGER), "Disconnecting FRI...");
-    // app_.disconnect();
-    // RCLCPP_INFO(rclcpp::get_logger(FRI_HW_LOGGER), "Done.");
+    RCLCPP_INFO(rclcpp::get_logger(FRI_HW_LOGGER), "Disconnecting FRI...");
+    if (connection_.isOpen()) connection_.close();
+    RCLCPP_INFO(rclcpp::get_logger(FRI_HW_LOGGER), "Done.");
 
-    // command_mode_init_ = false;
+    command_mode_init_ = false;
 
-    // status_ = hardware_interface::status::STOPPED;
+    status_ = hardware_interface::status::STOPPED;
     return hardware_interface::return_type::OK;
 }
 
@@ -190,9 +190,6 @@ hardware_interface::return_type FRIHardwareInterface::read() {
         return hardware_interface::return_type::ERROR;
     };
 
-    // app->receive_and_decode()
-    // app->callback()
-
     // get the position and efforts and share them with exposed state interfaces
     // (lbr_state_ shares data with lbr_data_)
     const double* position = lbr_state_->getMeasuredJointPosition();
@@ -200,108 +197,17 @@ hardware_interface::return_type FRIHardwareInterface::read() {
     const double* effort = lbr_state_->getMeasuredTorque();
     hw_effort_.assign(effort, effort+KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
 
-//    // **************************************************************************
-//    // callbacks
-//    // **************************************************************************
-//    // reset commmand message before callbacks
-//    lbr_data_->resetCommandMessage();
-   
-//    // callbacks for robot client
-//    ESessionState currentState = (ESessionState)lbr_data_->monitoringMsg.connectionInfo.sessionState;
-   
-//    if (lbr_data_->lastState != currentState) {
-//       _robotClient->onStateChange(_data->lastState, currentState);
-//       lbr_data_->lastState = currentState;
-//    }
-   
-//    switch (currentState)
-//    {
-//       case MONITORING_WAIT:
-//       case MONITORING_READY:
-//          _robotClient->monitor();
-//          break;
-//       case COMMANDING_WAIT:
-//          _robotClient->waitForCommand();
-//          break;
-//       case COMMANDING_ACTIVE:
-//          _robotClient->command();
-//          break;
-//       case IDLE:
-//       default:
-//          return true; // nothing to send back
-//    }
-
-//    // callback for transformation client
-//    if(_trafoClient != NULL)
-//    {
-//       _trafoClient->provide();
-//    }
-
-
-
-
-
-    return hardware_interface::return_type::OK;
+    return this->callbacks();
 }
 
 hardware_interface::return_type FRIHardwareInterface::write() {
-    // // get values from command interfaces and set lbr_command_ with them
-    // // (lbr_command_ in turn shares data with lbr_data_)
-    // switch (lbr_state_->getClientCommandMode()) {
-    //     case KUKA::FRI::EClientCommandMode::NO_COMMAND_MODE:
-    //         RCLCPP_WARN(rclcpp::get_logger(FRI_HW_LOGGER), "No client command mode available.");
-    //         return hardware_interface::return_type::ERROR;
-    //     case KUKA::FRI::EClientCommandMode::POSITION:
-    //         if (std::isnan(hw_position_command_[0])) { 
-    //             lbr_command_->setJointPosition(lbr_state_->getIpoJointPosition());
-    //         }
-    //         else {
-    //             // lbr_command_->setJointPosition(hw_position_command_.data());
-    //             lbr_command_->setJointPosition(lbr_state_->getIpoJointPosition());
-    //         }
-    //         break;
-    //     case KUKA::FRI::EClientCommandMode::TORQUE:
-    //         if (std::isnan(hw_effort_command_[0])) {
-    //             lbr_command_->setTorque(lbr_state_->getMeasuredTorque());
-    //         } 
-    //         else {
-    //             // lbr_command_->setTorque(hw_effort_command_.data());
-    //             lbr_command_->setTorque(lbr_state_->getMeasuredTorque());
-    //         }
-    //         break;
-    //     case KUKA::FRI::EClientCommandMode::WRENCH:
-    //         RCLCPP_ERROR(rclcpp::get_logger(FRI_HW_LOGGER), "Wrench command mode not supported through hardware interface.");
-    //         lbr_command_->setJointPosition(lbr_state_->getIpoJointPosition());
-    //         return hardware_interface::return_type::ERROR;
-    //     default:
-    //         lbr_command_->setJointPosition(lbr_state_->getIpoJointPosition());
-    //         break;
-    // }
-    lbr_command_->setJointPosition(lbr_state_->getCommandedJointPosition());
-
     if (!(this->encode_and_send() == hardware_interface::return_type::OK)) {
         RCLCPP_ERROR(rclcpp::get_logger(FRI_HW_LOGGER), "Failed to encode and send message.");
         return hardware_interface::return_type::ERROR;
     };
 
-    // app->encode_and_send()
-
     return hardware_interface::return_type::OK;
 }
-
-// // FRI
-// void FRIHardwareInterface::onStateChange(KUKA::FRI::ESessionState old_state, KUKA::FRI::ESessionState new_state) {
-//     RCLCPP_INFO(
-//         rclcpp::get_logger(FRI_HW_LOGGER), 
-//         "LBR switched from %s to %s.",
-//         fri_e_session_state_to_string_(old_state).c_str(),
-//         fri_e_session_state_to_string_(new_state).c_str()
-//     );
-
-//     if (new_state == KUKA::FRI::ESessionState::IDLE) {
-//         this->stop();
-//     }
-// }
 
 std::string FRIHardwareInterface::fri_e_session_state_to_string_(const KUKA::FRI::ESessionState& state) {
     switch (state) {
@@ -368,6 +274,35 @@ hardware_interface::return_type FRIHardwareInterface::receive_and_decode() {
     return hardware_interface::return_type::OK;
 }
 
+hardware_interface::return_type FRIHardwareInterface::callbacks() {
+    // **************************************************************************
+    // callbacks
+    // **************************************************************************
+    // reset commmand message before callbacks
+    lbr_data_->resetCommandMessage();
+
+    // callbacks for robot client
+    KUKA::FRI::ESessionState currentState = (KUKA::FRI::ESessionState)lbr_data_->monitoringMsg.connectionInfo.sessionState;
+
+    if (lbr_data_->lastState != currentState) {
+        this->on_state_change(lbr_data_->lastState, currentState);
+        lbr_data_->lastState = currentState;
+    }
+
+    switch (currentState) {
+        case KUKA::FRI::MONITORING_WAIT:
+        case KUKA::FRI::MONITORING_READY:
+            return this->monitor();
+        case KUKA::FRI::COMMANDING_WAIT:
+            return this->wait_for_command();
+        case KUKA::FRI::COMMANDING_ACTIVE:
+            return this->command();
+        case KUKA::FRI::IDLE:
+        default:
+            return hardware_interface::return_type::OK; // nothing to send back
+    }
+}
+
 hardware_interface::return_type FRIHardwareInterface::encode_and_send() {
     // **************************************************************************
     // Encode and send command message, see KUKA::FRI::ClientApplication::step
@@ -387,11 +322,75 @@ hardware_interface::return_type FRIHardwareInterface::encode_and_send() {
             return hardware_interface::return_type::ERROR;
         }
 
-        RCLCPP_INFO(rclcpp::get_logger(FRI_HW_LOGGER), "trying to send data");
         if (!connection_.send(lbr_data_->sendBuffer, buffer_size_)) {
             RCLCPP_ERROR(rclcpp::get_logger(FRI_HW_LOGGER), "Failed while trying to send command message.");
             return hardware_interface::return_type::ERROR;
         }
+    }
+
+    return hardware_interface::return_type::OK;
+}
+
+void FRIHardwareInterface::on_state_change(KUKA::FRI::ESessionState old_state, KUKA::FRI::ESessionState new_state) {
+    RCLCPP_INFO(
+        rclcpp::get_logger(FRI_HW_LOGGER), 
+        "LBR switched from %s to %s.",
+        fri_e_session_state_to_string_(old_state).c_str(),
+        fri_e_session_state_to_string_(new_state).c_str()
+    );
+
+    if (old_state == KUKA::FRI::ESessionState::COMMANDING_ACTIVE) {
+        RCLCPP_INFO(rclcpp::get_logger(FRI_HW_LOGGER), "Controller manager does not allow resets. Command interfaces can't be updated to current state. Shutting down.");
+        this->stop();
+        rclcpp::shutdown();
+    }
+
+    if (new_state == KUKA::FRI::ESessionState::IDLE) {
+        this->stop();
+        rclcpp::shutdown();
+    }
+}
+
+hardware_interface::return_type FRIHardwareInterface::monitor() {
+    lbr_command_->setJointPosition(lbr_state_->getCommandedJointPosition());
+    return hardware_interface::return_type::OK;
+}
+
+hardware_interface::return_type FRIHardwareInterface::wait_for_command() {
+    lbr_command_->setJointPosition(lbr_state_->getIpoJointPosition());
+    return hardware_interface::return_type::OK;
+}
+
+hardware_interface::return_type FRIHardwareInterface::command() {
+    // get values from command interfaces and set lbr_command_ with them
+    // (lbr_command_ in turn shares data with lbr_data_)
+    switch (lbr_state_->getClientCommandMode()) {
+        case KUKA::FRI::EClientCommandMode::NO_COMMAND_MODE:
+            RCLCPP_ERROR(rclcpp::get_logger(FRI_HW_LOGGER), "No client command mode available.");
+            return hardware_interface::return_type::ERROR;
+        case KUKA::FRI::EClientCommandMode::POSITION:
+            if (std::isnan(hw_position_command_[0])) { 
+                lbr_command_->setJointPosition(lbr_state_->getIpoJointPosition());
+            }
+            else {
+                lbr_command_->setJointPosition(hw_position_command_.data());
+            }
+            break;
+        case KUKA::FRI::EClientCommandMode::TORQUE:
+            if (std::isnan(hw_effort_command_[0])) {
+                lbr_command_->setTorque(lbr_state_->getMeasuredTorque());
+            } 
+            else {
+                lbr_command_->setTorque(hw_effort_command_.data());
+            }
+            break;
+        case KUKA::FRI::EClientCommandMode::WRENCH:
+            RCLCPP_ERROR(rclcpp::get_logger(FRI_HW_LOGGER), "Wrench command mode not supported through hardware interface.");
+            lbr_command_->setJointPosition(lbr_state_->getIpoJointPosition());
+            return hardware_interface::return_type::ERROR;
+        default:
+            lbr_command_->setJointPosition(lbr_state_->getIpoJointPosition());
+            break;
     }
 
     return hardware_interface::return_type::OK;

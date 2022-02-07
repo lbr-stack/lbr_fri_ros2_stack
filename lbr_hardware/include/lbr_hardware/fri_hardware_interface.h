@@ -73,8 +73,13 @@ class FRIHardwareInterface : public hardware_interface::BaseInterface<hardware_i
         std::string fri_e_operation_mode_to_string_(const KUKA::FRI::EOperationMode& mode);
 
         hardware_interface::return_type receive_and_decode();  // mimics decoding in KUKA::FRI::ClientApplication::step()
+        hardware_interface::return_type callbacks();                                      // mimics callbacks in KUKA::FRI::ClientApplication::step()
         hardware_interface::return_type encode_and_send();     // mimics encoding in KUKA::FRI::ClientApplication::step()
-        void fri_callback();
+
+        void on_state_change(KUKA::FRI::ESessionState old_state, KUKA::FRI::ESessionState new_state);  // mimics LBRClient::onStateChange()
+        hardware_interface::return_type monitor();                                                                                // mimics LBRClient::monitor()
+        hardware_interface::return_type wait_for_command();                                                                       // mimics LBRClient::waitForCommand()
+        hardware_interface::return_type command();                                                                                // mimics LBRClient::command()
 };
 
 } // end of name space LBR
