@@ -25,8 +25,8 @@ ros2 launch lbr_bringup lbr_bringup.launch.py model:=med7 sim:=false # model:=[i
 The controller (Sunrise Cabinet) receives commands from the ROS machine via the FRI. Therefore, the server application has to be pushed onto the Sunrise Cabinet.
 - Connect an ethernet cable to port X66 on the Sunrise Cabinet
 - By default, the controller's IP address is `172.31.1.147`, set your IP to `172.31.1.148` and ping the KUKA Sunrise Cabinet
-- [Install Sunrise Workbench](####install-sunrise-workbench) (Windows required)
-- [Synchronize the Server Application](####synchronize-the-server-application)
+- [Install Sunrise Workbench](###install-sunrise-workbench) (Windows required)
+- [Synchronize the Server Application](###synchronize-the-server-application)
 ### Install Sunrise Workbench
 This step requires Windows as OS. Sunrise Workbench is KUKA's Java IDE that allows you to program the LBR. 
 * Download it from the [RViM shared folder](https://emckclac.sharepoint.com/:u:/s/MT-BMEIS-RVIM/ETBf6gp3Ko5EvtJVziR8MZ4BLdeX8ysF13jTVmVreq0iZA?e=XJyagD) 
