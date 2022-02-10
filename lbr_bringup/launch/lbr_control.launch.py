@@ -61,11 +61,12 @@ def generate_launch_description():
 
     # Prepare controller manager and other required nodes
     controller_manager = Node(
-        package="controller_manager",
-        executable="ros2_control_node",
+        package="lbr_hardware",
+        executable="fri_ros2_control_node",
         parameters=[robot_description, controller_configurations],
         output="screen",
-        condition=UnlessCondition(LaunchConfiguration("sim"))
+        condition=UnlessCondition(LaunchConfiguration("sim")),
+        prefix="chrt -rr 99"  # launch with realtime priority, requries to set rtprio in /etc/security/limits.conf, e.g. <user> - rtprio 99
     )
 
     robot_state_publisher = Node(

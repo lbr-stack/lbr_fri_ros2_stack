@@ -7,9 +7,10 @@
 #include <rclcpp_lifecycle/state.hpp>
 #include <hardware_interface/system_interface.hpp>
 
-#include <fri/friLBRClient.h>
 #include <fri/friUdpConnection.h>
-#include <fri/friClientApplication.h>
+#include <fri/friLBRClient.h>
+
+#include <fri_hardware_interface_client_application.h>
 
 
 namespace LBR {
@@ -50,7 +51,7 @@ class FRIHardwareInterface : public hardware_interface::SystemInterface, public 
 
         // FRI
         KUKA::FRI::UdpConnection connection_;
-        KUKA::FRI::ClientApplication app_;
+        KUKA::FRI::FRIHardwareInterfaceClientApplication app_;
 
         std::uint16_t hw_port_;
         const char* hw_remote_host_;
@@ -58,6 +59,7 @@ class FRIHardwareInterface : public hardware_interface::SystemInterface, public 
         // track command mode as FRI does not support switches
         bool command_mode_init_;
 
+        // utilities
         std::string fri_e_session_state_to_string_(const KUKA::FRI::ESessionState& state);
 };
 

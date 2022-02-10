@@ -12,22 +12,32 @@ endif()
 
 find_package(ament_cmake REQUIRED)
 find_package(hardware_interface REQUIRED)
+find_package(controller_manager REQUIRED)
 find_package(pluginlib REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(fri REQUIRED)
 
-# Define target
+# Define targets
 add_library(
   ${PROJECT_NAME}
   SHARED
+  src/fri_hardware_interface_client_application.cpp
   src/fri_hardware_interface.cpp
+)
+
+add_executable(
+  fri_ros2_control_node
+  src/fri_ros2_control_node.cpp
 )
 
 # Add include directories for target
 target_include_directories(
   ${PROJECT_NAME}
+  PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
   PRIVATE
-  ${CMAKE_CURRENT_SOURCE_DIR}/include
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
 )
 
 # Link against dependencies
@@ -37,6 +47,12 @@ ament_target_dependencies(
   pluginlib
   rclcpp
   fri
+)
+
+ament_target_dependencies(
+  fri_ros2_control_node
+  controller_manager
+  rclcpp
 )
 
 pluginlib_export_plugin_description_file(hardware_interface lbr_hardware.xml)
@@ -59,9 +75,10 @@ install(
 )
 
 install(
-    TARGETS ${PROJECT_NAME}
+    TARGETS ${PROJECT_NAME} fri_ros2_control_node
     EXPORT export_${PROJECT_NAME}
-    LIBRARY DESTINATION lib
+    LIBRARY DESTINATION lib/${PROJECT_NAME}
+    RUNTIME DESTINATION lib/${PROJECT_NAME}
     INCLUDES DESTINATION include
 )
 
