@@ -1,27 +1,7 @@
 #include <lbr_hardware/fri_hardware_interface.h>
 
-#include <algorithm>
-#include <cmath>
-#include <exception>
-
-#include <franka/exception.h>
-#include <hardware_interface/handle.hpp>
-#include <hardware_interface/hardware_info.hpp>
-#include <hardware_interface/system_interface.hpp>
-#include <hardware_interface/types/hardware_interface_return_values.hpp>
-#include <hardware_interface/types/hardware_interface_type_values.hpp>
-#include <rclcpp/macros.hpp>
-#include <rclcpp/rclcpp.hpp>
-#include <algorithm>
-#include <array>
-#include <limits>
-#include <string>
-#include <vector>
 
 namespace LBR {
-
-using StateInterface = hardware_interface::StateInterface;
-using CommandInterface = hardware_interface::CommandInterface;
 
 CallbackReturn FRIHardwareInterface::on_init(const hardware_interface::HardwareInfo & system_info) {
     if (hardware_interface::SystemInterface::on_init(system_info) != CallbackReturn::SUCCESS)
@@ -64,12 +44,12 @@ CallbackReturn FRIHardwareInterface::on_init(const hardware_interface::HardwareI
             return CallbackReturn::ERROR;
         }
         for (auto& si: joint.state_interfaces) {
-            if (si.name != hardware_interface::HW_IF_POSITION &&
-                si.name != hardware_interface::HW_IF_EFFORT) {
+            if (si.name != "position" &&
+                si.name != "effort") {
                 RCLCPP_FATAL(
                     rclcpp::get_logger(FRI_HW_LOGGER),
                     "Joint %s received invalid state interface: %s. Expected %s or %s",
-                    joint.name.c_str(), si.name.c_str(), hardware_interface::HW_IF_POSITION, hardware_interface::HW_IF_EFFORT
+                    joint.name.c_str(), si.name.c_str(), "position", "effort"
                 );
                 return CallbackReturn::ERROR;
             }
@@ -84,12 +64,12 @@ CallbackReturn FRIHardwareInterface::on_init(const hardware_interface::HardwareI
             return CallbackReturn::ERROR;
         };
         for (auto& ci: joint.command_interfaces) {
-            if (ci.name != hardware_interface::HW_IF_POSITION &&
-                ci.name != hardware_interface::HW_IF_EFFORT) {
+            if (ci.name != "position" &&
+                ci.name != "effort") {
                 RCLCPP_FATAL(
                     rclcpp::get_logger(FRI_HW_LOGGER),
                     "Joint %s received invalid command interface: %s. Expected %s or %s.",
-                    joint.name.c_str(), ci.name.c_str(), hardware_interface::HW_IF_POSITION, hardware_interface::HW_IF_EFFORT
+                    joint.name.c_str(), ci.name.c_str(), "position", "effort"
                 );
                 return CallbackReturn::ERROR;
             }
@@ -99,7 +79,6 @@ CallbackReturn FRIHardwareInterface::on_init(const hardware_interface::HardwareI
     // command mode tracker
     command_mode_init_ = false;
 
-    //status_ = hardware_interface::status::CONFIGURED;
     return CallbackReturn::SUCCESS;
 }
 
@@ -109,12 +88,12 @@ std::vector<hardware_interface::StateInterface> FRIHardwareInterface::export_sta
     for (std::size_t i = 0; i < info_.joints.size(); i++) {
         // position interface
         state_interfaces.emplace_back(
-            info_.joints[i].name, hardware_interface::HW_IF_POSITION, &hw_position_[i]
+            info_.joints[i].name, "position", &hw_position_[i]
         );
 
         // effort interface
         state_interfaces.emplace_back(
-            info_.joints[i].name, hardware_interface::HW_IF_EFFORT, &hw_effort_[i]
+            info_.joints[i].name, "effort", &hw_effort_[i]
         );
     }
 
@@ -127,12 +106,12 @@ std::vector<hardware_interface::CommandInterface> FRIHardwareInterface::export_c
     for (std::size_t i = 0; i < info_.joints.size(); i++) {
         // position interface
         command_interfaces.emplace_back(
-            info_.joints[i].name, hardware_interface::HW_IF_POSITION, &hw_position_command_[i]
+            info_.joints[i].name, "position", &hw_position_command_[i]
         );
 
         // effort interface
         command_interfaces.emplace_back(
-            info_.joints[i].name, hardware_interface::HW_IF_EFFORT, &hw_effort_command_[i]
+            info_.joints[i].name, "effort", &hw_effort_command_[i]
         );
     }
 
@@ -161,7 +140,6 @@ hardware_interface::return_type FRIHardwareInterface::prepare_command_mode_switc
 
 CallbackReturn FRIHardwareInterface::on_activate(const rclcpp_lifecycle::State &) {
     app_.connect(hw_port_, hw_remote_host_);    
-    //status_ = hardware_interface::status::STARTED;
     return CallbackReturn::SUCCESS;
 }
 
@@ -172,7 +150,6 @@ CallbackReturn FRIHardwareInterface::on_deactivate(const rclcpp_lifecycle::State
 
     command_mode_init_ = false;
 
-    //status_ = hardware_interface::status::STOPPED;
     return CallbackReturn::SUCCESS;
 }
 

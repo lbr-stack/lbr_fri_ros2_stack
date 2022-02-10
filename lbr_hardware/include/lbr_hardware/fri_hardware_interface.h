@@ -4,21 +4,13 @@
 #include <vector>
 
 #include <rclcpp/rclcpp.hpp>
-//#include <hardware_interface/base_interface.hpp>
+#include <rclcpp_lifecycle/state.hpp>
 #include <hardware_interface/system_interface.hpp>
-//#include <hardware_interface/types/hardware_interface_type_values.hpp>
-//#include <hardware_interface/types/hardware_interface_status_values.hpp>
-#include <hardware_interface/hardware_info.hpp>
-#include <hardware_interface/handle.hpp>
 
 #include <fri/friLBRClient.h>
 #include <fri/friUdpConnection.h>
 #include <fri/friClientApplication.h>
 
-#include <rclcpp/logger.hpp>
-#include <rclcpp/macros.hpp>
-#include <rclcpp/rclcpp.hpp>
-#include <rclcpp_lifecycle/state.hpp>
 
 namespace LBR {
 
