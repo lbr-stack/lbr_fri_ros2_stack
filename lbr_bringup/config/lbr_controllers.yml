@@ -1,0 +1,29 @@
+# see controllers: http://control.ros.org/ros2_controllers/doc/controllers_index.html
+controller_manager:
+  ros__parameters:
+    update_rate: 1000  # Hz
+
+    joint_state_broadcaster:
+      type: joint_state_broadcaster/JointStateBroadcaster  # if left empty, all states are published https://github.com/ros-controls/ros2_controllers/blob/b9afbcd74a5263fafa77181187b8ffa8f0696ea8/joint_state_broadcaster/include/joint_state_broadcaster/joint_state_broadcaster.hpp#L41
+
+    position_trajectory_controller:
+      # find declaration here https://github.com/ros-controls/ros2_controllers/blob/b9afbcd74a5263fafa77181187b8ffa8f0696ea8/joint_trajectory_controller/joint_trajectory_plugin.xml#L2
+      type: joint_trajectory_controller/JointTrajectoryController
+
+position_trajectory_controller:
+  ros__parameters:
+    # find required parameters here https://github.com/ros-controls/ros2_controllers/blob/master/joint_trajectory_controller/src/joint_trajectory_controller.cpp
+    joints:
+      - lbr_joint_0
+      - lbr_joint_1
+      - lbr_joint_2
+      - lbr_joint_3
+      - lbr_joint_4
+      - lbr_joint_5
+      - lbr_joint_6
+    command_interfaces:
+      - position
+    state_interfaces:
+      - position
+    state_publish_rate: 50.0
+    action_monitor_rate: 20.0

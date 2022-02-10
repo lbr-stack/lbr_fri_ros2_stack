@@ -1,1 +1,6 @@
-The URDF file was extracted via the URDF exporter here https://github.com/syuntoku14/fusion2urdf
+# LBR Description
+Launch and example with
+
+```shell
+ros2 launch lbr_description view_robot.launch.py description_file:=urdf/med7/med7.urdf.xacro
+```
