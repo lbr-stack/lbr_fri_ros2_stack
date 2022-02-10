@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <algorithm>
+#include <chrono>
 #include <memory>
 #include <string>
 #include <thread>
@@ -20,7 +22,6 @@
 #include "rclcpp/rclcpp.hpp"
 
 using namespace std::chrono_literals;
-
 
 int main(int argc, char ** argv)
 {
@@ -37,10 +38,18 @@ int main(int argc, char ** argv)
   // When the MutliThreadedExecutor issues are fixed (ros2/rclcpp#1168), this loop should be
   // converted back to a timer.
   std::thread cm_thread([cm]() {
+    RCLCPP_INFO(cm->get_logger(), "update rate is %d Hz", cm->get_update_rate());
+
+    rclcpp::Time begin = cm->now();
+
+    // Use nanoseconds to avoid chrono's rounding
+    std::this_thread::sleep_for(std::chrono::nanoseconds(1000000000 / cm->get_update_rate()));
     while (rclcpp::ok())
     {
+      rclcpp::Time begin_last = begin;
+      begin = cm->now();
       cm->read();
-      cm->update();
+      cm->update(begin, begin - begin_last);
       cm->write();
     }
   });
