@@ -38,10 +38,12 @@ class FRIHardwareInterface : public hardware_interface::BaseInterface<hardware_i
 
         // FRI
         void onStateChange(KUKA::FRI::ESessionState old_state, KUKA::FRI::ESessionState new_state) override;
+        void waitForCommand() override;
         void command() override;
 
     private:
         std::string FRI_HW_LOGGER = "FRIHardwareInterface";
+        const std::vector<double> ZEROS = std::vector<double>(KUKA::FRI::LBRState::NUMBER_OF_JOINTS, 0.);
 
         // exposed states
         std::vector<double> hw_position_;      // accessible through FRI
@@ -50,6 +52,7 @@ class FRIHardwareInterface : public hardware_interface::BaseInterface<hardware_i
         // commands
         std::vector<double> hw_position_command_;  // supported by FRI
         std::vector<double> hw_effort_command_;    // supported by FRI
+
 
         // FRI
         KUKA::FRI::UdpConnection connection_;

@@ -1,9 +1,10 @@
-package fri_ros2;
+package fri;
 
 import static com.kuka.roboticsAPI.motionModel.BasicMotions.positionHold;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.Arrays;
 
 import com.kuka.roboticsAPI.applicationModel.RoboticsAPIApplication;
 import com.kuka.roboticsAPI.controllerModel.Controller;
@@ -22,18 +23,11 @@ public class LBRServer extends RoboticsAPIApplication {
 		POSITION_CONTROL,
 		JOINT_IMPEDANCE_CONTROL,
 		CARTESIAN_IMPEDANCE_CONTROL;
+	}
 
-		// convert enum to string array
-        public static String[] names() {
-            CONTROL_MODE[] modes = values();
-            String[] names = new String[modes.length];
-
-            for (int i = 0; i < modes.length; i++) {
-                names[i] = modes[i].name();
-            }
-
-            return names;
-        }
+	// convert enum to string array, see https://stackoverflow.com/questions/13783295/getting-all-names-in-an-enum-as-a-string
+	public static String[] getNames(Class<? extends Enum<?>> e) {
+	    return Arrays.toString(e.getEnumConstants()).replaceAll("^.|.$", "").split(", ");
 	}
 
 	// FRI parameters 
@@ -47,8 +41,10 @@ public class LBRServer extends RoboticsAPIApplication {
 	private FRIJointOverlay fri_overlay_;
 
 	private AbstractMotionControlMode control_mode_;
-	private String[] control_modes_ = CONTROL_MODE.names();
-	private ClientCommandMode command_mode_ = ClientCommandMode.POSITION;
+	private String[] control_modes_ = getNames(CONTROL_MODE.class);
+	private ClientCommandMode command_mode_;
+	private String[] command_modes_ = getNames(ClientCommandMode.class);
+	
 
 	// methods
 	public void request_user_config() {
@@ -83,13 +79,22 @@ public class LBRServer extends RoboticsAPIApplication {
 				control_mode_ = new PositionControlMode();
 				break;
 			case JOINT_IMPEDANCE_CONTROL:
-				control_mode_ = new JointImpedanceControlMode();
+				control_mode_ = new JointImpedanceControlMode(50, 50, 50, 50, 50, 50, 50);
 				break;
 			case CARTESIAN_IMPEDANCE_CONTROL:
 				control_mode_ = new CartesianImpedanceControlMode();
 				break;
 		}
 		getLogger().info("Control mode set to: " + control_mode.name());
+		
+		// command mode
+		id = getApplicationUI().displayModalDialog(
+				ApplicationDialogType.QUESTION,
+				"Select the desired FRI control mode: ",
+				command_modes_				
+		);
+		command_mode_ = ClientCommandMode.values()[id];
+		getLogger().info("Client command mode set to: " + command_mode_.name());	
 	}
 	
 	public void configure_fri() {
@@ -162,5 +167,3 @@ public class LBRServer extends RoboticsAPIApplication {
 		app.run();
 	}
 }
-
-

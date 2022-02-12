@@ -204,6 +204,14 @@ void FRIHardwareInterface::onStateChange(KUKA::FRI::ESessionState old_state, KUK
     }
 }
 
+void FRIHardwareInterface::waitForCommand() {
+    KUKA::FRI::LBRClient::waitForCommand();
+
+    if (robotState().getClientCommandMode() == KUKA::FRI::EClientCommandMode::TORQUE) {
+        robotCommand().setTorque(ZEROS.data());
+    }
+}
+
 void FRIHardwareInterface::command() {
     switch (robotState().getClientCommandMode()) {
         case KUKA::FRI::EClientCommandMode::NO_COMMAND_MODE:
@@ -218,11 +226,13 @@ void FRIHardwareInterface::command() {
             }
             break;
         case KUKA::FRI::EClientCommandMode::TORQUE:
-            if (std::isnan(hw_effort_command_[0])) {
+            if (std::isnan(hw_position_command_[0])) {
                 KUKA::FRI::LBRClient::command();
+                robotCommand().setTorque(ZEROS.data());
             } 
             else {
-                robotCommand().setTorque(hw_effort_command_.data());
+                robotCommand().setJointPosition(hw_position_command_.data());
+                robotCommand().setTorque(ZEROS.data());
             }
             break;
         case KUKA::FRI::EClientCommandMode::WRENCH:
