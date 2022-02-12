@@ -207,8 +207,17 @@ void FRIHardwareInterface::onStateChange(KUKA::FRI::ESessionState old_state, KUK
 void FRIHardwareInterface::waitForCommand() {
     KUKA::FRI::LBRClient::waitForCommand();
 
-    if (robotState().getClientCommandMode() == KUKA::FRI::EClientCommandMode::TORQUE) {
-        robotCommand().setTorque(ZEROS.data());
+    switch (robotState().getClientCommandMode()) {
+        case KUKA::FRI::EClientCommandMode::TORQUE:
+            // < 5ms
+            robotCommand().setTorque(JOINT_ZEROS.data());
+            break;
+        case KUKA::FRI::EClientCommandMode::WRENCH:
+            // <= 5ms, cartesian_impedance_control
+            robotCommand().setWrench(WRENCH_ZEROS.data());
+            break;
+        default:
+            break;
     }
 }
 
@@ -228,19 +237,27 @@ void FRIHardwareInterface::command() {
         case KUKA::FRI::EClientCommandMode::TORQUE:
             if (std::isnan(hw_position_command_[0])) {
                 KUKA::FRI::LBRClient::command();
-                robotCommand().setTorque(ZEROS.data());
+                robotCommand().setTorque(JOINT_ZEROS.data());
             } 
             else {
                 robotCommand().setJointPosition(hw_position_command_.data());
-                robotCommand().setTorque(ZEROS.data());
+                robotCommand().setTorque(JOINT_ZEROS.data());
             }
             break;
         case KUKA::FRI::EClientCommandMode::WRENCH:
-            RCLCPP_ERROR(rclcpp::get_logger(FRI_HW_LOGGER), "Wrench command mode not supported through hardware interface.");
-            KUKA::FRI::LBRClient::command();
+            if (std::isnan(hw_position_command_[0])) {
+                KUKA::FRI::LBRClient::command();
+                robotCommand().setWrench(WRENCH_ZEROS.data());
+            } 
+            else {
+                robotCommand().setJointPosition(hw_position_command_.data());
+                robotCommand().setWrench(WRENCH_ZEROS.data());
+            }
             break;
+
+
         default:
-            KUKA::FRI::LBRClient::command();
+            RCLCPP_ERROR(rclcpp::get_logger(FRI_HW_LOGGER), "Unkown KUKA::FRI::EClientCommandMode provided.");
             break;
     }
 }

@@ -43,7 +43,8 @@ class FRIHardwareInterface : public hardware_interface::BaseInterface<hardware_i
 
     private:
         std::string FRI_HW_LOGGER = "FRIHardwareInterface";
-        const std::vector<double> ZEROS = std::vector<double>(KUKA::FRI::LBRState::NUMBER_OF_JOINTS, 0.);
+        const std::vector<double> JOINT_ZEROS = std::vector<double>(KUKA::FRI::LBRState::NUMBER_OF_JOINTS, 0.);
+        const std::vector<double> WRENCH_ZEROS = std::vector<double>(6, 0.);
 
         // exposed states
         std::vector<double> hw_position_;      // accessible through FRI
