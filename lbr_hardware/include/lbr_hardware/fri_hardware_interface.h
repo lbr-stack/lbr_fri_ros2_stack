@@ -42,7 +42,7 @@ class FRIHardwareInterface : public hardware_interface::BaseInterface<hardware_i
         void command() override;
 
     private:
-        std::string FRI_HW_LOGGER = "FRIHardwareInterface";
+        const std::string FRI_HW_LOGGER = "FRIHardwareInterface";
         const std::vector<double> JOINT_ZEROS = std::vector<double>(KUKA::FRI::LBRState::NUMBER_OF_JOINTS, 0.);
         const std::vector<double> WRENCH_ZEROS = std::vector<double>(6, 0.);
 
