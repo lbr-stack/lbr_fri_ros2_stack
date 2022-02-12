@@ -151,10 +151,17 @@ public class LBRServer extends RoboticsAPIApplication {
 	@Override
 	public void run() {
 		// run the FRI
-        lbr_.move(positionHold(control_mode_, -1, TimeUnit.SECONDS).addMotionOverlay(fri_overlay_));
+		try {
+			lbr_.move(positionHold(control_mode_, -1, TimeUnit.SECONDS).addMotionOverlay(fri_overlay_));			
+		} catch (Exception e) {
+			e.printStackTrace();
+			fri_session_.close();	
+			return;
+		}
 
         // done
-        fri_session_.close();
+		fri_session_.close();				
+		return;
 	}
 	
 	/**
@@ -164,6 +171,6 @@ public class LBRServer extends RoboticsAPIApplication {
 	 */
 	public static void main(final String[] args) {
 		LBRServer app = new LBRServer();
-		app.run();
+		app.runApplication();
 	}
 }
