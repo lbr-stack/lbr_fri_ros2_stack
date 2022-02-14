@@ -3,9 +3,14 @@
 
 namespace LBR {
 
+FRIHardwareInterface::~FRIHardwareInterface() {
+    RCLCPP_INFO(rclcpp::get_logger(FRI_HW_LOGGER), "Disconnecting FRI on destruct...");
+    app_.disconnect();
+    RCLCPP_INFO(rclcpp::get_logger(FRI_HW_LOGGER), "Done.");
+}
+
 CallbackReturn FRIHardwareInterface::on_init(const hardware_interface::HardwareInfo & system_info) {
-    if (hardware_interface::SystemInterface::on_init(system_info) != CallbackReturn::SUCCESS)
-    {
+    if (hardware_interface::SystemInterface::on_init(system_info) != CallbackReturn::SUCCESS) {
         return CallbackReturn::ERROR;
     }
     
@@ -144,7 +149,7 @@ CallbackReturn FRIHardwareInterface::on_activate(const rclcpp_lifecycle::State &
 }
 
 CallbackReturn FRIHardwareInterface::on_deactivate(const rclcpp_lifecycle::State &)  {
-    RCLCPP_INFO(rclcpp::get_logger(FRI_HW_LOGGER), "Disconnecting FRI...");
+    RCLCPP_INFO(rclcpp::get_logger(FRI_HW_LOGGER), "Disconnecting FRI on stop...");
     app_.disconnect();
     RCLCPP_INFO(rclcpp::get_logger(FRI_HW_LOGGER), "Done.");
 
@@ -202,6 +207,23 @@ void FRIHardwareInterface::onStateChange(KUKA::FRI::ESessionState old_state, KUK
     }
 }
 
+void FRIHardwareInterface::waitForCommand() {
+    KUKA::FRI::LBRClient::waitForCommand();
+
+    switch (robotState().getClientCommandMode()) {
+        case KUKA::FRI::EClientCommandMode::TORQUE:
+            // < 5ms
+            robotCommand().setTorque(JOINT_ZEROS.data());
+            break;
+        case KUKA::FRI::EClientCommandMode::WRENCH:
+            // <= 5ms, cartesian_impedance_control
+            robotCommand().setWrench(WRENCH_ZEROS.data());
+            break;
+        default:
+            break;
+    }
+}
+
 void FRIHardwareInterface::command() {
     switch (robotState().getClientCommandMode()) {
         case KUKA::FRI::EClientCommandMode::NO_COMMAND_MODE:
@@ -216,19 +238,29 @@ void FRIHardwareInterface::command() {
             }
             break;
         case KUKA::FRI::EClientCommandMode::TORQUE:
-            if (std::isnan(hw_effort_command_[0])) {
+            if (std::isnan(hw_position_command_[0])) {
                 KUKA::FRI::LBRClient::command();
+                robotCommand().setTorque(JOINT_ZEROS.data());
             } 
             else {
-                robotCommand().setTorque(hw_effort_command_.data());
+                robotCommand().setJointPosition(hw_position_command_.data());
+                robotCommand().setTorque(JOINT_ZEROS.data());
             }
             break;
         case KUKA::FRI::EClientCommandMode::WRENCH:
-            RCLCPP_ERROR(rclcpp::get_logger(FRI_HW_LOGGER), "Wrench command mode not supported through hardware interface.");
-            KUKA::FRI::LBRClient::command();
+            if (std::isnan(hw_position_command_[0])) {
+                KUKA::FRI::LBRClient::command();
+                robotCommand().setWrench(WRENCH_ZEROS.data());
+            } 
+            else {
+                robotCommand().setJointPosition(hw_position_command_.data());
+                robotCommand().setWrench(WRENCH_ZEROS.data());
+            }
             break;
+
+
         default:
-            KUKA::FRI::LBRClient::command();
+            RCLCPP_ERROR(rclcpp::get_logger(FRI_HW_LOGGER), "Unkown KUKA::FRI::EClientCommandMode provided.");
             break;
     }
 }
