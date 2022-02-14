@@ -9,6 +9,7 @@ import java.util.Arrays;
 import com.kuka.roboticsAPI.applicationModel.RoboticsAPIApplication;
 import com.kuka.roboticsAPI.controllerModel.Controller;
 import com.kuka.roboticsAPI.deviceModel.LBR;
+import com.kuka.roboticsAPI.geometricModel.CartDOF;
 import com.kuka.roboticsAPI.uiModel.ApplicationDialogType;
 import com.kuka.roboticsAPI.motionModel.controlModeModel.*;
 import com.kuka.connectivity.fastRobotInterface.*;
@@ -129,7 +130,6 @@ public class LBRServer extends RoboticsAPIApplication {
         	fri_session_.await(10, TimeUnit.SECONDS);
         } catch (final TimeoutException e) {
         	getLogger().error(e.getLocalizedMessage());
-        	fri_session_.close();
         	return;
         }
         
@@ -155,13 +155,24 @@ public class LBRServer extends RoboticsAPIApplication {
 			lbr_.move(positionHold(control_mode_, -1, TimeUnit.SECONDS).addMotionOverlay(fri_overlay_));			
 		} catch (Exception e) {
 			e.printStackTrace();
-			fri_session_.close();	
 			return;
 		}
 
-        // done
-		fri_session_.close();				
 		return;
+	}
+	
+	@Override
+	public void dispose() {
+		// close connection
+		try {
+			getLogger().info("Disposing FRI session.");
+			fri_session_.close();
+		} catch (Exception e) {
+			getLogger().info("Failed to dispose FRI session. Session maybe not opened?");
+			e.printStackTrace();
+		}
+		
+		super.dispose();
 	}
 	
 	/**
