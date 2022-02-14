@@ -3,6 +3,12 @@
 
 namespace LBR {
 
+FRIHardwareInterface::~FRIHardwareInterface() {
+    RCLCPP_INFO(rclcpp::get_logger(FRI_HW_LOGGER), "Disconnecting FRI on destruct...");
+    app_.disconnect();
+    RCLCPP_INFO(rclcpp::get_logger(FRI_HW_LOGGER), "Done.");
+}
+
 hardware_interface::return_type FRIHardwareInterface::configure(const hardware_interface::HardwareInfo& system_info) {
     if (this->configure_default(system_info) != hardware_interface::return_type::OK) {
         return hardware_interface::return_type::ERROR;
@@ -145,7 +151,7 @@ hardware_interface::return_type FRIHardwareInterface::start() {
 }
 
 hardware_interface::return_type FRIHardwareInterface::stop() {
-    RCLCPP_INFO(rclcpp::get_logger(FRI_HW_LOGGER), "Disconnecting FRI...");
+    RCLCPP_INFO(rclcpp::get_logger(FRI_HW_LOGGER), "Disconnecting FRI on stop...");
     app_.disconnect();
     RCLCPP_INFO(rclcpp::get_logger(FRI_HW_LOGGER), "Done.");
 

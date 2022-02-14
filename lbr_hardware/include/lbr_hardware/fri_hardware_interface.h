@@ -21,7 +21,7 @@ class FRIHardwareInterface : public hardware_interface::BaseInterface<hardware_i
 
     public:
         FRIHardwareInterface() : app_(connection_, *this) { };
-        ~FRIHardwareInterface() = default;
+        ~FRIHardwareInterface();
 
         // hardware interface
         hardware_interface::return_type configure(const hardware_interface::HardwareInfo& system_info) override;  // check ros2 control and set status
