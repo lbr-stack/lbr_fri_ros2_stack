@@ -12,8 +12,8 @@
 #include <fri/friUdpConnection.h>
 #include <fri/friLBRClient.h>
 
-#include <fri_hardware_interface_client_application.h>
-#include <fri_hardware_interface_type_values.h>
+#include <fri_hardware_interface_client_application.hpp>
+#include <fri_hardware_interface_type_values.hpp>
 
 
 namespace LBR {

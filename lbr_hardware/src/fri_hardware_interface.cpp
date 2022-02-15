@@ -1,4 +1,4 @@
-#include <lbr_hardware/fri_hardware_interface.h>
+#include <lbr_hardware/fri_hardware_interface.hpp>
 
 
 namespace LBR {
@@ -320,8 +320,6 @@ void FRIHardwareInterface::command() {
                 robotCommand().setWrench(WRENCH_ZEROS.data());
             }
             break;
-
-
         default:
             RCLCPP_ERROR(rclcpp::get_logger(FRI_HW_LOGGER), "Unkown KUKA::FRI::EClientCommandMode provided.");
             break;
