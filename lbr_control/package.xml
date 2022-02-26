@@ -12,5 +12,7 @@
   <build_depend>rospy</build_depend>
   <exec_depend>rospy</exec_depend>
   <exec_depend>joint_trajectory_controller</exec_depend>
+  <exec_depend>ros_control</exec_depend>
+  <exec_depend>ros_controllers</exec_depend>
 
 </package>
