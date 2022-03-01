@@ -10,7 +10,8 @@
 #include <fri/friUdpConnection.h>
 #include <fri/friLBRClient.h>
 
-#include <fri_hardware_interface_client_application.h>
+#include <fri_hardware_interface_client_application.hpp>
+#include <fri_hardware_interface_type_values.hpp>
 
 
 namespace LBR {
@@ -45,8 +46,14 @@ class FRIHardwareInterface : public hardware_interface::SystemInterface, public 
         const std::vector<double> WRENCH_ZEROS = std::vector<double>(6, 0.);
 
         // exposed states
-        std::vector<double> hw_position_;      // accessible through FRI
-        std::vector<double> hw_effort_;        // accessible through FRI
+        std::vector<double> hw_position_;         // accessible through FRI
+        std::vector<double> hw_effort_;           // accessible through FRI
+        std::vector<double> hw_external_torque_;  // accessible through FRI
+
+        // FRI specific state interfaces, see KUKA::FRI::LBRState
+        double hw_sample_time_;                   // accessible through FRI
+        double hw_time_stamp_sec_;                // accessible through FRI
+        double hw_time_stamp_nano_sec_;           // accessible through FRI
 
         // commands
         std::vector<double> hw_position_command_;  // supported by FRI
