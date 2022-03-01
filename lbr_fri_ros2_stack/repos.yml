@@ -1,9 +1,9 @@
 repositories:
   fri:
     type: git
-    url: git@github.com:KCL-BMEIS/fri.git
+    url: https://github.com/KCL-BMEIS/fri
     version: ros2_hwi-dev
   lbr_fri_ros2_stack:
     type: git
-    url: git@github.com:KCL-BMEIS/lbr_fri_ros2_stack.git
+    url: https://github.com/KCL-BMEIS/lbr_fri_ros2_stack
     version: foxy
