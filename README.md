@@ -4,8 +4,9 @@ ROS2 packages for the KUKA LBR, including communication to the real robot via th
 # First Steps
 Install [colcon](https://docs.ros.org/en/foxy/Tutorials/Colcon-Tutorial.html#install-colcon) and [rosdep](https://docs.ros.org/en/crystal/Installation/Linux-Install-Binary.html#installing-and-initializing-rosdep). Build this repository
 ```shell
-mkdir -p lbr_fri_ros2_stack_ws/src && cd lbr_fri_ros2_stack_ws/src
-git clone --recursive https://github.com/KCL-BMEIS/lbr_fri_ros2_stack.git && cd ..
+mkdir -p lbr_fri_ros2_stack_ws/src && cd lbr_fri_ros2_stack_ws
+wget https://raw.githubusercontent.com/KCL-BMEIS/lbr_fri_ros2_stack/foxy/lbr_fri_ros2_stack/repos.yml -P src
+vcs import src < src/repos.yml
 rosdep install --from-paths src --ignore-src -r -y
 colcon build
 ```
