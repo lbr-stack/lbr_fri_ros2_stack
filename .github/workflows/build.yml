@@ -25,6 +25,7 @@ jobs:
         with:
           package-name: lbr_fri_ros2_stack
           target-ros2-distro: galactic
+          vcs-repo-file-url: https://raw.githubusercontent.com/KCL-BMEIS/lbr_fri_ros2_stack/main/lbr_fri_ros2_stack/repos.yml
 
       - name: Upload Logs
         uses: actions/upload-artifact@v2.3.1
