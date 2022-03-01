@@ -23,7 +23,7 @@ jobs:
       - name: ROS 2 CI Action
         uses: ros-tooling/action-ros-ci@0.2.4
         with:
-          package_name: lbr_fri_ros2_stack
+          package-name: lbr_fri_ros2_stack
           target-ros2-distro: galactic
 
       - name: Upload Logs
