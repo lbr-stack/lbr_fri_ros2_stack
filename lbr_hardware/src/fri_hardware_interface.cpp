@@ -1,4 +1,4 @@
-#include <lbr_hardware/fri_hardware_interface.h>
+#include <lbr_hardware/fri_hardware_interface.hpp>
 
 
 namespace LBR {
@@ -17,6 +17,12 @@ CallbackReturn FRIHardwareInterface::on_init(const hardware_interface::HardwareI
     // state interface references
     hw_position_.resize(KUKA::FRI::LBRState::NUMBER_OF_JOINTS, std::numeric_limits<double>::quiet_NaN());
     hw_effort_.resize(KUKA::FRI::LBRState::NUMBER_OF_JOINTS, std::numeric_limits<double>::quiet_NaN());
+    hw_external_torque_.resize(KUKA::FRI::LBRState::NUMBER_OF_JOINTS, std::numeric_limits<double>::quiet_NaN());
+
+    // lbr specific states
+    hw_sample_time_ = std::numeric_limits<double>::quiet_NaN();
+    hw_time_stamp_sec_ = std::numeric_limits<double>::quiet_NaN();
+    hw_time_stamp_nano_sec_ = std::numeric_limits<double>::quiet_NaN();
 
     // command interface references
     hw_position_command_.resize(KUKA::FRI::LBRState::NUMBER_OF_JOINTS, std::numeric_limits<double>::quiet_NaN());
@@ -33,6 +39,34 @@ CallbackReturn FRIHardwareInterface::on_init(const hardware_interface::HardwareI
         return CallbackReturn::ERROR;
     }
 
+    // check lbr specific state interfaces
+    if (info_.sensors.size() > 1) {
+        RCLCPP_FATAL(
+            rclcpp::get_logger(FRI_HW_LOGGER),
+            "Expected 1 sensor, got %d", info_.sensors.size()
+        );
+    }
+    
+    auto sensor = info_.sensors[0];
+    if (sensor.state_interfaces.size() != 3) {
+        RCLCPP_FATAL(
+            rclcpp::get_logger(FRI_HW_LOGGER),
+            "Sensor %s received invalid state interface. Received %d, expected 3. ", sensor.name.c_str(), sensor.state_interfaces.size()
+        );
+    }
+
+    for (auto& si: sensor.state_interfaces) {
+        if (si.name != LBR::HW_IF_SAMPLE_TIME &&
+            si.name != LBR::HW_IF_TIME_STAMP_SEC &&
+            si.name != LBR::HW_IF_TIME_STAMP_NANO_SEC) {
+            RCLCPP_FATAL(
+                rclcpp::get_logger(FRI_HW_LOGGER),
+                "Sensor %s received invalid state interface %s. Expected %s, %s, or %s.",
+                sensor.name.c_str(), si.name.c_str(), LBR::HW_IF_SAMPLE_TIME, LBR::HW_IF_TIME_STAMP_NANO_SEC, LBR::HW_IF_TIME_STAMP_SEC
+            );
+        }
+    }
+
     // for each joint check interfaces
     if (info_.joints.size() != KUKA::FRI::LBRState::NUMBER_OF_JOINTS) { 
         RCLCPP_FATAL(rclcpp::get_logger(FRI_HW_LOGGER), "Expected %d joints in URDF. Found %ld.", KUKA::FRI::LBRState::NUMBER_OF_JOINTS, info_.joints.size());
@@ -41,20 +75,21 @@ CallbackReturn FRIHardwareInterface::on_init(const hardware_interface::HardwareI
 
     for (auto& joint: info_.joints) {
         // check state interfaces
-        if (joint.state_interfaces.size() != 2) {
+        if (joint.state_interfaces.size() != 3) {
             RCLCPP_FATAL(
                 rclcpp::get_logger(FRI_HW_LOGGER),
-                "Joint %s received invalid number of state interfaces. Received %ld, expected 2.", joint.name.c_str(), joint.state_interfaces.size()
+                "Joint %s received invalid number of state interfaces. Received %d, expected 3.", joint.name.c_str(), joint.state_interfaces.size()
             );
             return CallbackReturn::ERROR;
         }
         for (auto& si: joint.state_interfaces) {
-            if (si.name != "position" &&
-                si.name != "effort") {
+            if (si.name != hardware_interface::HW_IF_POSITION &&
+                si.name != hardware_interface::HW_IF_EFFORT &&
+                si.name != LBR::HW_IF_EXTERNAL_TORQUE) {
                 RCLCPP_FATAL(
                     rclcpp::get_logger(FRI_HW_LOGGER),
-                    "Joint %s received invalid state interface: %s. Expected %s or %s",
-                    joint.name.c_str(), si.name.c_str(), "position", "effort"
+                    "Joint %s received invalid state interface: %s. Expected %s, %s, or %s",
+                    joint.name.c_str(), si.name.c_str(), hardware_interface::HW_IF_POSITION, hardware_interface::HW_IF_EFFORT, LBR::HW_IF_EXTERNAL_TORQUE
                 );
                 return CallbackReturn::ERROR;
             }
@@ -90,6 +125,19 @@ CallbackReturn FRIHardwareInterface::on_init(const hardware_interface::HardwareI
 std::vector<hardware_interface::StateInterface> FRIHardwareInterface::export_state_interfaces() {
     std::vector<hardware_interface::StateInterface> state_interfaces;
 
+    // lbr specific state interfaces
+    auto sensor = info_.sensors[0];
+    state_interfaces.emplace_back(
+        sensor.name, LBR::HW_IF_SAMPLE_TIME, &hw_sample_time_ 
+    );
+    state_interfaces.emplace_back(
+        sensor.name, LBR::HW_IF_TIME_STAMP_SEC, &hw_time_stamp_sec_
+    );
+    state_interfaces.emplace_back(
+        sensor.name, LBR::HW_IF_TIME_STAMP_NANO_SEC, &hw_time_stamp_nano_sec_
+    );
+
+    // other interfaces
     for (std::size_t i = 0; i < info_.joints.size(); i++) {
         // position interface
         state_interfaces.emplace_back(
@@ -99,6 +147,11 @@ std::vector<hardware_interface::StateInterface> FRIHardwareInterface::export_sta
         // effort interface
         state_interfaces.emplace_back(
             info_.joints[i].name, "effort", &hw_effort_[i]
+        );
+
+        // external torque interface (lbr specififc)
+        state_interfaces.emplace_back(
+            info_.joints[i].name, LBR::HW_IF_EXTERNAL_TORQUE, &hw_external_torque_[i]
         );
     }
 
@@ -165,11 +218,18 @@ hardware_interface::return_type FRIHardwareInterface::read() {
         return hardware_interface::return_type::ERROR;  
     };
 
+    // get lbr specific states
+    hw_sample_time_ = robotState().getSampleTime();
+    hw_time_stamp_sec_ = robotState().getTimestampSec();
+    hw_time_stamp_nano_sec_ = robotState().getTimestampNanoSec();
+ 
     // get the position and efforts and share them with exposed state interfaces
     const double* position = robotState().getMeasuredJointPosition();
     hw_position_.assign(position, position+KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
     const double* effort = robotState().getMeasuredTorque();
     hw_effort_.assign(effort, effort+KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
+    const double* external_torque = robotState().getExternalTorque();
+    hw_external_torque_.assign(external_torque, external_torque+KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
 
     return hardware_interface::return_type::OK;
 }
@@ -257,8 +317,6 @@ void FRIHardwareInterface::command() {
                 robotCommand().setWrench(WRENCH_ZEROS.data());
             }
             break;
-
-
         default:
             RCLCPP_ERROR(rclcpp::get_logger(FRI_HW_LOGGER), "Unkown KUKA::FRI::EClientCommandMode provided.");
             break;

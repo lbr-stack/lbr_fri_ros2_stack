@@ -1,4 +1,4 @@
-#include <fri_hardware_interface_client_application.h>
+#include <fri_hardware_interface_client_application.hpp>
 
 
 namespace KUKA {

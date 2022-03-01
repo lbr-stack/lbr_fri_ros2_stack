@@ -18,6 +18,14 @@
                 </hardware>
             </xacro:unless>
 
+            <!-- define lbr specific state interfaces as sensor, see https://github.com/ros-controls/roadmap/blob/master/design_drafts/components_architecture_and_urdf_examples.md -->
+            <sensor name="${robot_name}_state">
+                <!-- see KUKA::FRI::LBRState -->
+                <state_interface name="sample_time"/>
+                <state_interface name="time_stamp_sec"/>
+                <state_interface name="time_stamp_nano_sec"/>
+            </sensor>
+
             <!-- define joints and command/state interfaces for each joint -->
             <joint name="${robot_name}_joint_0">
                 <command_interface name="position">
@@ -31,6 +39,7 @@
                 </command_interface>
                 <state_interface name="position"/>
                 <state_interface name="effort"/>
+                <state_interface name="external_torque"/>
             </joint>
             <joint name="${robot_name}_joint_1">
                 <command_interface name="position">
@@ -43,6 +52,7 @@
                 </command_interface>
                 <state_interface name="position"/>
                 <state_interface name="effort"/>
+                <state_interface name="external_torque"/>
             </joint>
             <joint name="${robot_name}_joint_2">
                 <command_interface name="position">
@@ -55,6 +65,7 @@
                 </command_interface>
                 <state_interface name="position"/>
                 <state_interface name="effort"/>
+                <state_interface name="external_torque"/>
             </joint>
             <joint name="${robot_name}_joint_3">
                 <command_interface name="position">
@@ -67,6 +78,7 @@
                 </command_interface>
                 <state_interface name="position"/>
                 <state_interface name="effort"/>
+                <state_interface name="external_torque"/>
             </joint>
             <joint name="${robot_name}_joint_4">
                 <command_interface name="position">
@@ -79,6 +91,7 @@
                 </command_interface>
                 <state_interface name="position"/>
                 <state_interface name="effort"/>
+                <state_interface name="external_torque"/>
             </joint>
             <joint name="${robot_name}_joint_5">
                 <command_interface name="position">
@@ -91,6 +104,7 @@
                 </command_interface>
                 <state_interface name="position"/>
                 <state_interface name="effort"/>
+                <state_interface name="external_torque"/>
             </joint>
             <joint name="${robot_name}_joint_6">
                 <command_interface name="position">
@@ -103,6 +117,7 @@
                 </command_interface>
                 <state_interface name="position"/>
                 <state_interface name="effort"/>
+                <state_interface name="external_torque"/>
             </joint>
         </ros2_control>
     </xacro:macro>

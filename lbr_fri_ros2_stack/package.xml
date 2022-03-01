@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>lbr_fri_ros2_stack</name>
+  <version>0.0.1</version>
+  <description>ROS2 stack for KUKA LBR robots</description>
+  <maintainer email="m.huber_1994@hotmail.de">mhubii</maintainer>
+  <license>MIT</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <exec_depend>lbr_bringup</exec_depend>
+  <exec_depend>lbr_description</exec_depend>
+  <exec_depend>lbr_hardware</exec_depend>
+  <exec_depend>lbr_moveit</exec_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>
