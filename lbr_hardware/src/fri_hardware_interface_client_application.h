@@ -34,7 +34,7 @@ namespace KUKA {
             private:
                 int buffer_size_;
 
-                std::string CLIENT_APPLIATION_LOGGER = "FRIHardwareInterfaceClientApplication";
+                const std::string CLIENT_APPLICATION_LOGGER = "FRIHardwareInterfaceClientApplication";
         };
 
     }  // end of namespace FRI

@@ -19,7 +19,7 @@ class FRIHardwareInterface : public hardware_interface::SystemInterface, public 
 
     public:
         FRIHardwareInterface() : app_(connection_, *this) { };
-        ~FRIHardwareInterface() = default;
+        ~FRIHardwareInterface();
 
         // hardware interface
         CallbackReturn on_init(const hardware_interface::HardwareInfo & info) override; // check ros2 control and set status
@@ -36,10 +36,13 @@ class FRIHardwareInterface : public hardware_interface::SystemInterface, public 
 
         // FRI
         void onStateChange(KUKA::FRI::ESessionState old_state, KUKA::FRI::ESessionState new_state) override;
+        void waitForCommand() override;
         void command() override;
 
     private:
-        std::string FRI_HW_LOGGER = "FRIHardwareInterface";
+        const std::string FRI_HW_LOGGER = "FRIHardwareInterface";
+        const std::vector<double> JOINT_ZEROS = std::vector<double>(KUKA::FRI::LBRState::NUMBER_OF_JOINTS, 0.);
+        const std::vector<double> WRENCH_ZEROS = std::vector<double>(6, 0.);
 
         // exposed states
         std::vector<double> hw_position_;      // accessible through FRI
@@ -48,6 +51,7 @@ class FRIHardwareInterface : public hardware_interface::SystemInterface, public 
         // commands
         std::vector<double> hw_position_command_;  // supported by FRI
         std::vector<double> hw_effort_command_;    // supported by FRI
+
 
         // FRI
         KUKA::FRI::UdpConnection connection_;
