@@ -23,5 +23,5 @@ target_include_directories(lbr_fri_ros_node
 )
 
 target_link_libraries(lbr_fri_ros_node
-  ${catkin_LIBRARIES} fri
+  ${catkin_LIBRARIES} ${fri_LIBRARIES}
 )
