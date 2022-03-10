@@ -2,7 +2,7 @@
 ROS packages for the KUKA LBR, including communication to the real robot via the Fast Robot Interface ([FRI](https://github.com/KCL-BMEIS/fri)), [MoveIt](https://moveit.ros.org/) integration and [Gazebo](http://gazebosim.org/) simulation support. Included are the `iiwa7`, `iiwa14`, `med7`, and `med14`. To get going, follow the [First Steps](#first-steps).
 
 # First Steps
-Install [catkin](http://wiki.ros.org/catkin), [rosdep](http://wiki.ros.org/rosdep) ,and [vcstool](https://github.com/dirk-thomas/vcstool#how-to-install-vcstool). Build this repository
+Install [catkin](http://wiki.ros.org/catkin), [rosdep](http://wiki.ros.org/rosdep), and [vcstool](https://github.com/dirk-thomas/vcstool#how-to-install-vcstool). Build this repository
 ```shell
 mkdir -p lbr_fri_ros_ws/src && cd lbr_fri_ros_ws
 wget https://raw.githubusercontent.com/KCL-BMEIS/lbr_fri_ros2_stack/dev-noetic/lbr_fri_ros_stack/repos.yml -P src
