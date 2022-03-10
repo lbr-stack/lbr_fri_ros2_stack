@@ -5,6 +5,7 @@
     <arg name="hardware_interface" default="PositionJointInterface" />
     <arg name="robot_name" default="lbr" />
     <arg name="model" default="med7"/>
+    <arg name="rviz_config" default="$(find lbr_moveit)/config/config.rviz"/>
 
     <!-- load fri node or simulation -->
     <group if="$(arg sim)">
@@ -31,7 +32,9 @@
             <arg name="robot_name" default="lbr"/>
             <arg name="model" value="$(arg model)"/>
         </include>
-        <include file="$(find lbr_moveit)/launch/moveit_rviz.launch"/>
+        <include file="$(find lbr_moveit)/launch/moveit_rviz.launch">
+            <arg name="rviz_config" value="$(arg rviz_config)"/>
+        </include>
     </group>
 
     <!-- Spawn controller - simple pose controller -->
