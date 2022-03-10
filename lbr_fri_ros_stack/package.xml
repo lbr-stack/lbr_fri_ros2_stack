@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>lbr_fri_ros_stack</name>
+  <version>0.0.0</version>
+  <description>ROS stack for KUKA LBR robots</description>
+  <maintainer email="m.huber_1994@hotmail.de">mhubii</maintainer>
+  <license>MIT</license>
+
+  <author email="m.huber_1994@hotmail.de">mhubii</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <exec_depend>lbr_control</exec_depend>
+  <exec_depend>lbr_description</exec_depend>
+  <exec_depend>lbr_fri_ros</exec_depend>
+  <exec_depend>lbr_gazebo</exec_depend>
+  <exec_depend>lbr_moveit</exec_depend>
+  <exec_depend>lbr_msgs</exec_depend>
+</package>
