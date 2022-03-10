@@ -18,7 +18,7 @@ roslaunch lbr_moveit moveit_planning_execution.launch model:=med7 sim:=true # mo
 For execution on the real robot, the steps in [Real Setup](#real-setup) are to be followed. Once the controller is set up, run the `LBRServer` app on the KUKA smartPAD. Once running, establish a connection via
 ```shell
 source install/setup.bash
-roslaunch lbr_moveit moveit_planning_execution.launch model:=med7 sim:=true # model:=[iiwa7/iiwa14/med7/med14]
+roslaunch lbr_moveit moveit_planning_execution.launch model:=med7 sim:=false # model:=[iiwa7/iiwa14/med7/med14]
 ```
 
 # Real Setup
