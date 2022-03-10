@@ -38,9 +38,7 @@
             <geometry>
                 <mesh filename="package://lbr_description/meshes/iiwa14/visual/link_0.stl"/>
             </geometry>
-            <material name="silver">
-                <color rgba="1 0 0 1"/>
-            </material>
+            <material name="silver"/>
             </visual>
             <collision>
             <origin rpy="0 0 0" xyz="0 0 0"/>
@@ -76,9 +74,7 @@
             <geometry>
                 <mesh filename="package://lbr_description/meshes/iiwa14/visual/link_1.stl"/>
             </geometry>
-            <material name="silver">
-                <color rgba="1 0 0 1"/>
-            </material>
+            <material name="orange"/>
             </visual>
             <collision>
             <origin rpy="0 0 0" xyz="-0.0 0.0 -0.1475"/>
@@ -114,9 +110,7 @@
             <geometry>
                 <mesh filename="package://lbr_description/meshes/iiwa14/visual/link_2.stl"/>
             </geometry>
-            <material name="silver">
-                <color rgba="1 0 0 1"/>
-            </material>
+            <material name="orange"/>
             </visual>
             <collision>
             <origin rpy="0 0 0" xyz="-0.0 0.01 -0.36"/>
@@ -152,9 +146,7 @@
             <geometry>
                 <mesh filename="package://lbr_description/meshes/iiwa14/visual/link_3.stl"/>
             </geometry>
-            <material name="silver">
-                <color rgba="1 0 0 1"/>
-            </material>
+            <material name="orange"/>
             </visual>
             <collision>
             <origin rpy="0 0 0" xyz="-0.0 0.0 -0.5545"/>
@@ -190,9 +182,7 @@
             <geometry>
                 <mesh filename="package://lbr_description/meshes/iiwa14/visual/link_4.stl"/>
             </geometry>
-            <material name="silver">
-                <color rgba="1 0 0 1"/>
-            </material>
+            <material name="orange"/>
             </visual>
             <collision>
             <origin rpy="0 0 0" xyz="0.0 -0.0105 -0.78"/>
@@ -228,9 +218,7 @@
             <geometry>
                 <mesh filename="package://lbr_description/meshes/iiwa14/visual/link_5.stl"/>
             </geometry>
-            <material name="silver">
-                <color rgba="1 0 0 1"/>
-            </material>
+            <material name="orange"/>
             </visual>
             <collision>
             <origin rpy="0 0 0" xyz="-0.0 0.0 -0.9545"/>
@@ -266,9 +254,7 @@
             <geometry>
                 <mesh filename="package://lbr_description/meshes/iiwa14/visual/link_6.stl"/>
             </geometry>
-            <material name="silver">
-                <color rgba="1 0 0 1"/>
-            </material>
+            <material name="orange"/>
             </visual>
             <collision>
             <origin rpy="0 0 0" xyz="0.0 0.0707 -1.18"/>
@@ -304,9 +290,7 @@
             <geometry>
                 <mesh filename="package://lbr_description/meshes/iiwa14/visual/link_7.stl"/>
             </geometry>
-            <material name="silver">
-                <color rgba="1 0 0 1"/>
-            </material>
+            <material name="silver"/>
             </visual>
             <collision>
             <origin rpy="0 0 0" xyz="0.0 0.0 -1.2511"/>

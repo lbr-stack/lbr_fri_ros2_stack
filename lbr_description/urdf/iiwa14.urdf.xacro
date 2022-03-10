@@ -3,6 +3,9 @@
 <!-- top level -->
 <robot name="iiwa14" xmlns:xacro="http://www.ros.org/wiki/xacro">
 
+    <!-- include materials -->
+    <xacro:include filename="$(find lbr_description)/urdf/materials.xacro"/>
+
     <!-- include the lbr iiwa macro -->
     <xacro:include filename="$(find lbr_description)/urdf/iiwa14.xacro"/>
 
