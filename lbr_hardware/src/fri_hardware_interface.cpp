@@ -43,7 +43,7 @@ CallbackReturn FRIHardwareInterface::on_init(const hardware_interface::HardwareI
     if (info_.sensors.size() > 1) {
         RCLCPP_FATAL(
             rclcpp::get_logger(FRI_HW_LOGGER),
-            "Expected 1 sensor, got %d", info_.sensors.size()
+            "Expected 1 sensor, got %ld", info_.sensors.size()
         );
     }
     
@@ -51,7 +51,7 @@ CallbackReturn FRIHardwareInterface::on_init(const hardware_interface::HardwareI
     if (sensor.state_interfaces.size() != 3) {
         RCLCPP_FATAL(
             rclcpp::get_logger(FRI_HW_LOGGER),
-            "Sensor %s received invalid state interface. Received %d, expected 3. ", sensor.name.c_str(), sensor.state_interfaces.size()
+            "Sensor %s received invalid state interface. Received %ld, expected 3. ", sensor.name.c_str(), sensor.state_interfaces.size()
         );
     }
 
@@ -78,7 +78,7 @@ CallbackReturn FRIHardwareInterface::on_init(const hardware_interface::HardwareI
         if (joint.state_interfaces.size() != 3) {
             RCLCPP_FATAL(
                 rclcpp::get_logger(FRI_HW_LOGGER),
-                "Joint %s received invalid number of state interfaces. Received %d, expected 3.", joint.name.c_str(), joint.state_interfaces.size()
+                "Joint %s received invalid number of state interfaces. Received %ld, expected 3.", joint.name.c_str(), joint.state_interfaces.size()
             );
             return CallbackReturn::ERROR;
         }
