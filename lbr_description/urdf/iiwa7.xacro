@@ -8,6 +8,9 @@
     <!-- include transmission for ros_control -->
     <xacro:include filename="$(find lbr_description)/urdf/lbr.transmission.xacro"/>
 
+    <!-- include materials -->
+    <xacro:include filename="$(find lbr_description)/urdf/lbr.materials.xacro"/>
+
     <!-- some constants -->
     <xacro:property name="PI" value="3.1415926535897931"/>
     <xacro:property name="safety_controller_k_pos" value="100"/>

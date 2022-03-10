@@ -3,9 +3,6 @@
 <!-- top level -->
 <robot name="med7" xmlns:xacro="http://www.ros.org/wiki/xacro">
 
-    <!-- include materials -->
-    <xacro:include filename="$(find lbr_description)/urdf/lbr.materials.xacro"/>
-
     <!-- include the lbr med macro -->
     <xacro:include filename="$(find lbr_description)/urdf/med7.xacro"/>
 
