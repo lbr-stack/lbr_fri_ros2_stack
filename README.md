@@ -5,7 +5,7 @@ ROS packages for the KUKA LBR, including communication to the real robot via the
 Install [catkin](http://wiki.ros.org/catkin), [rosdep](http://wiki.ros.org/rosdep), and [vcstool](https://github.com/dirk-thomas/vcstool#how-to-install-vcstool). Build this repository
 ```shell
 mkdir -p lbr_fri_ros_ws/src && cd lbr_fri_ros_ws
-wget https://raw.githubusercontent.com/KCL-BMEIS/lbr_fri_ros2_stack/dev-noetic/lbr_fri_ros_stack/repos.yml -P src
+wget https://raw.githubusercontent.com/KCL-BMEIS/lbr_fri_ros2_stack/noetic/lbr_fri_ros_stack/repos.yml -P src
 vcs import src < src/repos.yml
 rosdep install --rosdistro noetic --ignore-src --from-paths src
 catkin_make
