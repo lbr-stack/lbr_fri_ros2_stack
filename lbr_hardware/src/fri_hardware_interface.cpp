@@ -13,7 +13,13 @@ CallbackReturn FRIHardwareInterface::on_init(const hardware_interface::HardwareI
     if (hardware_interface::SystemInterface::on_init(system_info) != CallbackReturn::SUCCESS) {
         return CallbackReturn::ERROR;
     }
-    
+
+    // services for switching controllers on reset
+    node_ = std::make_shared<rclcpp::Node>("fri_hardware_interface_node");
+    list_ctrl_clt_ = node_->create_client<controller_manager_msgs::srv::ListControllers>("/controller_manager/list_controllers");
+    switch_ctrl_clt_ = node_->create_client<controller_manager_msgs::srv::SwitchController>("/controller_manager/switch_controller");
+    fri_and_controllers_in_sync_ = false;
+
     // state interface references
     hw_position_.resize(KUKA::FRI::LBRState::NUMBER_OF_JOINTS, std::numeric_limits<double>::quiet_NaN());
     hw_effort_.resize(KUKA::FRI::LBRState::NUMBER_OF_JOINTS, std::numeric_limits<double>::quiet_NaN());
@@ -246,7 +252,7 @@ hardware_interface::return_type FRIHardwareInterface::write() {
 }
 
 // FRI
-void FRIHardwareInterface::onStateChange(KUKA::FRI::ESessionState old_state, KUKA::FRI::ESessionState new_state) {
+void FRIHardwareInterface::onStateChange(KUKA::FRI::ESessionState old_state, KUKA::FRI::ESessionState new_state) {    
     RCLCPP_INFO(
         rclcpp::get_logger(FRI_HW_LOGGER), 
         "LBR switched from %s to %s.",
@@ -254,16 +260,66 @@ void FRIHardwareInterface::onStateChange(KUKA::FRI::ESessionState old_state, KUK
         fri_e_session_state_to_string_(new_state).c_str()
     );
 
-    if (old_state == KUKA::FRI::ESessionState::COMMANDING_ACTIVE) {
-        RCLCPP_INFO(rclcpp::get_logger(FRI_HW_LOGGER), "Controller manager does not allow resets. Command interfaces can't be updated to current state. Shutting down.");
-        //this->on_deactivate(new_state);
-        rclcpp::shutdown();
-    }
-
     if (new_state == KUKA::FRI::ESessionState::IDLE) {
         RCLCPP_INFO(rclcpp::get_logger(FRI_HW_LOGGER), "FRI stoppped. Shutting down.");
       //  this->on_deactivate(new_state);
         rclcpp::shutdown();
+    }
+
+    if (old_state == KUKA::FRI::COMMANDING_ACTIVE) {
+        fri_and_controllers_in_sync_ = false;  // log potential out of synch
+    }
+
+    // on entering KUKA::FRI::COMMANDING_WAIT, just prior to KUKA::FRI::COMMANDING_ACTIVE, re-load controllers
+    if (new_state == KUKA::FRI::COMMANDING_WAIT) {
+        auto re_load_ctrl = [this]() -> void {
+
+            // poll current controllers
+            auto list_ctrl_request = std::make_shared<controller_manager_msgs::srv::ListControllers::Request>();       
+            auto list_ctrl_future = list_ctrl_clt_->async_send_request(list_ctrl_request);
+            if (rclcpp::spin_until_future_complete(node_, list_ctrl_future, std::chrono::milliseconds(100)) != rclcpp::FutureReturnCode::SUCCESS) {
+                RCLCPP_ERROR(rclcpp::get_logger(FRI_HW_LOGGER), "Failed to call service %s.", list_ctrl_clt_->get_service_name());
+                return;
+            };
+
+            std::vector<std::string> controllers;
+            for (auto& controller: list_ctrl_future.get()->controller) {
+                RCLCPP_INFO(rclcpp::get_logger(FRI_HW_LOGGER), "Found controller: %s", controller.name.c_str());
+                controllers.push_back(controller.name);
+            }
+
+            if (controllers.size() == 0) {
+                RCLCPP_INFO(rclcpp::get_logger(FRI_HW_LOGGER), "No controllers found.");
+                return;
+            }
+
+            // switch current controllers
+            auto switch_ctrl_request = std::make_shared<controller_manager_msgs::srv::SwitchController::Request>();
+            switch_ctrl_request->strictness = controller_manager_msgs::srv::SwitchController::Request::STRICT;
+            switch_ctrl_request->start_asap = true;
+            switch_ctrl_request->stop_controllers = controllers;
+            switch_ctrl_request->start_controllers = controllers;
+            auto switch_ctrl_future = switch_ctrl_clt_->async_send_request(switch_ctrl_request);
+
+            // wait until switch_ctrl_future
+            if (rclcpp::spin_until_future_complete(node_, switch_ctrl_future, std::chrono::milliseconds(100)) == rclcpp::FutureReturnCode::SUCCESS) {
+                if (switch_ctrl_future.get()->ok) {
+                    RCLCPP_INFO(rclcpp::get_logger(FRI_HW_LOGGER), "Re-loaded controllers.");
+
+                    // set commanded state to current state, see https://github.com/ros-controls/ros2_control/issues/674
+                    hw_position_command_ = hw_position_;
+                    hw_effort_command_ = hw_effort_;
+                    fri_and_controllers_in_sync_ = true;
+                } else {
+                    RCLCPP_ERROR(rclcpp::get_logger(FRI_HW_LOGGER), "Failed to re-load controllers.");
+                }
+            } else {
+                RCLCPP_ERROR(rclcpp::get_logger(FRI_HW_LOGGER), "Failed to call service %s.", switch_ctrl_clt_->get_service_name());
+            }
+        };
+
+        auto re_load_ctrl_thread = std::thread(re_load_ctrl);
+        re_load_ctrl_thread.detach();
     }
 }
 
@@ -290,7 +346,7 @@ void FRIHardwareInterface::command() {
             RCLCPP_FATAL(rclcpp::get_logger(FRI_HW_LOGGER), "No client command mode available.");
             break;
         case KUKA::FRI::EClientCommandMode::POSITION:
-            if (std::isnan(hw_position_command_[0])) { 
+            if (std::isnan(hw_position_command_[0]) || !fri_and_controllers_in_sync_) {
                 KUKA::FRI::LBRClient::command();
             }
             else {
@@ -298,7 +354,7 @@ void FRIHardwareInterface::command() {
             }
             break;
         case KUKA::FRI::EClientCommandMode::TORQUE:
-            if (std::isnan(hw_position_command_[0])) {
+            if (std::isnan(hw_position_command_[0]) || !fri_and_controllers_in_sync_) {
                 KUKA::FRI::LBRClient::command();
                 robotCommand().setTorque(JOINT_ZEROS.data());
             } 
@@ -308,7 +364,7 @@ void FRIHardwareInterface::command() {
             }
             break;
         case KUKA::FRI::EClientCommandMode::WRENCH:
-            if (std::isnan(hw_position_command_[0])) {
+            if (std::isnan(hw_position_command_[0]) || !fri_and_controllers_in_sync_) {
                 KUKA::FRI::LBRClient::command();
                 robotCommand().setWrench(WRENCH_ZEROS.data());
             } 

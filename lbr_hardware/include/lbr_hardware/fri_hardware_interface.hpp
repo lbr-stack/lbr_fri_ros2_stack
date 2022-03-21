@@ -7,6 +7,8 @@
 #include <rclcpp_lifecycle/state.hpp>
 #include <hardware_interface/system_interface.hpp>
 #include <hardware_interface/types/hardware_interface_type_values.hpp>
+#include <controller_manager_msgs/srv/switch_controller.hpp>
+#include <controller_manager_msgs/srv/list_controllers.hpp>
 
 #include <fri/friUdpConnection.h>
 #include <fri/friLBRClient.h>
@@ -60,6 +62,15 @@ class FRIHardwareInterface : public hardware_interface::SystemInterface, public 
         std::vector<double> hw_position_command_;  // supported by FRI
         std::vector<double> hw_effort_command_;    // supported by FRI
 
+        // services to switch controllers (to be replaced by ERROR return in read/write,
+        // see https://discourse.ros.org/t/ros2-control-controller-restart/24662, https://github.com/ros-controls/ros2_control/issues/674,
+        // and https://github.com/ros-controls/ros2_control/pull/677)
+        rclcpp::Node::SharedPtr node_;
+        rclcpp::Client<controller_manager_msgs::srv::ListControllers>::SharedPtr list_ctrl_clt_;
+        rclcpp::Client<controller_manager_msgs::srv::SwitchController>::SharedPtr switch_ctrl_clt_;
+
+        // FRI and controller synchronization tracker
+        bool fri_and_controllers_in_sync_;
 
         // FRI
         KUKA::FRI::UdpConnection connection_;
