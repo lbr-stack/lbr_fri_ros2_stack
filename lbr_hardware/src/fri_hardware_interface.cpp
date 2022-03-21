@@ -273,19 +273,27 @@ void FRIHardwareInterface::onStateChange(KUKA::FRI::ESessionState old_state, KUK
         fri_and_controllers_in_sync_ = false;  // log potential out of synch
     }
 
-    // on state change, reset controllers
-    if (new_state == KUKA::FRI::COMMANDING_WAIT) {  // NOT REALTIME SAFE, CONNECTION WILL BE LOST, TODO: asynch re-load
-        auto re_load_ctrl = [this]() {
+    // on entering KUKA::FRI::COMMANDING_WAIT, just prior to KUKA::FRI::COMMANDING_ACTIVE, re-load controllers
+    if (new_state == KUKA::FRI::COMMANDING_WAIT) {
+        auto re_load_ctrl = [this]() -> void {
 
             // poll current controllers
             auto list_ctrl_request = std::make_shared<controller_manager_msgs::srv::ListControllers::Request>();       
             auto list_ctrl_future = list_ctrl_clt_->async_send_request(list_ctrl_request);
-            rclcpp::spin_until_future_complete(node_, list_ctrl_future);
+            if (rclcpp::spin_until_future_complete(node_, list_ctrl_future, std::chrono::milliseconds(100)) != rclcpp::FutureReturnCode::SUCCESS) {
+                RCLCPP_ERROR(rclcpp::get_logger(FRI_HW_LOGGER), "Failed to call service %s.", list_ctrl_clt_->get_service_name());
+                return;
+            };
 
             std::vector<std::string> controllers;
             for (auto& controller: list_ctrl_future.get()->controller) {
-                RCLCPP_INFO(rclcpp::get_logger(FRI_HW_LOGGER), "%s", controller.name.c_str());
+                RCLCPP_INFO(rclcpp::get_logger(FRI_HW_LOGGER), "Found controller: %s", controller.name.c_str());
                 controllers.push_back(controller.name);
+            }
+
+            if (controllers.size() == 0) {
+                RCLCPP_INFO(rclcpp::get_logger(FRI_HW_LOGGER), "No controllers found.");
+                return;
             }
 
             // switch current controllers
@@ -297,9 +305,13 @@ void FRIHardwareInterface::onStateChange(KUKA::FRI::ESessionState old_state, KUK
             auto switch_ctrl_future = switch_ctrl_clt_->async_send_request(switch_ctrl_request);
 
             // wait until switch_ctrl_future
-            if (rclcpp::spin_until_future_complete(node_, switch_ctrl_future) == rclcpp::FutureReturnCode::SUCCESS) {
+            if (rclcpp::spin_until_future_complete(node_, switch_ctrl_future, std::chrono::milliseconds(100)) == rclcpp::FutureReturnCode::SUCCESS) {
                 if (switch_ctrl_future.get()->ok) {
-                    RCLCPP_INFO(rclcpp::get_logger(FRI_HW_LOGGER), "Re-loaded controllres.");
+                    RCLCPP_INFO(rclcpp::get_logger(FRI_HW_LOGGER), "Re-loaded controllers.");
+
+                    // set commanded state to current state, see https://github.com/ros-controls/ros2_control/issues/674
+                    hw_position_command_ = hw_position_;
+                    hw_effort_command_ = hw_effort_;
                     fri_and_controllers_in_sync_ = true;
                 } else {
                     RCLCPP_ERROR(rclcpp::get_logger(FRI_HW_LOGGER), "Failed to re-load controllers.");

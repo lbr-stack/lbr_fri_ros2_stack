@@ -63,7 +63,9 @@ class FRIHardwareInterface : public hardware_interface::BaseInterface<hardware_i
         std::vector<double> hw_position_command_;  // supported by FRI
         std::vector<double> hw_effort_command_;    // supported by FRI
 
-        // services to switch controllers (to be replaced by ERROR return in read/write, see https://discourse.ros.org/t/ros2-control-controller-restart/24662, and https://github.com/ros-controls/ros2_control/pull/677)
+        // services to switch controllers (to be replaced by ERROR return in read/write,
+        // see https://discourse.ros.org/t/ros2-control-controller-restart/24662, https://github.com/ros-controls/ros2_control/issues/674,
+        // and https://github.com/ros-controls/ros2_control/pull/677)
         rclcpp::Node::SharedPtr node_;
         rclcpp::Client<controller_manager_msgs::srv::ListControllers>::SharedPtr list_ctrl_clt_;
         rclcpp::Client<controller_manager_msgs::srv::SwitchController>::SharedPtr switch_ctrl_clt_;
