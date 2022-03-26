@@ -10,6 +10,7 @@
     <xacro:property name="max_velocity" value="10"/>
 
     <!-- includes -->
+    <xacro:include filename="$(find lbr_description)/urdf/materials.urdf.xacro"/>
     <xacro:include filename="$(find lbr_description)/gazebo/med.gazebo.xacro"/>
     <xacro:include filename="$(find lbr_description)/ros2_control/lbr.ros2_control.xacro"/>
 
