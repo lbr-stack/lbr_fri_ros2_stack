@@ -10,8 +10,6 @@
     <xacro:include filename="$(find lbr_description)/urdf/med7/med7_description.urdf.xacro"/>
 
     <xacro:arg name="robot_name" default="lbr"/>
-    <xacro:arg name="origin_xyz" default="0 0 0"/>
-    <xacro:arg name="origin_rpy" default="0 0 0"/>
     <xacro:arg name="sim" default="true"/>
 
     <!-- fix to world -->

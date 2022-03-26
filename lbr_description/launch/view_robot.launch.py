@@ -37,18 +37,6 @@ def generate_launch_description():
         description='Set robot name.'
     ))
 
-    launch_args.append(DeclareLaunchArgument(
-        name='origin_xyz',
-        default_value="'0 0 0'",
-        description='Set position origin of robot.'
-    ))
-
-    launch_args.append(DeclareLaunchArgument(
-        name='origin_rpy',
-        default_value="'0 0 0'",
-        description='Set orientation origin of robot.'
-    ))
-
     # Load robot description
     robot_description_content = Command(
         [
@@ -56,8 +44,6 @@ def generate_launch_description():
             PathJoinSubstitution(
                 [FindPackageShare(LaunchConfiguration('description_package')), LaunchConfiguration('description_file')]
             ), " ",
-            "origin_xyz:=", LaunchConfiguration('origin_xyz'), " ",
-            "origin_rpy:=", LaunchConfiguration('origin_rpy'), " ",
             "robot_name:=", LaunchConfiguration('robot_name')
         ]
     )
