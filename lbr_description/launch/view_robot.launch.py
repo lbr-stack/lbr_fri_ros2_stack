@@ -26,9 +26,15 @@ def generate_launch_description():
     ))
 
     launch_args.append(DeclareLaunchArgument(
+        name='rviz_pkg',
+        default_value='lbr_description',
+        description='Package containing rviz_config.'
+    ))
+
+    launch_args.append(DeclareLaunchArgument(
         name='rviz_config',
         default_value='config/config.rviz',
-        description='Rviz configuration relative to description_package.'
+        description='Rviz configuration relative to rviz_pkg.'
     ))
 
     launch_args.append(DeclareLaunchArgument(
@@ -64,9 +70,9 @@ def generate_launch_description():
     rviz = Node(
         package='rviz2',
         executable='rviz2',
-        parameters=[{'config': PathJoinSubstitution(
-            [FindPackageShare(LaunchConfiguration('description_package')), LaunchConfiguration('rviz_config')]
-        )}]
+        arguments=['-d', PathJoinSubstitution(
+            [FindPackageShare(LaunchConfiguration('rviz_pkg')), LaunchConfiguration('rviz_config')]
+        )]
     )
 
     return LaunchDescription(
