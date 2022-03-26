@@ -56,8 +56,6 @@ def generate_launch_description():
             PathJoinSubstitution(
                 [FindPackageShare(LaunchConfiguration('description_package')), LaunchConfiguration('description_file')]
             ), " ",
-            "origin_xyz:=", LaunchConfiguration('origin_xyz'), " ",
-            "origin_rpy:=", LaunchConfiguration('origin_rpy'), " ",
             "robot_name:=", LaunchConfiguration('robot_name')
         ]
     )
