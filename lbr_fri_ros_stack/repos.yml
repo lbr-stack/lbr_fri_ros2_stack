@@ -1,0 +1,9 @@
+repositories:
+  fri:
+    type: git
+    url: https://github.com/KCL-BMEIS/fri.git
+    version: ros
+  lbr_fri_ros_stack:
+    type: git
+    url: https://github.com/KCL-BMEIS/lbr_fri_ros2_stack.git
+    version: noetic
