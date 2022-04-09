@@ -56,7 +56,7 @@ public:
             if (_dt == 0.) { ROS_ERROR("ForceController: Received invalid argument dt %f", _dt); std::exit(-1); };
             if (_alpha == 0.) { ROS_ERROR("ForceController: Received invalid argument alpha %f", _alpha); std::exit(-1); };
             if (_translational_vel > 0.1) { ROS_ERROR("ForceController: Received too high translational_vel %f", _translational_vel); std::exit(-1); };
-            if (_rotational_vel > 2.0) { ROS_ERROR("ForceController: Received too high rotational_vel %f", _rotational_vel); std::exit(-1); };
+            if (_rotational_vel > 8.0) { ROS_ERROR("ForceController: Received too high rotational_vel %f", _rotational_vel); std::exit(-1); };
     };
 
     ~ForceController() {
@@ -81,7 +81,7 @@ private:
         
         // correct force
         f_ext.head(3) -= _force_correction;
-        // std::cout << "f_ext:       " << f_ext.transpose() << std::endl;
+        std::cout << "f_ext:       " << f_ext.transpose() << std::endl;
 
         // Compensate tool force
         f_ext -= _computeToolForce(robot_state);

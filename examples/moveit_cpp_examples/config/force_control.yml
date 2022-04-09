@@ -6,10 +6,10 @@ planning_group: "arm"
 
 # low level controls
 dt: 0.01                # control interval
-alpha: 0.1              # velocity scaling in [0, 1]
+alpha: 0.2             # velocity scaling in [0, 1]
 exp_smooth: 0.02        # exponential smoothing, 1.0 means no smoothing is applied
-translational_vel: 0.03 # translational velocity scaling
-rotational_vel: 4.0     # rotational velocity scaling
+translational_vel: 0.06 # translational velocity scaling
+rotational_vel: 8.0     # rotational velocity scaling
 
 # force control
 th_f: 4.0    # force threshold below which no motion is computed
