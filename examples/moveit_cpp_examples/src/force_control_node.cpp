@@ -32,21 +32,22 @@ class ForceController {
 public:
     ForceController(
         ros::NodeHandle& nh,
-        double dt=0.005, double alpha=0.01, double exp_smooth=0.03, double th_f=4., double th_tau=1.5,
+        double dt=0.005, double alpha=0.01, double exp_smooth=0.03, double translational_vel=0.05, double rotational_vel=0.1, double th_f=4., double th_tau=1.5,
         std::string control_client="PositionJointInterface_trajectory_controller/follow_joint_trajectory", std::string ee="link_ee", 
         std::string state_topic="states", std::string planning_group="arm",
-        double tool_m=0., std::vector<double> tool_com=std::vector<double>(3, 0.), std::vector<double> gravity={0., 0., -9.81}
+        double tool_m=0., std::vector<double> tool_com=std::vector<double>(3, 0.), std::vector<double> force_correction=std::vector<double>(3, 0.), std::vector<double> gravity={0., 0., -9.81}
     ) : 
         _nh(nh), 
         _move_group(planning_group),
         _ac(nh, control_client, false),
         _control_client(control_client), _ee(ee),
-        _dt(dt), _alpha(alpha), _exp_smooth(exp_smooth), _th_f(th_f), _th_tau(th_tau),
+        _dt(dt), _alpha(alpha), _exp_smooth(exp_smooth), _translational_vel(translational_vel), _rotational_vel(rotational_vel), _th_f(th_f), _th_tau(th_tau),
         _dq(_move_group.getActiveJoints().size(), 0.),
         _control_timer(_nh.createTimer(ros::Duration(_dt), &ForceController::controlCB_, this)),
         _state_sub(nh.subscribe(state_topic, 1, &ForceController::_stateCB, this)),
         _tool_m(tool_m),
         _tool_com(Eigen::Vector3d::Map(tool_com.data())),
+        _force_correction(Eigen::Vector3d::Map(force_correction.data())),
         _gravity(Eigen::Vector3d::Map(gravity.data())) {
             ROS_INFO("ForceController: Waiting for action server under %s...", _control_client.c_str());
             _ac.waitForServer();
@@ -54,6 +55,8 @@ public:
 
             if (_dt == 0.) { ROS_ERROR("ForceController: Received invalid argument dt %f", _dt); std::exit(-1); };
             if (_alpha == 0.) { ROS_ERROR("ForceController: Received invalid argument alpha %f", _alpha); std::exit(-1); };
+            if (_translational_vel > 0.1) { ROS_ERROR("ForceController: Received too high translational_vel %f", _translational_vel); std::exit(-1); };
+            if (_rotational_vel > 2.0) { ROS_ERROR("ForceController: Received too high rotational_vel %f", _rotational_vel); std::exit(-1); };
     };
 
     ~ForceController() {
@@ -75,6 +78,9 @@ private:
         auto tau_ext = Eigen::VectorXd::Map(_state.external_torque.data(), _state.external_torque.size());
         auto J_pseudo_inv = dampedLeastSquares(J);
         Eigen::VectorXd f_ext = J_pseudo_inv.transpose()*tau_ext;
+        
+        // correct force
+        f_ext.head(3) -= _force_correction;
         // std::cout << "f_ext:       " << f_ext.transpose() << std::endl;
 
         // Compensate tool force
@@ -84,15 +90,31 @@ private:
         // Velocity in direction of force -> hand-guiding
         Eigen::VectorXd dx = Eigen::VectorXd::Zero(J.rows());
 
-        int j = 0;
+        double scale = 2.;
         for (int i = 0; i < 3; i++) {
-            if (std::abs(f_ext[j]) > _th_f) (f_ext[j] > 0. ? dx[j] = 0.1 : dx[j] = -0.1);
-            j++;
+            if (std::abs(f_ext[i]) > _th_f && std::abs(f_ext[i]) < scale*_th_f) {
+                double sign = 0.;
+                f_ext[i] > 0. ? sign = 1. : sign = -1.;
+                dx[i] = sign*_translational_vel*(std::abs(f_ext[i]) - _th_f)/(scale*_th_f - _th_f);
+            }
+            else if (std::abs(f_ext[i]) > 2*_th_f) (f_ext[i] > 0. ? dx[i] = _translational_vel : dx[i] = -_translational_vel);
+            else {
+                dx[i] = 0.;
+            }
         }
-        for (int i = 0; i < 3; i++) {
-            if (std::abs(f_ext[j]) > _th_tau) (f_ext[j] > 0. ? dx[j] = 1.0 : dx[j] = -1.0);
-            j++;
+        for (int i = 3; i < 6; i++) {
+            if (std::abs(f_ext[i]) > _th_tau && std::abs(f_ext[i]) < scale*_th_tau) {
+                double sign = 0.;
+                f_ext[i] > 0. ? sign = 1. : sign = -1.;
+                dx[i] = sign*_translational_vel*(std::abs(f_ext[i]) - _th_tau)/(scale*_th_tau - _th_tau);
+            }
+            else if (std::abs(f_ext[i]) > 2*_th_tau) (f_ext[i] > 0. ? dx[i] = _translational_vel : dx[i] = -_translational_vel);
+            else {
+                dx[i] = 0.;
+            }             
+            // if (std::abs(f_ext[i]) > _th_tau) (f_ext[i] > 0. ? dx[i] = _rotational_vel : dx[i] = -_rotational_vel);
         }
+        // std::cout << "dx: " << dx.transpose() << std::endl;
 
         // Compute update
         Eigen::VectorXd dq = J_pseudo_inv*dx;
@@ -131,7 +153,7 @@ private:
     auto _computeToolForce(const moveit::core::RobotStatePtr robot_state) -> Eigen::VectorXd {
         auto base_tf = robot_state->getGlobalLinkTransform(_ee);
 
-        Eigen::VectorXd f(6);
+        Eigen::VectorXd f = Eigen::VectorXd::Zero(6);
 
         f <<
             _tool_m*_gravity,
@@ -146,7 +168,7 @@ private:
     actionlib::SimpleActionClient<control_msgs::FollowJointTrajectoryAction> _ac;
 
     std::string _control_client, _ee;
-    double _dt, _alpha, _exp_smooth, _th_f, _th_tau;
+    double _dt, _alpha, _exp_smooth, _translational_vel, _rotational_vel, _th_f, _th_tau;
     std::vector<double> _dq;
 
     ros::Timer _control_timer;
@@ -154,7 +176,7 @@ private:
     lbr_msgs::LBRState _state;
 
     double _tool_m;
-    Eigen::Vector3d _tool_com, _gravity;
+    Eigen::Vector3d _tool_com, _force_correction, _gravity;
 };
 
 
@@ -162,14 +184,16 @@ int main(int argc, char** argv) {
     ros::init(argc, argv, "force_control_node");
     ros::NodeHandle nh;
 
-    double dt, alpha, exp_smooth, th_f, th_tau;
+    double dt, alpha, exp_smooth, translational_vel, rotational_vel, th_f, th_tau;
     std::string control_client, ee, state_topic, planning_group;
     double tool_m;
-    std::vector<double> tool_com, gravity;
+    std::vector<double> tool_com, force_correction, gravity;
 
     nh.getParam("dt", dt);
     nh.getParam("alpha", alpha);
     nh.getParam("exp_smooth", exp_smooth);
+    nh.getParam("translational_vel", translational_vel);
+    nh.getParam("rotational_vel", rotational_vel);
     nh.getParam("th_f", th_f);
     nh.getParam("th_tau", th_tau);
     nh.getParam("control_client", control_client);
@@ -178,6 +202,7 @@ int main(int argc, char** argv) {
     nh.getParam("planning_group", planning_group);
     nh.getParam("tool_m", tool_m);
     nh.getParam("tool_com", tool_com);
+    nh.getParam("force_correction", force_correction);
     nh.getParam("gravity", gravity);
 
     ros::AsyncSpinner spinner(2);
@@ -185,9 +210,9 @@ int main(int argc, char** argv) {
 
     ForceController force_controller(
         nh,
-        dt, alpha, exp_smooth, th_f, th_tau,
+        dt, alpha, exp_smooth, translational_vel, rotational_vel, th_f, th_tau,
         control_client, ee, state_topic, planning_group,
-        tool_m, tool_com, gravity
+        tool_m, tool_com, force_correction, gravity
     );
 
     ros::waitForShutdown();
