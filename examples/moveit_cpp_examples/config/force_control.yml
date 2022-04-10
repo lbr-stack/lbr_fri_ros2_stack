@@ -13,7 +13,7 @@ rotational_vel: 8.0     # rotational velocity scaling
 
 # force control
 th_f: 4.0    # force threshold below which no motion is computed
-th_tau: 1.0  # torque threshold below which no motion is computed
+th_tau: 0.5  # torque threshold below which no motion is computed
 
 # tool definition
 tool_m: 0.                   # mass [kg]
