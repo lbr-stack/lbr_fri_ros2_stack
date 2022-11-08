@@ -17,14 +17,20 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
-# uncomment the following section in order to fill in
-# further dependencies manually.
-# find_package(<dependency> REQUIRED)
+find_package(eigen3_cmake_module REQUIRED)
+find_package(Eigen3)
+find_package(orocos_kdl REQUIRED)
+find_package(kdl_parser REQUIRED)
 
 add_executable(safety_node src/safety_node.cpp)
 target_include_directories(safety_node PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
+ament_target_dependencies(safety_node Eigen3)
+ament_export_dependencies(eigen3_cmake_module)
+ament_export_dependencies(Eigen3)
+target_link_libraries(safety_node
+  ${catkin_LIBRARIES} ${USE_OROCOS_LIBRARIES} ${orocos_kdl_LIBRARIES})
 
 install(TARGETS safety_node
   DESTINATION lib/${PROJECT_NAME})
