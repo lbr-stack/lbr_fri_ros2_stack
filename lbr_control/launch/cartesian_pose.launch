@@ -1,3 +1,4 @@
 <launch>
-    <node pkg="lbr_control" name="cartesian_pose_node" type="cartesian_pose_node.py"/>
+    <arg name="robot_name" default="lbr"/>
+    <node pkg="lbr_control" name="cartesian_pose_node" type="cartesian_pose_node.py" ns="$(arg robot_name)"/>
 </launch>
