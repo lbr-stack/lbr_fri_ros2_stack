@@ -12,6 +12,9 @@ class SafetyNode : public rclcpp::Node {
 public:
   
   SafetyNode() : Node("safety_node") {
+
+    // Load URDF from parameter
+    this->declare_parameter("robot_description");
     std::string urdf = this->get_parameter("robot_description").as_string();
 
     std::cout << urdf << "\n";
