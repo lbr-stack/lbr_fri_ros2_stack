@@ -24,6 +24,18 @@ find_package(orocos_kdl REQUIRED)
 find_package(kdl_parser REQUIRED)
 find_package(sensor_msgs REQUIRED)
 
+
+# TEMP TEMP TEMP
+
+add_executable(fake_joint_state src/test_publisher_node.cpp)
+ament_target_dependencies(fake_joint_state rclcpp sensor_msgs)
+
+install(TARGETS
+  fake_joint_state
+  DESTINATION lib/${PROJECT_NAME})
+
+# TEMP TEMP TEMP
+
 add_executable(safety_node src/safety_node.cpp)
 target_include_directories(safety_node PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
