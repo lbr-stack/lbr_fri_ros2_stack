@@ -22,15 +22,17 @@ find_package(eigen3_cmake_module REQUIRED)
 find_package(Eigen3)
 find_package(orocos_kdl REQUIRED)
 find_package(kdl_parser REQUIRED)
+find_package(sensor_msgs REQUIRED)
 
 add_executable(safety_node src/safety_node.cpp)
 target_include_directories(safety_node PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
-ament_target_dependencies(safety_node rclcpp)
+ament_target_dependencies(safety_node rclcpp sensor_msgs)
 ament_target_dependencies(safety_node Eigen3)
 ament_export_dependencies(eigen3_cmake_module)
-ament_export_dependencies(Eigen3)
+ament_export_dependencies(Eigen3 orocos_kdl kdl_parser)
+target_link_libraries(safety_node ${kdl_parser_LIBRARIES})
 target_link_libraries(safety_node
   ${catkin_LIBRARIES} ${USE_OROCOS_LIBRARIES} ${orocos_kdl_LIBRARIES})
 
