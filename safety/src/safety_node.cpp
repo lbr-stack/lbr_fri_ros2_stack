@@ -3,24 +3,32 @@
 #include <string>
 #include <iostream>
 
-
-// #include "rclcpp/rclcpp.hpp"
 #include <rclcpp/rclcpp.hpp>
+
+// Robot model
+#include "safety/robot.hpp"
 
 class SafetyNode : public rclcpp::Node {
 
 public:
-  
+
   SafetyNode() : Node("safety_node") {
 
     // Load URDF from parameter
     this->declare_parameter("robot_description");
     std::string urdf = this->get_parameter("robot_description").as_string();
 
-    std::cout << urdf << "\n";
+    // Setup robot model
+    _robot = RobotModel(urdf);
+
+    std::cout << "i am here\n";
 
   }
-  
+
+private:
+
+  RobotModel _robot;
+
 
 };
 
