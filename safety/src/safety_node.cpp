@@ -1,3 +1,37 @@
+#include <chrono>
+#include <functional>
+#include <string>
+#include <iostream>
+
+
+// #include "rclcpp/rclcpp.hpp"
+#include <rclcpp/rclcpp.hpp>
+
+class SafetyNode : public rclcpp::Node {
+
+public:
+  
+  SafetyNode() : Node("safety_node") {
+    std::string urdf = this->get_parameter("robot_description").as_string();
+
+    std::cout << urdf << "\n";
+
+  }
+  
+
+};
+
+int main(int argc, char ** argv)
+{
+  rclcpp::init(argc, argv);
+  rclcpp::spin(std::make_shared<SafetyNode>());
+  rclcpp::shutdown();
+  return 0;
+}
+
+
+/*
+
 // Standard lib
 #include <chrono>
 #include <functional>
@@ -79,3 +113,5 @@ int main(int argc, char ** argv) {
   rclcpp::shutdown();
   return 0;
 }
+
+*/
