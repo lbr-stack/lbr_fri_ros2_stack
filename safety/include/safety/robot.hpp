@@ -22,14 +22,19 @@ public:
   RobotModel(std::string urdf) {
 
     // Load URDF
-    KDL::Tree tree; // KDL tree representation for robot
-    if (!kdl_parser::treeFromString(urdf, tree))
+    KDL::Tree _tree; // KDL tree representation for robot
+    if (!kdl_parser::treeFromString(urdf, _tree))
       return;
 
+    // Get number of dofs and resize q window
+    _ndof = _tree.getNrOfJoints();
+    _t_window = Eigen::VectorXd::Zero(_n_window);
+    _q_window = Eigen::MatrixXd::Zero(_ndof, _n_window);
+
     // Create FK solvers
-    std::string root_name = tree.getRootSegment()->second.segment.getName();
+    std::string root_name = _tree.getRootSegment()->second.segment.getName();
     std::vector<std::string> link_names;
-    for (auto const& seg : tree.getSegments()) {
+    for (auto const& seg : _tree.getSegments()) {
 
       // Skip root
       std::string link_name = seg.second.segment.getName();
@@ -37,7 +42,7 @@ public:
 
 	// Get chain
 	KDL::Chain chain;
-	if (!tree.getChain(root_name, link_name, chain)) {
+	if (!_tree.getChain(root_name, link_name, chain)) {
 	  return;
 	}
 
@@ -61,13 +66,48 @@ public:
 
   }
 
+  // Append joint state
+  void append(double t, const sensor_msgs::msg::JointState::SharedPtr msg) {
+
+    for (unsigned int i = 0; i < _n_window-1; ++i) {
+      if (i < _n_window-1) {
+	_t_window(i) = _t_window(i+1);
+	_q_window.col(i) = _q_window.col(i+1);
+      } else {
+	_t_window(i) = t;
+	_q_window.col(i) = _msg2q(msg);
+      }
+    }
+    _nappend++;
+  }
+
   ~RobotModel() {}
 
 private:
 
-  int _nfk = 0;
-  std::vector<KDL::Chain> _chains;
-  std::vector<KDL::ChainFkSolverPos_recursive> _fksolvers;
+  unsigned long long int _nappend = 0;
+  const unsigned int _n_window = 2; // number of previously executed joint states to keep in memory
+  unsigned int _ndof; // number of degrees of freedom for the robot
+  KDL::Tree _tree; // kinematic tree
+  int _nfk = 0; // number of chains/fksolvers
+  std::vector<KDL::Chain> _chains; // kinematics chains
+  std::vector<KDL::ChainFkSolverPos_recursive> _fksolvers; // fk solvers associcated with each kinematic chain
+  Eigen::VectorXd _t_window; // window of time stamps for each executed joint state
+  Eigen::MatrixXd _q_window; // window of executed joint states
+
+  // Extract q from msg
+  Eigen::VectorXd _msg2q(const sensor_msgs::msg::JointState::SharedPtr msg) {
+    Eigen::VectorXd q(_ndof);
+
+    for (auto const& seg : _tree.getSegments()) {
+
+      std::string link_name = seg.second.segment.getName();
+      
+
+
+    }
+
+  }
 
 
   // Compute the positions of each link
