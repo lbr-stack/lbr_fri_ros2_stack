@@ -263,7 +263,7 @@
         <link name="${robot_name}_link_ee">
         </link>
 
-        <xacro:iiwa_gazebo robot_name="${robot_name}"/>
+        <xacro:med_gazebo robot_name="${robot_name}"/>
         <!-- TODO: move modes to args, decouple urdf/gazebo/controls -->
         <!-- add notice for remote host to set to kuka controller -->
         <xacro:lbr_hardware_interface sim="${sim}" remote_host="INADDR_ANY" port="30200" robot_name="${robot_name}"/>

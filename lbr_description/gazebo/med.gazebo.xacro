@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
-    <xacro:macro name="iiwa_gazebo" params="robot_name:=^|lbr">
+    <xacro:macro name="med_gazebo" params="robot_name:=^|lbr">
 
         <!-- ros_control-plugin -->
         <gazebo>
