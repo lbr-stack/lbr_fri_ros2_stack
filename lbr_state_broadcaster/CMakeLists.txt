@@ -16,6 +16,7 @@ find_package(rclcpp REQUIRED)
 find_package(rclcpp_lifecycle REQUIRED)
 find_package(realtime_tools REQUIRED)
 find_package(controller_interface REQUIRED)
+find_package(hardware_interface REQUIRED)
 find_package(pluginlib REQUIRED)
 find_package(lbr_state_msgs REQUIRED)
 find_package(lbr_hardware REQUIRED)
@@ -35,6 +36,7 @@ ament_target_dependencies(${PROJECT_NAME}
   rclcpp_lifecycle
   realtime_tools
   controller_interface
+  hardware_interface
   pluginlib
   lbr_state_msgs
   lbr_hardware
@@ -59,7 +61,6 @@ pluginlib_export_plugin_description_file(controller_interface ${PROJECT_NAME}.xm
 if(BUILD_TESTING)
   find_package(ament_cmake_gmock REQUIRED)
   find_package(controller_manager REQUIRED)
-  find_package(hardware_interface REQUIRED)
   find_package(ros2_control_test_assets REQUIRED)
   
   ament_add_gmock(
@@ -79,8 +80,10 @@ ament_export_dependencies(
   rclcpp_lifecycle
   realtime_tools
   controller_interface
+  hardware_interface
   pluginlib
   lbr_state_msgs
+  lbr_hardware
 )
   
 ament_export_targets(

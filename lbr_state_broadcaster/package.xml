@@ -13,18 +13,18 @@
   <build_depend>rclcpp_lifecycle</build_depend>
   <build_depend>realtime_tools</build_depend>
   <build_depend>controller_interface</build_depend>
+  <build_depend>hardware_interface</build_depend>
   <build_depend>pluginlib</build_depend>
   <build_depend>lbr_state_msgs</build_depend>
-  <build_depend>hardware_interface</build_depend>
   <build_depend>lbr_hardware</build_depend>
 
   <exec_depend>rclcpp</exec_depend>
   <exec_depend>rclcpp_lifecycle</exec_depend>
   <exec_depend>realtime_tools</exec_depend>
   <exec_depend>controller_interface</exec_depend>
+  <exec_depend>hardware_interface</exec_depend>
   <exec_depend>pluginlib</exec_depend>
   <exec_depend>lbr_state_msgs</exec_depend>
-  <exec_depend>hardware_interface</exec_depend>
   <exec_depend>lbr_hardware</exec_depend>
 
   <test_depend>ament_cmake_gmock</test_depend>
