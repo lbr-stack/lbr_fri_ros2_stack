@@ -78,11 +78,15 @@ install(
 )
 
 install(
-    TARGETS ${PROJECT_NAME} fri_ros2_control_node
+    TARGETS ${PROJECT_NAME}
     EXPORT export_${PROJECT_NAME}
     LIBRARY DESTINATION lib/${PROJECT_NAME}
     RUNTIME DESTINATION lib/${PROJECT_NAME}
     INCLUDES DESTINATION include
+)
+
+install(TARGETS fri_ros2_control_node
+  RUNTIME DESTINATION lib/${PROJECT_NAME}
 )
 
 ament_package()

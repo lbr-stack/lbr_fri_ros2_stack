@@ -18,6 +18,7 @@ find_package(realtime_tools REQUIRED)
 find_package(controller_interface REQUIRED)
 find_package(pluginlib REQUIRED)
 find_package(lbr_state_msgs REQUIRED)
+find_package(lbr_hardware REQUIRED)
 
 add_library(${PROJECT_NAME}
   SHARED
@@ -36,6 +37,7 @@ ament_target_dependencies(${PROJECT_NAME}
   controller_interface
   pluginlib
   lbr_state_msgs
+  lbr_hardware
 )
 
 install(
@@ -45,7 +47,7 @@ install(
 
 install(
   TARGETS ${PROJECT_NAME}
-  EXPORT ${PROJECT_NAME}Targets
+  EXPORT export_${PROJECT_NAME}
   LIBRARY DESTINATION lib
   ARCHIVE DESTINATION lib
   RUNTIME DESTINATION bin
@@ -82,7 +84,7 @@ ament_export_dependencies(
 )
   
 ament_export_targets(
-  ${PROJECT_NAME}Targets HAS_LIBRARY_TARGET
+  export_${PROJECT_NAME} HAS_LIBRARY_TARGET
 )
 
 ament_package()
