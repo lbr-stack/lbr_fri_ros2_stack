@@ -58,7 +58,6 @@ LBRStateBroadcaster::update() {
             this->realtime_lbr_state_publisher_->unlockAndPublish();
         }
     } catch (const std::exception& e) {
-
         return controller_interface::return_type::ERROR;
     }
 
