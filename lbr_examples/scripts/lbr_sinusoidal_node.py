@@ -10,7 +10,7 @@ from std_msgs.msg import Float64MultiArray
 from lbr_state_msgs.msg import LBRState
 
 
-class LBRReadWriteNode(Node):
+class LBRSinusoidalNode(Node):
     _sim: bool
     _command_rate: int
     _amplitude: float
@@ -77,8 +77,8 @@ class LBRReadWriteNode(Node):
 def main(args=None):
     rclpy.init(args=args)
 
-    lbr_read_write_node = LBRReadWriteNode()
-    rclpy.spin(lbr_read_write_node)
+    lbr_sinusoidal_node = LBRSinusoidalNode()
+    rclpy.spin(lbr_sinusoidal_node)
     rclpy.shutdown()
 
 
