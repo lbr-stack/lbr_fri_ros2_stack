@@ -34,7 +34,8 @@ def launch_setup(context, *args, **kwargs):
             warnings.warn("Windows currently not supported for real-time priority. Defaulting to non-real-time.")
         elif sys.platform.startswith("lin"):
             # launch with realtime priority, requries to set rtprio in /etc/security/limits.conf, e.g. <user> - rtprio 99
-            controller_manager_prefix = "chrt -rr 99"
+            # see priority https://github.com/ros-controls/ros2_control/blob/galactic/controller_manager/src/ros2_control_node.cpp
+            controller_manager_prefix = "chrt -rr 50"
         else:
             raise RuntimeError(f"Encountered unhandled platform {sys.platform}")
 
