@@ -10,7 +10,7 @@ LBRStateBroadcaster::init(const std::string& controller_name) {
         return ret;
     }
 
-    try { // thie parameters can be parsed via the YAML configurations
+    try { // these parameters can be parsed via the YAML configurations
         use_local_topics_ = this->auto_declare<bool>("use_local_topics", false);
         lbr_state_topic_ = this->auto_declare<std::string>("lbr_state_topic", "lbr_state");
     } catch (const std::exception& e) {
@@ -43,13 +43,9 @@ LBRStateBroadcaster::update() {
         lbr_state_.time_stamp_sec = this->time_stamp_sec_interface_ptr_->get_value();
         lbr_state_.time_stamp_nano_sec = this->time_stamp_nano_sec_interface_ptr_->get_value();
 
-        for (std::size_t i=0; i<this->position_interfaces_.size(); ++i) {
+        for (int i=0; i<KUKA::FRI::LBRState::NUMBER_OF_JOINTS; ++i) {
             this->lbr_state_.position[i] = this->position_interfaces_[i].get().get_value();
-        }
-        for (std::size_t i=0; i<this->effort_interfaces_.size(); ++i) {
             this->lbr_state_.torque[i] = this->effort_interfaces_[i].get().get_value();
-        }
-        for (std::size_t i=0; i<this->external_torque_interfaces_.size(); ++i) {
             this->lbr_state_.external_torque[i] = this->external_torque_interfaces_[i].get().get_value();
         }
 
@@ -80,6 +76,11 @@ LBRStateBroadcaster::on_configure(
         RCLCPP_ERROR(this->node_->get_logger(), "Failed to initialize publishers.\n%s", e.what());
         return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::ERROR;
     }
+
+    lbr_state_.name.reserve(KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
+    lbr_state_.position.resize(KUKA::FRI::LBRState::NUMBER_OF_JOINTS, std::numeric_limits<double>::quiet_NaN());
+    lbr_state_.torque.resize(KUKA::FRI::LBRState::NUMBER_OF_JOINTS, std::numeric_limits<double>::quiet_NaN());
+    lbr_state_.external_torque.resize(KUKA::FRI::LBRState::NUMBER_OF_JOINTS, std::numeric_limits<double>::quiet_NaN());
 
     return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
 }
@@ -135,10 +136,51 @@ LBRStateBroadcaster::on_activate(
         return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::ERROR;
     }
 
-    lbr_state_.name = joint_names_;
-    lbr_state_.position.resize(this->position_interfaces_.size(), std::numeric_limits<double>::quiet_NaN());
-    lbr_state_.torque.resize(this->effort_interfaces_.size(), std::numeric_limits<double>::quiet_NaN());
-    lbr_state_.external_torque.resize(this->external_torque_interfaces_.size(), std::numeric_limits<double>::quiet_NaN());
+    if (this->joint_names_.size() != KUKA::FRI::LBRState::NUMBER_OF_JOINTS) {
+        RCLCPP_ERROR(
+            this->node_->get_logger(), 
+            "Got invalid number of joint names. Got %d, expected %d.",
+            this->joint_names_.size(), KUKA::FRI::LBRState::NUMBER_OF_JOINTS
+        );
+        return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::ERROR;
+    }
+
+    if (this->position_interfaces_.size() != KUKA::FRI::LBRState::NUMBER_OF_JOINTS) {
+        RCLCPP_ERROR(
+            this->node_->get_logger(), 
+            "Got invalid number of position interfaces. Got %d, expected %d.",
+            this->position_interfaces_.size(), KUKA::FRI::LBRState::NUMBER_OF_JOINTS
+        );
+        return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::ERROR;
+    }
+
+    if (this->effort_interfaces_.size() != KUKA::FRI::LBRState::NUMBER_OF_JOINTS) {
+        RCLCPP_ERROR(
+            this->node_->get_logger(), 
+            "Got invalid number of effort interfaces. Got %d, expected %d.",
+            this->effort_interfaces_.size(), KUKA::FRI::LBRState::NUMBER_OF_JOINTS
+        );
+        return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::ERROR;
+    }
+
+    if (this->external_torque_interfaces_.size() != KUKA::FRI::LBRState::NUMBER_OF_JOINTS) {
+        RCLCPP_ERROR(
+            this->node_->get_logger(), 
+            "Got invalid number of external torque interfaces. Got %d, expected %d.",
+            this->external_torque_interfaces_.size(), KUKA::FRI::LBRState::NUMBER_OF_JOINTS
+        );
+        return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::ERROR;
+    }
+
+    try {
+        this->lbr_state_.name = joint_names_;
+        std::fill(this->lbr_state_.position.begin(), lbr_state_.position.end(), std::numeric_limits<double>::quiet_NaN());
+        std::fill(this->lbr_state_.torque.begin(), lbr_state_.position.end(), std::numeric_limits<double>::quiet_NaN());
+        std::fill(this->lbr_state_.external_torque.begin(), lbr_state_.position.end(), std::numeric_limits<double>::quiet_NaN());
+    } catch (const std::exception& e) {
+        RCLCPP_ERROR(this->node_->get_logger(), "Failed to initialize the LBRState.");
+        return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::ERROR;
+    }
 
     return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
 }

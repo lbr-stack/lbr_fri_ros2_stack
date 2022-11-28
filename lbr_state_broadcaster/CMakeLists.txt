@@ -20,6 +20,7 @@ find_package(hardware_interface REQUIRED)
 find_package(pluginlib REQUIRED)
 find_package(lbr_state_msgs REQUIRED)
 find_package(lbr_hardware REQUIRED)
+find_package(fri REQUIRED)
 
 add_library(${PROJECT_NAME}
   SHARED
@@ -40,6 +41,7 @@ ament_target_dependencies(${PROJECT_NAME}
   pluginlib
   lbr_state_msgs
   lbr_hardware
+  fri
 )
 
 install(
@@ -84,6 +86,7 @@ ament_export_dependencies(
   pluginlib
   lbr_state_msgs
   lbr_hardware
+  fri
 )
   
 ament_export_targets(

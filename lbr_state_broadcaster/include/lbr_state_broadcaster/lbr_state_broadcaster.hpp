@@ -1,5 +1,6 @@
 #pragma once
 
+#include <algorithm>
 #include <memory>
 #include <vector>
 #include <stdexcept>
@@ -13,6 +14,8 @@
 
 #include <lbr_hardware/fri_hardware_interface_type_values.hpp>
 #include <lbr_state_msgs/msg/lbr_state.hpp>
+
+#include <fri/friLBRState.h>
 
 
 namespace lbr_state_broadcaster {
