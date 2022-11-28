@@ -26,6 +26,7 @@ def test_urdf_mass(model: str, mass: float, abs_tol: float=1.e-5) -> None:
         mass (float): Reference mass
         abs_tol (float): Absolute tolerance in kg, 1.e-5 kg = 0.01 g
     """
+    print("running test")
     path = os.path.join(get_package_share_directory("lbr_description"), "urdf", model, f"{model}.urdf.xacro")
 
     xml = xacro.process(path)
