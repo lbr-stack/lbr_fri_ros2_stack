@@ -107,18 +107,6 @@ def generate_launch_description():
 
     launch_args.append(
         DeclareLaunchArgument(
-            name="real_time",
-            default_value="false",
-            description=
-                "Will launch ros2_control_node with real-time priority.\n"
-                "\tCurrently only supported on Linux. Requires user to set rtprio\n"
-                "\tin /etc/security/limits.conf, see https://linux.die.net/man/5/limits.conf.\n"
-                "\tE.g. <user> - rtprio 99."
-        )
-    )
-
-    launch_args.append(
-        DeclareLaunchArgument(
             name="controller_configurations_package",
             default_value="lbr_bringup",
             description="Package that contains controller configurations."
