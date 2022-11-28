@@ -54,6 +54,7 @@ LBRStateBroadcaster::update() {
             this->realtime_lbr_state_publisher_->unlockAndPublish();
         }
     } catch (const std::exception& e) {
+        RCLCPP_ERROR(this->node_->get_logger(), "Failed updating state.\n%s", e.what());
         return controller_interface::return_type::ERROR;
     }
 
@@ -174,9 +175,9 @@ LBRStateBroadcaster::on_activate(
 
     try {
         this->lbr_state_.name = joint_names_;
-        std::fill(this->lbr_state_.position.begin(), lbr_state_.position.end(), std::numeric_limits<double>::quiet_NaN());
-        std::fill(this->lbr_state_.torque.begin(), lbr_state_.position.end(), std::numeric_limits<double>::quiet_NaN());
-        std::fill(this->lbr_state_.external_torque.begin(), lbr_state_.position.end(), std::numeric_limits<double>::quiet_NaN());
+        std::fill(this->lbr_state_.position.begin(), this->lbr_state_.position.end(), std::numeric_limits<double>::quiet_NaN());
+        std::fill(this->lbr_state_.torque.begin(), this->lbr_state_.torque.end(), std::numeric_limits<double>::quiet_NaN());
+        std::fill(this->lbr_state_.external_torque.begin(), this->lbr_state_.external_torque.end(), std::numeric_limits<double>::quiet_NaN());
     } catch (const std::exception& e) {
         RCLCPP_ERROR(this->node_->get_logger(), "Failed to initialize the LBRState.");
         return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::ERROR;
