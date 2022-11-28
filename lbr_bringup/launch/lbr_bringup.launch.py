@@ -1,12 +1,11 @@
-from launch.actions.declare_launch_argument import DeclareLaunchArgument
-from launch.launch_description import LaunchDescription
 from launch.actions import IncludeLaunchDescription, OpaqueFunction
+from launch.actions.declare_launch_argument import DeclareLaunchArgument
 from launch.conditions import IfCondition
+from launch.launch_description import LaunchDescription
+from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import Command, FindExecutable, PathJoinSubstitution
 from launch.substitutions.launch_configuration import LaunchConfiguration
-from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
-from launch.launch_description_sources import PythonLaunchDescriptionSource
 
 
 def launch_setup(context, *args, **kwargs):
@@ -108,6 +107,18 @@ def generate_launch_description():
 
     launch_args.append(
         DeclareLaunchArgument(
+            name="real_time",
+            default_value="false",
+            description=
+                "Will launch ros2_control_node with real-time priority.\n"
+                "\tCurrently only supported on Linux. Requires user to set rtprio\n"
+                "\tin /etc/security/limits.conf, see https://linux.die.net/man/5/limits.conf.\n"
+                "\tE.g. <user> - rtprio 99."
+        )
+    )
+
+    launch_args.append(
+        DeclareLaunchArgument(
             name="controller_configurations_package",
             default_value="lbr_bringup",
             description="Package that contains controller configurations."
@@ -118,7 +129,9 @@ def generate_launch_description():
         DeclareLaunchArgument(
             name="controller_configurations",
             default_value="config/lbr_controllers.yml",
-            description="Relative path to controller configurations YAML file. Note that the joints in the controllers must be named according to the robot_name."
+            description=
+                "Relative path to controller configurations YAML file.\n"
+                "\tNote that the joints in the controllers must be named according to the robot_name."
         )
     )
 
@@ -142,7 +155,9 @@ def generate_launch_description():
         DeclareLaunchArgument(
             name="moveit_controller_configurations",
             default_value="config/lbr_controllers.yml",
-            description="Relative path to MoveIt! controller configurations YAML file. Note that the joints in the controllers must be named according to the robot_name. This file lists controllers that are loaded through the controller_configurations file."
+            description="Relative path to MoveIt! controller configurations YAML file.\n"
+            "\tNote that the joints in the controllers must be named according to the robot_name.\n"
+            "\tThis file lists controllers that are loaded through the controller_configurations file."
         )
     )
 
