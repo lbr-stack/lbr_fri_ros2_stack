@@ -4,6 +4,7 @@ import os
 
 import pytest
 import xacro
+from ament_index_python import get_package_share_directory
 from urdf_parser_py.urdf import URDF
 
 # masses from https://xpert.kuka.com (login required) or
@@ -26,7 +27,7 @@ def test_urdf_mass(model: str, mass: float, abs_tol: float=1.e-5) -> None:
         mass (float): Reference mass
         abs_tol (float): Absolute tolerance in kg, 1.e-5 kg = 0.01 g
     """
-    path = f"{os.getcwd()}/src/lbr_fri_ros2_stack/lbr_description/urdf/{model}/{model}.urdf.xacro"
+    path = os.path.join(get_package_share_directory("lbr_description"), "urdf", model, f"{model}.urdf.xacro")
 
     xml = xacro.process(path)
     urdf = URDF.from_xml_string(xml)
