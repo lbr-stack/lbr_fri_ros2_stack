@@ -2,10 +2,10 @@
 ROS2 packages for the KUKA LBR, including communication to the real robot via the Fast Robot Interface ([FRI](https://github.com/KCL-BMEIS/fri)), [MoveIt2](https://moveit.ros.org/) integration and [Gazebo](http://gazebosim.org/) simulation support. Included are the `iiwa7`, `iiwa14`, `med7`, and `med14`. To get going, follow the [First Steps](#first-steps).
 
 # First Steps
-Install [colcon](https://docs.ros.org/en/humble/Tutorials/Colcon-Tutorial.html#install-colcon) and [rosdep](https://docs.ros.org/en/crystal/Installation/Linux-Install-Binary.html#installing-and-initializing-rosdep). Build this repository
+Install [colcon](https://docs.ros.org/en/rolling/Tutorials/Colcon-Tutorial.html#install-colcon) and [rosdep](https://docs.ros.org/en/crystal/Installation/Linux-Install-Binary.html#installing-and-initializing-rosdep). Build this repository
 ```shell
 mkdir -p lbr_fri_ros2_stack_ws/src && cd lbr_fri_ros2_stack_ws
-wget https://raw.githubusercontent.com/KCL-BMEIS/lbr_fri_ros2_stack/humble/lbr_fri_ros2_stack/repos.yml -P src
+wget https://raw.githubusercontent.com/KCL-BMEIS/lbr_fri_ros2_stack/rolling/lbr_fri_ros2_stack/repos.yml -P src
 vcs import src < src/repos.yml
 rosdep install --from-paths src --ignore-src -r -y
 colcon build
