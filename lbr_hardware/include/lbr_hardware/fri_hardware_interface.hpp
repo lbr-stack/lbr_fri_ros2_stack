@@ -9,6 +9,7 @@
 #include <hardware_interface/types/hardware_interface_type_values.hpp>
 #include <controller_manager_msgs/srv/switch_controller.hpp>
 #include <controller_manager_msgs/srv/list_controllers.hpp>
+#include <controller_interface/controller_interface.hpp>
 
 #include <fri/friUdpConnection.h>
 #include <fri/friLBRClient.h>
@@ -27,17 +28,17 @@ class FRIHardwareInterface : public hardware_interface::SystemInterface, public 
         ~FRIHardwareInterface();
 
         // hardware interface
-        CallbackReturn on_init(const hardware_interface::HardwareInfo & info) override; // check ros2 control and set status
+        controller_interface::CallbackReturn on_init(const hardware_interface::HardwareInfo & info) override; // check ros2 control and set status
         std::vector<hardware_interface::StateInterface> export_state_interfaces() override;
         std::vector<hardware_interface::CommandInterface> export_command_interfaces() override;
 
         hardware_interface::return_type prepare_command_mode_switch(const std::vector<std::string>& start_interfaces, const std::vector<std::string>& stop_interfaces) override;  // not supported in FRI
 
-        CallbackReturn on_activate(const rclcpp_lifecycle::State & previous_state) override;
-        CallbackReturn on_deactivate(const rclcpp_lifecycle::State & previous_state) override;
+        controller_interface::CallbackReturn on_activate(const rclcpp_lifecycle::State & previous_state) override;
+        controller_interface::CallbackReturn on_deactivate(const rclcpp_lifecycle::State & previous_state) override;
 
-        hardware_interface::return_type read() override;
-        hardware_interface::return_type write() override;
+        hardware_interface::return_type read(const rclcpp::Time& time, const rclcpp::Duration& period) override;
+        hardware_interface::return_type write(const rclcpp::Time& time, const rclcpp::Duration& period) override;
 
         // FRI
         void onStateChange(KUKA::FRI::ESessionState old_state, KUKA::FRI::ESessionState new_state) override;

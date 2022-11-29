@@ -45,38 +45,40 @@ int main(int argc, char ** argv)
 
   RCLCPP_INFO(cm->get_logger(), "update rate is %d Hz", cm->get_update_rate());
 
-  std::thread cm_thread([cm]() {
-    if (controller_manager::has_realtime_kernel())
+  std::thread cm_thread(
+    [cm]()
     {
-      if (!controller_manager::configure_sched_fifo(kSchedPriority))
+      if (controller_manager::has_realtime_kernel())
       {
-        RCLCPP_WARN(cm->get_logger(), "Could not enable FIFO RT scheduling policy");
+        if (!controller_manager::configure_sched_fifo(kSchedPriority))
+        {
+          RCLCPP_WARN(cm->get_logger(), "Could not enable FIFO RT scheduling policy");
+        }
       }
-    }
-    else
-    {
-      RCLCPP_INFO(cm->get_logger(), "RT kernel is recommended for better performance");
-    }
+      else
+      {
+        RCLCPP_INFO(cm->get_logger(), "RT kernel is recommended for better performance");
+      }
 
-    // for calculating sleep time
-    auto const period = std::chrono::nanoseconds(1'000'000'000 / cm->get_update_rate());
+      // for calculating sleep time
+      auto const period = std::chrono::nanoseconds(1'000'000'000 / cm->get_update_rate());
 
-    // for calculating the measured period of the loop
-    rclcpp::Time previous_time = cm->now();
+      // for calculating the measured period of the loop
+      rclcpp::Time previous_time = cm->now();
 
-    while (rclcpp::ok())
-    {
-      // calculate measured period
-      auto const current_time = cm->now();
-      auto const measured_period = current_time - previous_time;
-      previous_time = current_time;
+      while (rclcpp::ok())
+      {
+        // calculate measured period
+        auto const current_time = cm->now();
+        auto const measured_period = current_time - previous_time;
+        previous_time = current_time;
 
-      // execute update loop
-      cm->read();
-      cm->update(cm->now(), measured_period);
-      cm->write();
-    }
-  });
+        // execute update loop
+        cm->read(cm->now(), measured_period);
+        cm->update(cm->now(), measured_period);
+        cm->write(cm->now(), measured_period);
+      }
+    });
 
   executor->add_node(cm);
   executor->spin();

@@ -9,9 +9,9 @@ FRIHardwareInterface::~FRIHardwareInterface() {
     RCLCPP_INFO(rclcpp::get_logger(FRI_HW_LOGGER), "Done.");
 }
 
-CallbackReturn FRIHardwareInterface::on_init(const hardware_interface::HardwareInfo & system_info) {
-    if (hardware_interface::SystemInterface::on_init(system_info) != CallbackReturn::SUCCESS) {
-        return CallbackReturn::ERROR;
+controller_interface::CallbackReturn FRIHardwareInterface::on_init(const hardware_interface::HardwareInfo & system_info) {
+    if (hardware_interface::SystemInterface::on_init(system_info) != controller_interface::CallbackReturn::SUCCESS) {
+        return controller_interface::CallbackReturn::ERROR;
     }
 
     // services for switching controllers on reset
@@ -42,7 +42,7 @@ CallbackReturn FRIHardwareInterface::on_init(const hardware_interface::HardwareI
         30209 <= hw_port_
     ) {
         RCLCPP_FATAL(rclcpp::get_logger(FRI_HW_LOGGER), "Expected port in [30200, 30209]. Found %d.", hw_port_);
-        return CallbackReturn::ERROR;
+        return controller_interface::CallbackReturn::ERROR;
     }
 
     // check lbr specific state interfaces
@@ -76,7 +76,7 @@ CallbackReturn FRIHardwareInterface::on_init(const hardware_interface::HardwareI
     // for each joint check interfaces
     if (info_.joints.size() != KUKA::FRI::LBRState::NUMBER_OF_JOINTS) { 
         RCLCPP_FATAL(rclcpp::get_logger(FRI_HW_LOGGER), "Expected %d joints in URDF. Found %ld.", KUKA::FRI::LBRState::NUMBER_OF_JOINTS, info_.joints.size());
-        return CallbackReturn::ERROR;
+        return controller_interface::CallbackReturn::ERROR;
     }
 
     for (auto& joint: info_.joints) {
@@ -86,7 +86,7 @@ CallbackReturn FRIHardwareInterface::on_init(const hardware_interface::HardwareI
                 rclcpp::get_logger(FRI_HW_LOGGER),
                 "Joint %s received invalid number of state interfaces. Received %ld, expected 3.", joint.name.c_str(), joint.state_interfaces.size()
             );
-            return CallbackReturn::ERROR;
+            return controller_interface::CallbackReturn::ERROR;
         }
         for (auto& si: joint.state_interfaces) {
             if (si.name != hardware_interface::HW_IF_POSITION &&
@@ -97,7 +97,7 @@ CallbackReturn FRIHardwareInterface::on_init(const hardware_interface::HardwareI
                     "Joint %s received invalid state interface: %s. Expected %s, %s, or %s",
                     joint.name.c_str(), si.name.c_str(), hardware_interface::HW_IF_POSITION, hardware_interface::HW_IF_EFFORT, LBR::HW_IF_EXTERNAL_TORQUE
                 );
-                return CallbackReturn::ERROR;
+                return controller_interface::CallbackReturn::ERROR;
             }
         }
 
@@ -107,7 +107,7 @@ CallbackReturn FRIHardwareInterface::on_init(const hardware_interface::HardwareI
                 rclcpp::get_logger(FRI_HW_LOGGER), 
                 "Joint %s received invalid number of command interfaces. Received %ld, expected 2.", joint.name.c_str(), joint.command_interfaces.size()
             );
-            return CallbackReturn::ERROR;
+            return controller_interface::CallbackReturn::ERROR;
         };
         for (auto& ci: joint.command_interfaces) {
             if (ci.name != "position" &&
@@ -117,7 +117,7 @@ CallbackReturn FRIHardwareInterface::on_init(const hardware_interface::HardwareI
                     "Joint %s received invalid command interface: %s. Expected %s or %s.",
                     joint.name.c_str(), ci.name.c_str(), "position", "effort"
                 );
-                return CallbackReturn::ERROR;
+                return controller_interface::CallbackReturn::ERROR;
             }
         }
     }
@@ -125,7 +125,7 @@ CallbackReturn FRIHardwareInterface::on_init(const hardware_interface::HardwareI
     // command mode tracker
     command_mode_init_ = false;
 
-    return CallbackReturn::SUCCESS;
+    return controller_interface::CallbackReturn::SUCCESS;
 }
 
 std::vector<hardware_interface::StateInterface> FRIHardwareInterface::export_state_interfaces() {
@@ -202,22 +202,22 @@ hardware_interface::return_type FRIHardwareInterface::prepare_command_mode_switc
     }
 }
 
-CallbackReturn FRIHardwareInterface::on_activate(const rclcpp_lifecycle::State &) {
+controller_interface::CallbackReturn FRIHardwareInterface::on_activate(const rclcpp_lifecycle::State &) {
     app_.connect(hw_port_, hw_remote_host_);    
-    return CallbackReturn::SUCCESS;
+    return controller_interface::CallbackReturn::SUCCESS;
 }
 
-CallbackReturn FRIHardwareInterface::on_deactivate(const rclcpp_lifecycle::State &)  {
+controller_interface::CallbackReturn FRIHardwareInterface::on_deactivate(const rclcpp_lifecycle::State &)  {
     RCLCPP_INFO(rclcpp::get_logger(FRI_HW_LOGGER), "Disconnecting FRI on stop...");
     app_.disconnect();
     RCLCPP_INFO(rclcpp::get_logger(FRI_HW_LOGGER), "Done.");
 
     command_mode_init_ = false;
 
-    return CallbackReturn::SUCCESS;
+    return controller_interface::CallbackReturn::SUCCESS;
 }
 
-hardware_interface::return_type FRIHardwareInterface::read() {
+hardware_interface::return_type FRIHardwareInterface::read(const rclcpp::Time& /*time*/, const rclcpp::Duration& /*period*/) {
     // read incoming data from controller
     if (!app_.receiveAndDecode()) {
         RCLCPP_ERROR(rclcpp::get_logger(FRI_HW_LOGGER), "Failed to receive and decode data from controller.");
@@ -240,7 +240,7 @@ hardware_interface::return_type FRIHardwareInterface::read() {
     return hardware_interface::return_type::OK;
 }
 
-hardware_interface::return_type FRIHardwareInterface::write() {
+hardware_interface::return_type FRIHardwareInterface::write(const rclcpp::Time& /*time*/, const rclcpp::Duration& /*period*/) {
     // callback callst LBRClient's (this) method, e.g. onStateChange(), command()
     app_.callback();
     if (!app_.encodeAndSend()) {

@@ -36,7 +36,7 @@ LBRStateBroadcaster::update(const rclcpp::Time& time, const rclcpp::Duration& /*
             this->realtime_lbr_state_publisher_->unlockAndPublish();
         }
     } catch (const std::exception& e) {
-        RCLCPP_ERROR(this->node_->get_logger(), "Failed updating state.\n%s", e.what());
+        RCLCPP_ERROR(this->get_node()->get_logger(), "Failed updating state.\n%s", e.what());
         return controller_interface::return_type::ERROR;
     }
 
@@ -49,7 +49,7 @@ LBRStateBroadcaster::on_init() {
         use_local_topics_ = this->auto_declare<bool>("use_local_topics", false);
         lbr_state_topic_ = this->auto_declare<std::string>("lbr_state_topic", "lbr_state");
     } catch (const std::exception& e) {
-        RCLCPP_ERROR(this->node_->get_logger(), "Failed to declare parameters.\n%s", e.what());
+        RCLCPP_ERROR(this->get_node()->get_logger(), "Failed to declare parameters.\n%s", e.what());
         return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::ERROR;
     }
 
@@ -63,13 +63,13 @@ LBRStateBroadcaster::on_configure(
     try { // initialize realtime publishers of lbr_state_msgs::msg::LBRState
         std::string topic_prefix = this->use_local_topics_ ? "~/" : "";
         this->lbr_state_publisher_ = rclcpp::create_publisher<lbr_state_msgs::msg::LBRState>(
-            this->node_, topic_prefix + this->lbr_state_topic_, rclcpp::SystemDefaultsQoS()
+            this->get_node(), topic_prefix + this->lbr_state_topic_, rclcpp::SystemDefaultsQoS()
         );
         this->realtime_lbr_state_publisher_ = std::make_shared<
             realtime_tools::RealtimePublisher<lbr_state_msgs::msg::LBRState>
         >(this->lbr_state_publisher_);
     } catch (const std::exception& e) {
-        RCLCPP_ERROR(this->node_->get_logger(), "Failed to initialize publishers.\n%s", e.what());
+        RCLCPP_ERROR(this->get_node()->get_logger(), "Failed to initialize publishers.\n%s", e.what());
         return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::ERROR;
     }
 
@@ -128,13 +128,13 @@ LBRStateBroadcaster::on_activate(
             throw std::runtime_error(e_msg);
         }
     } catch (const std::exception& e) {
-        RCLCPP_ERROR(this->node_->get_logger(), "Error while iterating state interfaces.\n%s", e.what());
+        RCLCPP_ERROR(this->get_node()->get_logger(), "Error while iterating state interfaces.\n%s", e.what());
         return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::ERROR;
     }
 
     if (this->joint_names_.size() != KUKA::FRI::LBRState::NUMBER_OF_JOINTS) {
         RCLCPP_ERROR(
-            this->node_->get_logger(), 
+            this->get_node()->get_logger(), 
             "Got invalid number of joint names. Got %lu, expected %d.",
             this->joint_names_.size(), KUKA::FRI::LBRState::NUMBER_OF_JOINTS
         );
@@ -143,7 +143,7 @@ LBRStateBroadcaster::on_activate(
 
     if (this->position_interfaces_.size() != KUKA::FRI::LBRState::NUMBER_OF_JOINTS) {
         RCLCPP_ERROR(
-            this->node_->get_logger(), 
+            this->get_node()->get_logger(), 
             "Got invalid number of position interfaces. Got %lu, expected %d.",
             this->position_interfaces_.size(), KUKA::FRI::LBRState::NUMBER_OF_JOINTS
         );
@@ -152,7 +152,7 @@ LBRStateBroadcaster::on_activate(
 
     if (this->effort_interfaces_.size() != KUKA::FRI::LBRState::NUMBER_OF_JOINTS) {
         RCLCPP_ERROR(
-            this->node_->get_logger(), 
+            this->get_node()->get_logger(), 
             "Got invalid number of effort interfaces. Got %lu, expected %d.",
             this->effort_interfaces_.size(), KUKA::FRI::LBRState::NUMBER_OF_JOINTS
         );
@@ -161,7 +161,7 @@ LBRStateBroadcaster::on_activate(
 
     if (this->external_torque_interfaces_.size() != KUKA::FRI::LBRState::NUMBER_OF_JOINTS) {
         RCLCPP_ERROR(
-            this->node_->get_logger(), 
+            this->get_node()->get_logger(), 
             "Got invalid number of external torque interfaces. Got %lu, expected %d.",
             this->external_torque_interfaces_.size(), KUKA::FRI::LBRState::NUMBER_OF_JOINTS
         );
@@ -174,7 +174,7 @@ LBRStateBroadcaster::on_activate(
         std::fill(this->lbr_state_.torque.begin(), this->lbr_state_.torque.end(), std::numeric_limits<double>::quiet_NaN());
         std::fill(this->lbr_state_.external_torque.begin(), this->lbr_state_.external_torque.end(), std::numeric_limits<double>::quiet_NaN());
     } catch (const std::exception& e) {
-        RCLCPP_ERROR(this->node_->get_logger(), "Failed to initialize the LBRState.");
+        RCLCPP_ERROR(this->get_node()->get_logger(), "Failed to initialize the LBRState.");
         return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::ERROR;
     }
 
@@ -194,7 +194,7 @@ LBRStateBroadcaster::on_deactivate(
         this->time_stamp_sec_interface_ptr_.release();
         this->time_stamp_nano_sec_interface_ptr_.release();
     } catch (const std::exception& e) {
-        RCLCPP_ERROR(this->node_->get_logger(), "Failed to clear interfaces.\n%s", e.what());
+        RCLCPP_ERROR(this->get_node()->get_logger(), "Failed to clear interfaces.\n%s", e.what());
         return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::ERROR;
     }
     return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
