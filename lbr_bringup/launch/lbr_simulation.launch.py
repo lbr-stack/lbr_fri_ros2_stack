@@ -28,10 +28,6 @@ def generate_launch_description():
         )
     )
 
-    # Note: Environment variable GAZEBO_MODEL_PATH is extended as in 
-    # ROS2 control demos via environment hook https://github.com/ros-controls/ros2_control_demos/tree/master/ros2_control_demo_description/rrbot_description
-    # Also see https://colcon.readthedocs.io/en/released/developer/environment.html#dsv-files
-    # Gazebo launch scripts append GAZEBO_MODEL_PATH with known paths, see https://github.com/ros-simulation/gazebo_ros_pkgs/blob/ab1ae5c05eda62674b36df74eb3be8c93cdc8761/gazebo_ros/launch/gzclient.launch.py#L26
     spawn_entity = Node(
         package="gazebo_ros",
         executable="spawn_entity.py",

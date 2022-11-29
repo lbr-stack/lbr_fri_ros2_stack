@@ -6,6 +6,7 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import Command, FindExecutable, PathJoinSubstitution
 from launch.substitutions.launch_configuration import LaunchConfiguration
 from launch_ros.substitutions import FindPackageShare
+from launch_ros.actions import Node
 
 
 def launch_setup(context, *args, **kwargs):
@@ -57,28 +58,22 @@ def launch_setup(context, *args, **kwargs):
         condition=IfCondition(LaunchConfiguration("sim"))
     )
 
-    # Move group
-    move_group = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            PathJoinSubstitution([
-                FindPackageShare("lbr_moveit"),
-                "launch",
-                "lbr_move_group.launch.py"
-            ])
-        ), 
-        launch_arguments=[
-            ("robot_description", robot_description_content),
-            ("moveit_controller_configurations_package", LaunchConfiguration("moveit_controller_configurations_package")),
-            ("moveit_controller_configurations", LaunchConfiguration("moveit_controller_configurations")),
-            ("model", LaunchConfiguration("model")),
-            ("sim", LaunchConfiguration("sim"))
-        ]
+    # Rviz
+    rviz2 = Node(
+        package="rviz2",
+        executable="rviz2",
+        parameters=[
+            {"robot_description": robot_description_content}
+        ],
+        arguments=["-d", PathJoinSubstitution(
+            [FindPackageShare("lbr_description"), "config/config.rviz"]
+        )]
     )
 
     return [
         simulation,
         control,
-        move_group
+        rviz2
     ]
 
 
@@ -128,24 +123,6 @@ def generate_launch_description():
             name="controller",
             default_value="position_trajectory_controller",
             description="Robot controller."
-        )
-    )
-
-    launch_args.append(
-        DeclareLaunchArgument(
-            name="moveit_controller_configurations_package",
-            default_value="lbr_moveit",
-            description="Package that contains MoveIt! controller configurations."
-        )
-    )
-
-    launch_args.append(
-        DeclareLaunchArgument(
-            name="moveit_controller_configurations",
-            default_value="config/lbr_controllers.yml",
-            description="Relative path to MoveIt! controller configurations YAML file.\n"
-            "\tNote that the joints in the controllers must be named according to the robot_name.\n"
-            "\tThis file lists controllers that are loaded through the controller_configurations file."
         )
     )
 
