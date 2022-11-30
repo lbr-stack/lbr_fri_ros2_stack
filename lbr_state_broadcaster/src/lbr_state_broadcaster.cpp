@@ -92,7 +92,7 @@ LBRStateBroadcaster::on_activate(
                     std::ref(state_interface)
                 );
                 this->joint_names_.emplace_back(
-                    state_interface.get_name()
+                    state_interface.get_prefix_name()
                 );
                 continue;
             }
