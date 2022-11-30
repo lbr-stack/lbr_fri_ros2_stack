@@ -12,12 +12,6 @@ def generate_launch_description():
         description="Whether to launch in simulation."
     )
 
-    command_rate_launch_arg = DeclareLaunchArgument(
-        name="command_rate",
-        default_value=f"{100}",
-        description="Command rate in Hz."
-    )
-
     amplitude_launch_arg = DeclareLaunchArgument(
         name="amplitude",
         default_value=f"{math.pi/4.}",
@@ -35,7 +29,6 @@ def generate_launch_description():
         executable="lbr_sinusoidal_node.py",
         parameters=[
             {"sim": LaunchConfiguration("sim")},
-            {"command_rate": LaunchConfiguration("command_rate")},
             {"amplitude": LaunchConfiguration("amplitude")},
             {"period": LaunchConfiguration("period")}
         ]
@@ -44,7 +37,6 @@ def generate_launch_description():
     return LaunchDescription(
         [
             sim_launch_arg,
-            command_rate_launch_arg,
             amplitude_launch_arg,
             period_launch_arg,
             sinusoidal_node
