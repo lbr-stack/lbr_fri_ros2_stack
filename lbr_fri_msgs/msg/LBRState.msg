@@ -22,8 +22,8 @@ std_msgs/Header header
 float64 sample_time
 uint32 time_stamp_sec
 uint32 time_stamp_nano_sec
+uint32 e_client_command_mode
 
-string[] name
 float64[] position
 float64[] torque
 float64[] external_torque

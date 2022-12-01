@@ -15,11 +15,13 @@ find_package(ament_cmake REQUIRED)
 find_package(builtin_interfaces REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
 find_package(std_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
 
 rosidl_generate_interfaces(lbr_fri_msgs
+  msg/LBRCommand.msg
   msg/LBRState.msg
   srv/AppConnect.srv
-  DEPENDENCIES builtin_interfaces std_msgs
+  DEPENDENCIES builtin_interfaces std_msgs geometry_msgs
   ADD_LINTER_TESTS
 )
 
