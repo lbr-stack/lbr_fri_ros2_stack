@@ -8,7 +8,7 @@ from rclpy.node import Node
 from sensor_msgs.msg import JointState
 from std_msgs.msg import Float64MultiArray
 
-from lbr_state_msgs.msg import LBRState
+from lbr_fri_msgs.msg import LBRState
 
 
 class LBRSinusoidalNode(Node):

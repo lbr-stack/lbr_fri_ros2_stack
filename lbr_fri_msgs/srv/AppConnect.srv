@@ -1,0 +1,4 @@
+int32 port_id
+string hostname
+---
+bool established

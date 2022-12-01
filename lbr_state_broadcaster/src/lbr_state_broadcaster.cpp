@@ -60,13 +60,13 @@ rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
 LBRStateBroadcaster::on_configure(
     const rclcpp_lifecycle::State& /*previous_state*/
 ) {
-    try { // initialize realtime publishers of lbr_state_msgs::msg::LBRState
+    try { // initialize realtime publishers of lbr_fri_msgs::msg::LBRState
         std::string topic_prefix = this->use_local_topics_ ? "~/" : "";
-        this->lbr_state_publisher_ = rclcpp::create_publisher<lbr_state_msgs::msg::LBRState>(
+        this->lbr_state_publisher_ = rclcpp::create_publisher<lbr_fri_msgs::msg::LBRState>(
             this->get_node(), topic_prefix + this->lbr_state_topic_, rclcpp::SystemDefaultsQoS()
         );
         this->realtime_lbr_state_publisher_ = std::make_shared<
-            realtime_tools::RealtimePublisher<lbr_state_msgs::msg::LBRState>
+            realtime_tools::RealtimePublisher<lbr_fri_msgs::msg::LBRState>
         >(this->lbr_state_publisher_);
     } catch (const std::exception& e) {
         RCLCPP_ERROR(this->get_node()->get_logger(), "Failed to initialize publishers.\n%s", e.what());

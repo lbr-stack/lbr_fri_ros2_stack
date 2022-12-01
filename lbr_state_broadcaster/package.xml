@@ -15,7 +15,7 @@
   <build_depend>controller_interface</build_depend>
   <build_depend>hardware_interface</build_depend>
   <build_depend>pluginlib</build_depend>
-  <build_depend>lbr_state_msgs</build_depend>
+  <build_depend>lbr_fri_msgs</build_depend>
   <build_depend>lbr_hardware</build_depend>
   <build_depend>fri</build_depend>
 
@@ -25,7 +25,7 @@
   <exec_depend>controller_interface</exec_depend>
   <exec_depend>hardware_interface</exec_depend>
   <exec_depend>pluginlib</exec_depend>
-  <exec_depend>lbr_state_msgs</exec_depend>
+  <exec_depend>lbr_fri_msgs</exec_depend>
   <exec_depend>lbr_hardware</exec_depend>
   <exec_depend>fri</exec_depend>
 
