@@ -1,4 +1,4 @@
-#include "lbr_hardware_new/lbr_state_client.hpp"
+#include "lbr_fri_ros2/lbr_state_client.hpp"
 
 #include "utilities.hpp"
 

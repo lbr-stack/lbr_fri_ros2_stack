@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(lbr_hardware_new)
+project(lbr_fri_ros2)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
@@ -13,7 +13,7 @@ find_package(std_srvs REQUIRED)
 find_package(lbr_fri_msgs REQUIRED)
 find_package(fri REQUIRED)
 
-add_library(lbr_hardware_new
+add_library(lbr_fri_ros2
   SHARED 
     src/lbr_state_client.cpp
     src/lbr_app.cpp
@@ -69,5 +69,10 @@ install(
   RUNTIME DESTINATION lib/${PROJECT_NAME}
 )
 # test node
+
+install(
+    PROGRAMS test/lbr_command_node.py
+    DESTINATION lib/${PROJECT_NAME}
+)
 
 ament_package()

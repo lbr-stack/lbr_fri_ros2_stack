@@ -2,7 +2,7 @@
 
 #include "rclcpp/rclcpp.hpp"
 
-#include "lbr_hardware_new/lbr_app.hpp"
+#include "lbr_fri_ros2/lbr_app.hpp"
 
 
 int main(int argc, char** argv) {
