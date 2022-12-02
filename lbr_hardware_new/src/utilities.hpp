@@ -24,5 +24,4 @@ namespace lbr_hardware
             throw std::runtime_error("Reveived unknown state.");
         }
     }
-
 }

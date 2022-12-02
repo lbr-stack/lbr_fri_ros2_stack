@@ -4,6 +4,7 @@
 #include <memory>
 #include <string>
 #include <stdexcept>
+#include <thread>
 
 #include "rclcpp/rclcpp.hpp"
 #include "std_srvs/srv/empty.hpp"
