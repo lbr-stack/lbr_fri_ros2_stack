@@ -18,11 +18,22 @@
 #                          the torques induced by the robot itself. 
 
 float64 sample_time
+int8 session_state
+int8 connection_quality
+int8 safety_state
+int8 operation_mode
+int8 drive_state
+int8 client_command_mode
+int8 overlay_type
+int8 control_mode
+
 uint32 time_stamp_sec
 uint32 time_stamp_nano_sec
-uint32 e_client_command_mode
 
 float64[] measured_joint_position
-float64[] ipo_joint_position
-float64[] torque
+float64[] commanded_joint_position
+float64[] measured_torque
+float64[] commanded_torque
 float64[] external_torque
+float64[] ipo_joint_position
+float64 tracking_performance
