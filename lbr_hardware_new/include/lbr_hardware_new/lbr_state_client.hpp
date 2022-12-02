@@ -1,8 +1,10 @@
 #pragma once
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <stdexcept>
+#include <thread>
 
 #include "rclcpp/rclcpp.hpp"
 #include "realtime_tools/realtime_buffer.h"
@@ -33,11 +35,15 @@ namespace lbr_hardware
         void lbr_command_cb_(const lbr_fri_msgs::msg::LBRCommand::SharedPtr lbr_command);
         void publish_lbr_state_();
 
-        void lbr_command_to_robot_command_();
         void robot_state_to_lbr_state_();
+
+        void init_lbr_command_(lbr_fri_msgs::msg::LBRCommand &lbr_command);
+        void init_lbr_state_(lbr_fri_msgs::msg::LBRState &lbr_state);
 
         void reset_lbr_command_(lbr_fri_msgs::msg::LBRCommand &lbr_command);
         void reset_lbr_state_(lbr_fri_msgs::msg::LBRState &lbr_state);
+
+        bool verify_lbr_command_(const lbr_fri_msgs::msg::LBRCommand &lbr_command);
 
         std::shared_ptr<rclcpp::Node> node_;
 
@@ -48,5 +54,7 @@ namespace lbr_hardware
         rclcpp::Publisher<lbr_fri_msgs::msg::LBRState>::SharedPtr lbr_state_pub_;
         std::shared_ptr<realtime_tools::RealtimeBuffer<lbr_fri_msgs::msg::LBRCommand>> rt_lbr_command_buf_;
         std::shared_ptr<realtime_tools::RealtimePublisher<lbr_fri_msgs::msg::LBRState>> rt_lbr_state_pub_;
+
+        std::unique_ptr<std::thread> node_thread_;
     };
 } // end of namespace lbr_hardware

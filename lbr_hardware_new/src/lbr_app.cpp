@@ -36,12 +36,12 @@ namespace lbr_hardware
         const lbr_fri_msgs::srv::AppConnect::Request::SharedPtr request,
         lbr_fri_msgs::srv::AppConnect::Response::SharedPtr response)
     {
-        RCLCPP_INFO(get_logger(), "Attempting to connect to LBR server...");
+        RCLCPP_INFO(get_logger(), "Attempting to open UDP connection for LBR server...");
         const char *remote_host = request->remote_host.empty() ? NULL : request->remote_host.c_str();
         response->established = connect_(request->port_id, remote_host);
         if (!response->established)
         {
-            RCLCPP_ERROR(get_logger(), "Failed to connect to LBR server.");
+            RCLCPP_ERROR(get_logger(), "Failed.");
             return;
         };
         RCLCPP_INFO(get_logger(), "Done.");
@@ -51,10 +51,10 @@ namespace lbr_hardware
         const std_srvs::srv::Empty::Request::SharedPtr /*request*/,
         std_srvs::srv::Empty::Response::SharedPtr /*response*/)
     {
-        RCLCPP_INFO(get_logger(), "Attempting disconnect from LBR server...");
+        RCLCPP_INFO(get_logger(), "Attempting to close UDP connection for LBR server...");
         if (!disconnect_())
         {
-            RCLCPP_ERROR(get_logger(), "Failed to disconnect from LBR server.");
+            RCLCPP_ERROR(get_logger(), "Failed.");
             return;
         };
         RCLCPP_INFO(get_logger(), "Done.");
