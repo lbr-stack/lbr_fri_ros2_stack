@@ -2,7 +2,7 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>lbr_state_broadcaster</name>
-  <version>0.0.0</version>
+  <version>1.0.0</version>
   <description>ROS2 controller for broadcasting states that are exposes via the Fast Robot Interface (FRI)..</description>
   <maintainer email="martin.huber@kcl.ac.uk">mhubii</maintainer>
   <license>MIT</license>
