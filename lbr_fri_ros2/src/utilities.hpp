@@ -4,7 +4,7 @@
 
 #include "fri/friClientIf.h"
 
-namespace lbr_hardware
+namespace lbr_fri_ros2
 {
     std::string e_session_state_to_string(const KUKA::FRI::ESessionState &state)
     {

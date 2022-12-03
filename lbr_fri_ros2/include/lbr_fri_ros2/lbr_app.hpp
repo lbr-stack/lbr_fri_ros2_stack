@@ -15,7 +15,7 @@
 #include "fri/friUdpConnection.h"
 #include "fri/friClientApplication.h"
 
-namespace lbr_hardware
+namespace lbr_fri_ros2
 {
     class LBRApp : public rclcpp::Node
     {
@@ -46,8 +46,8 @@ namespace lbr_hardware
         rclcpp::Service<lbr_fri_msgs::srv::AppConnect>::SharedPtr app_connect_srv_;
         rclcpp::Service<std_srvs::srv::Empty>::SharedPtr app_disconnect_srv_;
 
-        std::unique_ptr<lbr_hardware::LBRStateClient> lbr_state_client_;
+        std::unique_ptr<lbr_fri_ros2::LBRStateClient> lbr_state_client_;
         std::unique_ptr<KUKA::FRI::UdpConnection> connection_;
         std::unique_ptr<KUKA::FRI::ClientApplication> app_;
     };
-} // end of namespace lbr_hardware
+} // end of namespace lbr_fri_ros2

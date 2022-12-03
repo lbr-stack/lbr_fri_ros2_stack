@@ -1,6 +1,6 @@
 #include "lbr_fri_ros2/lbr_app.hpp"
 
-namespace lbr_hardware
+namespace lbr_fri_ros2
 {
     LBRApp::LBRApp(const std::string &node_name, const int &port_id, const char *const remote_host)
         : rclcpp::Node(node_name)
@@ -22,7 +22,7 @@ namespace lbr_hardware
             "app/disconnect",
             std::bind(&LBRApp::app_disconnect_cb_, this, std::placeholders::_1, std::placeholders::_2), rmw_qos_profile_system_default);
 
-        lbr_state_client_ = std::make_unique<lbr_hardware::LBRStateClient>("lbr_state_client_node");
+        lbr_state_client_ = std::make_unique<lbr_fri_ros2::LBRStateClient>("lbr_state_client_node");
         connection_ = std::make_unique<KUKA::FRI::UdpConnection>();
         app_ = std::make_unique<KUKA::FRI::ClientApplication>(*connection_.get(), *lbr_state_client_.get());
     }
@@ -127,4 +127,4 @@ namespace lbr_hardware
         }
         return !connected_;
     }
-} // end of namespace lbr_hardware
+} // end of namespace lbr_fri_ros2

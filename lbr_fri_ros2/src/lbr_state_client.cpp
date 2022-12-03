@@ -2,7 +2,7 @@
 
 #include "utilities.hpp"
 
-namespace lbr_hardware
+namespace lbr_fri_ros2
 {
     LBRStateClient::LBRStateClient(const std::string &node_name)
     {
@@ -285,4 +285,4 @@ namespace lbr_hardware
         }
         return true;
     }
-} // end of namespace lbr_hardware
+} // end of namespace lbr_fri_ros2

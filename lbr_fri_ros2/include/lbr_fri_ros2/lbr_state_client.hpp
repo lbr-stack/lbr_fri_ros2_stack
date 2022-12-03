@@ -16,7 +16,7 @@
 #include "fri/friLBRClient.h"
 #include "fri/friLBRState.h"
 
-namespace lbr_hardware
+namespace lbr_fri_ros2
 {
     class LBRStateClient : public KUKA::FRI::LBRClient
     {
@@ -57,4 +57,4 @@ namespace lbr_hardware
 
         std::unique_ptr<std::thread> node_thread_;
     };
-} // end of namespace lbr_hardware
+} // end of namespace lbr_fri_ros2
