@@ -12,6 +12,7 @@
 
 #include "lbr_fri_msgs/msg/lbr_command.hpp"
 #include "lbr_fri_msgs/msg/lbr_state.hpp"
+
 #include "fri/friClientIf.h"
 #include "fri/friLBRClient.h"
 #include "fri/friLBRState.h"
@@ -39,7 +40,7 @@ namespace lbr_fri_ros2
         void reset_rt_lbr_command_buf_();
         void reset_lbr_state_(lbr_fri_msgs::msg::LBRState::SharedPtr lbr_state);
 
-        bool verify_lbr_command_(const lbr_fri_msgs::msg::LBRCommand::SharedPtr *const lbr_command);
+        bool verify_lbr_command_(const lbr_fri_msgs::msg::LBRCommand::SharedPtr *const lbr_command_ptr) const;
 
         std::shared_ptr<rclcpp::Node> node_;
 

@@ -45,46 +45,35 @@ namespace lbr_fri_ros2
     void LBRStateClient::monitor()
     {
         KUKA::FRI::LBRClient::monitor();
-        robot_state_to_lbr_state_();
         publish_lbr_state_();
     }
 
     void LBRStateClient::waitForCommand()
     {
         KUKA::FRI::LBRClient::waitForCommand();
-        // maybe set torque / wrenches zero here
-        robot_state_to_lbr_state_();
         publish_lbr_state_();
     }
 
     void LBRStateClient::command()
     {
-        robot_state_to_lbr_state_();
         publish_lbr_state_();
 
-        auto lbr_command = rt_lbr_command_buf_->readFromRT();
+        auto lbr_command_ptr = rt_lbr_command_buf_->readFromRT();
 
-        KUKA::FRI::LBRClient::command();
-
-        if (verify_lbr_command_(lbr_command))
+        if (verify_lbr_command_(lbr_command_ptr))
         {
             switch (robotState().getClientCommandMode())
             {
             case KUKA::FRI::EClientCommandMode::POSITION:
-                if (!std::isnan(lbr_command->get()->joint_position[0]))
-                {
-                    robotCommand().setJointPosition(lbr_command->get()->joint_position.data());
-                }
+                robotCommand().setJointPosition((*lbr_command_ptr)->joint_position.data());
                 break;
             case KUKA::FRI::EClientCommandMode::TORQUE:
-                if (!std::isnan(lbr_command->get()->joint_position[0]))
-                {
-                }
+                robotCommand().setJointPosition((*lbr_command_ptr)->joint_position.data());
+                robotCommand().setTorque((*lbr_command_ptr)->torque.data());
                 break;
             case KUKA::FRI::EClientCommandMode::WRENCH:
-                if (!std::isnan(lbr_command->get()->joint_position[0]))
-                {
-                }
+                robotCommand().setJointPosition((*lbr_command_ptr)->joint_position.data());
+                robotCommand().setWrench((*lbr_command_ptr)->wrench.data());
                 break;
             default:
                 std::string error_msg = "Unknown EClientCommandMode provided.";
@@ -92,11 +81,14 @@ namespace lbr_fri_ros2
                 throw std::runtime_error(error_msg);
             }
         }
+        else
+        {
+            LBRClient::command();
+        }
     }
 
     void LBRStateClient::lbr_command_cb_(const lbr_fri_msgs::msg::LBRCommand::SharedPtr lbr_command)
     {
-        // TODO: fix ! write subscription into buffer, not the command
         if (lbr_command->client_command_mode != robotState().getClientCommandMode())
         {
             RCLCPP_WARN(
@@ -106,12 +98,12 @@ namespace lbr_fri_ros2
             reset_rt_lbr_command_buf_();
             return;
         }
-
         rt_lbr_command_buf_->writeFromNonRT(lbr_command);
     }
 
     void LBRStateClient::publish_lbr_state_()
     {
+        robot_state_to_lbr_state_();
         if (rt_lbr_state_pub_->trylock())
         {
             rt_lbr_state_pub_->msg_ = *lbr_state_;
@@ -241,34 +233,49 @@ namespace lbr_fri_ros2
         }
     }
 
-    bool LBRStateClient::verify_lbr_command_(const lbr_fri_msgs::msg::LBRCommand::SharedPtr *const lbr_command)
+    bool LBRStateClient::verify_lbr_command_(const lbr_fri_msgs::msg::LBRCommand::SharedPtr *const lbr_command_ptr) const
     {
-        if (lbr_command->get())
+        if (!lbr_command_ptr || !(*lbr_command_ptr))
         {
-            return true;
+            RCLCPP_WARN(node_->get_logger(), "Not command provided.");
+            return false;
         }
-        return false;
-        // // TODO: modify for different control modes
-        // switch (lbr_command->client_command_mode)
-        // {
-        // case KUKA::FRI::EClientCommandMode::POSITION:
-        //     if (std::isnan(lbr_command->joint_position[0]))
-        //     {
-        //         RCLCPP_ERROR(node_->get_logger(), "Attempted to command invalid joint position.");
-        //         return false;
-        //     }
-        //     break;
-        // case KUKA::FRI::EClientCommandMode::TORQUE:
-        //     /* code */
-        //     break;
-        // case KUKA::FRI::EClientCommandMode::WRENCH:
-        //     /* code */
-        //     break;
-        // default:
-        //     std::string error_msg = "Unknown EClientCommandMode provided.";
-        //     RCLCPP_ERROR(node_->get_logger(), error_msg.c_str());
-        //     throw std::runtime_error(error_msg);
-        // }
-        // return true;
+
+        switch ((*lbr_command_ptr)->client_command_mode)
+        {
+        case KUKA::FRI::EClientCommandMode::POSITION:
+            if (std::isnan((*lbr_command_ptr)->joint_position[0]) ||
+                (*lbr_command_ptr)->joint_position.size() != KUKA::FRI::LBRState::NUMBER_OF_JOINTS)
+            {
+                RCLCPP_ERROR(node_->get_logger(), "Attempted to command invalid joint position.");
+                return false;
+            }
+            break;
+        case KUKA::FRI::EClientCommandMode::TORQUE:
+            if (std::isnan((*lbr_command_ptr)->joint_position[0]) ||
+                std::isnan((*lbr_command_ptr)->torque[0]) ||
+                (*lbr_command_ptr)->joint_position.size() != KUKA::FRI::LBRState::NUMBER_OF_JOINTS ||
+                (*lbr_command_ptr)->torque.size() != KUKA::FRI::LBRState::NUMBER_OF_JOINTS)
+            {
+                RCLCPP_ERROR(node_->get_logger(), "Attempted to command invalid joint position and or torques.");
+                return false;
+            }
+            break;
+        case KUKA::FRI::EClientCommandMode::WRENCH:
+            if (std::isnan((*lbr_command_ptr)->joint_position[0]) ||
+                std::isnan((*lbr_command_ptr)->wrench[0]) ||
+                (*lbr_command_ptr)->joint_position.size() != KUKA::FRI::LBRState::NUMBER_OF_JOINTS ||
+                (*lbr_command_ptr)->wrench.size() != 6)
+            {
+                RCLCPP_ERROR(node_->get_logger(), "Attempted to command invalid joint position and or wrench.");
+                return false;
+            }
+            break;
+        default:
+            std::string error_msg = "Unknown EClientCommandMode provided.";
+            RCLCPP_ERROR(node_->get_logger(), error_msg.c_str());
+            throw std::runtime_error(error_msg);
+        }
+        return true;
     }
 } // end of namespace lbr_fri_ros2
