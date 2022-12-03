@@ -81,13 +81,6 @@ def generate_launch_description():
         arguments=["joint_state_broadcaster", "--controller-manager", "/controller_manager"],
     )
 
-    lbr_state_broadcaster = Node(
-        package="controller_manager",
-        executable="spawner",
-        arguments=["lbr_state_broadcaster", "--controller-manager", "/controller_manager"],
-        condition=UnlessCondition(LaunchConfiguration("sim"))
-    )
-
     controller = Node(
         package="controller_manager",
         executable="spawner",
@@ -99,6 +92,5 @@ def generate_launch_description():
             controller_manager,
             robot_state_publisher,
             joint_state_broadcaster,
-            lbr_state_broadcaster,
             controller
         ])
