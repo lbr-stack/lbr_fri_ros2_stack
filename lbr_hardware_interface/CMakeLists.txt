@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16.3)
-project(lbr_hardware)
+project(lbr_hardware_interface)
 
 # Default to C++14
 if(NOT CMAKE_CXX_STANDARD)
@@ -59,7 +59,7 @@ ament_target_dependencies(
   rclcpp
 )
 
-pluginlib_export_plugin_description_file(hardware_interface lbr_hardware.xml)
+pluginlib_export_plugin_description_file(hardware_interface lbr_hardware_interface.xml)
 
 # Export for downstream usage, see https://docs.ros.org/en/foxy/Guides/Ament-CMake-Documentation.html
 ament_export_targets(

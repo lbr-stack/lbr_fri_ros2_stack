@@ -1,15 +1,15 @@
-#include <lbr_hardware/fri_hardware_interface.hpp>
+#include <lbr_hardware/lbr_hardware_interface.hpp>
 
 
-namespace LBR {
+namespace lbr_hardware {
 
-FRIHardwareInterface::~FRIHardwareInterface() {
+LBRHardwareInterface::~LBRHardwareInterface() {
     RCLCPP_INFO(rclcpp::get_logger(FRI_HW_LOGGER), "Disconnecting FRI on destruct...");
     app_.disconnect();
     RCLCPP_INFO(rclcpp::get_logger(FRI_HW_LOGGER), "Done.");
 }
 
-controller_interface::CallbackReturn FRIHardwareInterface::on_init(const hardware_interface::HardwareInfo & system_info) {
+controller_interface::CallbackReturn LBRHardwareInterface::on_init(const hardware_interface::HardwareInfo & system_info) {
     if (hardware_interface::SystemInterface::on_init(system_info) != controller_interface::CallbackReturn::SUCCESS) {
         return controller_interface::CallbackReturn::ERROR;
     }
@@ -62,13 +62,13 @@ controller_interface::CallbackReturn FRIHardwareInterface::on_init(const hardwar
     }
 
     for (auto& si: sensor.state_interfaces) {
-        if (si.name != LBR::HW_IF_SAMPLE_TIME &&
-            si.name != LBR::HW_IF_TIME_STAMP_SEC &&
-            si.name != LBR::HW_IF_TIME_STAMP_NANO_SEC) {
+        if (si.name != lbr_hardware::HW_IF_SAMPLE_TIME &&
+            si.name != lbr_hardware::HW_IF_TIME_STAMP_SEC &&
+            si.name != lbr_hardware::HW_IF_TIME_STAMP_NANO_SEC) {
             RCLCPP_FATAL(
                 rclcpp::get_logger(FRI_HW_LOGGER),
                 "Sensor %s received invalid state interface %s. Expected %s, %s, or %s.",
-                sensor.name.c_str(), si.name.c_str(), LBR::HW_IF_SAMPLE_TIME, LBR::HW_IF_TIME_STAMP_NANO_SEC, LBR::HW_IF_TIME_STAMP_SEC
+                sensor.name.c_str(), si.name.c_str(), lbr_hardware::HW_IF_SAMPLE_TIME, lbr_hardware::HW_IF_TIME_STAMP_NANO_SEC, lbr_hardware::HW_IF_TIME_STAMP_SEC
             );
         }
     }
@@ -91,11 +91,11 @@ controller_interface::CallbackReturn FRIHardwareInterface::on_init(const hardwar
         for (auto& si: joint.state_interfaces) {
             if (si.name != hardware_interface::HW_IF_POSITION &&
                 si.name != hardware_interface::HW_IF_EFFORT &&
-                si.name != LBR::HW_IF_EXTERNAL_TORQUE) {
+                si.name != lbr_hardware::HW_IF_EXTERNAL_TORQUE) {
                 RCLCPP_FATAL(
                     rclcpp::get_logger(FRI_HW_LOGGER),
                     "Joint %s received invalid state interface: %s. Expected %s, %s, or %s",
-                    joint.name.c_str(), si.name.c_str(), hardware_interface::HW_IF_POSITION, hardware_interface::HW_IF_EFFORT, LBR::HW_IF_EXTERNAL_TORQUE
+                    joint.name.c_str(), si.name.c_str(), hardware_interface::HW_IF_POSITION, hardware_interface::HW_IF_EFFORT, lbr_hardware::HW_IF_EXTERNAL_TORQUE
                 );
                 return controller_interface::CallbackReturn::ERROR;
             }
@@ -128,19 +128,19 @@ controller_interface::CallbackReturn FRIHardwareInterface::on_init(const hardwar
     return controller_interface::CallbackReturn::SUCCESS;
 }
 
-std::vector<hardware_interface::StateInterface> FRIHardwareInterface::export_state_interfaces() {
+std::vector<hardware_interface::StateInterface> LBRHardwareInterface::export_state_interfaces() {
     std::vector<hardware_interface::StateInterface> state_interfaces;
 
     // lbr specific state interfaces
     auto sensor = info_.sensors[0];
     state_interfaces.emplace_back(
-        sensor.name, LBR::HW_IF_SAMPLE_TIME, &hw_sample_time_ 
+        sensor.name, lbr_hardware::HW_IF_SAMPLE_TIME, &hw_sample_time_ 
     );
     state_interfaces.emplace_back(
-        sensor.name, LBR::HW_IF_TIME_STAMP_SEC, &hw_time_stamp_sec_
+        sensor.name, lbr_hardware::HW_IF_TIME_STAMP_SEC, &hw_time_stamp_sec_
     );
     state_interfaces.emplace_back(
-        sensor.name, LBR::HW_IF_TIME_STAMP_NANO_SEC, &hw_time_stamp_nano_sec_
+        sensor.name, lbr_hardware::HW_IF_TIME_STAMP_NANO_SEC, &hw_time_stamp_nano_sec_
     );
 
     // other interfaces
@@ -157,14 +157,14 @@ std::vector<hardware_interface::StateInterface> FRIHardwareInterface::export_sta
 
         // external torque interface (lbr specififc)
         state_interfaces.emplace_back(
-            info_.joints[i].name, LBR::HW_IF_EXTERNAL_TORQUE, &hw_external_torque_[i]
+            info_.joints[i].name, lbr_hardware::HW_IF_EXTERNAL_TORQUE, &hw_external_torque_[i]
         );
     }
 
     return state_interfaces;
 }
 
-std::vector<hardware_interface::CommandInterface> FRIHardwareInterface::export_command_interfaces() {
+std::vector<hardware_interface::CommandInterface> LBRHardwareInterface::export_command_interfaces() {
     std::vector<hardware_interface::CommandInterface> command_interfaces;
 
     for (std::size_t i = 0; i < info_.joints.size(); i++) {
@@ -182,7 +182,7 @@ std::vector<hardware_interface::CommandInterface> FRIHardwareInterface::export_c
     return command_interfaces;
 }
 
-hardware_interface::return_type FRIHardwareInterface::prepare_command_mode_switch(const std::vector<std::string>& start_interfaces, const std::vector<std::string>& stop_interfaces) {
+hardware_interface::return_type LBRHardwareInterface::prepare_command_mode_switch(const std::vector<std::string>& start_interfaces, const std::vector<std::string>& stop_interfaces) {
 
     if (!command_mode_init_) {
         command_mode_init_ = true;
@@ -202,12 +202,12 @@ hardware_interface::return_type FRIHardwareInterface::prepare_command_mode_switc
     }
 }
 
-controller_interface::CallbackReturn FRIHardwareInterface::on_activate(const rclcpp_lifecycle::State &) {
+controller_interface::CallbackReturn LBRHardwareInterface::on_activate(const rclcpp_lifecycle::State &) {
     app_.connect(hw_port_, hw_remote_host_);    
     return controller_interface::CallbackReturn::SUCCESS;
 }
 
-controller_interface::CallbackReturn FRIHardwareInterface::on_deactivate(const rclcpp_lifecycle::State &)  {
+controller_interface::CallbackReturn LBRHardwareInterface::on_deactivate(const rclcpp_lifecycle::State &)  {
     RCLCPP_INFO(rclcpp::get_logger(FRI_HW_LOGGER), "Disconnecting FRI on stop...");
     app_.disconnect();
     RCLCPP_INFO(rclcpp::get_logger(FRI_HW_LOGGER), "Done.");
@@ -217,7 +217,7 @@ controller_interface::CallbackReturn FRIHardwareInterface::on_deactivate(const r
     return controller_interface::CallbackReturn::SUCCESS;
 }
 
-hardware_interface::return_type FRIHardwareInterface::read(const rclcpp::Time& /*time*/, const rclcpp::Duration& /*period*/) {
+hardware_interface::return_type LBRHardwareInterface::read(const rclcpp::Time& /*time*/, const rclcpp::Duration& /*period*/) {
     // read incoming data from controller
     if (!app_.receiveAndDecode()) {
         RCLCPP_ERROR(rclcpp::get_logger(FRI_HW_LOGGER), "Failed to receive and decode data from controller.");
@@ -240,7 +240,7 @@ hardware_interface::return_type FRIHardwareInterface::read(const rclcpp::Time& /
     return hardware_interface::return_type::OK;
 }
 
-hardware_interface::return_type FRIHardwareInterface::write(const rclcpp::Time& /*time*/, const rclcpp::Duration& /*period*/) {
+hardware_interface::return_type LBRHardwareInterface::write(const rclcpp::Time& /*time*/, const rclcpp::Duration& /*period*/) {
     // callback callst LBRClient's (this) method, e.g. onStateChange(), command()
     app_.callback();
     if (!app_.encodeAndSend()) {
@@ -252,7 +252,7 @@ hardware_interface::return_type FRIHardwareInterface::write(const rclcpp::Time& 
 }
 
 // FRI
-void FRIHardwareInterface::onStateChange(KUKA::FRI::ESessionState old_state, KUKA::FRI::ESessionState new_state) {    
+void LBRHardwareInterface::onStateChange(KUKA::FRI::ESessionState old_state, KUKA::FRI::ESessionState new_state) {    
     RCLCPP_INFO(
         rclcpp::get_logger(FRI_HW_LOGGER), 
         "LBR switched from %s to %s.",
@@ -323,7 +323,7 @@ void FRIHardwareInterface::onStateChange(KUKA::FRI::ESessionState old_state, KUK
     }
 }
 
-void FRIHardwareInterface::waitForCommand() {
+void LBRHardwareInterface::waitForCommand() {
     KUKA::FRI::LBRClient::waitForCommand();
 
     switch (robotState().getClientCommandMode()) {
@@ -340,7 +340,7 @@ void FRIHardwareInterface::waitForCommand() {
     }
 }
 
-void FRIHardwareInterface::command() {
+void LBRHardwareInterface::command() {
     switch (robotState().getClientCommandMode()) {
         case KUKA::FRI::EClientCommandMode::NO_COMMAND_MODE:
             RCLCPP_FATAL(rclcpp::get_logger(FRI_HW_LOGGER), "No client command mode available.");
@@ -379,7 +379,7 @@ void FRIHardwareInterface::command() {
     }
 }
 
-std::string FRIHardwareInterface::fri_e_session_state_to_string_(const KUKA::FRI::ESessionState& state) {
+std::string LBRHardwareInterface::fri_e_session_state_to_string_(const KUKA::FRI::ESessionState& state) {
     switch (state) {
         case KUKA::FRI::ESessionState::IDLE:
             return "IDLE";
@@ -397,11 +397,11 @@ std::string FRIHardwareInterface::fri_e_session_state_to_string_(const KUKA::FRI
     }
 }
 
-} // end of namespace LBR
+} // end of namespace lbr_hardware
 
 #include <pluginlib/class_list_macros.hpp>
 
 PLUGINLIB_EXPORT_CLASS(
-    LBR::FRIHardwareInterface,
+    lbr_hardware::LBRHardwareInterface,
     hardware_interface::SystemInterface
 )

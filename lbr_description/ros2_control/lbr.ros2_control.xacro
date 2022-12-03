@@ -12,7 +12,7 @@
             </xacro:if>
             <xacro:unless value="${sim}">
                 <hardware>
-                    <plugin>LBR::FRIHardwareInterface</plugin>
+                    <plugin>lbr_hardware::LBRHardwareInterface</plugin>
                     <param name="remote_host">${remote_host}</param>
                     <param name="port">${port}</param>
                 </hardware>
