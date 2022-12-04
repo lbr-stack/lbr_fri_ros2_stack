@@ -237,7 +237,7 @@ namespace lbr_fri_ros2
     {
         if (!lbr_command_ptr || !(*lbr_command_ptr))
         {
-            RCLCPP_WARN(node_->get_logger(), "Not command provided.");
+            RCLCPP_WARN(node_->get_logger(), "No command provided.");
             return false;
         }
 
