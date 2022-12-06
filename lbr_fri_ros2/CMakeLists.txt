@@ -69,7 +69,7 @@ install(
 )
 
 install(
-    PROGRAMS scritps/lbr_state_smoothing_node.py
+    PROGRAMS scripts/lbr_state_smoothing_node.py
     DESTINATION lib/${PROJECT_NAME}
 )
 

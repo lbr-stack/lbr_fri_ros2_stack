@@ -28,7 +28,7 @@ class LBRStateSmoothingNode(Node):
     def _update_window(self, msg):
         self._window.append(msg)
         if len(self._window) > self._max_window_length:
-            self.window.pop(0)
+            self._window.pop(0)
 
     def _filter_mean(self):
         smooth_state = self._window[-1]
