@@ -1,14 +1,14 @@
-# This is a service message that exposes the Fast Robot Interface's (FRI)
+# This service message exposes the Fast Robot Interface's (FRI)
 # KUKA::FRI::ClientApplication::connect method to a service call.
-#
-# Following states are exposes (also refer to KUKA::FRI::LBRState in friLBRState.h)
 #
 #  * port [int32]: The port ID.
 #  * remote_host [string]: The address of the remote host.
 #  ---
-#  * established [bool]: True when connection established successfully.
+#  * connected [bool]: True when connection established successfully.
+#  * message [string]: Informational message, containing e.g. errors.
 
 int32 port_id
 string remote_host
 ---
-bool established
+bool connected
+string message

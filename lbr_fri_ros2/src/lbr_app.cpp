@@ -18,7 +18,7 @@ namespace lbr_fri_ros2
             "app/connect",
             std::bind(&LBRApp::app_connect_cb_, this, std::placeholders::_1, std::placeholders::_2), rmw_qos_profile_system_default);
 
-        app_disconnect_srv_ = this->create_service<std_srvs::srv::Empty>(
+        app_disconnect_srv_ = this->create_service<lbr_fri_msgs::srv::AppDisconnect>(
             "app/disconnect",
             std::bind(&LBRApp::app_disconnect_cb_, this, std::placeholders::_1, std::placeholders::_2), rmw_qos_profile_system_default);
 
@@ -38,8 +38,17 @@ namespace lbr_fri_ros2
     {
         RCLCPP_INFO(get_logger(), "Attempting to open UDP connection for LBR server...");
         const char *remote_host = request->remote_host.empty() ? NULL : request->remote_host.c_str();
-        response->established = connect_(request->port_id, remote_host);
-        if (!response->established)
+        try
+        {
+            response->connected = connect_(request->port_id, remote_host);
+        }
+        catch (const std::exception &e)
+        {
+            response->message = e.what();
+            RCLCPP_ERROR(get_logger(), "Failed.\n%s", e.what());
+        }
+
+        if (!response->connected)
         {
             RCLCPP_ERROR(get_logger(), "Failed.");
             return;
@@ -48,11 +57,21 @@ namespace lbr_fri_ros2
     }
 
     void LBRApp::app_disconnect_cb_(
-        const std_srvs::srv::Empty::Request::SharedPtr /*request*/,
-        std_srvs::srv::Empty::Response::SharedPtr /*response*/)
+        const lbr_fri_msgs::srv::AppDisconnect::Request::SharedPtr /*request*/,
+        lbr_fri_msgs::srv::AppDisconnect::Response::SharedPtr response)
     {
         RCLCPP_INFO(get_logger(), "Attempting to close UDP connection for LBR server...");
-        if (!disconnect_())
+        try
+        {
+            response->disconnected = disconnect_();
+        }
+        catch (const std::exception &e)
+        {
+            response->message = e.what();
+            RCLCPP_ERROR(get_logger(), "Failed.\n%s", e.what());
+        }
+
+        if (!response->disconnected)
         {
             RCLCPP_ERROR(get_logger(), "Failed.");
             return;
@@ -62,10 +81,10 @@ namespace lbr_fri_ros2
 
     bool LBRApp::valid_port_(const int &port_id)
     {
-        if (30200 > port_id ||
-            30209 <= port_id)
+        if (port_id < 30200 ||
+            port_id > 30209)
         {
-            RCLCPP_ERROR(get_logger(), "Expected port_id id in [30200, 30209] or -1, got %d.", port_id);
+            RCLCPP_ERROR(get_logger(), "Expected port_id id in [30200, 30209], got %d.", port_id);
             return false;
         }
         return true;

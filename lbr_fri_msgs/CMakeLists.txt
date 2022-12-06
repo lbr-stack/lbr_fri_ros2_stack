@@ -20,6 +20,7 @@ rosidl_generate_interfaces(lbr_fri_msgs
   msg/LBRCommand.msg
   msg/LBRState.msg
   srv/AppConnect.srv
+  srv/AppDisconnect.srv
   DEPENDENCIES builtin_interfaces std_msgs
   ADD_LINTER_TESTS
 )
