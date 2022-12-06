@@ -13,9 +13,4 @@ install(
   DESTINATION share/${PROJECT_NAME}
 )
 
-install(
-    PROGRAMS scripts/lbr_state_smoothing_node.py
-    DESTINATION lib/${PROJECT_NAME}
-)
-
 ament_package()
