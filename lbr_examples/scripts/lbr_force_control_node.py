@@ -1,80 +1,88 @@
 #!/usr/bin/python3
-import time
-import math
-from rclpy.action import ActionClient
-import optas  # https://github.com/cmower/optas
-import time
-import numpy as np
-from rclpy.duration import Duration
 import rclpy
 from rclpy.node import Node
-from typing import List
-from sensor_msgs.msg import JointState
-from std_msgs.msg import Float64MultiArray
-from trajectory_msgs.msg import JointTrajectoryPoint
-# from control_msgs.msg import FollowJointTrajectoryAction, FollowJointTrajectoryGoal
-from control_msgs.action import FollowJointTrajectory
+
+from copy import deepcopy
 
 from lbr_fri_msgs.msg import LBRState, LBRCommand
 
-optas.np.set_printoptions(precision=2, suppress=True, linewidth=1000)
-
-action_server = '/position_trajectory_controller/follow_joint_trajectory'
-joint_names = [f'lbr_joint_{i}' for i in range(7)]
-
+import optas  # https://github.com/cmower/optas
 
 class Controller:
 
-    def __init__(self,
-                 urdf_string,
-                 end_effector='lbr_link_ee',
-                 hz=100,
-                 wdq=[1, 1, 1, 1, 1, 1, 1],
-                 f_zero=[4.0, 4.0, 4.0, 1.0, 1.0, 1.0],
-                 f_max=[7, 7, 7, 2, 2, 2],
-                 admittance=[0.0025, 0.0025, 0.0025, 0.0025, 0.0025, 0.0025],
-                 dx_max=[0.03, 0.03, 0.03, 0.01, 0.01, 0.01],
-                 smooth=0.02,
-    ):
+    def __init__(self, robot_description, hz, end_effector):
 
-        # Setup robot
-        robot = optas.RobotModel(urdf_string=urdf_string, time_derivs=[0, 1])
-        self._name = robot.get_name()
-        # self._J = robot.get_global_linear_jacobian_function(end_effector)
-        self._J = robot.get_global_geometric_jacobian_function(end_effector)
-        self.dq = optas.np.zeros(7)
+        # Setup variables
+        dt = 1.0/float(hz)
 
-    def get_jacobian(self, q):
-        return self._J(q).toarray()
+        # Setup robot model
+        robot = optas.RobotModel(urdf_string=robot_description, time_derivs=[0, 1])
+        self.name = robot.get_name()
 
-    def get_jacobian_inverse(self, q, lam=2e-1):
-        J = self.get_jacobian(q)        
-        return np.linalg.pinv(J, rcond=0.01), J
-        # U, S, VT = optas.np.linalg.svd(J)
-        # ns = S.shape[0]
-        # s = optas.np.zeros((J.shape[1], J.shape[0]))
-        # for i in range(ns):
-        #     s[i, i] = S[i]/(S[i]**2 + lam**2)
-        # return VT.T @ s @ U.T
+        # Setup optimization builder
+        builder = optas.OptimizationBuilder(T=2, robots=robot)
 
-    def compute_next_state(self, qc, tau_ext) -> bool:
+        # Get jacobian function
+        self.J = robot.get_global_geometric_jacobian_function(end_effector)
 
-        Jinv, J = self.get_jacobian_inverse(qc)
+        # Setup parameters
+        qc = builder.add_parameter('current_robot_configuration', robot.ndof)
+        dx_goal = builder.add_parameter('goal_end_effector_velocity', 6)
 
-        # dx = optas.np.array([0.0,0.0,0.01])
-        # dq = Jinv @ dx
+        # Get states
+        q0 = builder.get_model_state(self.name, 0, time_deriv=0)
+        qF = builder.get_model_state(self.name, 1, time_deriv=0)
+        dq = builder.get_model_state(self.name, 0, time_deriv=1)
 
-        # self.dq = dq
-        # dt = 1.0/100.
-        # self._goal = qc + dt*dq
+        # Get jacobian at current configuration
+        J = self.J(qc)
 
-        f_ext = Jinv.T @ tau_ext
+        # Constraint: initial state
+        builder.add_equality_constraint('init', q0, qc)
 
-        exp_smooth = 0.02
+        # Constraint: dynamics
+        builder.add_equality_constraint('dynamics', q0 + dt*dq, qF)
+
+        # Cost: match end-effector goal veloity
+        pc = robot.get_global_link_position(end_effector, qc)
+        dx = J @ dq
+        pF = pc + dt * dx[:3]
+        pG = pc + dt * dx_goal[:3]
+        # diff = dx - dx_goal
+        Wx = optas.diag([1, 1, 1, 1, 1, 1])
+        # builder.add_cost_term('match_eff_goal_vel', optas.sumsqr(dx - dx_goal))#rho*(diff.T @ Wx @ diff))
+        builder.add_cost_term('match_eff_goal_pos', optas.sumsqr(pF - pG))
+
+        # Constraint: joint position/velocity limits
+        # builder.enforce_model_limits(self.name, time_deriv=0)
+        # builder.enforce_model_limits(self.name, time_deriv=1)
+
+        # Cost: minimize joint motion
+        # Wq = optas.diag(range(robot.ndof, 0, -1))
+        # builder.add_cost_term('min_dq', dq.T @ Wq @ dq)
+
+        # Setup solver
+        self.dx = optas.DM.zeros(6)
+        self.solution = None
+        self.solver = optas.CasADiSolver(builder.build()).setup('ipopt')
+
+    def get_jacobian_inverse(self, q):
+        return optas.pinv(self.J(q))
+
+    # def get_jacobian_inverse(self, q):
+    #     return optas.DM(optas.np.linalg.pinv(self.J(q).toarray(), rcond=0.01))
+
+    def smooth(self, nxt, prv, alpha=0.02):
+        return (1.-alpha)*prv + alpha*nxt
+
+    def admittance_control(self, f_ext):
+
         translational_vel = 0.2
         th_f = 4.0
         th_tau = 0.5
         scale = 2.0
+
+        f_ext = f_ext.toarray().flatten()
 
         dx = optas.np.zeros(6)
 
@@ -98,173 +106,81 @@ class Controller:
                 else:
                     dx[i] = -translational_vel
 
-        dq = Jinv @ dx
+        return optas.DM(dx)
 
-        self.dq = (1-exp_smooth)*self.dq + exp_smooth*dq
+    def compute_next_state(self, qc, tau_ext):
 
-        dt = 1.0/100.
+        # Compute external wrench on end-effector
+        f_ext = self.get_jacobian_inverse(qc).T @ tau_ext
 
-        self._goal = qc + dt*self.dq
+        # Admittance control
+        self.dx = self.smooth(self.admittance_control(f_ext), self.dx)
 
-        return True, J
+        # Reset solver
+        if self.solution is not None:
+            self.solver.reset_initial_seed(self.solution)
+        else:
+            self.solver.reset_initial_seed({f'{self.name}/q': optas.horzcat(qc, qc)})
 
-    def get_next_state(self) -> List:
-        return self._goal.tolist()
+        self.solver.reset_parameters({
+            'current_robot_configuration': qc,
+            'goal_end_effector_velocity': self.dx,
+        })
 
+        # Solve problem
+        # if self.solution is None:
+        self.solution = self.solver.solve()
+        return self.solver.did_solve()
+        # return True
 
+    def get_next_state(self):
+        return self.solution[f'{self.name}/q'].toarray()[:,-1].flatten().tolist()
+
+    def get_goal_dq(self):
+        return self.solution[f'{self.name}/dq'].toarray().flatten().tolist()
 
 class LBRForceControlNode(Node):
 
-    def __init__(self, node_name='lbr_force_control_node'):
-        super().__init__(node_name)
+    def __init__(self):
 
-        # declare and get parameters
-        self.declare_parameter("sim", False)
-        self.declare_parameter("command_rate", 100)
+
+        super().__init__('lbr_force_control_node')
+
+        # Declare and get parameters
         self.declare_parameter("robot_description")
+        robot_description = str(self.get_parameter("robot_description").value)
 
-        self._sim = self.get_parameter("sim")
-        self._command_rate = int(self.get_parameter("command_rate").value)
-        self._robot_description = str(self.get_parameter("robot_description").value)
-        self._lbr_state = None
-        self._controller = Controller(self._robot_description, hz=self._command_rate)
+        self.declare_parameter("command_rate", 100)
+        command_rate = int(self.get_parameter("command_rate").value)
 
-        self.get_logger().info("-------here-----------")
+        self.declare_parameter("end_effector", "lbr_link_ee")
+        end_effector = str(self.get_parameter("end_effector").value)
 
-        # Setup action client
-        # self._client = ActionClient(self, FollowJointTrajectory, action_server)
-        # self._client.wait_for_server()
+        # Setup controller
+        self._controller = Controller(robot_description, command_rate, end_effector)
 
-        self.qinit = None
-        self.qstart = optas.np.deg2rad([0, 30, 0, -45, 0, 60, 0]).tolist()
-        self.at_start = False
-        # self.command(optas.np.deg2rad([0, 30, 0, -45, 0, 60, 0]).tolist())
-
-        self._window_length = 20
-        self._position_window = []
-        self._ext_torque_window = []
-
-        # time.sleep(2)
-
-        # # Start state subscriber
-        self._lbr_state_subscriber = self.create_subscription(
-            LBRState, "/lbr_state/smooth", self._lbr_state_callback, 100
+        # Setup publishers/subscribers
+        self._lbr_command_publisher = self.create_publisher(LBRCommand, "/lbr_command", 1)
+        self._lbr_state_smooth_subscriber = self.create_subscription(
+            LBRState, "/lbr_state/smooth", self._lbr_state_smooth_callback, 1,
         )
 
+    def _command(self, q):
+        command = LBRCommand(client_command_mode=1, joint_position=q)
+        self._lbr_command_publisher.publish(command)
 
-        self._position_command_publisher = self.create_publisher(LBRCommand, '/lbr_command', 10)
-
-        # self._position_command_publisher = self.create_publisher(
-        #     Float64MultiArray, "/forward_position_controller/commands", 1
-        # )
-
-        # Start state subscriber
-        # self._lbr_state_subscriber = self.create_subscription(
-        #     JointState, "/joint_states", self._lbr_state_callback, 1
-        # )
-
-    # def command(self, q):
-    #     command = Float64MultiArray()
-    #     command.data = q
-    #     # self.get_logger().info(str(q))
-    #     self._position_command_publisher.publish(command)
-
-    def command(self, q):
-        cmd = LBRCommand(client_command_mode=1, joint_position=q)
-        self._position_command_publisher.publish(cmd)
-
-
-    # def command(self, q):
-    #     dt = (1.0/float(self._command_rate))/0.15
-    #     goal = FollowJointTrajectory.Goal()
-    #     goal.trajectory.joint_names = joint_names
-    #     goal.trajectory.points = [JointTrajectoryPoint(time_from_start=Duration(seconds=dt).to_msg())]
-    #     goal.trajectory.points[0].positions = q
-    #     self._client.send_goal_async(goal)
-        # self._client.wait_for_server()
-
-
-    def _lbr_state_callback(self, msg: LBRState) -> None:
-
-
-        # NO SMOOTH
-        # [-1.0306387399183016e-05, 0.8454608216638262, 4.4880923548877684e-05, -1.2561714743503292, 0.053008527780070175, 0.8892982774301188, -0.0001024052303653588])
-        # [-0.6471269279269534, 1.555126048423324, -0.06054706312318544, 0.2874986168976977, -0.3578914178156747, -0.2563220743772851, 0.007513290569132143])        
-
-
-        # SMOOTH
-        # [-1.0337037251303277e-05, 0.8454607867448243, 4.487106941960401e-05, -1.2561714769476038, 0.05300855708929061, 0.8892981845721579, -0.00010240863369751193])
-        # [-0.64821639313649, 1.5492188626869248, -0.05952264896134366, 0.28917341625792925, -0.3620496232703626, -0.2566734043640636, 0.007754301946650115])
-        
-        
-
-        # self.get_logger().info(str(msg.measured_joint_position))
-        # self.get_logger().info(str(msg.external_torque))        
-
-        # p = []
-        # for name in joint_names:
-        #     p.append(msg.position[msg.name.index(name)])
-
-
-        # if self.qinit is None:
-        #     self.qinit = p
-        #     self.t0 = time.time()
-        #     return
-
-        # if not self.at_start:
-
-        #     dur = 3.
-        #     t = time.time()
-        #     alpha = (t - self.t0)/dur
-
-        #     self.get_logger().info('type(qinit)' + str(type(self.qinit)))
-        #     self.get_logger().info('type(qstart)' + str(type(self.qstart)))
-
-        #     qn = alpha*optas.np.array(self.qstart) + (1-alpha)*optas.np.array(self.qinit)
-
-        #     self.get_logger().info('goal: '+str(qn))
-
-        #     self.command(qn.tolist())
-
-        #     if alpha > 1.0:
-        #         self.at_start = True
-        #     return
-
-        # self._position_window.append(msg.measured_joint_position)
-        # self._ext_torque_window.append(msg.external_torque)
-        # if len(self._position_window) > self._window_length:
-        #     self._position_window.pop(0)
-        #     self._ext_torque_window.pop(0)
-
-        # P = np.mean(self._position_window, axis=0).flatten().tolist()
-        # E = np.mean(self._ext_torque_window, axis=0).flatten().tolist()
-
-        success, J = self._controller.compute_next_state(msg.measured_joint_position, msg.external_torque) #(msg.position, msg.external_torque):
-        # success, J = self._controller.compute_next_state(P, E)
-
-        # self.get_logger().info('J='+str(J))
-        
-        if success:
-            # c = optas.np.array(msg.position)
-            # n = optas.np.array(self._controller.get_next_state())
-
-            # n# self.command(n)
-            n = self._controller.get_next_state()
-
-
-            # self.get_logger().info('goal: '+str(n))
-            # self.get_logger().info('goal: '+str(p))
-
-            self.get_logger().info('-=------hwerwerhwerhwer-----------------')
-            self.get_logger().info('dq:\n' + str(self._controller.dq))            
-            self.command(n)
+    def _lbr_state_smooth_callback(self, msg):
+        if self._controller.compute_next_state(msg.measured_joint_position, msg.external_torque):
+            self.get_logger().info('dx: '+str(self._controller.dx))
+            self.get_logger().info('dq: '+str(self._controller.get_goal_dq()))
+            self._command(self._controller.get_next_state())
         else:
             self.get_logger().error("Solver failed!")
 
+
 def main(args=None):
     rclpy.init(args=args)
-    node = LBRForceControlNode()
-    rclpy.spin(node)
+    rclpy.spin(LBRForceControlNode())
     rclpy.shutdown()
 
 
