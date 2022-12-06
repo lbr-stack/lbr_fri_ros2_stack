@@ -78,7 +78,7 @@ def launch_setup(context, *args, **kwargs):
     return [
         simulation,
         control,
-        move_group
+        # move_group
     ]
 
 
