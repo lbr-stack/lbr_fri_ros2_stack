@@ -8,7 +8,7 @@ from rclpy.node import Node
 from sensor_msgs.msg import JointState
 from std_msgs.msg import Float64MultiArray
 
-from lbr_state_msgs.msg import LBRState
+from lbr_fri_msgs.msg import LBRState
 
 
 class LBRSinusoidalNode(Node):
@@ -66,7 +66,7 @@ class LBRSinusoidalNode(Node):
 
     def _execute_command(self) -> None:
         command = Float64MultiArray()
-        command.data = deepcopy(self._initial_state.position)
+        command.data = deepcopy(self._initial_state.measured_joint_position)
 
         omega = 2*math.pi/self._period
         t = (float(self.get_clock().now().nanoseconds) - self._t0)/1.e9

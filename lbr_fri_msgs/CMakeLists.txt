@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16.3)
-project(lbr_state_msgs)
+project(lbr_fri_msgs)
 
 # Default to C++14
 if(NOT CMAKE_CXX_STANDARD)
@@ -16,8 +16,11 @@ find_package(builtin_interfaces REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
 find_package(std_msgs REQUIRED)
 
-rosidl_generate_interfaces(lbr_state_msgs
+rosidl_generate_interfaces(lbr_fri_msgs
+  msg/LBRCommand.msg
   msg/LBRState.msg
+  srv/AppConnect.srv
+  srv/AppDisconnect.srv
   DEPENDENCIES builtin_interfaces std_msgs
   ADD_LINTER_TESTS
 )

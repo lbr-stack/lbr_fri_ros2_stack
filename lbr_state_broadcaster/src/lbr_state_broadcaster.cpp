@@ -44,8 +44,8 @@ LBRStateBroadcaster::update() {
         lbr_state_.time_stamp_nano_sec = this->time_stamp_nano_sec_interface_ptr_->get_value();
 
         for (int i=0; i<KUKA::FRI::LBRState::NUMBER_OF_JOINTS; ++i) {
-            this->lbr_state_.position[i] = this->position_interfaces_[i].get().get_value();
-            this->lbr_state_.torque[i] = this->effort_interfaces_[i].get().get_value();
+            this->lbr_state_.measured_joint_position[i] = this->position_interfaces_[i].get().get_value();
+            this->lbr_state_.measured_torque[i] = this->effort_interfaces_[i].get().get_value();
             this->lbr_state_.external_torque[i] = this->external_torque_interfaces_[i].get().get_value();
         }
 
@@ -65,13 +65,13 @@ rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
 LBRStateBroadcaster::on_configure(
     const rclcpp_lifecycle::State& /*previous_state*/
 ) {
-    try { // initialize realtime publishers of lbr_state_msgs::msg::LBRState
+    try { // initialize realtime publishers of lbr_fri_msgs::msg::LBRState
         std::string topic_prefix = this->use_local_topics_ ? "~/" : "";
-        this->lbr_state_publisher_ = rclcpp::create_publisher<lbr_state_msgs::msg::LBRState>(
+        this->lbr_state_publisher_ = rclcpp::create_publisher<lbr_fri_msgs::msg::LBRState>(
             this->node_, topic_prefix + this->lbr_state_topic_, rclcpp::SystemDefaultsQoS()
         );
         this->realtime_lbr_state_publisher_ = std::make_shared<
-            realtime_tools::RealtimePublisher<lbr_state_msgs::msg::LBRState>
+            realtime_tools::RealtimePublisher<lbr_fri_msgs::msg::LBRState>
         >(this->lbr_state_publisher_);
     } catch (const std::exception& e) {
         RCLCPP_ERROR(this->node_->get_logger(), "Failed to initialize publishers.\n%s", e.what());
@@ -79,8 +79,8 @@ LBRStateBroadcaster::on_configure(
     }
 
     lbr_state_.name.reserve(KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
-    lbr_state_.position.resize(KUKA::FRI::LBRState::NUMBER_OF_JOINTS, std::numeric_limits<double>::quiet_NaN());
-    lbr_state_.torque.resize(KUKA::FRI::LBRState::NUMBER_OF_JOINTS, std::numeric_limits<double>::quiet_NaN());
+    lbr_state_.measured_joint_position.resize(KUKA::FRI::LBRState::NUMBER_OF_JOINTS, std::numeric_limits<double>::quiet_NaN());
+    lbr_state_.measured_torque.resize(KUKA::FRI::LBRState::NUMBER_OF_JOINTS, std::numeric_limits<double>::quiet_NaN());
     lbr_state_.external_torque.resize(KUKA::FRI::LBRState::NUMBER_OF_JOINTS, std::numeric_limits<double>::quiet_NaN());
 
     return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
@@ -175,8 +175,8 @@ LBRStateBroadcaster::on_activate(
 
     try {
         this->lbr_state_.name = joint_names_;
-        std::fill(this->lbr_state_.position.begin(), this->lbr_state_.position.end(), std::numeric_limits<double>::quiet_NaN());
-        std::fill(this->lbr_state_.torque.begin(), this->lbr_state_.torque.end(), std::numeric_limits<double>::quiet_NaN());
+        std::fill(this->lbr_state_.measured_joint_position.begin(), this->lbr_state_.measured_joint_position.end(), std::numeric_limits<double>::quiet_NaN());
+        std::fill(this->lbr_state_.measured_torque.begin(), this->lbr_state_.measured_torque.end(), std::numeric_limits<double>::quiet_NaN());
         std::fill(this->lbr_state_.external_torque.begin(), this->lbr_state_.external_torque.end(), std::numeric_limits<double>::quiet_NaN());
     } catch (const std::exception& e) {
         RCLCPP_ERROR(this->node_->get_logger(), "Failed to initialize the LBRState.");

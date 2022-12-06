@@ -18,7 +18,7 @@ find_package(realtime_tools REQUIRED)
 find_package(controller_interface REQUIRED)
 find_package(hardware_interface REQUIRED)
 find_package(pluginlib REQUIRED)
-find_package(lbr_state_msgs REQUIRED)
+find_package(lbr_fri_msgs REQUIRED)
 find_package(lbr_hardware REQUIRED)
 find_package(fri REQUIRED)
 
@@ -39,7 +39,7 @@ ament_target_dependencies(${PROJECT_NAME}
   controller_interface
   hardware_interface
   pluginlib
-  lbr_state_msgs
+  lbr_fri_msgs
   lbr_hardware
   fri
 )
@@ -84,7 +84,7 @@ ament_export_dependencies(
   controller_interface
   hardware_interface
   pluginlib
-  lbr_state_msgs
+  lbr_fri_msgs
   lbr_hardware
   fri
 )
