@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 import rclpy
 from rclpy.node import Node
+from copy import deepcopy
 from lbr_fri_msgs.msg import LBRState
 
 import numpy as np
@@ -20,9 +21,9 @@ class LBRStateSmoothingNode(Node):
         # self._filter = self._filter_median
 
         # Create publishers/subscribers
-        self._lbr_state_smooth_publisher = self.create_publisher(LBRState, "/lbr_state/smooth", 1)
+        self._lbr_state_smooth_publisher = self.create_publisher(LBRState, "/lbr_state/smooth", 10)
         self._lbr_state_callback = self.create_subscription(
-            LBRState, '/lbr_state', self._lbr_state_callback, 1,
+            LBRState, '/lbr_state', self._lbr_state_callback, 10,
         )
 
     def _update_window(self, msg):
@@ -30,15 +31,18 @@ class LBRStateSmoothingNode(Node):
         if len(self._window) > self._max_window_length:
             self._window.pop(0)
 
+    def _get_most_recent_state(self):
+        return deepcopy(self._window[-1])
+
     def _filter_mean(self):
-        smooth_state = self._window[-1]
+        smooth_state = self._get_most_recent_state()
         smooth_state.measured_joint_position = np.mean([m.measured_joint_position for m in self._window], axis=0).tolist()
         smooth_state.measured_torque = np.mean([m.measured_torque for m in self._window], axis=0).tolist()
         smooth_state.external_torque = np.mean([m.external_torque for m in self._window], axis=0).tolist()
         return smooth_state
 
     def _filter_median(self):
-        smooth_state = self._window[-1]
+        smooth_state = self._get_most_recent_state()
         smooth_state.measured_joint_position = np.median([m.measured_joint_position for m in self._window], axis=0).tolist()
         smooth_state.measured_torque = np.median([m.measured_torque for m in self._window], axis=0).tolist()
         smooth_state.external_torque = np.median([m.external_torque for m in self._window], axis=0).tolist()

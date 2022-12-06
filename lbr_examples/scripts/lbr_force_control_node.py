@@ -15,7 +15,7 @@ from trajectory_msgs.msg import JointTrajectoryPoint
 # from control_msgs.msg import FollowJointTrajectoryAction, FollowJointTrajectoryGoal
 from control_msgs.action import FollowJointTrajectory
 
-from lbr_state_msgs.msg import LBRState
+from lbr_fri_msgs.msg import LBRState, LBRCommand
 
 optas.np.set_printoptions(precision=2, suppress=True, linewidth=1000)
 
@@ -71,7 +71,7 @@ class Controller:
         f_ext = Jinv.T @ tau_ext
 
         exp_smooth = 0.02
-        translational_vel = 0.06
+        translational_vel = 0.2
         th_f = 4.0
         th_tau = 0.5
         scale = 2.0
@@ -132,8 +132,8 @@ class LBRForceControlNode(Node):
         self.get_logger().info("-------here-----------")
 
         # Setup action client
-        self._client = ActionClient(self, FollowJointTrajectory, action_server)
-        self._client.wait_for_server()
+        # self._client = ActionClient(self, FollowJointTrajectory, action_server)
+        # self._client.wait_for_server()
 
         self.qinit = None
         self.qstart = optas.np.deg2rad([0, 30, 0, -45, 0, 60, 0]).tolist()
@@ -148,13 +148,15 @@ class LBRForceControlNode(Node):
 
         # # Start state subscriber
         self._lbr_state_subscriber = self.create_subscription(
-            LBRState, "/lbr_state", self._lbr_state_callback, 1
+            LBRState, "/lbr_state/smooth", self._lbr_state_callback, 100
         )
 
 
-        self._position_command_publisher = self.create_publisher(
-            Float64MultiArray, "/forward_position_controller/commands", 1
-        )
+        self._position_command_publisher = self.create_publisher(LBRCommand, '/lbr_command', 10)
+
+        # self._position_command_publisher = self.create_publisher(
+        #     Float64MultiArray, "/forward_position_controller/commands", 1
+        # )
 
         # Start state subscriber
         # self._lbr_state_subscriber = self.create_subscription(
@@ -167,20 +169,37 @@ class LBRForceControlNode(Node):
     #     # self.get_logger().info(str(q))
     #     self._position_command_publisher.publish(command)
 
-
     def command(self, q):
-        dt = (1.0/float(self._command_rate))/0.15
-        goal = FollowJointTrajectory.Goal()
-        goal.trajectory.joint_names = joint_names
-        goal.trajectory.points = [JointTrajectoryPoint(time_from_start=Duration(seconds=dt).to_msg())]
-        goal.trajectory.points[0].positions = q
-        self._client.send_goal_async(goal)
+        cmd = LBRCommand(client_command_mode=1, joint_position=q)
+        self._position_command_publisher.publish(cmd)
+
+
+    # def command(self, q):
+    #     dt = (1.0/float(self._command_rate))/0.15
+    #     goal = FollowJointTrajectory.Goal()
+    #     goal.trajectory.joint_names = joint_names
+    #     goal.trajectory.points = [JointTrajectoryPoint(time_from_start=Duration(seconds=dt).to_msg())]
+    #     goal.trajectory.points[0].positions = q
+    #     self._client.send_goal_async(goal)
         # self._client.wait_for_server()
 
 
     def _lbr_state_callback(self, msg: LBRState) -> None:
 
-        # self.get_logger().info('--here--')
+
+        # NO SMOOTH
+        # [-1.0306387399183016e-05, 0.8454608216638262, 4.4880923548877684e-05, -1.2561714743503292, 0.053008527780070175, 0.8892982774301188, -0.0001024052303653588])
+        # [-0.6471269279269534, 1.555126048423324, -0.06054706312318544, 0.2874986168976977, -0.3578914178156747, -0.2563220743772851, 0.007513290569132143])        
+
+
+        # SMOOTH
+        # [-1.0337037251303277e-05, 0.8454607867448243, 4.487106941960401e-05, -1.2561714769476038, 0.05300855708929061, 0.8892981845721579, -0.00010240863369751193])
+        # [-0.64821639313649, 1.5492188626869248, -0.05952264896134366, 0.28917341625792925, -0.3620496232703626, -0.2566734043640636, 0.007754301946650115])
+        
+        
+
+        # self.get_logger().info(str(msg.measured_joint_position))
+        # self.get_logger().info(str(msg.external_torque))        
 
         # p = []
         # for name in joint_names:
@@ -211,18 +230,19 @@ class LBRForceControlNode(Node):
         #         self.at_start = True
         #     return
 
-        self._position_window.append(msg.position)
-        self._ext_torque_window.append(msg.external_torque)
-        if len(self._position_window) > self._window_length:
-            self._position_window.pop(0)
-            self._ext_torque_window.pop(0)
+        # self._position_window.append(msg.measured_joint_position)
+        # self._ext_torque_window.append(msg.external_torque)
+        # if len(self._position_window) > self._window_length:
+        #     self._position_window.pop(0)
+        #     self._ext_torque_window.pop(0)
 
-        P = np.mean(self._position_window, axis=0).flatten().tolist()
-        E = np.mean(self._ext_torque_window, axis=0).flatten().tolist()
+        # P = np.mean(self._position_window, axis=0).flatten().tolist()
+        # E = np.mean(self._ext_torque_window, axis=0).flatten().tolist()
 
-        success, J = self._controller.compute_next_state(P, E) #(msg.position, msg.external_torque):
+        success, J = self._controller.compute_next_state(msg.measured_joint_position, msg.external_torque) #(msg.position, msg.external_torque):
+        # success, J = self._controller.compute_next_state(P, E)
 
-        self.get_logger().info('J='+str(J))
+        # self.get_logger().info('J='+str(J))
         
         if success:
             # c = optas.np.array(msg.position)
@@ -234,8 +254,10 @@ class LBRForceControlNode(Node):
 
             # self.get_logger().info('goal: '+str(n))
             # self.get_logger().info('goal: '+str(p))
+
+            self.get_logger().info('-=------hwerwerhwerhwer-----------------')
+            self.get_logger().info('dq:\n' + str(self._controller.dq))            
             self.command(n)
-            # self.get_logger().info(str(self._controller.dq))
         else:
             self.get_logger().error("Solver failed!")
 
