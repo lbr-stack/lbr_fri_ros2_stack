@@ -13,7 +13,7 @@
 #include <realtime_tools/realtime_publisher.h>
 
 #include <lbr_hardware/fri_hardware_interface_type_values.hpp>
-#include <lbr_state_msgs/msg/lbr_state.hpp>
+#include <lbr_fri_msgs/msg/lbr_state.hpp>
 
 #include <fri/friLBRState.h>
 
@@ -50,9 +50,9 @@ class LBRStateBroadcaster : public controller_interface::ControllerInterface {
         std::string lbr_state_topic_;
 
         std::vector<std::string> joint_names_;
-        std::shared_ptr<rclcpp::Publisher<lbr_state_msgs::msg::LBRState>> lbr_state_publisher_;
-        std::shared_ptr<realtime_tools::RealtimePublisher<lbr_state_msgs::msg::LBRState>> realtime_lbr_state_publisher_;
-        lbr_state_msgs::msg::LBRState lbr_state_;
+        std::shared_ptr<rclcpp::Publisher<lbr_fri_msgs::msg::LBRState>> lbr_state_publisher_;
+        std::shared_ptr<realtime_tools::RealtimePublisher<lbr_fri_msgs::msg::LBRState>> realtime_lbr_state_publisher_;
+        lbr_fri_msgs::msg::LBRState lbr_state_;
 
         // references to FRI exposed states for convenience
         std::vector<std::reference_wrapper<hardware_interface::LoanedStateInterface>> position_interfaces_;
