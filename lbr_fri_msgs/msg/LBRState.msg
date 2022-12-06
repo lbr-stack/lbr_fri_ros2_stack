@@ -1,3 +1,4 @@
+# TODO: update doc
 # This is a message that holds states that are exposed through the
 # Fast Robot Interface (FRI).
 #

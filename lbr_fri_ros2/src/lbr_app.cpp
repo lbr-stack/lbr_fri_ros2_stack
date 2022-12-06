@@ -15,11 +15,11 @@ namespace lbr_fri_ros2
         connected_ = false;
 
         app_connect_srv_ = this->create_service<lbr_fri_msgs::srv::AppConnect>(
-            "app/connect",
+            "lbr_app/connect",
             std::bind(&LBRApp::app_connect_cb_, this, std::placeholders::_1, std::placeholders::_2), rmw_qos_profile_system_default);
 
         app_disconnect_srv_ = this->create_service<lbr_fri_msgs::srv::AppDisconnect>(
-            "app/disconnect",
+            "lbr_app/disconnect",
             std::bind(&LBRApp::app_disconnect_cb_, this, std::placeholders::_1, std::placeholders::_2), rmw_qos_profile_system_default);
 
         lbr_state_client_ = std::make_unique<lbr_fri_ros2::LBRStateClient>("lbr_state_client_node");

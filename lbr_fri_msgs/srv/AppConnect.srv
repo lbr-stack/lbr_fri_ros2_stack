@@ -1,5 +1,5 @@
-# This service message exposes the Fast Robot Interface's (FRI)
-# KUKA::FRI::ClientApplication::connect method to a service call.
+# This service message is used to call the Fast Robot Interface's (FRI)
+# KUKA::FRI::ClientApplication::connect method via a service call.
 #
 #  * port [int32]: The port ID.
 #  * remote_host [string]: The address of the remote host.

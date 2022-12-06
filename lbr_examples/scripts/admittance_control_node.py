@@ -17,8 +17,8 @@ class Controller(object):
                  end_link_name: str="lbr_link_ee",
                  root_link_name: str="lbr_link_0",
                  f_threshold: np.ndarray=np.array([6., 6., 6., 1.5, 1.5, 1.5]),
-                 gain: np.ndarray=np.array([0.01, 0.01, 0.01, 0.01, 0.01, 0.01]),
-                 dx: np.ndarray=np.array([2., 2., 2., 5., 5., 5.]),
+                 gain: np.ndarray=np.array([0.1, 0.1, 0.1, 0.1, 0.1, 0.1]),
+                 dx: np.ndarray=np.array([10., 10., 10., 40., 40., 40.]),
                  smooth: float=0.02
     ) -> None:
         self.chain_ = kinpy.build_serial_chain_from_urdf(
@@ -59,10 +59,12 @@ class AdmittanceControlNode(Node):
         self.declare_parameter("model", "med7")
         self.declare_parameter("end_link_name", "lbr_link_ee")
         self.declare_parameter("root_link_name", "lbr_link_0")
-        
+        self.declare_parameter("command_rate", 200.)
+
         self.model_ = str(self.get_parameter("model").value)
         self.end_link_name_ = str(self.get_parameter("end_link_name").value)
         self.root_link_name_ = str(self.get_parameter("root_link_name").value)
+        self.dt_ = 1./float(self.get_parameter("command_rate").value)
 
         # controller
         path = os.path.join(get_package_share_directory("lbr_description"), "urdf", self.model_, f"{self.model_}.urdf.xacro")
@@ -82,10 +84,10 @@ class AdmittanceControlNode(Node):
             LBRCommand, "/lbr_command", 1
         )
 
-        self.joint_position_buffer_len_ = 30
+        self.joint_position_buffer_len_ = 10
         self.joint_position_buffer_ = []
 
-        self.external_torque_buffer_len_ = 30
+        self.external_torque_buffer_len_ = 10
         self.external_torque_buffer_ = []
 
     def lbr_state_cb_(self, msg: LBRState) -> None:
@@ -115,7 +117,7 @@ class AdmittanceControlNode(Node):
         # command
         command = LBRCommand()
         command.client_command_mode = 1
-        command.joint_position = (q + dq).data
+        command.joint_position = (q + dq*self.dt_).data
         # command.torque = dq.data
         self.lbr_command_pub_.publish(command)
     
