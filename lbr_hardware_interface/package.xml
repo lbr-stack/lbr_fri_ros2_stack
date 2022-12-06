@@ -10,11 +10,11 @@
   <buildtool_depend>ament_cmake</buildtool_depend>
 
   <depend>hardware_interface</depend>
-  <depend>controller_manager</depend>
   <depend>controller_manager_msgs</depend>
   <depend>controller_interface</depend>
   <depend>pluginlib</depend>
   <depend>rclcpp</depend>
+  <depend>lbr_fri_msgs</depend>
   <depend>fri</depend>
 
   <export>
