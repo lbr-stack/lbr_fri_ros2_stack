@@ -116,7 +116,6 @@ class AdmittanceControlNode(Node):
 
         # command
         command = LBRCommand()
-        command.client_command_mode = 1
         command.joint_position = (q + dq*self.dt_).data
         # command.torque = dq.data
         self.lbr_command_pub_.publish(command)

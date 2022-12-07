@@ -83,21 +83,13 @@ namespace lbr_fri_ros2
         }
         else
         {
+            reset_rt_lbr_command_buf_();
             LBRClient::command();
         }
     }
 
     void LBRStateClient::lbr_command_cb_(const lbr_fri_msgs::msg::LBRCommand::SharedPtr lbr_command)
     {
-        if (lbr_command->client_command_mode != robotState().getClientCommandMode())
-        {
-            RCLCPP_WARN(
-                node_->get_logger(),
-                "Expected client command mode %d, got %d.", robotState().getClientCommandMode(),
-                lbr_command->client_command_mode);
-            reset_rt_lbr_command_buf_();
-            return;
-        }
         rt_lbr_command_buf_->writeFromNonRT(lbr_command);
     }
 
@@ -241,7 +233,7 @@ namespace lbr_fri_ros2
             return false;
         }
 
-        switch ((*lbr_command_ptr)->client_command_mode)
+        switch (robotState().getClientCommandMode())
         {
         case KUKA::FRI::EClientCommandMode::POSITION:
             if (std::isnan((*lbr_command_ptr)->joint_position[0]) ||

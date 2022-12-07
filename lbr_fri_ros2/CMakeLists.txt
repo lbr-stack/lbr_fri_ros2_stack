@@ -70,9 +70,4 @@ install(
 )
 # test node
 
-install(
-    PROGRAMS test/lbr_command_node.py
-    DESTINATION lib/${PROJECT_NAME}
-)
-
 ament_package()
