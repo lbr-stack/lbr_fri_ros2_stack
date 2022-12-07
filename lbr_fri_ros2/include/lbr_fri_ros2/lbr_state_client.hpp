@@ -4,6 +4,7 @@
 #include <memory>
 #include <string>
 #include <stdexcept>
+#include <thread>
 
 #include "rclcpp/rclcpp.hpp"
 #include "realtime_tools/realtime_buffer.h"
@@ -45,9 +46,11 @@ namespace lbr_fri_ros2
 
         lbr_fri_msgs::msg::LBRState::SharedPtr lbr_state_;
 
+        std::shared_ptr<realtime_tools::RealtimeBuffer<lbr_fri_msgs::msg::LBRCommand::SharedPtr>> rt_lbr_command_buf_;
         rclcpp::Subscription<lbr_fri_msgs::msg::LBRCommand>::SharedPtr lbr_command_sub_;
         rclcpp::Publisher<lbr_fri_msgs::msg::LBRState>::SharedPtr lbr_state_pub_;
-        std::shared_ptr<realtime_tools::RealtimeBuffer<lbr_fri_msgs::msg::LBRCommand::SharedPtr>> rt_lbr_command_buf_;
         std::shared_ptr<realtime_tools::RealtimePublisher<lbr_fri_msgs::msg::LBRState>> rt_lbr_state_pub_;
+        
+        std::unique_ptr<std::thread> node_thread_;
     };
 } // end of namespace lbr_fri_ros2

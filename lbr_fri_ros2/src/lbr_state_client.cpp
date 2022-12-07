@@ -5,10 +5,11 @@
 namespace lbr_fri_ros2
 {
     LBRStateClient::LBRStateClient(const std::string &node_name)
-        : lbr_state_(nullptr),
+        : node_(nullptr),
+          lbr_state_(nullptr),
+          rt_lbr_command_buf_(nullptr),
           lbr_command_sub_(nullptr),
           lbr_state_pub_(nullptr),
-          rt_lbr_command_buf_(nullptr),
           rt_lbr_state_pub_(nullptr)
 
     {
@@ -16,12 +17,19 @@ namespace lbr_fri_ros2
 
         init_lbr_state_();
 
-        lbr_command_sub_ = node_->create_subscription<lbr_fri_msgs::msg::LBRCommand>(
-            "~/lbr_command", rclcpp::SystemDefaultsQoS(), std::bind(&LBRStateClient::lbr_command_cb_, this, std::placeholders::_1));
-        lbr_state_pub_ = node_->create_publisher<lbr_fri_msgs::msg::LBRState>(
-            "~/lbr_state", rclcpp::SystemDefaultsQoS());
         rt_lbr_command_buf_ = std::make_shared<realtime_tools::RealtimeBuffer<lbr_fri_msgs::msg::LBRCommand::SharedPtr>>(nullptr);
+        lbr_command_sub_ = node_->create_subscription<lbr_fri_msgs::msg::LBRCommand>(
+            "/lbr_command", rclcpp::SystemDefaultsQoS(), std::bind(&LBRStateClient::lbr_command_cb_, this, std::placeholders::_1));
+        lbr_state_pub_ = node_->create_publisher<lbr_fri_msgs::msg::LBRState>(
+            "/lbr_state", rclcpp::SystemDefaultsQoS());
         rt_lbr_state_pub_ = std::make_shared<realtime_tools::RealtimePublisher<lbr_fri_msgs::msg::LBRState>>(lbr_state_pub_);
+
+        auto node_thread = [this]()
+        {
+            rclcpp::spin(node_);
+            rclcpp::shutdown();
+        };
+        node_thread_ = std::make_unique<std::thread>(node_thread);
     }
 
     void LBRStateClient::onStateChange(KUKA::FRI::ESessionState old_state, KUKA::FRI::ESessionState new_state)
