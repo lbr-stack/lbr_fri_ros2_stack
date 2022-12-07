@@ -50,11 +50,6 @@
                     <param name="min">-1</param>
                     <param name="max"> 1</param>
                 </command_interface>
-                <command_interface name="wrench">
-                    <param name="min">-1</param>
-                    <param name="max"> 1</param>
-                </command_interface>
-
                 <state_interface name="position"/>
                 <state_interface name="effort"/>
                 <xacro:unless value="${sim}">
@@ -73,11 +68,6 @@
                     <param name="min">-1</param>
                     <param name="max"> 1</param>
                 </command_interface>
-                <command_interface name="wrench">
-                    <param name="min">-1</param>
-                    <param name="max"> 1</param>
-                </command_interface>
-
                 <state_interface name="position"/>
                 <state_interface name="effort"/>
                 <xacro:unless value="${sim}">
@@ -96,11 +86,6 @@
                     <param name="min">-1</param>
                     <param name="max"> 1</param>
                 </command_interface>
-                <command_interface name="wrench">
-                    <param name="min">-1</param>
-                    <param name="max"> 1</param>
-                </command_interface>
-
                 <state_interface name="position"/>
                 <state_interface name="effort"/>
                 <xacro:unless value="${sim}">
@@ -119,11 +104,6 @@
                     <param name="min">-1</param>
                     <param name="max"> 1</param>
                 </command_interface>
-                <command_interface name="wrench">
-                    <param name="min">-1</param>
-                    <param name="max"> 1</param>
-                </command_interface>
-
                 <state_interface name="position"/>
                 <state_interface name="effort"/>
                 <xacro:unless value="${sim}">
@@ -142,11 +122,6 @@
                     <param name="min">-1</param>
                     <param name="max"> 1</param>
                 </command_interface>
-                <command_interface name="wrench">
-                    <param name="min">-1</param>
-                    <param name="max"> 1</param>
-                </command_interface>
-
                 <state_interface name="position"/>
                 <state_interface name="effort"/>
                 <xacro:unless value="${sim}">
@@ -165,11 +140,6 @@
                     <param name="min">-1</param>
                     <param name="max"> 1</param>
                 </command_interface>
-                <command_interface name="wrench">
-                    <param name="min">-1</param>
-                    <param name="max"> 1</param>
-                </command_interface>
-
                 <state_interface name="position"/>
                 <state_interface name="effort"/>
                 <xacro:unless value="${sim}">
@@ -188,11 +158,6 @@
                     <param name="min">-1</param>
                     <param name="max"> 1</param>
                 </command_interface>
-                <command_interface name="wrench">
-                    <param name="min">-1</param>
-                    <param name="max"> 1</param>
-                </command_interface>
-
                 <state_interface name="position"/>
                 <state_interface name="effort"/>
                 <xacro:unless value="${sim}">
