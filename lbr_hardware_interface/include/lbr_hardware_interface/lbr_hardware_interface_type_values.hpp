@@ -1,7 +1,7 @@
 #pragma once
 
 // see https://github.com/ros-controls/ros2_control/blob/master/hardware_interface/include/hardware_interface/types/hardware_interface_type_values.hpp
-namespace lbr_hardware
+namespace lbr_hardware_interface
 {
     // additional LBR state interfaces, reference KUKA::FRI::LBRState
     constexpr char HW_IF_SAMPLE_TIME[] = "sample_time";
@@ -27,4 +27,4 @@ namespace lbr_hardware
 
     // additional LBR command interfaces, reference KUKA::FRI::LBRCommand
     constexpr char HW_IF_WRENCH[] = "wrench";
-} // end of namespace lbr_hardware
+} // end of namespace lbr_hardware_interface

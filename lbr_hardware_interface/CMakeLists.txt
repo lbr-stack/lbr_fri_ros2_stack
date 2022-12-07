@@ -16,6 +16,7 @@ find_package(controller_manager_msgs REQUIRED)
 find_package(controller_interface REQUIRED)
 find_package(pluginlib REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(realtime_tools REQUIRED)
 find_package(lbr_fri_msgs REQUIRED)
 find_package(fri REQUIRED)
 
@@ -44,6 +45,7 @@ ament_target_dependencies(
   controller_interface
   pluginlib
   rclcpp
+  realtime_tools
   lbr_fri_msgs
   fri
 )
@@ -61,6 +63,7 @@ ament_export_dependencies(
   controller_interface
   pluginlib
   rclcpp
+  realtime_tools
   lbr_fri_msgs
   fri
 )
