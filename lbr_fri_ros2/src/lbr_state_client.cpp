@@ -24,12 +24,11 @@ namespace lbr_fri_ros2
             "/lbr_state", rclcpp::SystemDefaultsQoS());
         rt_lbr_state_pub_ = std::make_shared<realtime_tools::RealtimePublisher<lbr_fri_msgs::msg::LBRState>>(lbr_state_pub_);
 
-        auto node_thread = [this]()
-        {
-            rclcpp::spin(node_);
-            rclcpp::shutdown();
-        };
-        node_thread_ = std::make_unique<std::thread>(node_thread);
+        node_thread_ = std::make_unique<std::thread>(
+            [this]()
+            {
+                rclcpp::spin(node_);
+            });
     }
 
     void LBRStateClient::onStateChange(KUKA::FRI::ESessionState old_state, KUKA::FRI::ESessionState new_state)
