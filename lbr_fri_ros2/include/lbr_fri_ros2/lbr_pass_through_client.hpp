@@ -19,9 +19,10 @@
 namespace lbr_fri_ros2 {
 class LBRPassThroughClient : public KUKA::FRI::LBRClient {
 public:
+  LBRPassThroughClient();
   LBRPassThroughClient(const std::vector<double> &delta_joint_position_limit,
-                       const std::vector<double> &delta_torque_limit,
-                       const std::vector<double> &delta_wrench_limit);
+                       const std::vector<double> &torque_limit,
+                       const std::vector<double> &wrench_limit);
 
   void onStateChange(KUKA::FRI::ESessionState old_state,
                      KUKA::FRI::ESessionState new_state) override;
@@ -32,6 +33,11 @@ public:
   // command setter and state getter for control by owning object
   inline lbr_fri_msgs::msg::LBRCommand::SharedPtr lbr_command() { return lbr_command_; };
   inline const lbr_fri_msgs::msg::LBRState::SharedPtr lbr_state() const { return lbr_state_; };
+
+  // limits for commands
+  std::vector<double> delta_joint_position_limit;
+  std::vector<double> torque_limit;
+  std::vector<double> wrench_limit;
 
 protected:
   // initialize
@@ -53,10 +59,6 @@ protected:
   // pass through from lbr_fri_msgs to robot
   bool robot_state_to_lbr_state_();
   bool lbr_command_to_robot_command_();
-
-  std::vector<double> delta_joint_position_limit_;
-  std::vector<double> delta_torque_limit_;
-  std::vector<double> delta_wrench_limit_;
 
   lbr_fri_msgs::msg::LBRCommand::SharedPtr lbr_command_;
   lbr_fri_msgs::msg::LBRState::SharedPtr lbr_state_;

@@ -2,12 +2,28 @@
 
 namespace lbr_fri_ros2 {
 
+LBRPassThroughClient::LBRPassThroughClient()
+    : LBRPassThroughClient({KUKA::FRI::LBRState::NUMBER_OF_JOINTS, 0.},
+                           {KUKA::FRI::LBRState::NUMBER_OF_JOINTS, 0.}, {6, 0.}) {}
+
 LBRPassThroughClient::LBRPassThroughClient(const std::vector<double> &delta_joint_position_limit,
-                                           const std::vector<double> &delta_torque_limit,
-                                           const std::vector<double> &delta_wrench_limit)
-    : delta_joint_position_limit_(delta_joint_position_limit),
-      delta_torque_limit_(delta_torque_limit), delta_wrench_limit_(delta_wrench_limit),
-      lbr_command_(nullptr), lbr_state_(nullptr) {
+                                           const std::vector<double> &torque_limit,
+                                           const std::vector<double> &wrench_limit)
+    : lbr_command_(nullptr), lbr_state_(nullptr) {
+  if (delta_joint_position_limit.size() != KUKA::FRI::LBRState::NUMBER_OF_JOINTS) {
+    throw std::length_error("Got delta_joint_position_limit of unexpected size.");
+  }
+  if (torque_limit.size() != KUKA::FRI::LBRState::NUMBER_OF_JOINTS) {
+    throw std::length_error("Got torque_limit of unexpected size.");
+  }
+  if (wrench_limit.size() != 6) {
+    throw std::length_error("Got wrench_limit of unexpected size.");
+  }
+
+  this->delta_joint_position_limit = delta_joint_position_limit;
+  this->torque_limit = torque_limit;
+  this->wrench_limit = wrench_limit;
+
   init_lbr_fri_msgs_();
 }
 
@@ -203,10 +219,10 @@ bool LBRPassThroughClient::valid_joint_position_command_() {
       return false;
     }
     if (std::abs(lbr_command_->joint_position[i] - lbr_state_->measured_joint_position[i]) >
-        delta_joint_position_limit_[i]) {
+        delta_joint_position_limit[i]) {
       printf("Requested position delta command %f on joint %lu. Maximally allowed is %f.\n",
              std::abs(lbr_command_->joint_position[i] - lbr_state_->measured_joint_position[i]), i,
-             delta_joint_position_limit_[i]);
+             delta_joint_position_limit[i]);
       return false;
     }
   }
@@ -234,15 +250,15 @@ bool LBRPassThroughClient::valid_torque_command_() {
       return false;
     }
     if (std::abs(lbr_command_->joint_position[i] - lbr_state_->measured_joint_position[i]) >
-        delta_joint_position_limit_[i]) {
+        delta_joint_position_limit[i]) {
       printf("Requested position delta command %f on joint %lu. Maximally allowed is %f.\n",
              std::abs(lbr_command_->joint_position[i] - lbr_state_->measured_joint_position[i]), i,
-             delta_joint_position_limit_[i]);
+             delta_joint_position_limit[i]);
       return false;
     }
-    if (std::abs(lbr_command_->torque[i]) > delta_torque_limit_[i]) {
+    if (std::abs(lbr_command_->torque[i]) > torque_limit[i]) {
       printf("Requested torque command %f on joint %lu. Maximally allowed is %f.\n",
-             std::abs(lbr_command_->torque[i]), i, delta_torque_limit_[i]);
+             std::abs(lbr_command_->torque[i]), i, torque_limit[i]);
       return false;
     }
   }
@@ -265,10 +281,10 @@ bool LBRPassThroughClient::valid_wrench_command_() {
       return false;
     }
     if (std::abs(lbr_command_->joint_position[i] - lbr_state_->measured_joint_position[i]) >
-        delta_joint_position_limit_[i]) {
+        delta_joint_position_limit[i]) {
       printf("Requested position delta command %f on joint %lu. Maximally allowed is %f.\n",
              std::abs(lbr_command_->joint_position[i] - lbr_state_->measured_joint_position[i]), i,
-             delta_joint_position_limit_[i]);
+             delta_joint_position_limit[i]);
       return false;
     }
   }
@@ -277,9 +293,9 @@ bool LBRPassThroughClient::valid_wrench_command_() {
       printf("Received nan wrench command on axis %lu.\n", i);
       return false;
     }
-    if (std::abs(lbr_command_->wrench[i]) > delta_wrench_limit_[i]) {
+    if (std::abs(lbr_command_->wrench[i]) > wrench_limit[i]) {
       printf("Requested wrench command %f on axis %lu. Maximally allowed is %f.\n",
-             std::abs(lbr_command_->wrench[i]), i, delta_wrench_limit_[i]);
+             std::abs(lbr_command_->wrench[i]), i, wrench_limit[i]);
       return false;
     }
   }
