@@ -36,7 +36,7 @@ namespace lbr_fri_ros2
         const lbr_fri_msgs::srv::AppConnect::Request::SharedPtr request,
         lbr_fri_msgs::srv::AppConnect::Response::SharedPtr response)
     {
-        RCLCPP_INFO(get_logger(), "Attempting to open UDP connection for LBR server...");
+        RCLCPP_INFO(get_logger(), "Attempting to open UDP socket for LBR server...");
         const char *remote_host = request->remote_host.empty() ? NULL : request->remote_host.c_str();
         try
         {
@@ -45,7 +45,7 @@ namespace lbr_fri_ros2
         catch (const std::exception &e)
         {
             response->message = e.what();
-            RCLCPP_ERROR(get_logger(), "Failed.\n%s", e.what());
+            RCLCPP_ERROR(get_logger(), "Failed. %s", e.what());
         }
 
         if (!response->connected)
@@ -60,7 +60,7 @@ namespace lbr_fri_ros2
         const lbr_fri_msgs::srv::AppDisconnect::Request::SharedPtr /*request*/,
         lbr_fri_msgs::srv::AppDisconnect::Response::SharedPtr response)
     {
-        RCLCPP_INFO(get_logger(), "Attempting to close UDP connection for LBR server...");
+        RCLCPP_INFO(get_logger(), "Attempting to close UDP socket for LBR server...");
         try
         {
             response->disconnected = disconnect_();
@@ -68,7 +68,7 @@ namespace lbr_fri_ros2
         catch (const std::exception &e)
         {
             response->message = e.what();
-            RCLCPP_ERROR(get_logger(), "Failed.\n%s", e.what());
+            RCLCPP_ERROR(get_logger(), "Failed. %s", e.what());
         }
 
         if (!response->disconnected)
@@ -119,7 +119,9 @@ namespace lbr_fri_ros2
                             break;
                         }
                     }
-                    disconnect_();
+                    if (connected_) {
+                        disconnect_();
+                    }
                 };
 
                 app_step_thread_ = std::make_unique<std::thread>(app_step);
@@ -128,7 +130,7 @@ namespace lbr_fri_ros2
         }
         else
         {
-            RCLCPP_WARN(get_logger(), "Attempted to connect to LBR server when already connected.");
+            RCLCPP_INFO(get_logger(), "Port already open.");
         }
         return connected_;
     }
@@ -142,7 +144,7 @@ namespace lbr_fri_ros2
         }
         else
         {
-            RCLCPP_WARN(get_logger(), "Attempted to disconnect from LBR server when already disconnected.");
+            RCLCPP_INFO(get_logger(), "Port already closed.");
         }
         return !connected_;
     }
