@@ -3,8 +3,9 @@
 namespace lbr_fri_ros2 {
 
 LBRPassThroughClient::LBRPassThroughClient()
-    : LBRPassThroughClient({KUKA::FRI::LBRState::NUMBER_OF_JOINTS, 0.},
-                           {KUKA::FRI::LBRState::NUMBER_OF_JOINTS, 0.}, {6, 0.}) {}
+    : LBRPassThroughClient(std::vector<double>(KUKA::FRI::LBRState::NUMBER_OF_JOINTS, 0.),
+                           std::vector<double>(KUKA::FRI::LBRState::NUMBER_OF_JOINTS, 0.),
+                           std::vector<double>(6, 0.)) {}
 
 LBRPassThroughClient::LBRPassThroughClient(const std::vector<double> &delta_joint_position_limit,
                                            const std::vector<double> &torque_limit,
