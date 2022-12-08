@@ -36,7 +36,6 @@ namespace lbr_fri_ros2
         const lbr_fri_msgs::srv::AppConnect::Request::SharedPtr request,
         lbr_fri_msgs::srv::AppConnect::Response::SharedPtr response)
     {
-        RCLCPP_INFO(get_logger(), "Attempting to open UDP socket for LBR server...");
         const char *remote_host = request->remote_host.empty() ? NULL : request->remote_host.c_str();
         try
         {
@@ -47,20 +46,12 @@ namespace lbr_fri_ros2
             response->message = e.what();
             RCLCPP_ERROR(get_logger(), "Failed. %s", e.what());
         }
-
-        if (!response->connected)
-        {
-            RCLCPP_ERROR(get_logger(), "Failed.");
-            return;
-        };
-        RCLCPP_INFO(get_logger(), "Done.");
     }
 
     void LBRApp::app_disconnect_cb_(
         const lbr_fri_msgs::srv::AppDisconnect::Request::SharedPtr /*request*/,
         lbr_fri_msgs::srv::AppDisconnect::Response::SharedPtr response)
     {
-        RCLCPP_INFO(get_logger(), "Attempting to close UDP socket for LBR server...");
         try
         {
             response->disconnected = disconnect_();
@@ -70,13 +61,6 @@ namespace lbr_fri_ros2
             response->message = e.what();
             RCLCPP_ERROR(get_logger(), "Failed. %s", e.what());
         }
-
-        if (!response->disconnected)
-        {
-            RCLCPP_ERROR(get_logger(), "Failed.");
-            return;
-        };
-        RCLCPP_INFO(get_logger(), "Done.");
     }
 
     bool LBRApp::valid_port_(const int &port_id)
@@ -92,6 +76,7 @@ namespace lbr_fri_ros2
 
     bool LBRApp::connect_(const int &port_id, const char *const remote_host)
     {
+        RCLCPP_INFO(get_logger(), "Attempting to open UDP socket for LBR server...");
         if (!connected_)
         {
             if (!valid_port_(port_id))
@@ -119,7 +104,8 @@ namespace lbr_fri_ros2
                             break;
                         }
                     }
-                    if (connected_) {
+                    if (connected_)
+                    {
                         disconnect_();
                     }
                 };
@@ -132,11 +118,20 @@ namespace lbr_fri_ros2
         {
             RCLCPP_INFO(get_logger(), "Port already open.");
         }
+        if (connected_)
+        {
+            RCLCPP_INFO(get_logger(), "Connected successfully.");
+        }
+        else
+        {
+            RCLCPP_WARN(get_logger(), "Failed to connect.");
+        }
         return connected_;
     }
 
     bool LBRApp::disconnect_()
     {
+        RCLCPP_INFO(get_logger(), "Attempting to close UDP socket for LBR server...");
         if (connected_)
         {
             app_->disconnect();
@@ -145,6 +140,14 @@ namespace lbr_fri_ros2
         else
         {
             RCLCPP_INFO(get_logger(), "Port already closed.");
+        }
+        if (!connected_)
+        {
+            RCLCPP_INFO(get_logger(), "Disonnected successfully.");
+        }
+        else
+        {
+            RCLCPP_WARN(get_logger(), "Failed to disconnect.");
         }
         return !connected_;
     }
