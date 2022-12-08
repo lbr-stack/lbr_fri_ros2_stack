@@ -318,9 +318,12 @@ bool LBRPassThroughClient::robot_state_to_lbr_state_() {
     auto external_torque = robotState().getExternalTorque();
     lbr_state_->external_torque.assign(external_torque,
                                        external_torque + KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
-    auto ipo_joint_position = robotState().getIpoJointPosition();
-    lbr_state_->ipo_joint_position.assign(
-        ipo_joint_position, ipo_joint_position + KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
+    if (robotState().getSessionState() == KUKA::FRI::ESessionState::COMMANDING_WAIT ||
+        robotState().getSessionState() == KUKA::FRI::ESessionState::COMMANDING_ACTIVE) {
+      auto ipo_joint_position = robotState().getIpoJointPosition();
+      lbr_state_->ipo_joint_position.assign(
+          ipo_joint_position, ipo_joint_position + KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
+    }
     auto measured_joint_position = robotState().getMeasuredJointPosition();
     lbr_state_->measured_joint_position.assign(
         measured_joint_position, measured_joint_position + KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
