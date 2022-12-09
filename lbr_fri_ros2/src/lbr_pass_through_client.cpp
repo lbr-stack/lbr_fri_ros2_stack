@@ -3,28 +3,17 @@
 namespace lbr_fri_ros2 {
 
 LBRPassThroughClient::LBRPassThroughClient()
-    : LBRPassThroughClient(std::vector<double>(KUKA::FRI::LBRState::NUMBER_OF_JOINTS, 0.),
-                           std::vector<double>(KUKA::FRI::LBRState::NUMBER_OF_JOINTS, 0.),
-                           std::vector<double>(6, 0.)) {}
+    : LBRPassThroughClient({0., 0., 0., 0., 0., 0., 0.}, {0., 0., 0., 0., 0., 0., 0.},
+                           {0., 0., 0., 0., 0., 0.}) {}
 
-LBRPassThroughClient::LBRPassThroughClient(const std::vector<double> &delta_joint_position_limit,
-                                           const std::vector<double> &torque_limit,
-                                           const std::vector<double> &wrench_limit)
+LBRPassThroughClient::LBRPassThroughClient(
+    const std::array<double, JOINT_DOF> &joint_velocity_limit,
+    const std::array<double, JOINT_DOF> &torque_limit,
+    const std::array<double, CARTESIAN_DOF> &wrench_limit)
     : lbr_command_(nullptr), lbr_state_(nullptr) {
-  if (delta_joint_position_limit.size() != KUKA::FRI::LBRState::NUMBER_OF_JOINTS) {
-    throw std::length_error("Got delta_joint_position_limit of unexpected size.");
-  }
-  if (torque_limit.size() != KUKA::FRI::LBRState::NUMBER_OF_JOINTS) {
-    throw std::length_error("Got torque_limit of unexpected size.");
-  }
-  if (wrench_limit.size() != 6) {
-    throw std::length_error("Got wrench_limit of unexpected size.");
-  }
-
-  this->delta_joint_position_limit = delta_joint_position_limit;
-  this->torque_limit = torque_limit;
-  this->wrench_limit = wrench_limit;
-
+  joint_velocity_limit_ = joint_velocity_limit;
+  torque_limit_ = torque_limit;
+  wrench_limit_ = wrench_limit;
   init_lbr_fri_msgs_();
 }
 
@@ -58,6 +47,33 @@ void LBRPassThroughClient::command() {
   }
 }
 
+void LBRPassThroughClient::joint_velocity_limit(const std::vector<double> &joint_velocity_limit) {
+  if (joint_velocity_limit.size() != JOINT_DOF) {
+    throw std::length_error("Got joint velocity limit of unexpected dimension.");
+  }
+  for (uint8_t i = 0; i < JOINT_DOF; ++i) {
+    joint_velocity_limit_[i] = joint_velocity_limit[i];
+  }
+}
+
+void LBRPassThroughClient::torque_limit(const std::vector<double> &torque_limit) {
+  if (torque_limit.size() != JOINT_DOF) {
+    throw std::length_error("Got torque limit of unexpected dimension.");
+  }
+  for (uint8_t i = 0; i < JOINT_DOF; ++i) {
+    torque_limit_[i] = torque_limit[i];
+  }
+}
+
+void LBRPassThroughClient::wrench_limit(const std::vector<double> &wrench_limit) {
+  if (wrench_limit.size() != CARTESIAN_DOF) {
+    throw std::length_error("Got wrench limit of unexpected dimension.");
+  }
+  for (uint8_t i = 0; i < CARTESIAN_DOF; ++i) {
+    wrench_limit_[i] = wrench_limit[i];
+  }
+}
+
 bool LBRPassThroughClient::init_lbr_fri_msgs_() {
   if (!init_lbr_command_()) {
     return false;
@@ -71,12 +87,9 @@ bool LBRPassThroughClient::init_lbr_fri_msgs_() {
 bool LBRPassThroughClient::init_lbr_command_() {
   try {
     lbr_command_ = std::make_shared<lbr_fri_msgs::msg::LBRCommand>();
-    lbr_command_->joint_position.resize(KUKA::FRI::LBRState::NUMBER_OF_JOINTS,
-                                        std::numeric_limits<double>::quiet_NaN());
-    lbr_command_->torque.resize(KUKA::FRI::LBRState::NUMBER_OF_JOINTS,
-                                std::numeric_limits<double>::quiet_NaN());
-    lbr_command_->wrench.resize(KUKA::FRI::LBRState::NUMBER_OF_JOINTS,
-                                std::numeric_limits<double>::quiet_NaN());
+    lbr_command_->joint_position.resize(JOINT_DOF, std::numeric_limits<double>::quiet_NaN());
+    lbr_command_->torque.resize(JOINT_DOF, std::numeric_limits<double>::quiet_NaN());
+    lbr_command_->wrench.resize(CARTESIAN_DOF, std::numeric_limits<double>::quiet_NaN());
   } catch (const std::exception &e) {
     printf("Failed to initialize lbr_command. %s.\n", e.what());
     return false;
@@ -88,21 +101,16 @@ bool LBRPassThroughClient::init_lbr_state_() {
   try {
     lbr_state_ = std::make_shared<lbr_fri_msgs::msg::LBRState>();
     lbr_state_->client_command_mode = std::numeric_limits<int8_t>::quiet_NaN();
-    lbr_state_->commanded_joint_position.resize(KUKA::FRI::LBRState::NUMBER_OF_JOINTS,
+    lbr_state_->commanded_joint_position.resize(JOINT_DOF,
                                                 std::numeric_limits<double>::quiet_NaN());
-    lbr_state_->commanded_torque.resize(KUKA::FRI::LBRState::NUMBER_OF_JOINTS,
-                                        std::numeric_limits<double>::quiet_NaN());
+    lbr_state_->commanded_torque.resize(JOINT_DOF, std::numeric_limits<double>::quiet_NaN());
     lbr_state_->connection_quality = std::numeric_limits<int8_t>::quiet_NaN();
     lbr_state_->control_mode = std::numeric_limits<int8_t>::quiet_NaN();
     lbr_state_->drive_state = std::numeric_limits<int8_t>::quiet_NaN();
-    lbr_state_->external_torque.resize(KUKA::FRI::LBRState::NUMBER_OF_JOINTS,
-                                       std::numeric_limits<double>::quiet_NaN());
-    lbr_state_->ipo_joint_position.resize(KUKA::FRI::LBRState::NUMBER_OF_JOINTS,
-                                          std::numeric_limits<double>::quiet_NaN());
-    lbr_state_->measured_joint_position.resize(KUKA::FRI::LBRState::NUMBER_OF_JOINTS,
-                                               std::numeric_limits<double>::quiet_NaN());
-    lbr_state_->measured_torque.resize(KUKA::FRI::LBRState::NUMBER_OF_JOINTS,
-                                       std::numeric_limits<double>::quiet_NaN());
+    lbr_state_->external_torque.resize(JOINT_DOF, std::numeric_limits<double>::quiet_NaN());
+    lbr_state_->ipo_joint_position.resize(JOINT_DOF, std::numeric_limits<double>::quiet_NaN());
+    lbr_state_->measured_joint_position.resize(JOINT_DOF, std::numeric_limits<double>::quiet_NaN());
+    lbr_state_->measured_torque.resize(JOINT_DOF, std::numeric_limits<double>::quiet_NaN());
     lbr_state_->operation_mode = std::numeric_limits<int8_t>::quiet_NaN();
     lbr_state_->overlay_type = std::numeric_limits<int8_t>::quiet_NaN();
     lbr_state_->safety_state = std::numeric_limits<int8_t>::quiet_NaN();
@@ -209,21 +217,21 @@ bool LBRPassThroughClient::verify_lbr_command_() {
 }
 
 bool LBRPassThroughClient::valid_joint_position_command_() {
-  if (lbr_command_->joint_position.size() != KUKA::FRI::LBRState::NUMBER_OF_JOINTS) {
+  if (lbr_command_->joint_position.size() != JOINT_DOF) {
     printf("Received joint position command of size %lu. Expected %d.\n",
-           lbr_command_->joint_position.size(), KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
+           lbr_command_->joint_position.size(), JOINT_DOF);
     return false;
   }
-  for (std::size_t i = 0; i < KUKA::FRI::LBRState::NUMBER_OF_JOINTS; ++i) {
+  for (std::size_t i = 0; i < JOINT_DOF; ++i) {
     if (std::isnan(lbr_command_->joint_position[i])) {
       printf("Received nan joint position command on joint %lu.\n", i);
       return false;
     }
     if (std::abs(lbr_command_->joint_position[i] - lbr_state_->measured_joint_position[i]) >
-        delta_joint_position_limit[i]) {
+        joint_velocity_limit_[i] * robotState().getSampleTime()) {
       printf("Requested position delta command %f on joint %lu. Maximally allowed is %f.\n",
              std::abs(lbr_command_->joint_position[i] - lbr_state_->measured_joint_position[i]), i,
-             delta_joint_position_limit[i]);
+             joint_velocity_limit_[i] * robotState().getSampleTime());
       return false;
     }
   }
@@ -231,17 +239,17 @@ bool LBRPassThroughClient::valid_joint_position_command_() {
 }
 
 bool LBRPassThroughClient::valid_torque_command_() {
-  if (lbr_command_->joint_position.size() != KUKA::FRI::LBRState::NUMBER_OF_JOINTS) {
+  if (lbr_command_->joint_position.size() != JOINT_DOF) {
     printf("Received joint position command of size %lu. Expected %d.\n",
-           lbr_command_->joint_position.size(), KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
+           lbr_command_->joint_position.size(), JOINT_DOF);
     return false;
   }
-  if (lbr_command_->torque.size() != KUKA::FRI::LBRState::NUMBER_OF_JOINTS) {
+  if (lbr_command_->torque.size() != JOINT_DOF) {
     printf("Received torque command of size %lu. Expected %d.\n", lbr_command_->torque.size(),
-           KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
+           JOINT_DOF);
     return false;
   }
-  for (std::size_t i = 0; i < KUKA::FRI::LBRState::NUMBER_OF_JOINTS; ++i) {
+  for (std::size_t i = 0; i < JOINT_DOF; ++i) {
     if (std::isnan(lbr_command_->joint_position[i])) {
       printf("Received nan joint position command on joint %lu.\n", i);
       return false;
@@ -251,15 +259,15 @@ bool LBRPassThroughClient::valid_torque_command_() {
       return false;
     }
     if (std::abs(lbr_command_->joint_position[i] - lbr_state_->measured_joint_position[i]) >
-        delta_joint_position_limit[i]) {
+        joint_velocity_limit_[i] * robotState().getSampleTime()) {
       printf("Requested position delta command %f on joint %lu. Maximally allowed is %f.\n",
              std::abs(lbr_command_->joint_position[i] - lbr_state_->measured_joint_position[i]), i,
-             delta_joint_position_limit[i]);
+             joint_velocity_limit_[i] * robotState().getSampleTime());
       return false;
     }
-    if (std::abs(lbr_command_->torque[i]) > torque_limit[i]) {
+    if (std::abs(lbr_command_->torque[i]) > torque_limit_[i]) {
       printf("Requested torque command %f on joint %lu. Maximally allowed is %f.\n",
-             std::abs(lbr_command_->torque[i]), i, torque_limit[i]);
+             std::abs(lbr_command_->torque[i]), i, torque_limit_[i]);
       return false;
     }
   }
@@ -267,36 +275,37 @@ bool LBRPassThroughClient::valid_torque_command_() {
 }
 
 bool LBRPassThroughClient::valid_wrench_command_() {
-  if (lbr_command_->joint_position.size() != KUKA::FRI::LBRState::NUMBER_OF_JOINTS) {
+  if (lbr_command_->joint_position.size() != JOINT_DOF) {
     printf("Received joint position command of size %lu. Expected %d.\n",
-           lbr_command_->joint_position.size(), KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
+           lbr_command_->joint_position.size(), JOINT_DOF);
     return false;
   }
-  if (lbr_command_->wrench.size() != 6) {
-    printf("Received wrench command of size %lu. Expected %d.\n", lbr_command_->wrench.size(), 6);
+  if (lbr_command_->wrench.size() != CARTESIAN_DOF) {
+    printf("Received wrench command of size %lu. Expected %d.\n", lbr_command_->wrench.size(),
+           CARTESIAN_DOF);
     return false;
   }
-  for (std::size_t i = 0; i < KUKA::FRI::LBRState::NUMBER_OF_JOINTS; ++i) {
+  for (std::size_t i = 0; i < JOINT_DOF; ++i) {
     if (std::isnan(lbr_command_->joint_position[i])) {
       printf("Received nan joint position command on joint %lu.\n", i);
       return false;
     }
     if (std::abs(lbr_command_->joint_position[i] - lbr_state_->measured_joint_position[i]) >
-        delta_joint_position_limit[i]) {
+        joint_velocity_limit_[i] * robotState().getSampleTime()) {
       printf("Requested position delta command %f on joint %lu. Maximally allowed is %f.\n",
              std::abs(lbr_command_->joint_position[i] - lbr_state_->measured_joint_position[i]), i,
-             delta_joint_position_limit[i]);
+             joint_velocity_limit_[i] * robotState().getSampleTime());
       return false;
     }
   }
-  for (std::size_t i = 0; i < 6; ++i) {
+  for (std::size_t i = 0; i < CARTESIAN_DOF; ++i) {
     if (std::isnan(lbr_command_->wrench[i])) {
       printf("Received nan wrench command on axis %lu.\n", i);
       return false;
     }
-    if (std::abs(lbr_command_->wrench[i]) > wrench_limit[i]) {
+    if (std::abs(lbr_command_->wrench[i]) > torque_limit_[i]) {
       printf("Requested wrench command %f on axis %lu. Maximally allowed is %f.\n",
-             std::abs(lbr_command_->wrench[i]), i, wrench_limit[i]);
+             std::abs(lbr_command_->wrench[i]), i, torque_limit_[i]);
       return false;
     }
   }
@@ -307,29 +316,25 @@ bool LBRPassThroughClient::robot_state_to_lbr_state_() {
   try {
     lbr_state_->client_command_mode = robotState().getClientCommandMode();
     auto commanded_joint_position = robotState().getCommandedJointPosition();
-    lbr_state_->commanded_joint_position.assign(
-        commanded_joint_position, commanded_joint_position + KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
+    lbr_state_->commanded_joint_position.assign(commanded_joint_position,
+                                                commanded_joint_position + JOINT_DOF);
     auto commanded_torque = robotState().getCommandedTorque();
-    lbr_state_->commanded_torque.assign(commanded_torque,
-                                        commanded_torque + KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
+    lbr_state_->commanded_torque.assign(commanded_torque, commanded_torque + JOINT_DOF);
     lbr_state_->connection_quality = robotState().getConnectionQuality();
     lbr_state_->control_mode = robotState().getControlMode();
     lbr_state_->drive_state = robotState().getDriveState();
     auto external_torque = robotState().getExternalTorque();
-    lbr_state_->external_torque.assign(external_torque,
-                                       external_torque + KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
+    lbr_state_->external_torque.assign(external_torque, external_torque + JOINT_DOF);
     if (robotState().getSessionState() == KUKA::FRI::ESessionState::COMMANDING_WAIT ||
         robotState().getSessionState() == KUKA::FRI::ESessionState::COMMANDING_ACTIVE) {
       auto ipo_joint_position = robotState().getIpoJointPosition();
-      lbr_state_->ipo_joint_position.assign(
-          ipo_joint_position, ipo_joint_position + KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
+      lbr_state_->ipo_joint_position.assign(ipo_joint_position, ipo_joint_position + JOINT_DOF);
     }
     auto measured_joint_position = robotState().getMeasuredJointPosition();
-    lbr_state_->measured_joint_position.assign(
-        measured_joint_position, measured_joint_position + KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
+    lbr_state_->measured_joint_position.assign(measured_joint_position,
+                                               measured_joint_position + JOINT_DOF);
     auto measured_torque = robotState().getMeasuredTorque();
-    lbr_state_->measured_torque.assign(measured_torque,
-                                       measured_torque + KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
+    lbr_state_->measured_torque.assign(measured_torque, measured_torque + JOINT_DOF);
     lbr_state_->operation_mode = robotState().getOperationMode();
     lbr_state_->overlay_type = robotState().getOverlayType();
     lbr_state_->safety_state = robotState().getSafetyState();
