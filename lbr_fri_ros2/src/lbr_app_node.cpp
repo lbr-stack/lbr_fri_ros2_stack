@@ -1,7 +1,8 @@
 #include "lbr_fri_ros2/lbr_app_node.hpp"
 
 namespace lbr_fri_ros2 {
-LBRAppNode::LBRAppNode(const std::string &node_name, const int &port_id, const char *const remote_host)
+LBRAppNode::LBRAppNode(const std::string &node_name, const int &port_id,
+                       const char *const remote_host)
     : rclcpp::Node(node_name) {
   if (!valid_port_(port_id)) {
     throw std::range_error("Invalid port_id provided.");
@@ -18,7 +19,8 @@ LBRAppNode::LBRAppNode(const std::string &node_name, const int &port_id, const c
 
   app_disconnect_srv_ = this->create_service<lbr_fri_msgs::srv::AppDisconnect>(
       "/lbr_app/disconnect",
-      std::bind(&LBRAppNode::app_disconnect_cb_, this, std::placeholders::_1, std::placeholders::_2),
+      std::bind(&LBRAppNode::app_disconnect_cb_, this, std::placeholders::_1,
+                std::placeholders::_2),
       rmw_qos_profile_system_default);
 
   lbr_command_rt_buf_ =
@@ -42,7 +44,7 @@ LBRAppNode::LBRAppNode(const std::string &node_name, const int &port_id, const c
 LBRAppNode::~LBRAppNode() { disconnect_(); }
 
 void LBRAppNode::app_connect_cb_(const lbr_fri_msgs::srv::AppConnect::Request::SharedPtr request,
-                             lbr_fri_msgs::srv::AppConnect::Response::SharedPtr response) {
+                                 lbr_fri_msgs::srv::AppConnect::Response::SharedPtr response) {
   const char *remote_host = request->remote_host.empty() ? NULL : request->remote_host.c_str();
   try {
     response->connected = connect_(request->port_id, remote_host);
@@ -99,7 +101,7 @@ bool LBRAppNode::connect_(const int &port_id, const char *const remote_host) {
             }
 
             success = app_->step();
-            
+
             if (lbr_state_rt_pub_->trylock()) {
               lbr_state_rt_pub_->msg_ = *lbr_->state;
               lbr_state_rt_pub_->unlockAndPublish();

@@ -23,7 +23,7 @@ namespace lbr_fri_ros2 {
 class LBRAppNode : public rclcpp::Node {
 public:
   LBRAppNode(const std::string &node_name, const int &port_id = 30200,
-         const char *const remote_host = NULL);
+             const char *const remote_host = NULL);
   ~LBRAppNode();
 
 protected:
