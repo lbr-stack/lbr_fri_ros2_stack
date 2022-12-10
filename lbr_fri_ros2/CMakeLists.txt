@@ -15,12 +15,13 @@ find_package(fri REQUIRED)
 
 add_library(lbr_fri_ros2
   SHARED 
-    src/lbr_state_client.cpp
     src/lbr_app.cpp
+    src/lbr_client.cpp
+    src/lbr.cpp
 )
 
 target_include_directories(${PROJECT_NAME}
-  PRIVATE include src
+  PRIVATE include
 )
 
 ament_target_dependencies(${PROJECT_NAME}
