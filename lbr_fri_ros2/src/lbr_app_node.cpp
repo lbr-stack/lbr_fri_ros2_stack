@@ -39,6 +39,9 @@ LBRAppNode::LBRAppNode(const std::string &node_name, const int &port_id,
   lbr_client_ = std::make_shared<LBRClient>(lbr_);
   connection_ = std::make_unique<KUKA::FRI::UdpConnection>();
   app_ = std::make_unique<KUKA::FRI::ClientApplication>(*connection_, *lbr_client_);
+
+  // attempt default connect
+  connect_(port_id_, remote_host_);
 }
 
 LBRAppNode::~LBRAppNode() { disconnect_(); }
@@ -123,9 +126,9 @@ bool LBRAppNode::connect_(const int &port_id, const char *const remote_host) {
     RCLCPP_INFO(get_logger(), "Port already open.");
   }
   if (connected_) {
-    RCLCPP_INFO(get_logger(), "Connected successfully.");
+    RCLCPP_INFO(get_logger(), "Opened successfully.");
   } else {
-    RCLCPP_WARN(get_logger(), "Failed to connect.");
+    RCLCPP_WARN(get_logger(), "Failed to open.");
   }
   return connected_;
 }
@@ -139,9 +142,9 @@ bool LBRAppNode::disconnect_() {
     RCLCPP_INFO(get_logger(), "Port already closed.");
   }
   if (!connected_) {
-    RCLCPP_INFO(get_logger(), "Disonnected successfully.");
+    RCLCPP_INFO(get_logger(), "Closed successfully.");
   } else {
-    RCLCPP_WARN(get_logger(), "Failed to disconnect.");
+    RCLCPP_WARN(get_logger(), "Failed to close.");
   }
   return !connected_;
 }

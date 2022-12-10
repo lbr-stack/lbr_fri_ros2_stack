@@ -15,7 +15,7 @@ find_package(fri REQUIRED)
 
 add_library(lbr_fri_ros2
   SHARED 
-    src/lbr_app.cpp
+    src/lbr_app_node.cpp
     src/lbr_client.cpp
     src/lbr.cpp
 )
@@ -54,10 +54,10 @@ install(
 )
 
 # # test node
-add_executable(lbr_app_node src/lbr_app_node.cpp)
-target_include_directories(lbr_app_node PRIVATE include)
-target_link_libraries(lbr_app_node ${PROJECT_NAME})
-ament_target_dependencies(lbr_app_node
+add_executable(lbr_spinner src/lbr_spinner.cpp)
+target_include_directories(lbr_spinner PRIVATE include)
+target_link_libraries(lbr_spinner ${PROJECT_NAME})
+ament_target_dependencies(lbr_spinner
   rclcpp
   realtime_tools
   std_srvs
@@ -66,7 +66,7 @@ ament_target_dependencies(lbr_app_node
 )
 
 install(
-  TARGETS lbr_app_node
+  TARGETS lbr_spinner
   RUNTIME DESTINATION lib/${PROJECT_NAME}
 )
 # test node
