@@ -1,4 +1,5 @@
-#pragma once
+#ifndef LBR_FRI_ROS2__LBR_APP_NODE_HPP_
+#define LBR_FRI_ROS2__LBR_APP_NODE_HPP_
 
 #include <atomic>
 #include <memory>
@@ -61,3 +62,4 @@ protected:
   std::unique_ptr<KUKA::FRI::ClientApplication> app_;
 };
 } // end of namespace lbr_fri_ros2
+#endif // LBR_FRI_ROS2__LBR_APP_NODE_HPP_

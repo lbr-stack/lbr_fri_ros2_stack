@@ -1,4 +1,5 @@
-#pragma once
+#ifndef LBR_FRI_ROS2__LBR_CLIENT_HPP_
+#define LBR_FRI_ROS2__LBR_CLIENT_HPP_
 
 #include <algorithm>
 #include <cmath>
@@ -49,3 +50,4 @@ protected:
   std::shared_ptr<LBR> lbr_;
 };
 } // end of namespace lbr_fri_ros2
+#endif // LBR_FRI_ROS2__LBR_CLIENT_HPP_

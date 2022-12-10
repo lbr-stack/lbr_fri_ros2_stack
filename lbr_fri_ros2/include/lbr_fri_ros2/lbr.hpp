@@ -1,4 +1,5 @@
-#pragma once
+#ifndef LBR_FRI_ROS2__LBR_HPP_
+#define LBR_FRI_ROS2__LBR_HPP_
 
 #include <limits>
 #include <stdexcept>
@@ -25,3 +26,4 @@ struct LBR {
   lbr_fri_msgs::msg::LBRState::SharedPtr state;
 };
 } // end of namespace lbr_fri_ros2
+#endif // LBR_FRI_ROS2__LBR_HPP_
