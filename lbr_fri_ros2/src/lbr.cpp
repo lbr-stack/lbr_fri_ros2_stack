@@ -21,8 +21,8 @@ bool LBR::init_lbr_command() {
   try {
     command = std::make_shared<lbr_fri_msgs::msg::LBRCommand>();
     command->joint_position.resize(JOINT_DOF, std::numeric_limits<double>::quiet_NaN());
-    command->torque.resize(JOINT_DOF, std::numeric_limits<double>::quiet_NaN());
     command->wrench.resize(CARTESIAN_DOF, std::numeric_limits<double>::quiet_NaN());
+    command->torque.resize(JOINT_DOF, std::numeric_limits<double>::quiet_NaN());
   } catch (const std::exception &e) {
     printf("Failed to initialize command. %s.\n", e.what());
     return false;

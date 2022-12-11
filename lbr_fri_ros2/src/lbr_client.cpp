@@ -35,8 +35,8 @@ void LBRClient::command() {
 bool LBRClient::reset_lbr_command_() {
   try {
     lbr_->command->joint_position = lbr_->state->measured_joint_position;
-    std::fill(lbr_->command->torque.begin(), lbr_->command->torque.end(), 0.);
     std::fill(lbr_->command->wrench.begin(), lbr_->command->wrench.end(), 0.);
+    std::fill(lbr_->command->torque.begin(), lbr_->command->torque.end(), 0.);
   } catch (const std::exception &e) {
     printf("Failed to reset lbr_command. %s.\n", e.what());
     return false;
@@ -56,15 +56,15 @@ bool LBRClient::valid_lbr_command_() {
       return false;
     }
     break;
-  case KUKA::FRI::EClientCommandMode::TORQUE:
-    if (!valid_joint_position_command_() || !valid_torque_command_()) {
-      printf("Attempted to command invalid joint position and or torques.\n");
-      return false;
-    }
-    break;
   case KUKA::FRI::EClientCommandMode::WRENCH:
     if (!valid_joint_position_command_() || !valid_wrench_command_()) {
       printf("Attempted to command invalid joint position and or wrench.\n");
+      return false;
+    }
+    break;
+  case KUKA::FRI::EClientCommandMode::TORQUE:
+    if (!valid_joint_position_command_() || !valid_torque_command_()) {
+      printf("Attempted to command invalid joint position and or torques.\n");
       return false;
     }
     break;
@@ -90,21 +90,6 @@ bool LBRClient::valid_joint_position_command_() {
   return true;
 }
 
-bool LBRClient::valid_torque_command_() {
-  if (lbr_->command->torque.size() != LBR::JOINT_DOF) {
-    printf("Received torque command of size %lu. Expected %d.\n", lbr_->command->torque.size(),
-           LBR::JOINT_DOF);
-    return false;
-  }
-  for (std::size_t i = 0; i < LBR::JOINT_DOF; ++i) {
-    if (std::isnan(lbr_->command->torque[i])) {
-      printf("Received nan torque command on joint %lu.\n", i);
-      return false;
-    }
-  }
-  return true;
-}
-
 bool LBRClient::valid_wrench_command_() {
   if (lbr_->command->wrench.size() != LBR::CARTESIAN_DOF) {
     printf("Received wrench command of size %lu. Expected %d.\n", lbr_->command->wrench.size(),
@@ -114,6 +99,21 @@ bool LBRClient::valid_wrench_command_() {
   for (std::size_t i = 0; i < LBR::CARTESIAN_DOF; ++i) {
     if (std::isnan(lbr_->command->wrench[i])) {
       printf("Received nan wrench command on axis %lu.\n", i);
+      return false;
+    }
+  }
+  return true;
+}
+
+bool LBRClient::valid_torque_command_() {
+  if (lbr_->command->torque.size() != LBR::JOINT_DOF) {
+    printf("Received torque command of size %lu. Expected %d.\n", lbr_->command->torque.size(),
+           LBR::JOINT_DOF);
+    return false;
+  }
+  for (std::size_t i = 0; i < LBR::JOINT_DOF; ++i) {
+    if (std::isnan(lbr_->command->torque[i])) {
+      printf("Received nan torque command on joint %lu.\n", i);
       return false;
     }
   }
@@ -163,16 +163,19 @@ bool LBRClient::lbr_command_to_robot_command_() {
   try {
     if (valid_lbr_command_()) {
       switch (robotState().getClientCommandMode()) {
+      case KUKA::FRI::EClientCommandMode::NO_COMMAND_MODE:
+        printf("Attempted to command when EClientCommandMode::NO_COMMAND_MODE provided.\n");
+        return false;
       case KUKA::FRI::EClientCommandMode::POSITION:
         robotCommand().setJointPosition(lbr_->command->joint_position.data());
-        break;
-      case KUKA::FRI::EClientCommandMode::TORQUE:
-        robotCommand().setJointPosition(lbr_->command->joint_position.data());
-        robotCommand().setTorque(lbr_->command->torque.data());
         break;
       case KUKA::FRI::EClientCommandMode::WRENCH:
         robotCommand().setJointPosition(lbr_->command->joint_position.data());
         robotCommand().setWrench(lbr_->command->wrench.data());
+        break;
+      case KUKA::FRI::EClientCommandMode::TORQUE:
+        robotCommand().setJointPosition(lbr_->command->joint_position.data());
+        robotCommand().setTorque(lbr_->command->torque.data());
         break;
       default:
         printf("Unknown EClientCommandMode provided.\n");

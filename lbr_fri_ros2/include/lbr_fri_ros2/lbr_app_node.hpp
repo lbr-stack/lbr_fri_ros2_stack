@@ -2,6 +2,7 @@
 #define LBR_FRI_ROS2__LBR_APP_NODE_HPP_
 
 #include <atomic>
+#include <cmath>
 #include <memory>
 #include <stdexcept>
 #include <string>
@@ -13,6 +14,7 @@
 #include "std_srvs/srv/empty.hpp"
 
 #include "fri/friClientApplication.h"
+#include "fri/friClientIf.h"
 #include "fri/friUdpConnection.h"
 
 #include "lbr_fri_msgs/srv/app_connect.hpp"
@@ -40,12 +42,21 @@ protected:
   bool connect_(const int &port_id = 30200, const char *const remote_host = NULL);
   bool disconnect_();
 
+  bool valid_lbr_command_(const lbr_fri_msgs::msg::LBRCommand::SharedPtr *const lbr_command);
+  bool valid_joint_position_command_(const std::vector<double> &joint_position_command);
+  bool valid_wrench_command_(const std::vector<double> &wrench_command);
+  bool valid_torque_command_(const std::vector<double> &torque_command);
+
   std::unique_ptr<std::thread> app_step_thread_;
 
   const char *remote_host_;
   int port_id_;
 
   std::atomic<bool> connected_;
+
+  std::vector<double> joint_velocity_command_limit_;
+  std::vector<double> wrench_command_limit_;
+  std::vector<double> torque_command_limit_;
 
   rclcpp::Service<lbr_fri_msgs::srv::AppConnect>::SharedPtr app_connect_srv_;
   rclcpp::Service<lbr_fri_msgs::srv::AppDisconnect>::SharedPtr app_disconnect_srv_;
