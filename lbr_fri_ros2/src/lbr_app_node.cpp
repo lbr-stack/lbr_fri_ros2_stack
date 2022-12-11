@@ -148,6 +148,11 @@ bool LBRAppNode::disconnect_() {
   } else {
     RCLCPP_WARN(get_logger(), "Failed to close.");
   }
+  auto future = std::async(std::launch::async, &std::thread::join, app_step_thread_.get());
+  if (future.wait_for(std::chrono::seconds(1)) != std::future_status::ready) {
+    throw std::runtime_error("Could not join app step thread.");
+  }
+  app_step_thread_.release();
   return !connected_;
 }
 

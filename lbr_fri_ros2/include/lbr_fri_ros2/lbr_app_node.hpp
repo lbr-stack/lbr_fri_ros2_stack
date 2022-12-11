@@ -3,6 +3,7 @@
 
 #include <atomic>
 #include <cmath>
+#include <future>
 #include <memory>
 #include <stdexcept>
 #include <string>
