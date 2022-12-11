@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 3.16)
 project(lbr_fri_ros2)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
@@ -53,22 +53,16 @@ install(
   INCLUDES DESTINATION include
 )
 
-# # test node
 add_executable(lbr_spinner src/lbr_spinner.cpp)
 target_include_directories(lbr_spinner PRIVATE include)
 target_link_libraries(lbr_spinner ${PROJECT_NAME})
 ament_target_dependencies(lbr_spinner
   rclcpp
-  realtime_tools
-  std_srvs
-  lbr_fri_msgs
-  fri
 )
 
 install(
   TARGETS lbr_spinner
   RUNTIME DESTINATION lib/${PROJECT_NAME}
 )
-# test node
 
 ament_package()
