@@ -4,6 +4,7 @@ import math
 from copy import deepcopy
 
 import rclpy
+from rclpy import qos
 from rclpy.node import Node
 from sensor_msgs.msg import JointState
 from std_msgs.msg import Float64MultiArray
@@ -39,17 +40,17 @@ class LBRSinusoidalNode(Node):
             # using the /joint_states might cause unintended behavior on the robot
             # use the /lbr_state instead
             self._joint_states_subscriber = self.create_subscription(
-                JointState, "/joint_states", self._joint_states_callback, 1
+                JointState, "/joint_states", self._joint_states_callback, qos.qos_profile_system_default
             )
             self._position_command_publisher = self.create_publisher(
-                Float64MultiArray, "/forward_position_controller/commands", 1
+                Float64MultiArray, "/forward_position_controller/commands", qos.qos_profile_system_default
             )
         else:
             self._lbr_state_subscriber = self.create_subscription(
-                LBRState, "/lbr_state", self._lbr_state_callback, 1
+                LBRState, "/lbr_state", self._lbr_state_callback, qos.qos_profile_system_default
             )
             self._lbr_command_publisher = self.create_publisher(
-                LBRCommand, "/lbr_command", 1
+                LBRCommand, "/lbr_command", qos.qos_profile_system_default
             )
 
 
