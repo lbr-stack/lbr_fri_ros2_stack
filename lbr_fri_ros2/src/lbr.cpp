@@ -188,14 +188,14 @@ bool LBR::command_within_limits(const lbr_fri_msgs::msg::LBRCommand::SharedPtr l
 
 bool LBR::joint_position_command_within_limits(const std::vector<double> &joint_position_command) {
   if (joint_position_command.size() != LBR::JOINT_DOF) {
-    printf("Joint position command of size %lu received. Expected size %d.",
+    printf("Joint position command of size %lu received. Expected size %d.\n",
            joint_position_command.size(), LBR::JOINT_DOF);
     return false;
   }
   for (uint8_t i = 0; i < LBR::JOINT_DOF; ++i) {
     if (std::abs(joint_position_command[i] - state->measured_joint_position[i]) >
         joint_velocity_command_limit[i] * state->sample_time) {
-      printf("Got joint velocity command abs(%f) on joint %d. Limit is %f.",
+      printf("Got joint velocity command abs(%f) on joint %d. Limit is %f.\n",
              std::abs(joint_position_command[i] - state->measured_joint_position[i]) /
                  state->sample_time,
              i, joint_velocity_command_limit[i]);
@@ -207,13 +207,13 @@ bool LBR::joint_position_command_within_limits(const std::vector<double> &joint_
 
 bool LBR::wrench_command_within_limits(const std::vector<double> &wrench_command) {
   if (wrench_command.size() != LBR::CARTESIAN_DOF) {
-    printf("Wrench command of size %lu received. Expected size %d.", wrench_command.size(),
+    printf("Wrench command of size %lu received. Expected size %d.\n", wrench_command.size(),
            LBR::CARTESIAN_DOF);
     return false;
   }
   for (uint8_t i = 0; i < LBR::CARTESIAN_DOF; ++i) {
     if (std::abs(wrench_command[i]) > wrench_command_limit[i]) {
-      printf("Got wrench command abs(%f) on axis %d. Limit is %f.", std::abs(wrench_command[i]), i,
+      printf("Got wrench command abs(%f) on axis %d. Limit is %f.\n", std::abs(wrench_command[i]), i,
              wrench_command_limit[i]);
       return false;
     }
@@ -223,13 +223,13 @@ bool LBR::wrench_command_within_limits(const std::vector<double> &wrench_command
 
 bool LBR::torque_command_within_limits(const std::vector<double> &torque_command) {
   if (torque_command.size() != LBR::JOINT_DOF) {
-    printf("Torque command of size %lu received. Expected size %d.", torque_command.size(),
+    printf("Torque command of size %lu received. Expected size %d.\n", torque_command.size(),
            LBR::JOINT_DOF);
     return false;
   }
   for (uint8_t i = 0; i < LBR::JOINT_DOF; ++i) {
     if (std::abs(torque_command[i]) > torque_command_limit[i]) {
-      printf("Got torque command abs(%f) on joint %d. Limit is %f.", std::abs(torque_command[i]), i,
+      printf("Got torque command abs(%f) on joint %d. Limit is %f.\n", std::abs(torque_command[i]), i,
              torque_command_limit[i]);
       return false;
     }
