@@ -195,10 +195,12 @@ bool LBR::joint_position_command_within_limits(const std::vector<double> &joint_
   for (uint8_t i = 0; i < LBR::JOINT_DOF; ++i) {
     if (std::abs(joint_position_command[i] - state->measured_joint_position[i]) >
         joint_velocity_command_limit[i] * state->sample_time) {
-      printf("Got joint velocity command abs(%f) on joint %d. Limit is %f.\n",
+      printf("Got joint velocity command abs(%f) on joint %d. Limit is %f. Current position is %f, "
+             "desired position is %f.\n",
              std::abs(joint_position_command[i] - state->measured_joint_position[i]) /
                  state->sample_time,
-             i, joint_velocity_command_limit[i]);
+             i, joint_velocity_command_limit[i], state->measured_joint_position[i],
+             joint_position_command[i]);
       return false;
     }
   }
@@ -213,8 +215,8 @@ bool LBR::wrench_command_within_limits(const std::vector<double> &wrench_command
   }
   for (uint8_t i = 0; i < LBR::CARTESIAN_DOF; ++i) {
     if (std::abs(wrench_command[i]) > wrench_command_limit[i]) {
-      printf("Got wrench command abs(%f) on axis %d. Limit is %f.\n", std::abs(wrench_command[i]), i,
-             wrench_command_limit[i]);
+      printf("Got wrench command abs(%f) on axis %d. Limit is %f.\n", std::abs(wrench_command[i]),
+             i, wrench_command_limit[i]);
       return false;
     }
   }
@@ -229,8 +231,8 @@ bool LBR::torque_command_within_limits(const std::vector<double> &torque_command
   }
   for (uint8_t i = 0; i < LBR::JOINT_DOF; ++i) {
     if (std::abs(torque_command[i]) > torque_command_limit[i]) {
-      printf("Got torque command abs(%f) on joint %d. Limit is %f.\n", std::abs(torque_command[i]), i,
-             torque_command_limit[i]);
+      printf("Got torque command abs(%f) on joint %d. Limit is %f.\n", std::abs(torque_command[i]),
+             i, torque_command_limit[i]);
       return false;
     }
   }
