@@ -161,21 +161,21 @@ bool LBR::command_within_limits(const lbr_fri_msgs::msg::LBRCommand::SharedPtr l
     return true;
   case KUKA::FRI::EClientCommandMode::POSITION:
     if (!joint_position_command_within_limits(lbr_command->joint_position)) {
-      printf("Attempted to command invalid joint position.\n");
+      printf("Desired joint position command outside of velocity limits.\n");
       return false;
     }
     break;
   case KUKA::FRI::EClientCommandMode::WRENCH:
     if (!joint_position_command_within_limits(lbr_command->joint_position) ||
         !wrench_command_within_limits(lbr_command->wrench)) {
-      printf("Attempted to command invalid joint position and or wrench.\n");
+      printf("Desired joint position command and or wrench command outside limits.\n");
       return false;
     }
     break;
   case KUKA::FRI::EClientCommandMode::TORQUE:
     if (!joint_position_command_within_limits(lbr_command->joint_position) ||
         !torque_command_within_limits(lbr_command->torque)) {
-      printf("Attempted to command invalid joint position and or torques.\n");
+      printf("Desired joint position command and or torque command outside limits.\n");
       return false;
     }
     break;
