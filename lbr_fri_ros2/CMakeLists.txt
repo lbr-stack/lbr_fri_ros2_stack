@@ -36,6 +36,7 @@ ament_export_targets(${PROJECT_NAME}_export HAS_LIBRARY_TARGET)
 ament_export_dependencies(
   rclcpp
   realtime_tools
+  std_srvs
   lbr_fri_msgs
   fri
 )
