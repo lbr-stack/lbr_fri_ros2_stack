@@ -16,10 +16,6 @@ LBRAppNode::LBRAppNode(const std::string &node_name, const int &port_id,
   declare_parameter("wrench_command_limit", std::vector<double>(LBR::CARTESIAN_DOF, 0.));
   declare_parameter("torque_command_limit", std::vector<double>(LBR::JOINT_DOF, 0.));
 
-  joint_velocity_command_limit_ = get_parameter("joint_velocity_command_limit").as_double_array();
-  wrench_command_limit_ = get_parameter("wrench_command_limit").as_double_array();
-  torque_command_limit_ = get_parameter("torque_command_limit").as_double_array();
-
   app_connect_srv_ = create_service<lbr_fri_msgs::srv::AppConnect>(
       "/lbr_app/connect",
       std::bind(&LBRAppNode::app_connect_cb_, this, std::placeholders::_1, std::placeholders::_2),
@@ -44,6 +40,10 @@ LBRAppNode::LBRAppNode(const std::string &node_name, const int &port_id,
           lbr_state_pub_);
 
   lbr_ = std::make_shared<LBR>();
+  lbr_->joint_velocity_command_limit = get_parameter("joint_velocity_command_limit").as_double_array();
+  lbr_->wrench_command_limit = get_parameter("wrench_command_limit").as_double_array();
+  lbr_->torque_command_limit = get_parameter("torque_command_limit").as_double_array();
+
   lbr_client_ = std::make_shared<LBRClient>(lbr_);
   connection_ = std::make_unique<KUKA::FRI::UdpConnection>();
   app_ = std::make_unique<KUKA::FRI::ClientApplication>(*connection_, *lbr_client_);
@@ -103,9 +103,9 @@ bool LBRAppNode::connect_(const int &port_id, const char *const remote_host) {
         bool success = true;
         while (success && connected_ && rclcpp::ok()) {
           try {
-            auto lbr_command = lbr_command_rt_buf_->readFromRT();
-            if (valid_lbr_command_(lbr_command)) {
-              lbr_->command = *lbr_command;
+            auto lbr_command = *lbr_command_rt_buf_->readFromRT();
+            if (lbr_->command_within_limits(lbr_command)) {
+              lbr_->command = lbr_command;
             }
             success = app_->step();
             if (lbr_state_rt_pub_->trylock()) {
@@ -154,85 +154,5 @@ bool LBRAppNode::disconnect_() {
   }
   app_step_thread_.release();
   return !connected_;
-}
-
-bool LBRAppNode::valid_lbr_command_(
-    const lbr_fri_msgs::msg::LBRCommand::SharedPtr *const lbr_command) {
-  if (!lbr_command || !(*lbr_command)) {
-    return false;
-  }
-
-  switch (lbr_->state->client_command_mode) {
-  case KUKA::FRI::EClientCommandMode::NO_COMMAND_MODE: {
-    return true;
-  }
-  case KUKA::FRI::EClientCommandMode::POSITION: {
-    return valid_joint_position_command_((*lbr_command)->joint_position);
-  }
-  case KUKA::FRI::EClientCommandMode::WRENCH: {
-    return valid_joint_position_command_((*lbr_command)->joint_position) &&
-           valid_wrench_command_((*lbr_command)->wrench);
-  }
-  case KUKA::FRI::EClientCommandMode::TORQUE: {
-    return valid_joint_position_command_((*lbr_command)->joint_position) &&
-           valid_torque_command_((*lbr_command)->torque);
-  }
-  default: {
-    RCLCPP_ERROR(get_logger(), "Unknown EClientCommandMode provided.");
-    break;
-  }
-  }
-  return false;
-}
-
-bool LBRAppNode::valid_joint_position_command_(const std::vector<double> &joint_position_command) {
-  if (joint_position_command.size() != LBR::JOINT_DOF) {
-    RCLCPP_WARN(get_logger(), "Joint position command of size %lu received. Expected size %d.",
-                joint_position_command.size(), LBR::JOINT_DOF);
-    return false;
-  }
-  for (uint8_t i = 0; i < LBR::JOINT_DOF; ++i) {
-    if (std::abs(joint_position_command[i] - lbr_->state->measured_joint_position[i]) >
-        joint_velocity_command_limit_[i] * lbr_->state->sample_time) {
-      RCLCPP_WARN(get_logger(), "Got joint velocity command abs(%f) on joint %d. Limit is %f.",
-                  std::abs(joint_position_command[i] - lbr_->state->measured_joint_position[i]) /
-                      lbr_->state->sample_time,
-                  i, joint_velocity_command_limit_[i]);
-      return false;
-    }
-  }
-  return true;
-}
-
-bool LBRAppNode::valid_wrench_command_(const std::vector<double> &wrench_command) {
-  if (wrench_command.size() != LBR::CARTESIAN_DOF) {
-    RCLCPP_WARN(get_logger(), "Wrench command of size %lu received. Expected size %d.",
-                wrench_command.size(), LBR::CARTESIAN_DOF);
-    return false;
-  }
-  for (uint8_t i = 0; i < LBR::CARTESIAN_DOF; ++i) {
-    if (std::abs(wrench_command[i]) > wrench_command_limit_[i]) {
-      RCLCPP_WARN(get_logger(), "Got wrench command abs(%f) on axis %d. Limit is %f.",
-                  std::abs(wrench_command[i]), i, wrench_command_limit_[i]);
-      return false;
-    }
-  }
-  return true;
-}
-
-bool LBRAppNode::valid_torque_command_(const std::vector<double> &torque_command) {
-  if (torque_command.size() != LBR::JOINT_DOF) {
-    RCLCPP_WARN(get_logger(), "Torque command of size %lu received. Expected size %d.",
-                torque_command.size(), LBR::JOINT_DOF);
-    return false;
-  }
-  for (uint8_t i = 0; i < LBR::JOINT_DOF; ++i) {
-    if (std::abs(torque_command[i]) > torque_command_limit_[i]) {
-      RCLCPP_WARN(get_logger(), "Got torque command abs(%f) on joint %d. Limit is %f.",
-                  std::abs(torque_command[i]), i, torque_command_limit_[i]);
-      return false;
-    }
-  }
-  return true;
 }
 } // end of namespace lbr_fri_ros2

@@ -44,82 +44,6 @@ bool LBRClient::reset_lbr_command_() {
   return true;
 }
 
-bool LBRClient::valid_lbr_command_() {
-  if (!lbr_->command) {
-    return false;
-  }
-
-  switch (robotState().getClientCommandMode()) {
-  case KUKA::FRI::EClientCommandMode::POSITION:
-    if (!valid_joint_position_command_()) {
-      printf("Attempted to command invalid joint position.\n");
-      return false;
-    }
-    break;
-  case KUKA::FRI::EClientCommandMode::WRENCH:
-    if (!valid_joint_position_command_() || !valid_wrench_command_()) {
-      printf("Attempted to command invalid joint position and or wrench.\n");
-      return false;
-    }
-    break;
-  case KUKA::FRI::EClientCommandMode::TORQUE:
-    if (!valid_joint_position_command_() || !valid_torque_command_()) {
-      printf("Attempted to command invalid joint position and or torques.\n");
-      return false;
-    }
-    break;
-  default:
-    printf("Unknown EClientCommandMode provided.\n");
-    return false;
-  }
-  return true;
-}
-
-bool LBRClient::valid_joint_position_command_() {
-  if (lbr_->command->joint_position.size() != LBR::JOINT_DOF) {
-    printf("Received joint position command of size %lu. Expected %d.\n",
-           lbr_->command->joint_position.size(), LBR::JOINT_DOF);
-    return false;
-  }
-  for (std::size_t i = 0; i < LBR::JOINT_DOF; ++i) {
-    if (std::isnan(lbr_->command->joint_position[i])) {
-      printf("Received nan joint position command on joint %lu.\n", i);
-      return false;
-    }
-  }
-  return true;
-}
-
-bool LBRClient::valid_wrench_command_() {
-  if (lbr_->command->wrench.size() != LBR::CARTESIAN_DOF) {
-    printf("Received wrench command of size %lu. Expected %d.\n", lbr_->command->wrench.size(),
-           LBR::CARTESIAN_DOF);
-    return false;
-  }
-  for (std::size_t i = 0; i < LBR::CARTESIAN_DOF; ++i) {
-    if (std::isnan(lbr_->command->wrench[i])) {
-      printf("Received nan wrench command on axis %lu.\n", i);
-      return false;
-    }
-  }
-  return true;
-}
-
-bool LBRClient::valid_torque_command_() {
-  if (lbr_->command->torque.size() != LBR::JOINT_DOF) {
-    printf("Received torque command of size %lu. Expected %d.\n", lbr_->command->torque.size(),
-           LBR::JOINT_DOF);
-    return false;
-  }
-  for (std::size_t i = 0; i < LBR::JOINT_DOF; ++i) {
-    if (std::isnan(lbr_->command->torque[i])) {
-      printf("Received nan torque command on joint %lu.\n", i);
-      return false;
-    }
-  }
-  return true;
-}
-
 bool LBRClient::robot_state_to_lbr_state_() {
   try {
     lbr_->state->client_command_mode = robotState().getClientCommandMode();
@@ -161,7 +85,7 @@ bool LBRClient::robot_state_to_lbr_state_() {
 
 bool LBRClient::lbr_command_to_robot_command_() {
   try {
-    if (valid_lbr_command_()) {
+    if (lbr_->valid_command()) {
       switch (robotState().getClientCommandMode()) {
       case KUKA::FRI::EClientCommandMode::NO_COMMAND_MODE:
         printf("Attempted to command when EClientCommandMode::NO_COMMAND_MODE provided.\n");

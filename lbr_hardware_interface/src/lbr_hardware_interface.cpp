@@ -213,9 +213,11 @@ hardware_interface::return_type LBRHardwareInterface::write(const rclcpp::Time &
                                                             const rclcpp::Duration & /*period*/) {
   lbr_->command->joint_position.assign(hw_position_command_.begin(), hw_position_command_.end());
   lbr_->command->torque.assign(hw_effort_command_.begin(), hw_effort_command_.end());
-  if (rt_lbr_command_pub_->trylock()) {
-    rt_lbr_command_pub_->msg_ = *lbr_->command;
-    rt_lbr_command_pub_->unlockAndPublish();
+  if (lbr_->valid_command()) {
+    if (rt_lbr_command_pub_->trylock()) {
+      rt_lbr_command_pub_->msg_ = *lbr_->command;
+      rt_lbr_command_pub_->unlockAndPublish();
+    }
   }
   return hardware_interface::return_type::OK;
 }
@@ -290,8 +292,13 @@ bool LBRHardwareInterface::wait_for_service_(
 }
 
 bool LBRHardwareInterface::init_lbr_() {
-  lbr_ = std::make_unique<lbr_fri_ros2::LBR>();
-  return lbr_->init_lbr_fri_msgs();
+  try {
+    lbr_ = std::make_unique<lbr_fri_ros2::LBR>();
+  } catch (const std::exception &e) {
+    RCLCPP_ERROR(node_->get_logger(), "Failed to initialize LBR.\n%s.", e.what());
+    return false;
+  }
+  return true;
 }
 
 bool LBRHardwareInterface::init_command_interfaces_() {

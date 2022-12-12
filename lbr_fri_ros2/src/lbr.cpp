@@ -2,22 +2,25 @@
 
 namespace lbr_fri_ros2 {
 LBR::LBR() {
-  if (!init_lbr_fri_msgs()) {
+  if (!init_fri_msgs()) {
     throw std::runtime_error("Failed to initialize lbr_fri_msgs.");
   }
 }
 
-bool LBR::init_lbr_fri_msgs() {
-  if (!init_lbr_command()) {
+bool LBR::init_fri_msgs() {
+  if (!init_command()) {
     return false;
   }
-  if (!init_lbr_state()) {
+  if (!init_state()) {
+    return false;
+  }
+  if (!init_limits()) {
     return false;
   }
   return true;
 }
 
-bool LBR::init_lbr_command() {
+bool LBR::init_command() {
   try {
     command = std::make_shared<lbr_fri_msgs::msg::LBRCommand>();
     command->joint_position.resize(JOINT_DOF, std::numeric_limits<double>::quiet_NaN());
@@ -30,7 +33,7 @@ bool LBR::init_lbr_command() {
   return true;
 }
 
-bool LBR::init_lbr_state() {
+bool LBR::init_state() {
   try {
     state = std::make_shared<lbr_fri_msgs::msg::LBRState>();
     state->client_command_mode = std::numeric_limits<int8_t>::quiet_NaN();
@@ -54,6 +57,182 @@ bool LBR::init_lbr_state() {
   } catch (const std::exception &e) {
     printf("Failed to initialize state. %s.\n", e.what());
     return false;
+  }
+  return true;
+}
+
+bool LBR::init_limits() {
+  try {
+    joint_velocity_command_limit.resize(JOINT_DOF, 0.);
+    wrench_command_limit.resize(CARTESIAN_DOF, 0.);
+    torque_command_limit.resize(JOINT_DOF, 0.);
+  } catch (const std::exception &e) {
+    printf("Failed to initialize limits.\n%s.", e.what());
+    return false;
+  }
+  return true;
+}
+
+bool LBR::valid_command() {
+  if (!command) {
+    return false;
+  }
+
+  switch (state->client_command_mode) {
+  case KUKA::FRI::EClientCommandMode::NO_COMMAND_MODE:
+    return true;
+  case KUKA::FRI::EClientCommandMode::POSITION:
+    if (!valid_joint_position_command()) {
+      printf("Attempted to command invalid joint position.\n");
+      return false;
+    }
+    break;
+  case KUKA::FRI::EClientCommandMode::WRENCH:
+    if (!valid_joint_position_command() || !valid_wrench_command()) {
+      printf("Attempted to command invalid joint position and or wrench.\n");
+      return false;
+    }
+    break;
+  case KUKA::FRI::EClientCommandMode::TORQUE:
+    if (!valid_joint_position_command() || !valid_torque_command()) {
+      printf("Attempted to command invalid joint position and or torques.\n");
+      return false;
+    }
+    break;
+  default:
+    printf("Unknown EClientCommandMode provided.\n");
+    return false;
+  }
+  return true;
+}
+
+bool LBR::valid_joint_position_command() {
+  if (command->joint_position.size() != JOINT_DOF) {
+    printf("Received joint position command of size %lu. Expected %d.\n",
+           command->joint_position.size(), JOINT_DOF);
+    return false;
+  }
+  for (std::size_t i = 0; i < JOINT_DOF; ++i) {
+    if (std::isnan(command->joint_position[i])) {
+      printf("Received nan joint position command on joint %lu.\n", i);
+      return false;
+    }
+  }
+  return true;
+}
+
+bool LBR::valid_wrench_command() {
+  if (command->wrench.size() != CARTESIAN_DOF) {
+    printf("Received wrench command of size %lu. Expected %d.\n", command->wrench.size(),
+           CARTESIAN_DOF);
+    return false;
+  }
+  for (std::size_t i = 0; i < CARTESIAN_DOF; ++i) {
+    if (std::isnan(command->wrench[i])) {
+      printf("Received nan wrench command on axis %lu.\n", i);
+      return false;
+    }
+  }
+  return true;
+}
+
+bool LBR::valid_torque_command() {
+  if (command->torque.size() != JOINT_DOF) {
+    printf("Received torque command of size %lu. Expected %d.\n", command->torque.size(),
+           JOINT_DOF);
+    return false;
+  }
+  for (std::size_t i = 0; i < JOINT_DOF; ++i) {
+    if (std::isnan(command->torque[i])) {
+      printf("Received nan torque command on joint %lu.\n", i);
+      return false;
+    }
+  }
+  return true;
+}
+
+bool LBR::command_within_limits(const lbr_fri_msgs::msg::LBRCommand::SharedPtr lbr_command) {
+  if (!lbr_command) {
+    return false;
+  }
+
+  switch (state->client_command_mode) {
+  case KUKA::FRI::EClientCommandMode::NO_COMMAND_MODE:
+    return true;
+  case KUKA::FRI::EClientCommandMode::POSITION:
+    if (!joint_position_command_within_limits(lbr_command->joint_position)) {
+      printf("Attempted to command invalid joint position.\n");
+      return false;
+    }
+    break;
+  case KUKA::FRI::EClientCommandMode::WRENCH:
+    if (!joint_position_command_within_limits(lbr_command->joint_position) ||
+        !wrench_command_within_limits(lbr_command->wrench)) {
+      printf("Attempted to command invalid joint position and or wrench.\n");
+      return false;
+    }
+    break;
+  case KUKA::FRI::EClientCommandMode::TORQUE:
+    if (!joint_position_command_within_limits(lbr_command->joint_position) ||
+        !torque_command_within_limits(lbr_command->torque)) {
+      printf("Attempted to command invalid joint position and or torques.\n");
+      return false;
+    }
+    break;
+  default:
+    printf("Unknown EClientCommandMode provided.\n");
+    return false;
+  }
+  return true;
+}
+
+bool LBR::joint_position_command_within_limits(const std::vector<double> &joint_position_command) {
+  if (joint_position_command.size() != LBR::JOINT_DOF) {
+    printf("Joint position command of size %lu received. Expected size %d.",
+           joint_position_command.size(), LBR::JOINT_DOF);
+    return false;
+  }
+  for (uint8_t i = 0; i < LBR::JOINT_DOF; ++i) {
+    if (std::abs(joint_position_command[i] - state->measured_joint_position[i]) >
+        joint_velocity_command_limit[i] * state->sample_time) {
+      printf("Got joint velocity command abs(%f) on joint %d. Limit is %f.",
+             std::abs(joint_position_command[i] - state->measured_joint_position[i]) /
+                 state->sample_time,
+             i, joint_velocity_command_limit[i]);
+      return false;
+    }
+  }
+  return true;
+}
+
+bool LBR::wrench_command_within_limits(const std::vector<double> &wrench_command) {
+  if (wrench_command.size() != LBR::CARTESIAN_DOF) {
+    printf("Wrench command of size %lu received. Expected size %d.", wrench_command.size(),
+           LBR::CARTESIAN_DOF);
+    return false;
+  }
+  for (uint8_t i = 0; i < LBR::CARTESIAN_DOF; ++i) {
+    if (std::abs(wrench_command[i]) > wrench_command_limit[i]) {
+      printf("Got wrench command abs(%f) on axis %d. Limit is %f.", std::abs(wrench_command[i]), i,
+             wrench_command_limit[i]);
+      return false;
+    }
+  }
+  return true;
+}
+
+bool LBR::torque_command_within_limits(const std::vector<double> &torque_command) {
+  if (torque_command.size() != LBR::JOINT_DOF) {
+    printf("Torque command of size %lu received. Expected size %d.", torque_command.size(),
+           LBR::JOINT_DOF);
+    return false;
+  }
+  for (uint8_t i = 0; i < LBR::JOINT_DOF; ++i) {
+    if (std::abs(torque_command[i]) > torque_command_limit[i]) {
+      printf("Got torque command abs(%f) on joint %d. Limit is %f.", std::abs(torque_command[i]), i,
+             torque_command_limit[i]);
+      return false;
+    }
   }
   return true;
 }

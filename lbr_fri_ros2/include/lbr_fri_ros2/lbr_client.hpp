@@ -2,11 +2,8 @@
 #define LBR_FRI_ROS2__LBR_CLIENT_HPP_
 
 #include <algorithm>
-#include <cmath>
-#include <limits>
 #include <memory>
 #include <stdexcept>
-#include <vector>
 
 #include "fri/friLBRClient.h"
 #include "fri/friLBRState.h"
@@ -33,12 +30,6 @@ public:
 protected:
   // reset
   bool reset_lbr_command_();
-
-  // verify command
-  bool valid_lbr_command_();
-  bool valid_joint_position_command_();
-  bool valid_torque_command_();
-  bool valid_wrench_command_();
 
   // pass through from lbr_fri_msgs to robot
   bool robot_state_to_lbr_state_();
