@@ -166,10 +166,19 @@ bool LBR::valid_state() {
   }
   for (uint8_t i = 0; i < JOINT_DOF; ++i) {
     if (std::isnan(state->commanded_joint_position[i]) || std::isnan(state->commanded_torque[i]) ||
-        std::isnan(state->external_torque[i]) || std::isnan(state->ipo_joint_position[i]) ||
-        std::isnan(state->measured_joint_position[i]) || std::isnan(state->measured_torque[i])) {
+        std::isnan(state->external_torque[i]) || std::isnan(state->measured_joint_position[i]) ||
+        std::isnan(state->measured_torque[i])) {
       printf("Found nan for state in joint %d.\n", i);
       return false;
+    }
+  }
+  if (state->session_state == KUKA::FRI::COMMANDING_WAIT ||
+      state->session_state == KUKA::FRI::COMMANDING_ACTIVE) {
+    for (uint8_t i = 0; i < JOINT_DOF; ++i) {
+      if (std::isnan(state->ipo_joint_position[i])) {
+        printf("Found nan for interpolated joint position in joint %d.\n", i);
+        return false;
+      }
     }
   }
   if (std::isnan(state->client_command_mode) || std::isnan(state->connection_quality) ||
