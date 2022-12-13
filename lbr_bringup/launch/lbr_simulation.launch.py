@@ -7,15 +7,11 @@ from launch_ros.substitutions import FindPackageShare
 
 
 def generate_launch_description():
-
-    # Launch arguments
-    launch_args = []
-
-    launch_args.append(DeclareLaunchArgument(
+    robot_name_arg = DeclareLaunchArgument(
         name="robot_name",
         default_value="lbr",
         description="Set robot name."
-    ))
+    )
 
     # Launch Gazebo
     gazebo = IncludeLaunchDescription(
@@ -38,8 +34,8 @@ def generate_launch_description():
         output="screen"
     )
 
-    return LaunchDescription(
-        launch_args + [
-            gazebo,
-            spawn_entity
+    return LaunchDescription([
+        robot_name_arg,
+        gazebo,
+        spawn_entity
     ])
