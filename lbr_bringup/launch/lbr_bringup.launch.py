@@ -10,7 +10,6 @@ from launch_ros.actions import Node
 
 
 def launch_setup(context, *args, **kwargs):
-
     # Evaluate frequently used variables
     model = LaunchConfiguration("model").perform(context)
 
@@ -78,55 +77,50 @@ def launch_setup(context, *args, **kwargs):
 
 
 def generate_launch_description():
-
-    # Launch arguments
-    launch_args = []
-
-    launch_args.append(DeclareLaunchArgument(
+    model_arg = DeclareLaunchArgument(
         name="model",
         default_value="iiwa7",
         description="Desired LBR model. Use model:=iiwa7/iiwa14/med7/med14."
-    ))
+    )
 
-    launch_args.append(DeclareLaunchArgument(
+    robot_name_arg = DeclareLaunchArgument(
         name="robot_name",
         default_value="lbr",
         description="Set robot name."
-    ))
+    )
 
-    launch_args.append(DeclareLaunchArgument(
+    sim_arg = DeclareLaunchArgument(
         name="sim",
         default_value="true",
         description="Launch robot in simulation or on real setup."
-    ))
-
-    launch_args.append(
-        DeclareLaunchArgument(
-            name="controller_configurations_package",
-            default_value="lbr_bringup",
-            description="Package that contains controller configurations."
-        )
     )
 
-    launch_args.append(
-        DeclareLaunchArgument(
-            name="controller_configurations",
-            default_value="config/lbr_controllers.yml",
-            description=
-                "Relative path to controller configurations YAML file.\n"
-                "\tNote that the joints in the controllers must be named according to the robot_name."
-        )
+    controller_configurations_package_arg = DeclareLaunchArgument(
+        name="controller_configurations_package",
+        default_value="lbr_bringup",
+        description="Package that contains controller configurations."
     )
 
-    launch_args.append(
-        DeclareLaunchArgument(
-            name="controller",
-            default_value="position_trajectory_controller",
-            description="Robot controller."
-        )
+    controller_configurations_arg = DeclareLaunchArgument(
+        name="controller_configurations",
+        default_value="config/lbr_controllers.yml",
+        description=
+            "Relative path to controller configurations YAML file.\n"
+            "\tNote that the joints in the controllers must be named according to the robot_name."
     )
 
-    return LaunchDescription(
-        launch_args + [
+    controller_arg = DeclareLaunchArgument(
+        name="controller",
+        default_value="position_trajectory_controller",
+        description="Robot controller."
+    )
+
+    return LaunchDescription([
+        model_arg,
+        robot_name_arg,
+        sim_arg,
+        controller_configurations_package_arg,
+        controller_configurations_arg,
+        controller_arg,
         OpaqueFunction(function=launch_setup)
     ])
