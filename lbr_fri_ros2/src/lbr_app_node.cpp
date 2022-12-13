@@ -108,9 +108,11 @@ bool LBRAppNode::connect_(const int &port_id, const char *const remote_host) {
               lbr_->command = lbr_command;
             }
             success = app_->step();
-            if (lbr_state_rt_pub_->trylock()) {
-              lbr_state_rt_pub_->msg_ = *lbr_->state;
-              lbr_state_rt_pub_->unlockAndPublish();
+            if (lbr_->valid_state()) {
+              if (lbr_state_rt_pub_->trylock()) {
+                lbr_state_rt_pub_->msg_ = *lbr_->state;
+                lbr_state_rt_pub_->unlockAndPublish();
+              }
             }
           } catch (const std::exception &e) {
             RCLCPP_ERROR(get_logger(), e.what());

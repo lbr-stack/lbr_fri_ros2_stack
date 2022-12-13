@@ -30,6 +30,8 @@ struct LBR {
   bool valid_torque_command();
   bool valid_wrench_command();
 
+  bool valid_state();
+
   // limit checks
   bool command_within_limits(const lbr_fri_msgs::msg::LBRCommand::SharedPtr lbr_command);
   bool joint_position_command_within_limits(const std::vector<double> &lbr_command);

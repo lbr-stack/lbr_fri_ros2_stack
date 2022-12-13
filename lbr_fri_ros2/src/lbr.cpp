@@ -151,6 +151,39 @@ bool LBR::valid_torque_command() {
   return true;
 }
 
+bool LBR::valid_state() {
+  if (!state) {
+    printf("Found no state.\n");
+    return false;
+  }
+  if (state->commanded_joint_position.size() != JOINT_DOF ||
+      state->commanded_torque.size() != JOINT_DOF || state->external_torque.size() != JOINT_DOF ||
+      state->ipo_joint_position.size() != JOINT_DOF ||
+      state->measured_joint_position.size() != JOINT_DOF ||
+      state->measured_torque.size() != JOINT_DOF) {
+    printf("State of invalid size found.\n");
+    return false;
+  }
+  for (uint8_t i = 0; i < JOINT_DOF; ++i) {
+    if (std::isnan(state->commanded_joint_position[i]) || std::isnan(state->commanded_torque[i]) ||
+        std::isnan(state->external_torque[i]) || std::isnan(state->ipo_joint_position[i]) ||
+        std::isnan(state->measured_joint_position[i]) || std::isnan(state->measured_torque[i])) {
+      printf("Found nan for state in joint %d.\n", i);
+      return false;
+    }
+  }
+  if (std::isnan(state->client_command_mode) || std::isnan(state->connection_quality) ||
+      std::isnan(state->control_mode) || std::isnan(state->drive_state) ||
+      std::isnan(state->operation_mode) || std::isnan(state->overlay_type) ||
+      std::isnan(state->safety_state) || std::isnan(state->sample_time) ||
+      std::isnan(state->session_state) || std::isnan(state->time_stamp_nano_sec) ||
+      std::isnan(state->time_stamp_sec) || std::isnan(state->tracking_performance)) {
+    printf("Found nan in other state variables.\n");
+    return false;
+  }
+  return true;
+}
+
 bool LBR::command_within_limits(const lbr_fri_msgs::msg::LBRCommand::SharedPtr lbr_command) {
   if (!lbr_command) {
     return false;
