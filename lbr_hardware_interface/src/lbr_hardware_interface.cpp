@@ -179,32 +179,34 @@ hardware_interface::return_type LBRHardwareInterface::read(const rclcpp::Time & 
     return hardware_interface::return_type::ERROR;
   }
 
-  hw_sample_time_ = lbr_->state->sample_time;
-  hw_session_state_ = static_cast<double>(lbr_->state->session_state);
-  hw_connection_quality_ = static_cast<double>(lbr_->state->connection_quality);
-  hw_safety_state_ = static_cast<double>(lbr_->state->safety_state);
-  hw_operation_mode_ = static_cast<double>(lbr_->state->operation_mode);
-  hw_drive_state_ = static_cast<double>(lbr_->state->drive_state);
-  hw_client_command_mode_ = static_cast<double>(lbr_->state->client_command_mode);
-  hw_overlay_type_ = static_cast<double>(lbr_->state->overlay_type);
-  hw_control_mode_ = static_cast<double>(lbr_->state->control_mode);
+  if (lbr_->valid_state()) {
+    hw_sample_time_ = lbr_->state->sample_time;
+    hw_session_state_ = static_cast<double>(lbr_->state->session_state);
+    hw_connection_quality_ = static_cast<double>(lbr_->state->connection_quality);
+    hw_safety_state_ = static_cast<double>(lbr_->state->safety_state);
+    hw_operation_mode_ = static_cast<double>(lbr_->state->operation_mode);
+    hw_drive_state_ = static_cast<double>(lbr_->state->drive_state);
+    hw_client_command_mode_ = static_cast<double>(lbr_->state->client_command_mode);
+    hw_overlay_type_ = static_cast<double>(lbr_->state->overlay_type);
+    hw_control_mode_ = static_cast<double>(lbr_->state->control_mode);
 
-  hw_time_stamp_sec_ = static_cast<double>(lbr_->state->time_stamp_sec);
-  hw_time_stamp_nano_sec_ = static_cast<double>(lbr_->state->time_stamp_nano_sec);
+    hw_time_stamp_sec_ = static_cast<double>(lbr_->state->time_stamp_sec);
+    hw_time_stamp_nano_sec_ = static_cast<double>(lbr_->state->time_stamp_nano_sec);
 
-  hw_position_.assign(lbr_->state->measured_joint_position.begin(),
-                      lbr_->state->measured_joint_position.end());
-  hw_commanded_joint_position_.assign(lbr_->state->commanded_joint_position.begin(),
-                                      lbr_->state->commanded_joint_position.end());
-  hw_effort_.assign(lbr_->state->measured_torque.begin(), lbr_->state->measured_torque.end());
-  hw_commanded_torque_.assign(lbr_->state->commanded_torque.begin(),
-                              lbr_->state->commanded_torque.end());
-  hw_external_torque_.assign(lbr_->state->external_torque.begin(),
-                             lbr_->state->external_torque.end());
-  hw_ipo_joint_position_.assign(lbr_->state->ipo_joint_position.begin(),
-                                lbr_->state->ipo_joint_position.end());
+    hw_position_.assign(lbr_->state->measured_joint_position.begin(),
+                        lbr_->state->measured_joint_position.end());
+    hw_commanded_joint_position_.assign(lbr_->state->commanded_joint_position.begin(),
+                                        lbr_->state->commanded_joint_position.end());
+    hw_effort_.assign(lbr_->state->measured_torque.begin(), lbr_->state->measured_torque.end());
+    hw_commanded_torque_.assign(lbr_->state->commanded_torque.begin(),
+                                lbr_->state->commanded_torque.end());
+    hw_external_torque_.assign(lbr_->state->external_torque.begin(),
+                               lbr_->state->external_torque.end());
+    hw_ipo_joint_position_.assign(lbr_->state->ipo_joint_position.begin(),
+                                  lbr_->state->ipo_joint_position.end());
 
-  hw_tracking_performance_ = lbr_->state->tracking_performance;
+    hw_tracking_performance_ = lbr_->state->tracking_performance;
+  }
 
   return hardware_interface::return_type::OK;
 }
