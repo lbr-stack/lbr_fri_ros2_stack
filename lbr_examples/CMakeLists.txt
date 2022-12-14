@@ -4,7 +4,9 @@ project(lbr_examples)
 find_package(ament_cmake REQUIRED)
 
 install(
-    PROGRAMS scripts/lbr_sinusoidal_node.py
+    PROGRAMS
+        scripts/admittance_control_node.py
+        scripts/lbr_sinusoidal_node.py
     DESTINATION lib/${PROJECT_NAME}
 )
 

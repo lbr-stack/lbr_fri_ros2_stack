@@ -265,7 +265,7 @@
 
         <xacro:med_gazebo robot_name="${robot_name}"/>
         <!-- TODO: move modes to args, decouple urdf/gazebo/controls -->
-        <xacro:lbr_hardware_interface sim="${sim}" remote_host="INADDR_ANY" port="30200" robot_name="${robot_name}"/>
+        <xacro:lbr_hardware_interface sim="${sim}" remote_host="INADDR_ANY" port_id="30200" robot_name="${robot_name}"/>
 
     </xacro:macro>
 </robot>
