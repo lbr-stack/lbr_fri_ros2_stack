@@ -11,12 +11,10 @@ from launch_ros.actions import Node
 
 
 class LBRBringUp:
-    model_: str
     robot_name_: str
     sim: bool
 
     robot_description_: dict
-    safety_file_path_: str
     launch_description_: LaunchDescription
 
     lbr_spinner_node_: Node
@@ -26,15 +24,11 @@ class LBRBringUp:
     robot_state_publisher_: Node
     rviz2_node_: Node
 
-    def __init__(
-        self, model: str = "iiwa7", robot_name: str = "lbr", sim: bool = True
-    ) -> None:
-        self.model_ = model
+    def __init__(self, robot_name: str = "lbr", sim: bool = True) -> None:
         self.robot_name_ = robot_name
         self.sim_ = sim
 
         self.robot_description_ = None
-        self.safety_file_path_ = None
         self.launch_description_ = LaunchDescription()
 
         self.lbr_spinner_node_ = None
@@ -45,16 +39,16 @@ class LBRBringUp:
         self.rviz2_node_ = None
 
     @property
-    def model(self):
-        return self.model_
+    def robot_name(self):
+        return self.robot_name_
+
+    @property
+    def sim(self):
+        return self.sim_
 
     @property
     def robot_description(self):
         return self.robot_description_
-
-    @property
-    def safety_file_path(self):
-        return self.safety_file_path_
 
     @property
     def launch_description(self):
@@ -177,12 +171,16 @@ class LBRBringUp:
         self.launch_description_.add_action(rviz2_event_handler)
         return self
 
-    def add_robot_description(self):
+    def add_robot_description(
+        self,
+        package: str = "lbr_description",
+        xacro_file: str = "urdf/iiwa7/iiwa7.urdf.xacro"
+    ):
         self.robot_description_ = {
             "robot_description": xacro.process(
                 os.path.join(
-                    get_package_share_directory("lbr_description"),
-                    f"urdf/{self.model_}/{self.model_}.urdf.xacro",
+                    get_package_share_directory(package),
+                    xacro_file,
                 ),
                 mappings={"robot_name": self.robot_name_, "sim": str(self.sim_)},
             )
@@ -198,16 +196,11 @@ class LBRBringUp:
     def add_lbr_spinner(
         self,
         package: str = "lbr_fri_ros2",
-        safety_file: str = "config/lbr_safety_limits.yml",
-        executable: str = "lbr_spinner",
+        executable: str = "lbr_spinner"
     ):
-        self.safety_file_path_ = os.path.join(
-            get_package_share_directory(package), safety_file
-        )
         self.lbr_spinner_node_ = Node(
             package=package,
             executable=executable,
-            parameters=[self.safety_file_path_],
             emulate_tty=True,
             output="screen",
         )

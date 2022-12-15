@@ -18,10 +18,14 @@ def configure_lbr(context):
     controller_file = LaunchConfiguration("controller_file").perform(context)
     controller = LaunchConfiguration("controller").perform(context)
 
-    lbr_bringup = LBRBringUp(model=model, sim=sim)
-    lbr_bringup.add_robot_description().add_robot().add_controller_manager(
+    lbr_bringup = LBRBringUp(sim=sim)
+    lbr_bringup.add_robot_description(
+        package="lbr_description", xacro_file=f"urdf/{model}/{model}.urdf.xacro"
+    ).add_robot().add_controller_manager(
         package=controller_package, controller_configurations_file=controller_file
-    ).add_controller("joint_state_broadcaster").add_controller(
+    ).add_controller(
+        "joint_state_broadcaster"
+    ).add_controller(
         controller
     ).add_robot_state_publisher().add_rviz2()
 
@@ -32,13 +36,15 @@ def generate_launch_description():
     model_arg = DeclareLaunchArgument(
         name="model",
         default_value="iiwa7",
-        description="The LBR model in use. One of [iiwa7, iiwa14, med7, med14]",
+        description="The LBR model in use.",
+        choices=["iiwa7", "iiwa14", "med7", "med14"],
     )
 
     sim_arg = DeclareLaunchArgument(
         name="sim",
         default_value="true",
-        description="One of [True, true, False, false].",
+        description="Whether to launch simulation or real robot.",
+        choices=["True", "true", "False", "false"],
     )
 
     controller_package_arg = DeclareLaunchArgument(
