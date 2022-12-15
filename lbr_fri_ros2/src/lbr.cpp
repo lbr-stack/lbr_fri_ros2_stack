@@ -88,13 +88,13 @@ bool LBR::valid_command() {
     }
     break;
   case KUKA::FRI::EClientCommandMode::WRENCH:
-    if (!valid_joint_position_command() || !valid_wrench_command()) {
+    if (!valid_wrench_command()) {
       printf("Attempted to command invalid joint position and or wrench.\n");
       return false;
     }
     break;
   case KUKA::FRI::EClientCommandMode::TORQUE:
-    if (!valid_joint_position_command() || !valid_torque_command()) {
+    if (!valid_torque_command()) {
       printf("Attempted to command invalid joint position and or torques.\n");
       return false;
     }
@@ -208,15 +208,13 @@ bool LBR::command_within_limits(const lbr_fri_msgs::msg::LBRCommand::SharedPtr l
     }
     break;
   case KUKA::FRI::EClientCommandMode::WRENCH:
-    if (!joint_position_command_within_limits(lbr_command->joint_position) ||
-        !wrench_command_within_limits(lbr_command->wrench)) {
+    if (!wrench_command_within_limits(lbr_command->wrench)) {
       printf("Desired joint position command and or wrench command outside limits.\n");
       return false;
     }
     break;
   case KUKA::FRI::EClientCommandMode::TORQUE:
-    if (!joint_position_command_within_limits(lbr_command->joint_position) ||
-        !torque_command_within_limits(lbr_command->torque)) {
+    if (!torque_command_within_limits(lbr_command->torque)) {
       printf("Desired joint position command and or torque command outside limits.\n");
       return false;
     }
