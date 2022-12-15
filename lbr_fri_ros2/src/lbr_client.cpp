@@ -21,6 +21,9 @@ void LBRClient::waitForCommand() {
   if (!robot_state_to_lbr_state_()) {
     printf("Failed to convert robot state to lbr state.\n");
   }
+  if (!lbr_command_to_robot_command_()) {
+    printf("Failed to convert lbr command to robot command.\n");
+  }
 }
 
 void LBRClient::command() {
