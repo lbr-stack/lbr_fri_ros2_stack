@@ -15,7 +15,6 @@ class LBRBringUp:
     sim: bool
 
     robot_description_: dict
-    safety_file_path_: str
     launch_description_: LaunchDescription
 
     lbr_spinner_node_: Node
@@ -30,7 +29,6 @@ class LBRBringUp:
         self.sim_ = sim
 
         self.robot_description_ = None
-        self.safety_file_path_ = None
         self.launch_description_ = LaunchDescription()
 
         self.lbr_spinner_node_ = None
@@ -51,10 +49,6 @@ class LBRBringUp:
     @property
     def robot_description(self):
         return self.robot_description_
-
-    @property
-    def safety_file_path(self):
-        return self.safety_file_path_
 
     @property
     def launch_description(self):
@@ -202,16 +196,11 @@ class LBRBringUp:
     def add_lbr_spinner(
         self,
         package: str = "lbr_fri_ros2",
-        safety_file: str = "config/lbr_safety_limits.yml",
-        executable: str = "lbr_spinner",
+        executable: str = "lbr_spinner"
     ):
-        self.safety_file_path_ = os.path.join(
-            get_package_share_directory(package), safety_file
-        )
         self.lbr_spinner_node_ = Node(
             package=package,
             executable=executable,
-            parameters=[self.safety_file_path_],
             emulate_tty=True,
             output="screen",
         )

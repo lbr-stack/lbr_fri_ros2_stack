@@ -1,7 +1,7 @@
 #!/usr/bin/python3
-from typing import Union
 import math
 from copy import deepcopy
+from typing import Union
 
 import rclpy
 from rclpy import qos
@@ -19,13 +19,13 @@ class LBRSinusoidalNode(Node):
     _t0: float
     _initial_state: Union[JointState, LBRState]
 
-    def __init__(self, node_name: str="lbr_read_write_node"):
+    def __init__(self, node_name: str = "lbr_sinusoidal_node"):
         super().__init__(node_name)
 
         # declare and get parameters
         self.declare_parameter("sim", False)
-        self.declare_parameter("amplitude", math.pi/4.)
-        self.declare_parameter("period", 10.)
+        self.declare_parameter("amplitude", math.pi / 4.0)
+        self.declare_parameter("period", 10.0)
 
         self._sim = bool(self.get_parameter("sim").value)
         self._amplitude = float(self.get_parameter("amplitude").value)
@@ -40,19 +40,26 @@ class LBRSinusoidalNode(Node):
             # using the /joint_states might cause unintended behavior on the robot
             # use the /lbr_state instead
             self._joint_states_subscriber = self.create_subscription(
-                JointState, "/joint_states", self._joint_states_callback, qos.qos_profile_system_default
+                JointState,
+                "/joint_states",
+                self._joint_states_callback,
+                qos.qos_profile_system_default,
             )
             self._position_command_publisher = self.create_publisher(
-                Float64MultiArray, "/forward_position_controller/commands", qos.qos_profile_system_default
+                Float64MultiArray,
+                "/forward_position_controller/commands",
+                qos.qos_profile_system_default,
             )
         else:
             self._lbr_state_subscriber = self.create_subscription(
-                LBRState, "/lbr_state", self._lbr_state_callback, qos.qos_profile_system_default
+                LBRState,
+                "/lbr_state",
+                self._lbr_state_callback,
+                qos.qos_profile_system_default,
             )
             self._lbr_command_publisher = self.create_publisher(
                 LBRCommand, "/lbr_command", qos.qos_profile_system_default
             )
-
 
     def _joint_states_callback(self, msg: JointState) -> None:
         # get the initial joint configuration and time
@@ -63,9 +70,9 @@ class LBRSinusoidalNode(Node):
         command = Float64MultiArray()
         command.data = deepcopy(self._initial_state.position)
 
-        omega = 2*math.pi/self._period
-        t = (float(self.get_clock().now().nanoseconds) - self._t0)/1.e9
-        command.data[6] += self._amplitude*math.sin(omega*t)
+        omega = 2 * math.pi / self._period
+        t = (float(self.get_clock().now().nanoseconds) - self._t0) / 1.0e9
+        command.data[6] += self._amplitude * math.sin(omega * t)
         self._position_command_publisher.publish(command)
 
     def _lbr_state_callback(self, msg: LBRState) -> None:
@@ -77,9 +84,10 @@ class LBRSinusoidalNode(Node):
         command = LBRCommand()
         command.joint_position = deepcopy(self._initial_state.measured_joint_position)
 
-        omega = 2*math.pi/self._period
-        t = (float(self.get_clock().now().nanoseconds) - self._t0)/1.e9
-        command.joint_position[6] += self._amplitude*math.sin(omega*t)
+        omega = 2 * math.pi / self._period
+        t = (float(self.get_clock().now().nanoseconds) - self._t0) / 1.0e9
+        command.joint_position[6] += self._amplitude * math.sin(omega * t)
+
         self._lbr_command_publisher.publish(command)
 
 
