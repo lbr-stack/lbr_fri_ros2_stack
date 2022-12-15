@@ -67,7 +67,7 @@ class AdmittanceControlNode(Node):
         self.declare_parameter("end_link_name", "lbr_link_ee")
         self.declare_parameter("root_link_name", "lbr_link_0")
         self.declare_parameter("command_rate", 100.0)
-        self.declare_parameter("buffer_len", 10)
+        self.declare_parameter("buffer_len", 20)
 
         self.model_ = str(self.get_parameter("model").value)
         self.end_link_name_ = str(self.get_parameter("end_link_name").value)
