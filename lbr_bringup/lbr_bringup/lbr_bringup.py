@@ -11,7 +11,6 @@ from launch_ros.actions import Node
 
 
 class LBRBringUp:
-    model_: str
     robot_name_: str
     sim: bool
 
@@ -26,10 +25,7 @@ class LBRBringUp:
     robot_state_publisher_: Node
     rviz2_node_: Node
 
-    def __init__(
-        self, model: str = "iiwa7", robot_name: str = "lbr", sim: bool = True
-    ) -> None:
-        self.model_ = model
+    def __init__(self, robot_name: str = "lbr", sim: bool = True) -> None:
         self.robot_name_ = robot_name
         self.sim_ = sim
 
@@ -45,8 +41,12 @@ class LBRBringUp:
         self.rviz2_node_ = None
 
     @property
-    def model(self):
-        return self.model_
+    def robot_name(self):
+        return self.robot_name_
+
+    @property
+    def sim(self):
+        return self.sim_
 
     @property
     def robot_description(self):
@@ -177,12 +177,16 @@ class LBRBringUp:
         self.launch_description_.add_action(rviz2_event_handler)
         return self
 
-    def add_robot_description(self):
+    def add_robot_description(
+        self,
+        package: str = "lbr_description",
+        xacro_file: str = "urdf/iiwa7/iiwa7.urdf.xacro"
+    ):
         self.robot_description_ = {
             "robot_description": xacro.process(
                 os.path.join(
-                    get_package_share_directory("lbr_description"),
-                    f"urdf/{self.model_}/{self.model_}.urdf.xacro",
+                    get_package_share_directory(package),
+                    xacro_file,
                 ),
                 mappings={"robot_name": self.robot_name_, "sim": str(self.sim_)},
             )
