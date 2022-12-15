@@ -4,7 +4,7 @@ on:
   push:
   pull_request:
     branches:
-      - galactic
+      - rolling
 
 # ros 2 ci: https://github.com/marketplace/actions/ros-2-ci-action
 # doc: https://ubuntu.com/blog/ros-2-ci-with-github-actions
@@ -15,21 +15,9 @@ jobs:
       matrix:
         os: [ubuntu-latest]
     steps:
-      - name: Setup ROS environment
-        uses: ros-tooling/setup-ros@0.2.2
-        with:
-          required-ros-distributions: galactic
-
-      - name: ROS 2 CI Action
-        uses: ros-tooling/action-ros-ci@0.2.4
+      - uses: ros-tooling/setup-ros@v0.3
+      - uses: ros-tooling/action-ros-ci@v0.2
         with:
           package-name: lbr_fri_ros2_stack
-          target-ros2-distro: galactic
-          vcs-repo-file-url: https://raw.githubusercontent.com/KCL-BMEIS/lbr_fri_ros2_stack/galactic/lbr_fri_ros2_stack/repos.yml
-
-      - name: Upload Logs
-        uses: actions/upload-artifact@v2.3.1
-        with:
-          name: colcon-logs
-          path: ros_ws/log
-        if: always()
+          target-ros2-distro: rolling
+          vcs-repo-file-url: https://raw.githubusercontent.com/KCL-BMEIS/lbr_fri_ros2_stack/rolling/lbr_fri_ros2_stack/repos.yml

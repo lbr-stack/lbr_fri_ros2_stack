@@ -20,7 +20,7 @@ def generate_launch_description():
 
     period_launch_arg = DeclareLaunchArgument(
         name="period",
-        default_value=f"{10.}",
+        default_value=f"{20.}",
         description="Rotation period in seconds."
     )
 
