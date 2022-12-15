@@ -478,12 +478,12 @@ bool LBRHardwareInterface::spawn_clients_() {
   }
 
   list_ctrl_clt_ = node_->create_client<controller_manager_msgs::srv::ListControllers>(
-      "/controller_manager/list_controllers", rmw_qos_profile_system_default);
+      "/controller_manager/list_controllers", rclcpp::SystemDefaultsQoS());
   switch_ctrl_clt_ = node_->create_client<controller_manager_msgs::srv::SwitchController>(
-      "/controller_manager/switch_controller", rmw_qos_profile_system_default);
+      "/controller_manager/switch_controller", rclcpp::SystemDefaultsQoS());
 
   app_connect_clt_ = node_->create_client<lbr_fri_msgs::srv::AppConnect>(
-      "/lbr_app/connect", rmw_qos_profile_system_default);
+      "/lbr_app/connect", rclcpp::SystemDefaultsQoS());
   if (!wait_for_service_<lbr_fri_msgs::srv::AppConnect>(app_connect_clt_)) {
     RCLCPP_ERROR(node_->get_logger(), "Failed.");
     return false;
@@ -491,7 +491,7 @@ bool LBRHardwareInterface::spawn_clients_() {
   RCLCPP_INFO(node_->get_logger(), "Done.");
 
   app_disconnect_clt_ = node_->create_client<lbr_fri_msgs::srv::AppDisconnect>(
-      "/lbr_app/disconnect", rmw_qos_profile_system_default);
+      "/lbr_app/disconnect", rclcpp::SystemDefaultsQoS());
   if (!wait_for_service_<lbr_fri_msgs::srv::AppDisconnect>(app_disconnect_clt_)) {
     RCLCPP_ERROR(node_->get_logger(), "Failed.");
     return false;

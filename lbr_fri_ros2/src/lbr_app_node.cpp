@@ -19,13 +19,13 @@ LBRAppNode::LBRAppNode(const std::string &node_name, const int &port_id,
   app_connect_srv_ = create_service<lbr_fri_msgs::srv::AppConnect>(
       "/lbr_app/connect",
       std::bind(&LBRAppNode::app_connect_cb_, this, std::placeholders::_1, std::placeholders::_2),
-      rmw_qos_profile_system_default);
+      rclcpp::SystemDefaultsQoS());
 
   app_disconnect_srv_ = create_service<lbr_fri_msgs::srv::AppDisconnect>(
       "/lbr_app/disconnect",
       std::bind(&LBRAppNode::app_disconnect_cb_, this, std::placeholders::_1,
                 std::placeholders::_2),
-      rmw_qos_profile_system_default);
+      rclcpp::SystemDefaultsQoS());
 
   lbr_command_rt_buf_ =
       std::make_shared<realtime_tools::RealtimeBuffer<lbr_fri_msgs::msg::LBRCommand::SharedPtr>>(
