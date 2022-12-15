@@ -88,7 +88,7 @@ bool LBRClient::robot_state_to_lbr_state_() {
 
 bool LBRClient::lbr_command_to_robot_command_() {
   try {
-    if (lbr_->valid_command()) {
+    if (lbr_->valid_command(lbr_->command)) {
       switch (robotState().getClientCommandMode()) {
       case KUKA::FRI::EClientCommandMode::NO_COMMAND_MODE:
         printf("Attempted to command when EClientCommandMode::NO_COMMAND_MODE provided.\n");

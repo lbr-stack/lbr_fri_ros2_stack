@@ -12,10 +12,6 @@ LBRAppNode::LBRAppNode(const std::string &node_name, const int &port_id,
 
   connected_ = false;
 
-  declare_parameter("joint_velocity_command_limit", std::vector<double>(LBR::JOINT_DOF, 0.));
-  declare_parameter("wrench_command_limit", std::vector<double>(LBR::CARTESIAN_DOF, 0.));
-  declare_parameter("torque_command_limit", std::vector<double>(LBR::JOINT_DOF, 0.));
-
   app_connect_srv_ = create_service<lbr_fri_msgs::srv::AppConnect>(
       "/lbr_app/connect",
       std::bind(&LBRAppNode::app_connect_cb_, this, std::placeholders::_1, std::placeholders::_2),
@@ -40,10 +36,6 @@ LBRAppNode::LBRAppNode(const std::string &node_name, const int &port_id,
           lbr_state_pub_);
 
   lbr_ = std::make_shared<LBR>();
-  lbr_->joint_velocity_command_limit = get_parameter("joint_velocity_command_limit").as_double_array();
-  lbr_->wrench_command_limit = get_parameter("wrench_command_limit").as_double_array();
-  lbr_->torque_command_limit = get_parameter("torque_command_limit").as_double_array();
-
   lbr_client_ = std::make_shared<LBRClient>(lbr_);
   connection_ = std::make_unique<KUKA::FRI::UdpConnection>();
   app_ = std::make_unique<KUKA::FRI::ClientApplication>(*connection_, *lbr_client_);
@@ -104,7 +96,7 @@ bool LBRAppNode::connect_(const int &port_id, const char *const remote_host) {
         while (success && connected_ && rclcpp::ok()) {
           try {
             auto lbr_command = *lbr_command_rt_buf_->readFromRT();
-            if (lbr_->command_within_limits(lbr_command)) {
+            if (lbr_->valid_command(lbr_command)) {
               lbr_->command = lbr_command;
             }
             success = app_->step();

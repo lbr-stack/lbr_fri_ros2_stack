@@ -215,7 +215,7 @@ hardware_interface::return_type LBRHardwareInterface::write(const rclcpp::Time &
                                                             const rclcpp::Duration & /*period*/) {
   lbr_->command->joint_position.assign(hw_position_command_.begin(), hw_position_command_.end());
   lbr_->command->torque.assign(hw_effort_command_.begin(), hw_effort_command_.end());
-  if (lbr_->valid_command()) {
+  if (lbr_->valid_command(lbr_->command)) {
     if (rt_lbr_command_pub_->trylock()) {
       rt_lbr_command_pub_->msg_ = *lbr_->command;
       rt_lbr_command_pub_->unlockAndPublish();
