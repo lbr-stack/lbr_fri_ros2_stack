@@ -1,0 +1,10 @@
+# Default initial positions for med7's ros2_control fake system
+
+initial_positions:
+  lbr_joint_0: 0
+  lbr_joint_1: 0
+  lbr_joint_2: 0
+  lbr_joint_3: 0
+  lbr_joint_4: 0
+  lbr_joint_5: 0
+  lbr_joint_6: 0

@@ -1,12 +1,13 @@
 import os
-from typing import Dict
+from pathlib import Path
+from typing import Dict, List
 
-import xacro
 from ament_index_python import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import IncludeLaunchDescription, RegisterEventHandler
 from launch.event_handlers import OnProcessExit, OnProcessStart
 from launch.launch_description_sources import PythonLaunchDescriptionSource
+from launch_param_builder import load_xacro
 from launch_ros.actions import Node
 
 
@@ -15,7 +16,6 @@ class LBRBringUp:
     sim: bool
 
     robot_description_: dict
-    safety_file_path_: str
     launch_description_: LaunchDescription
 
     lbr_spinner_node_: Node
@@ -30,7 +30,6 @@ class LBRBringUp:
         self.sim_ = sim
 
         self.robot_description_ = None
-        self.safety_file_path_ = None
         self.launch_description_ = LaunchDescription()
 
         self.lbr_spinner_node_ = None
@@ -51,10 +50,6 @@ class LBRBringUp:
     @property
     def robot_description(self):
         return self.robot_description_
-
-    @property
-    def safety_file_path(self):
-        return self.safety_file_path_
 
     @property
     def launch_description(self):
@@ -144,15 +139,12 @@ class LBRBringUp:
         self,
         package: str = "lbr_description",
         rviz2_config_file: str = "config/config.rviz",
+        parameters: List=[]
     ):
-        if not self.robot_description_:
-            raise ValueError(
-                "Cannot add rviz2 without robot description. Call add_robot_description() first."
-            )
         self.rviz2_node_ = Node(
             package="rviz2",
             executable="rviz2",
-            parameters=[self.robot_description_],
+            parameters=parameters,
             arguments=[
                 "-d",
                 os.path.join(get_package_share_directory(package), rviz2_config_file),
@@ -180,13 +172,15 @@ class LBRBringUp:
     def add_robot_description(
         self,
         package: str = "lbr_description",
-        xacro_file: str = "urdf/iiwa7/iiwa7.urdf.xacro"
+        xacro_file: str = "urdf/iiwa7/iiwa7.urdf.xacro",
     ):
         self.robot_description_ = {
-            "robot_description": xacro.process(
-                os.path.join(
-                    get_package_share_directory(package),
-                    xacro_file,
+            "robot_description": load_xacro(
+                file_path=Path(
+                    os.path.join(
+                        get_package_share_directory(package),
+                        xacro_file,
+                    )
                 ),
                 mappings={"robot_name": self.robot_name_, "sim": str(self.sim_)},
             )
@@ -202,16 +196,11 @@ class LBRBringUp:
     def add_lbr_spinner(
         self,
         package: str = "lbr_fri_ros2",
-        safety_file: str = "config/lbr_safety_limits.yml",
         executable: str = "lbr_spinner",
     ):
-        self.safety_file_path_ = os.path.join(
-            get_package_share_directory(package), safety_file
-        )
         self.lbr_spinner_node_ = Node(
             package=package,
             executable=executable,
-            parameters=[self.safety_file_path_],
             emulate_tty=True,
             output="screen",
         )

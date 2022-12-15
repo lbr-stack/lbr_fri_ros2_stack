@@ -1,7 +1,7 @@
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, OpaqueFunction
 
-from lbr_bringup.launch_bundles import lbr_launch
+from lbr_bringup.launch_bundles import lbr_with_moveit_launch
 
 
 def generate_launch_description():
@@ -51,6 +51,6 @@ def generate_launch_description():
             controller_package_arg,
             controller_file_arg,
             controller_arg,
-            OpaqueFunction(function=lbr_launch),
+            OpaqueFunction(function=lbr_with_moveit_launch),
         ]
     )
