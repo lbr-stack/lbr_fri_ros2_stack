@@ -24,11 +24,6 @@ install(
 )
 
 install(
-    DIRECTORY launch
-    DESTINATION share/${PROJECT_NAME}
-)
-
-install(
     TARGETS lbr_command_node
     RUNTIME DESTINATION lib/${PROJECT_NAME}
 )

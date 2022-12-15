@@ -44,9 +44,6 @@ protected:
     lbr_fri_msgs::msg::LBRCommand lbr_command;
     lbr_command.joint_position = initial_lbr_state_->measured_joint_position;
     double t = static_cast<double>(now().nanoseconds() - t0_) / 1.e9;
-    lbr_command.joint_position[3] -= amplitude_ * std::sin(omega_ * t);
-    lbr_command.joint_position[4] -= amplitude_ * std::sin(omega_ * t);
-    lbr_command.joint_position[5] += amplitude_ * std::sin(omega_ * t);
     lbr_command.joint_position[6] += amplitude_ * std::sin(omega_ * t);
     lbr_command_pub_->publish(lbr_command);
   }

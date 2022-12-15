@@ -15,14 +15,14 @@ class LBRSinusoidalNode(Node):
     t0_: float
     initial_lbr_state_: LBRState
 
-    def __init__(self, node_name: str = "lbr_sinusoidal_node"):
+    def __init__(self, node_name: str = "lbr_command_node") -> None:
         super().__init__(node_name)
 
         self.declare_parameter("amplitude", math.pi / 4.0)
         self.declare_parameter("period", 20.0)
 
         self.amplitude_ = float(self.get_parameter("amplitude").value)
-        self.omega_ = 2*math.pi / float(self.get_parameter("period").value)
+        self.omega_ = 2 * math.pi / float(self.get_parameter("period").value)
         self.t0_ = None
         self.initial_lbr_state_ = None
 
@@ -42,24 +42,21 @@ class LBRSinusoidalNode(Node):
             self.t0_ = float(self.get_clock().now().nanoseconds)
             self.initial_lbr_state_ = msg
 
-    def timer_cb_(self):
+    def timer_cb_(self) -> None:
         if not self.initial_lbr_state_:
             return
         command = LBRCommand()
-        command.joint_position = deepcopy(self.initial_lbr_state_.measured_joint_position)
+        command.joint_position = deepcopy(
+            self.initial_lbr_state_.measured_joint_position
+        )
         t = (float(self.get_clock().now().nanoseconds) - self.t0_) / 1.0e9
-        command.joint_position[3] -= self.amplitude_ * math.sin(self.omega_ * t)
-        command.joint_position[4] -= self.amplitude_ * math.sin(self.omega_ * t)
-        command.joint_position[5] += self.amplitude_ * math.sin(self.omega_ * t)
         command.joint_position[6] += self.amplitude_ * math.sin(self.omega_ * t)
         self.lbr_command_pub_.publish(command)
 
 
 def main(args=None):
     rclpy.init(args=args)
-
-    lbr_sinusoidal_node = LBRSinusoidalNode()
-    rclpy.spin(lbr_sinusoidal_node)
+    rclpy.spin(LBRSinusoidalNode())
     rclpy.shutdown()
 
 
