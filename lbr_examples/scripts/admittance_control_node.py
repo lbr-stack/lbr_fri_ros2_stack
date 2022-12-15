@@ -21,7 +21,7 @@ class Controller(object):
         root_link_name: str = "lbr_link_0",
         f_threshold: np.ndarray = np.array([6.0, 6.0, 6.0, 1.0, 1.0, 1.0]),
         dq_gain: np.ndarray = np.array([0.2, 0.2, 0.2, 0.2, 0.2, 0.2]),
-        dx_gain: np.ndarray = np.array([1.0, 1.0, 1.0, 20.0, 20.0, 20.0]),
+        dx_gain: np.ndarray = np.array([1.0, 1.0, 1.0, 20.0, 40.0, 60.0]),
         smooth: float = 0.02,
     ) -> None:
         self.chain_ = kinpy.build_serial_chain_from_urdf(
