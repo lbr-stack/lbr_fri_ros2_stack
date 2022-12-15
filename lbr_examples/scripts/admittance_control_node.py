@@ -21,7 +21,7 @@ class Controller(object):
         root_link_name: str = "lbr_link_0",
         f_threshold: np.ndarray = np.array([6.0, 6.0, 6.0, 1.0, 1.0, 1.0]),
         dq_gain: np.ndarray = np.array([0.2, 0.2, 0.2, 0.2, 0.2, 0.2]),
-        dx_gain: np.ndarray = np.array([1.0, 1.0, 1.0, 20.0, 20.0, 20.0]),
+        dx_gain: np.ndarray = np.array([1.0, 1.0, 1.0, 20.0, 40.0, 60.0]),
         smooth: float = 0.02,
     ) -> None:
         self.chain_ = kinpy.build_serial_chain_from_urdf(
@@ -67,7 +67,7 @@ class AdmittanceControlNode(Node):
         self.declare_parameter("end_link_name", "lbr_link_ee")
         self.declare_parameter("root_link_name", "lbr_link_0")
         self.declare_parameter("command_rate", 100.0)
-        self.declare_parameter("buffer_len", 10)
+        self.declare_parameter("buffer_len", 20)
 
         self.model_ = str(self.get_parameter("model").value)
         self.end_link_name_ = str(self.get_parameter("end_link_name").value)
