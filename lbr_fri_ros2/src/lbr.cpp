@@ -3,7 +3,7 @@
 namespace lbr_fri_ros2 {
 LBR::LBR() {
   if (!init_fri_msgs()) {
-    throw std::runtime_error("Failed to initialize lbr_fri_msgs.")
+    throw std::runtime_error("Failed to initialize lbr_fri_msgs.");
   }
 }
 
