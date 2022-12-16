@@ -1,0 +1,23 @@
+name: Build
+
+on:
+  push:
+  pull_request:
+    branches:
+      - foxy
+
+# ros 2 ci: https://github.com/marketplace/actions/ros-2-ci-action
+# doc: https://ubuntu.com/blog/ros-2-ci-with-github-actions
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+    steps:
+      - uses: ros-tooling/setup-ros@v0.3
+      - uses: ros-tooling/action-ros-ci@v0.2
+        with:
+          package-name: lbr_fri_ros2_stack
+          target-ros2-distro: foxy
+          vcs-repo-file-url: https://raw.githubusercontent.com/KCL-BMEIS/lbr_fri_ros2_stack/foxy/lbr_fri_ros2_stack/repos.yml

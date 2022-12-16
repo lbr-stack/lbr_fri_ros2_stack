@@ -3,9 +3,8 @@
 <package format="3">
   <name>lbr_fri_ros2</name>
   <version>1.0.0</version>
-  <description>TODO: Package description</description>
+  <description>The lbr_fri_ros2 package provides the Fast Robot Interface (FRI) integration into ROS2. Robot states can be extracted and commanded.</description>
   <maintainer email="martin.huber@kcl.ac.uk">mhubii</maintainer>
-  <maintainer email="christopher.mower@kcl.ac.uk">Christopher E. Mower</maintainer>
   <license>MIT</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
@@ -15,8 +14,6 @@
   <depend>std_srvs</depend>
   <depend>lbr_fri_msgs</depend>
   <depend>fri</depend>
-
-  <exec_depend>rclpy</exec_depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
