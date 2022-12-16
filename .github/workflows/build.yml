@@ -16,8 +16,10 @@ jobs:
         os: [ubuntu-latest]
     steps:
       - uses: ros-tooling/setup-ros@v0.3
+        with:
+          required-ros-distributions: foxy
       - uses: ros-tooling/action-ros-ci@v0.2
         with:
           package-name: lbr_fri_ros2_stack
           target-ros2-distro: foxy
-          vcs-repo-file-url: https://raw.githubusercontent.com/KCL-BMEIS/lbr_fri_ros2_stack/dev-foxy-lbr-fri-ros2/lbr_fri_ros2_stack/repos.yml
+          vcs-repo-file-url: https://raw.githubusercontent.com/KCL-BMEIS/lbr_fri_ros2_stack/foxy/lbr_fri_ros2_stack/repos.yml
