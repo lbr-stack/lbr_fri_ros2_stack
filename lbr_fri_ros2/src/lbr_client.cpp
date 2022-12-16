@@ -2,7 +2,7 @@
 
 namespace lbr_fri_ros2 {
 
-LBRClient::LBRClient(std::shared_ptr<LBR> lbr) : lbr_(lbr){}
+LBRClient::LBRClient(std::shared_ptr<LBR> lbr) : lbr_(lbr) {}
 
 void LBRClient::onStateChange(KUKA::FRI::ESessionState old_state,
                               KUKA::FRI::ESessionState new_state) {
