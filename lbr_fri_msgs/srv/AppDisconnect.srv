@@ -1,0 +1,10 @@
+# This service message is used to call the Fast Robot Interface's (FRI)
+# KUKA::FRI::ClientApplication::disconnect method via a service call.
+#
+#  ---
+#  * disconnected [bool]: True when connection closed successfully.
+#  * message [string]: Informational message, containing e.g. errors.
+
+---
+bool disconnected
+string message

@@ -15,23 +15,29 @@ def launch_setup(context, *args, **kwargs):
     robot_description = {"robot_description": LaunchConfiguration("robot_description")}
 
     # Load controllers from YAML configuration file
-    controller_configurations = PathJoinSubstitution([
-        FindPackageShare(LaunchConfiguration("controller_configurations_package")),
-        LaunchConfiguration("controller_configurations")
-    ])
+    controller_configurations = PathJoinSubstitution(
+        [
+            FindPackageShare(LaunchConfiguration("controller_configurations_package")),
+            LaunchConfiguration("controller_configurations"),
+        ]
+    )
 
     # Prepare controller manager and other required nodes
     real_time = LaunchConfiguration("real_time").perform(context)
     valid_real_time_arguments = ["true", "false", "1", "0"]
     if not real_time in valid_real_time_arguments:
-        raise ValueError(f"Invalid real_time launch argument. Expected one of {valid_real_time_arguments}, got {real_time}.")
+        raise ValueError(
+            f"Invalid real_time launch argument. Expected one of {valid_real_time_arguments}, got {real_time}."
+        )
 
     controller_manager_prefix = ""
     if real_time in ["true", "1"]:
         if sys.platform.startswith("win"):
             # currently not supported. To be implemented with ExecuteCommand after fri_ros2_control_node launch
-            # https://superuser.com/questions/620724/changing-windows-process-priority-via-command-line 
-            warnings.warn("Windows currently not supported for real-time priority. Defaulting to non-real-time.")
+            # https://superuser.com/questions/620724/changing-windows-process-priority-via-command-line
+            warnings.warn(
+                "Windows currently not supported for real-time priority. Defaulting to non-real-time."
+            )
         elif sys.platform.startswith("lin"):
             # launch with realtime priority, requries to set rtprio in /etc/security/limits.conf, e.g. <user> - rtprio 99
             controller_manager_prefix = "chrt -rr 99"
@@ -39,38 +45,50 @@ def launch_setup(context, *args, **kwargs):
             raise RuntimeError(f"Encountered unhandled platform {sys.platform}")
 
     controller_manager = Node(
-        package="lbr_hardware",
-        executable="fri_ros2_control_node",
+        package="controller_manager",
+        executable="ros2_control_node",
         parameters=[robot_description, controller_configurations],
         output="screen",
         condition=UnlessCondition(LaunchConfiguration("sim")),
-        prefix=controller_manager_prefix
+        prefix=controller_manager_prefix,
     )
 
     robot_state_publisher = Node(
         package="robot_state_publisher",
         executable="robot_state_publisher",
         output="screen",
-        parameters=[robot_description]
+        parameters=[robot_description],
     )
 
     joint_state_broadcaster = Node(
         package="controller_manager",
         executable="spawner.py",
-        arguments=["joint_state_broadcaster", "--controller-manager", "/controller_manager"],
+        arguments=[
+            "joint_state_broadcaster",
+            "--controller-manager",
+            "/controller_manager",
+        ],
     )
 
     lbr_state_broadcaster = Node(
         package="controller_manager",
         executable="spawner.py",
-        arguments=["lbr_state_broadcaster", "--controller-manager", "/controller_manager"],
-        condition=UnlessCondition(LaunchConfiguration("sim"))
+        arguments=[
+            "lbr_state_broadcaster",
+            "--controller-manager",
+            "/controller_manager",
+        ],
+        condition=UnlessCondition(LaunchConfiguration("sim")),
     )
 
     controller = Node(
         package="controller_manager",
         executable="spawner.py",
-        arguments=[LaunchConfiguration("controller"), "--controller-manager", "/controller_manager"],
+        arguments=[
+            LaunchConfiguration("controller"),
+            "--controller-manager",
+            "/controller_manager",
+        ],
     )
 
     return [
@@ -78,12 +96,12 @@ def launch_setup(context, *args, **kwargs):
         robot_state_publisher,
         joint_state_broadcaster,
         lbr_state_broadcaster,
-        controller
+        controller,
     ]
 
 
 def generate_launch_description():
-    
+
     # Launch arguments
     launch_args = []
 
@@ -91,7 +109,7 @@ def generate_launch_description():
         DeclareLaunchArgument(
             name="controller_configurations_package",
             default_value="lbr_bringup",
-            description="Package that contains controller configurations."
+            description="Package that contains controller configurations.",
         )
     )
 
@@ -99,14 +117,13 @@ def generate_launch_description():
         DeclareLaunchArgument(
             name="controller_configurations",
             default_value="config/lbr_controllers.yml",
-            description="Relative path to controller configurations YAML file."
+            description="Relative path to controller configurations YAML file.",
         )
     )
 
     launch_args.append(
         DeclareLaunchArgument(
-            name="robot_description",
-            description="Robot description XML file."
+            name="robot_description", description="Robot description XML file."
         )
     )
 
@@ -114,7 +131,7 @@ def generate_launch_description():
         DeclareLaunchArgument(
             name="controller",
             default_value="position_trajectory_controller",
-            description="Robot controller."
+            description="Robot controller.",
         )
     )
 
@@ -122,7 +139,7 @@ def generate_launch_description():
         DeclareLaunchArgument(
             name="sim",
             default_value="true",
-            description="Launch robot in simulation or on real setup."
+            description="Launch robot in simulation or on real setup.",
         )
     )
 
@@ -130,15 +147,11 @@ def generate_launch_description():
         DeclareLaunchArgument(
             name="real_time",
             default_value="false",
-            description=
-                "Will launch ros2_control_node with real-time priority.\n"
-                "\tCurrently only supported on Linux. Requires user to set rtprio\n"
-                "\tin /etc/security/limits.conf, see https://linux.die.net/man/5/limits.conf.\n"
-                "\tE.g. <user> - rtprio 99."
+            description="Will launch ros2_control_node with real-time priority.\n"
+            "\tCurrently only supported on Linux. Requires user to set rtprio\n"
+            "\tin /etc/security/limits.conf, see https://linux.die.net/man/5/limits.conf.\n"
+            "\tE.g. <user> - rtprio 99.",
         )
     )
 
-    return LaunchDescription(
-        launch_args + [
-            OpaqueFunction(function=launch_setup)
-    ])
+    return LaunchDescription(launch_args + [OpaqueFunction(function=launch_setup)])

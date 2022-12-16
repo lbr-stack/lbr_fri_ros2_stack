@@ -1,23 +1,23 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>lbr_fri_ros2</name>
+  <name>lbr_fri_msgs</name>
   <version>1.0.0</version>
-  <description>The lbr_fri_ros2 package provides the Fast Robot Interface (FRI) integration into ROS2. Robot states can be extracted and commanded.</description>
+  <description>ROS2 message for the Fast Robot Interface (FRI) specific states.</description>
   <maintainer email="martin.huber@kcl.ac.uk">mhubii</maintainer>
-  <maintainer email="christopher.mower@kcl.ac.uk">cmower</maintainer>
   <license>MIT</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
+  <buildtool_depend>rosidl_default_generators</buildtool_depend>
+  
+  <depend>builtin_interfaces</depend>
+  <depend>std_msgs</depend>
 
-  <depend>rclcpp</depend>
-  <depend>realtime_tools</depend>
-  <depend>std_srvs</depend>
-  <depend>lbr_fri_msgs</depend>
-  <depend>fri</depend>
+  <exec_depend>rosidl_default_runtime</exec_depend>
 
-  <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
+
+  <member_of_group>rosidl_interface_packages</member_of_group>
 
   <export>
     <build_type>ament_cmake</build_type>
