@@ -1,11 +1,16 @@
-from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, OpaqueFunction
-from launch.substitutions import LaunchConfiguration
+from launch.actions import IncludeLaunchDescription, OpaqueFunction
+from launch.actions.declare_launch_argument import DeclareLaunchArgument
+from launch.conditions import IfCondition, UnlessCondition
+from launch.launch_description import LaunchDescription
+from launch.launch_description_sources import PythonLaunchDescriptionSource
+from launch.substitutions import Command, FindExecutable, PathJoinSubstitution
+from launch.substitutions.launch_configuration import LaunchConfiguration
+from launch_ros.substitutions import FindPackageShare
 
-from lbr_bringup import LBRBringUp
 
+def launch_setup(context, *args, **kwargs):
 
-def configure_lbr(context):
+    # Evaluate frequently used variables
     model = LaunchConfiguration("model").perform(context)
 
     # Load robot description
@@ -18,6 +23,18 @@ def configure_lbr(context):
             "robot_name:=", LaunchConfiguration("robot_name"), " ",
             "sim:=", LaunchConfiguration("sim")
         ]
+    )
+
+    # Load LBR FRI ROS2
+    lbr_spinner = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            PathJoinSubstitution([
+                FindPackageShare("lbr_fri_ros2"),
+                "launch",
+                "lbr_spinner.launch.py"
+            ])
+        ),
+        condition=UnlessCondition(LaunchConfiguration("sim"))
     )
 
     # Load controls
@@ -71,52 +88,93 @@ def configure_lbr(context):
     )
 
     return [
+        lbr_spinner,
         simulation,
         control,
-        # move_group
+        move_group
     ]
 
 
 def generate_launch_description():
-    model_arg = DeclareLaunchArgument(
+
+    # Launch arguments
+    launch_args = []
+
+    launch_args.append(DeclareLaunchArgument(
         name="model",
         default_value="iiwa7",
-        description="The LBR model in use.",
-        choices=["iiwa7", "iiwa14", "med7", "med14"],
-    )
+        description="Desired LBR model. Use model:=iiwa7/iiwa14/med7/med14."
+    ))
 
-    sim_arg = DeclareLaunchArgument(
+    launch_args.append(DeclareLaunchArgument(
+        name="robot_name",
+        default_value="lbr",
+        description="Set robot name."
+    ))
+
+    launch_args.append(DeclareLaunchArgument(
         name="sim",
         default_value="true",
-        description="Whether to launch simulation or real robot.",
-        choices=["True", "true", "False", "false"],
+        description="Launch robot in simulation or on real setup."
+    ))
+
+    launch_args.append(
+        DeclareLaunchArgument(
+            name="real_time",
+            default_value="false",
+            description=
+                "Will launch ros2_control_node with real-time priority.\n"
+                "\tCurrently only supported on Linux. Requires user to set rtprio\n"
+                "\tin /etc/security/limits.conf, see https://linux.die.net/man/5/limits.conf.\n"
+                "\tE.g. <user> - rtprio 99."
+        )
     )
 
-    controller_package_arg = DeclareLaunchArgument(
-        name="controller_package",
-        default_value="lbr_bringup",
-        description="The package containing the controller_file.",
+    launch_args.append(
+        DeclareLaunchArgument(
+            name="controller_configurations_package",
+            default_value="lbr_bringup",
+            description="Package that contains controller configurations."
+        )
     )
 
-    controller_file_arg = DeclareLaunchArgument(
-        name="controller_file",
-        default_value="config/lbr_controllers.yml",
-        description="Relative path from controller_package to the controllers.",
+    launch_args.append(
+        DeclareLaunchArgument(
+            name="controller_configurations",
+            default_value="config/lbr_controllers.yml",
+            description=
+                "Relative path to controller configurations YAML file.\n"
+                "\tNote that the joints in the controllers must be named according to the robot_name."
+        )
     )
 
-    controller_arg = DeclareLaunchArgument(
-        name="controller",
-        default_value="position_trajectory_controller",
-        description="Desired default controller. One of specified in controller_file_arg.",
+    launch_args.append(
+        DeclareLaunchArgument(
+            name="controller",
+            default_value="position_trajectory_controller",
+            description="Robot controller."
+        )
+    )
+
+    launch_args.append(
+        DeclareLaunchArgument(
+            name="moveit_controller_configurations_package",
+            default_value="lbr_moveit",
+            description="Package that contains MoveIt! controller configurations."
+        )
+    )
+
+    launch_args.append(
+        DeclareLaunchArgument(
+            name="moveit_controller_configurations",
+            default_value="config/lbr_controllers.yml",
+            description="Relative path to MoveIt! controller configurations YAML file.\n"
+            "\tNote that the joints in the controllers must be named according to the robot_name.\n"
+            "\tThis file lists controllers that are loaded through the controller_configurations file."
+        )
     )
 
     return LaunchDescription(
-        [
-            model_arg,
-            sim_arg,
-            controller_package_arg,
-            controller_file_arg,
-            controller_arg,
-            OpaqueFunction(function=configure_lbr),
-        ]
-    )
+        launch_args + [
+        OpaqueFunction(function=launch_setup)
+    ])

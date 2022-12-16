@@ -39,8 +39,8 @@ def launch_setup(context, *args, **kwargs):
             raise RuntimeError(f"Encountered unhandled platform {sys.platform}")
 
     controller_manager = Node(
-        package="lbr_hardware",
-        executable="fri_ros2_control_node",
+        package="controller_manager",
+        executable="ros2_control_node",
         parameters=[robot_description, controller_configurations],
         output="screen",
         condition=UnlessCondition(LaunchConfiguration("sim")),
