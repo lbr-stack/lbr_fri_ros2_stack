@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 import os
-from copy import deepcopy
 
 import kinpy
 import numpy as np
@@ -20,7 +19,7 @@ class Controller(object):
         end_link_name: str = "lbr_link_ee",
         root_link_name: str = "lbr_link_0",
         f_threshold: np.ndarray = np.array([6.0, 6.0, 6.0, 1.0, 1.0, 1.0]),
-        dq_gain: np.ndarray = np.array([0.2, 0.2, 0.2, 0.2, 0.2, 0.2]),
+        dq_gain: np.ndarray = np.array([0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2]),
         dx_gain: np.ndarray = np.array([1.0, 1.0, 1.0, 20.0, 40.0, 60.0]),
         smooth: float = 0.02,
     ) -> None:
@@ -53,9 +52,9 @@ class Controller(object):
             0.0,
         )
 
-        dq = jacobian_inv @ self.dq_gain_ @ f_ext
+        dq = self.dq_gain_ @ jacobian_inv @ f_ext
         self.dq_ = (1.0 - self.smooth_) * self.dq_ + self.smooth_ * dq
-        return deepcopy(self.dq_), f_ext
+        return self.dq_, f_ext
 
 
 class AdmittanceControlNode(Node):
@@ -113,7 +112,7 @@ class AdmittanceControlNode(Node):
         if not self.lbr_state_:
             return
         # compute control
-        q = deepcopy(np.array(self.lbr_state_.measured_joint_position.tolist()))
+        q = np.array(self.lbr_state_.measured_joint_position.tolist())
 
         if len(self.joint_position_buffer_) > self.joint_position_buffer_len_:
             self.joint_position_buffer_.pop(0)
@@ -123,7 +122,7 @@ class AdmittanceControlNode(Node):
         for qi in self.joint_position_buffer_:
             q += qi / len(self.joint_position_buffer_)
 
-        tau_ext = deepcopy(np.array(self.lbr_state_.external_torque.tolist()))
+        tau_ext = np.array(self.lbr_state_.external_torque.tolist())
 
         if len(self.external_torque_buffer_) > self.external_torque_buffer_len_:
             self.external_torque_buffer_.pop(0)
