@@ -15,7 +15,7 @@ jobs:
       matrix:
         os: [ubuntu-latest]
     steps:
-      - uses: ros-tooling/setup-ros@v0.3
+      - uses: ros-tooling/setup-ros@v0.4
         with:
           required-ros-distributions: foxy
       - uses: ros-tooling/action-ros-ci@v0.2
