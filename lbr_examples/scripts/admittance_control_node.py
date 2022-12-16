@@ -6,10 +6,9 @@ import numpy as np
 import rclpy
 import xacro
 from ament_index_python import get_package_share_directory
+from lbr_fri_msgs.msg import LBRCommand, LBRState
 from rclpy import qos
 from rclpy.node import Node
-
-from lbr_fri_msgs.msg import LBRCommand, LBRState
 
 
 class Controller(object):

@@ -3,10 +3,9 @@ import math
 from copy import deepcopy
 
 import rclpy
+from lbr_fri_msgs.msg import LBRCommand, LBRState
 from rclpy import qos
 from rclpy.node import Node
-
-from lbr_fri_msgs.msg import LBRCommand, LBRState
 
 
 class LBRSinusoidalNode(Node):

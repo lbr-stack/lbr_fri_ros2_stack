@@ -1,3 +1,5 @@
+from launch_ros.substitutions import FindPackageShare
+
 from launch.actions import IncludeLaunchDescription, OpaqueFunction
 from launch.actions.declare_launch_argument import DeclareLaunchArgument
 from launch.conditions import IfCondition, UnlessCondition
@@ -5,7 +7,6 @@ from launch.launch_description import LaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import Command, FindExecutable, PathJoinSubstitution
 from launch.substitutions.launch_configuration import LaunchConfiguration
-from launch_ros.substitutions import FindPackageShare
 
 
 def launch_setup(context, *args, **kwargs):
