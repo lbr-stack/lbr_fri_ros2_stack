@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 import os
 
-import kinpy
+import optas
 import numpy as np
 import rclpy
 import xacro
@@ -23,20 +23,21 @@ class Controller(object):
         dx_gain: np.ndarray = np.array([1.0, 1.0, 1.0, 20.0, 40.0, 60.0]),
         smooth: float = 0.02,
     ) -> None:
-        self.chain_ = kinpy.build_serial_chain_from_urdf(
-            data=urdf_string, end_link_name=end_link_name, root_link_name=root_link_name
-        )
+
+        robot = optas.RobotModel(urdf_string=urdf_string)
+        J = robot.get_geometric_jacobian_function(end_link_name, root_link_name)
+        self.jacobian = lambda q: J(q).toarray()  # toarray: convert casadi.DM -> numpy.ndarray
 
         self.f_threshold_ = f_threshold
         self.dq_gain_ = np.diag(dq_gain)
         self.dx_gain_ = np.diag(dx_gain)
         self.smooth_ = smooth
 
-        self.dof_ = len(self.chain_.get_joint_parameter_names())
+        self.dof_ = robot.ndof
         self.dq_ = np.zeros(self.dof_)
 
     def __call__(self, q: np.ndarray, tau_ext: np.ndarray) -> np.ndarray:
-        jacobian = self.chain_.jacobian(q)
+        jacobian = self.jacobian(q)
         # J^T fext = tau
         if tau_ext.size != self.dof_ or q.size != self.dof_:
             raise BufferError(
