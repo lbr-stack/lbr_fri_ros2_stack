@@ -196,7 +196,7 @@ class LBRBringUp:
     def add_lbr_spinner(
         self,
         package: str = "lbr_fri_ros2",
-        executable: str = "lbr_spinner",
+        executable: str = "lbr_spinner"
     ):
         self.lbr_spinner_node_ = Node(
             package=package,
