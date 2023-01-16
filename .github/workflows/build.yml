@@ -4,7 +4,7 @@ on:
   push:
   pull_request:
     branches:
-      - galactic
+      - foxy
 
 # ros 2 ci: https://github.com/marketplace/actions/ros-2-ci-action
 # doc: https://ubuntu.com/blog/ros-2-ci-with-github-actions
@@ -17,9 +17,9 @@ jobs:
     steps:
       - uses: ros-tooling/setup-ros@v0.2
         with:
-          required-ros-distributions: galactic
+          required-ros-distributions: foxy
       - uses: ros-tooling/action-ros-ci@v0.2
         with:
           package-name: lbr_fri_ros2_stack
-          target-ros2-distro: galactic
-          vcs-repo-file-url: https://raw.githubusercontent.com/KCL-BMEIS/lbr_fri_ros2_stack/galactic/lbr_fri_ros2_stack/repos.yml
+          target-ros2-distro: foxy
+          vcs-repo-file-url: https://raw.githubusercontent.com/KCL-BMEIS/lbr_fri_ros2_stack/foxy/lbr_fri_ros2_stack/repos.yml
