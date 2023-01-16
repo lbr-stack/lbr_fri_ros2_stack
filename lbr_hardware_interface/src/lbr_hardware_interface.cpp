@@ -23,7 +23,7 @@ CallbackReturn LBRHardwareInterface::on_init(const hardware_interface::HardwareI
   }
 
   if (!init_last_hw_states_()) {
-    return controller_interface::CallbackReturn::ERROR;
+    return CallbackReturn::ERROR;
   }
 
   if (!verify_number_of_joints_()) {
