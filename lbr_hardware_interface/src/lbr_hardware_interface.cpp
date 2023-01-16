@@ -1,42 +1,45 @@
 #include "lbr_hardware_interface/lbr_hardware_interface.hpp"
 
 namespace lbr_hardware_interface {
-hardware_interface::return_type
-LBRHardwareInterface::configure(const hardware_interface::HardwareInfo &info) {
+CallbackReturn LBRHardwareInterface::on_init(const hardware_interface::HardwareInfo &info) {
   node_ = std::make_shared<rclcpp::Node>("fri_hardware_interface_node");
 
-  auto ret = configure_default(info);
-  if (ret != hardware_interface::return_type::OK) {
+  auto ret = hardware_interface::SystemInterface::on_init(info);
+  if (ret != CallbackReturn::SUCCESS) {
     RCLCPP_ERROR(node_->get_logger(), "Failed to initialize SystemInterface.");
     return ret;
   }
 
   if (!init_lbr_()) {
-    return hardware_interface::return_type::ERROR;
+    return CallbackReturn::ERROR;
   }
 
   if (!init_command_interfaces_()) {
-    return hardware_interface::return_type::ERROR;
+    return CallbackReturn::ERROR;
   }
 
   if (!init_state_interfaces_()) {
-    return hardware_interface::return_type::ERROR;
+    return CallbackReturn::ERROR;
+  }
+
+  if (!init_last_hw_states_()) {
+    return CallbackReturn::ERROR;
   }
 
   if (!verify_number_of_joints_()) {
-    return hardware_interface::return_type::ERROR;
+    return CallbackReturn::ERROR;
   }
 
   if (!verify_joint_command_interfaces_()) {
-    return hardware_interface::return_type::ERROR;
+    return CallbackReturn::ERROR;
   }
 
   if (!verify_joint_state_interfaces_()) {
-    return hardware_interface::return_type::ERROR;
+    return CallbackReturn::ERROR;
   }
 
   if (!verify_sensors_()) {
-    return hardware_interface::return_type::ERROR;
+    return CallbackReturn::ERROR;
   }
 
   // read port_id and remote_host from lbr.ros2_control.xacro
@@ -47,15 +50,15 @@ LBRHardwareInterface::configure(const hardware_interface::HardwareInfo &info) {
 
   if (port_id_ < 30200 || port_id_ > 30209) {
     RCLCPP_ERROR(node_->get_logger(), "Expected port_id in [30200, 30209]. Found %d.", port_id_);
-    return hardware_interface::return_type::ERROR;
+    return CallbackReturn::ERROR;
   }
 
   if (!spawn_rt_layer_()) {
-    return hardware_interface::return_type::ERROR;
+    return CallbackReturn::ERROR;
   }
 
   if (!spawn_clients_()) {
-    return hardware_interface::return_type::ERROR;
+    return CallbackReturn::ERROR;
   }
 
   node_thread_ = std::make_unique<std::thread>([this]() {
@@ -63,7 +66,7 @@ LBRHardwareInterface::configure(const hardware_interface::HardwareInfo &info) {
     disconnect_();
   });
 
-  return hardware_interface::return_type::OK;
+  return CallbackReturn::SUCCESS;
 }
 
 std::vector<hardware_interface::StateInterface> LBRHardwareInterface::export_state_interfaces() {
@@ -104,6 +107,9 @@ std::vector<hardware_interface::StateInterface> LBRHardwareInterface::export_sta
 
     state_interfaces.emplace_back(info_.joints[i].name, HW_IF_IPO_JOINT_POSITION,
                                   &hw_ipo_joint_position_[i]);
+
+    state_interfaces.emplace_back(info_.joints[i].name, hardware_interface::HW_IF_VELOCITY,
+                                  &hw_velocity_[i]);
   }
 
   state_interfaces.emplace_back(lbr_fri_sensor.name, HW_IF_TRACKING_PERFORMANCE,
@@ -152,20 +158,20 @@ hardware_interface::return_type LBRHardwareInterface::prepare_command_mode_switc
   return hardware_interface::return_type::OK;
 }
 
-hardware_interface::return_type LBRHardwareInterface::start() {
+CallbackReturn LBRHardwareInterface::on_activate(const rclcpp_lifecycle::State &/*previous_state*/) {
   if (!connect_()) {
     RCLCPP_ERROR(node_->get_logger(), "Failed to connect to robot.");
-    return hardware_interface::return_type::ERROR;
+    return CallbackReturn::ERROR;
   }
-  return hardware_interface::return_type::OK;
+  return CallbackReturn::SUCCESS;
 }
 
-hardware_interface::return_type LBRHardwareInterface::stop() {
+CallbackReturn LBRHardwareInterface::on_deactivate(const rclcpp_lifecycle::State &/*previous_state*/) {
   if (!disconnect_()) {
     RCLCPP_ERROR(node_->get_logger(), "Failed to disconnect from robot.");
-    return hardware_interface::return_type::ERROR;
+    return CallbackReturn::ERROR;
   }
-  return hardware_interface::return_type::OK;
+  return CallbackReturn::SUCCESS;
 }
 
 hardware_interface::return_type LBRHardwareInterface::read() {
@@ -203,6 +209,11 @@ hardware_interface::return_type LBRHardwareInterface::read() {
                                   lbr_->state->ipo_joint_position.end());
 
     hw_tracking_performance_ = lbr_->state->tracking_performance;
+
+    compute_hw_velocity_();
+    if (!update_last_hw_states_()) {
+      return hardware_interface::return_type::ERROR;
+    }
   }
 
   return hardware_interface::return_type::OK;
@@ -338,6 +349,8 @@ bool LBRHardwareInterface::init_state_interfaces_() {
     hw_ipo_joint_position_.resize(lbr_fri_ros2::LBR::JOINT_DOF,
                                   std::numeric_limits<double>::quiet_NaN());
     hw_tracking_performance_ = std::numeric_limits<double>::quiet_NaN();
+
+    hw_velocity_.resize(lbr_fri_ros2::LBR::JOINT_DOF, std::numeric_limits<double>::quiet_NaN());
   } catch (const std::exception &e) {
     RCLCPP_ERROR(node_->get_logger(), "Failed to initialize state interfaces.\n%s", e.what());
     return false;
@@ -392,13 +405,15 @@ bool LBRHardwareInterface::verify_joint_state_interfaces_() {
       if (si.name != hardware_interface::HW_IF_POSITION &&
           si.name != HW_IF_COMMANDED_JOINT_POSITION &&
           si.name != hardware_interface::HW_IF_EFFORT && si.name != HW_IF_COMMANDED_TORQUE &&
-          si.name != HW_IF_EXTERNAL_TORQUE && si.name != HW_IF_IPO_JOINT_POSITION) {
+          si.name != HW_IF_EXTERNAL_TORQUE && si.name != HW_IF_IPO_JOINT_POSITION &&
+          si.name != hardware_interface::HW_IF_VELOCITY) {
         RCLCPP_ERROR(
             node_->get_logger(),
-            "Joint %s received invalid state interface: %s. Expected %s, %s, %s, %s, %s or %s",
+            "Joint %s received invalid state interface: %s. Expected %s, %s, %s, %s, %s, %s or %s.",
             joint.name.c_str(), si.name.c_str(), hardware_interface::HW_IF_POSITION,
             HW_IF_COMMANDED_JOINT_POSITION, hardware_interface::HW_IF_EFFORT,
-            HW_IF_COMMANDED_TORQUE, HW_IF_EXTERNAL_TORQUE, HW_IF_IPO_JOINT_POSITION);
+            HW_IF_COMMANDED_TORQUE, HW_IF_EXTERNAL_TORQUE, HW_IF_IPO_JOINT_POSITION,
+            hardware_interface::HW_IF_VELOCITY);
         return false;
       }
     }
@@ -533,6 +548,55 @@ bool LBRHardwareInterface::disconnect_() {
 void LBRHardwareInterface::lbr_state_cb_(const lbr_fri_msgs::msg::LBRState::SharedPtr lbr_state) {
   rt_lbr_state_buf_->writeFromNonRT(lbr_state);
 }
+
+double LBRHardwareInterface::time_stamps_to_sec_(const double &sec, const double &nano_sec) const {
+  return sec + nano_sec / 1.e9;
+}
+
+bool LBRHardwareInterface::init_last_hw_states_() {
+  try {
+    last_hw_position_.resize(lbr_fri_ros2::LBR::JOINT_DOF,
+                             std::numeric_limits<double>::quiet_NaN());
+    last_hw_time_stamp_sec_ = std::numeric_limits<double>::quiet_NaN();
+    last_hw_time_stamp_nano_sec_ = std::numeric_limits<double>::quiet_NaN();
+  } catch (const std::exception &e) {
+    RCLCPP_ERROR(node_->get_logger(), "Failed to init last hw states.");
+    return false;
+  }
+  return true;
+}
+
+bool LBRHardwareInterface::update_last_hw_states_() {
+  try {
+    last_hw_position_ = hw_position_;
+    last_hw_time_stamp_sec_ = hw_time_stamp_sec_;
+    last_hw_time_stamp_nano_sec_ = hw_time_stamp_nano_sec_;
+  } catch (const std::exception &e) {
+    RCLCPP_ERROR(node_->get_logger(), "Failed to update last hw states.");
+    return false;
+  }
+  return true;
+}
+
+void LBRHardwareInterface::compute_hw_velocity_() {
+  // state uninitialized
+  if (std::isnan(last_hw_time_stamp_nano_sec_) || std::isnan(last_hw_position_[0])) {
+    return;
+  }
+
+  // state wasn't updated
+  if (last_hw_time_stamp_sec_ == hw_time_stamp_sec_ &&
+      last_hw_time_stamp_nano_sec_ == hw_time_stamp_nano_sec_) {
+    return;
+  }
+
+  for (uint8_t i = 0; i < lbr_fri_ros2::LBR::JOINT_DOF; ++i) {
+    hw_velocity_[i] = (hw_position_[i] - last_hw_position_[i]) /
+                      (time_stamps_to_sec_(hw_time_stamp_sec_, hw_time_stamp_nano_sec_) -
+                       time_stamps_to_sec_(last_hw_time_stamp_sec_, last_hw_time_stamp_nano_sec_));
+  }
+}
+
 } // end of namespace lbr_hardware_interface
 
 #include <pluginlib/class_list_macros.hpp>
