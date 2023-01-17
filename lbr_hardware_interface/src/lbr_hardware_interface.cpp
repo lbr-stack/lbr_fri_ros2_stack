@@ -1,7 +1,8 @@
 #include "lbr_hardware_interface/lbr_hardware_interface.hpp"
 
 namespace lbr_hardware_interface {
-hardware_interface::return_type LBRHardwareInterface::configure(const hardware_interface::HardwareInfo &info) {
+hardware_interface::return_type
+LBRHardwareInterface::configure(const hardware_interface::HardwareInfo &info) {
   node_ = std::make_shared<rclcpp::Node>("fri_hardware_interface_node");
 
   auto ret = configure_default(info);
