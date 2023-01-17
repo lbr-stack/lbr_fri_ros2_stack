@@ -10,15 +10,13 @@
 
 #include "controller_manager_msgs/srv/list_controllers.hpp"
 #include "controller_manager_msgs/srv/switch_controller.hpp"
-#include "realtime_tools/realtime_buffer.h"
-#include "realtime_tools/realtime_publisher.h"
-#include "controller_manager_msgs/srv/list_controllers.hpp"
-#include "controller_manager_msgs/srv/switch_controller.hpp"
 #include "hardware_interface/base_interface.hpp"
 #include "hardware_interface/system_interface.hpp"
 #include "hardware_interface/types/hardware_interface_status_values.hpp"
 #include "hardware_interface/types/hardware_interface_type_values.hpp"
 #include "rclcpp/rclcpp.hpp"
+#include "realtime_tools/realtime_buffer.h"
+#include "realtime_tools/realtime_publisher.h"
 
 #include "fri/friLBRState.h"
 
@@ -74,7 +72,7 @@ protected:
 
   void lbr_state_cb_(const lbr_fri_msgs::msg::LBRState::SharedPtr lbr_state);
 
-  const uint8_t LBR_FRI_STATE_INTERFACE_SIZE = 6;
+  const uint8_t LBR_FRI_STATE_INTERFACE_SIZE = 7;
   const uint8_t LBR_FRI_COMMAND_INTERFACE_SIZE = 2;
   const uint8_t LBR_FRI_SENSOR_SIZE = 12;
 
@@ -105,6 +103,17 @@ protected:
   std::vector<double> hw_external_torque_;
   std::vector<double> hw_ipo_joint_position_;
   double hw_tracking_performance_;
+
+  // comput velocity for state interface
+  double time_stamps_to_sec_(const double &sec, const double &nano_sec) const;
+  bool init_last_hw_states_();
+  bool update_last_hw_states_();
+  void compute_hw_velocity_();
+
+  std::vector<double> last_hw_position_;
+  double last_hw_time_stamp_sec_;
+  double last_hw_time_stamp_nano_sec_;
+  std::vector<double> hw_velocity_;
 
   // exposed command interfaces
   std::vector<double> hw_position_command_;
