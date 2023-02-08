@@ -151,27 +151,16 @@ public class LBRServer extends RoboticsAPIApplication {
 	@Override
 	public void run() {
 		// run the FRI
-		try {
-			lbr_.move(positionHold(control_mode_, -1, TimeUnit.SECONDS).addMotionOverlay(fri_overlay_));			
-		} catch (Exception e) {
-			e.printStackTrace();
-			return;
-		}
-
+		lbr_.move(positionHold(control_mode_, -1, TimeUnit.SECONDS).addMotionOverlay(fri_overlay_));			
 		return;
 	}
 	
 	@Override
 	public void dispose() {
 		// close connection
-		try {
-			getLogger().info("Disposing FRI session.");
-			fri_session_.close();
-		} catch (Exception e) {
-			getLogger().info("Failed to dispose FRI session. Session maybe not opened?");
-			e.printStackTrace();
-		}
-		
+		getLogger().info("Disposing FRI session.");
+		fri_session_.close();
+
 		super.dispose();
 	}
 	
