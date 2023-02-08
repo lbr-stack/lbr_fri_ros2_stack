@@ -91,7 +91,7 @@ public class LBRServer extends RoboticsAPIApplication {
 		// command mode
 		id = getApplicationUI().displayModalDialog(
 				ApplicationDialogType.QUESTION,
-				"Select the desired FRI control mode: ",
+				"Select the desired FRI client command mode: ",
 				command_modes_				
 		);
 		command_mode_ = ClientCommandMode.values()[id];
