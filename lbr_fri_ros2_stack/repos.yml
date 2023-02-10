@@ -2,7 +2,7 @@ repositories:
   fri:
     type: git
     url: https://github.com/KCL-BMEIS/fri
-    version: ros2_hwi-dev
+    version: ros2-fri-1.15
   lbr_fri_ros2_stack:
     type: git
     url: https://github.com/KCL-BMEIS/lbr_fri_ros2_stack
