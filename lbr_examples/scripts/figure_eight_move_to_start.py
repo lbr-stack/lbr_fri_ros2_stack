@@ -14,7 +14,7 @@ class FigureEightMoveToStartNode(LBRPositionControlNode):
         )
         self.declare_parameter("duration", 5.0)  # seconds
         self._duration = float(self.get_parameter("duration").value)
-        self.declare_parameter("hz", 100)
+        self.declare_parameter("hz", 500)
         hz = int(self.get_parameter("hz").value)
         dt = 1.0 / float(hz)
         self._first = True
