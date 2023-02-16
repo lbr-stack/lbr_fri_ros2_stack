@@ -95,13 +95,13 @@ class LBRPositionControlNode(Node):
         self.model_name = str(self.get_parameter("model").value)
 
         # Initialize robot model
-        xacro_filename = os.path.join(
+        self.xacro_filename = os.path.join(
             get_package_share_directory("lbr_description"),
             "urdf",
             self.model_name,
             f"{self.model_name}.urdf.xacro",
         )
-        self.model = optas.RobotModel(xacro_filename=xacro_filename)
+        self.model = optas.RobotModel(xacro_filename=self.xacro_filename)
 
         # Start state listener and commander
         self.command = RobotCommander(self)
