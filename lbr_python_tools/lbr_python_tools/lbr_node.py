@@ -28,7 +28,7 @@ class StateListener:
             self._callback,
             qos.qos_profile_system_default,
         )
-        if self.node.sim:
+        if self._node.sim:
             self.get_position = self.get_joint_states_position
         else:
             self.get_position = self.get_lbr_states_position
@@ -50,9 +50,9 @@ class StateListener:
 
         # Ensure joint positions are in correct order
         q = []
-        for joint_name in self._node.robot_model.actuated_joint_names:
+        for joint_name in self._node.model.actuated_joint_names:
             joint_idx = msg.name.index(joint_name)
-            q.append(msg.position[joint_index])
+            q.append(msg.position[joint_idx])
         return q
 
 
