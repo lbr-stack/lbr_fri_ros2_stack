@@ -20,6 +20,7 @@ install(
     PROGRAMS
         scripts/admittance_control_node.py
         scripts/lbr_command_node.py
+        scripts/figure_eight_move_to_start.py
     DESTINATION lib/${PROJECT_NAME}
 )
 
