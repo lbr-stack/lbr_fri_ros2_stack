@@ -25,7 +25,9 @@ class FigureEightMoveToStartNode(LBRPositionControlNode):
             return
 
         if self._first:
-            self._current_joint_state = optas.np.array(self.joint_states.get_position())
+            self._initial_joint_position = optas.np.array(
+                self.joint_states.get_position()
+            )
             self._start_time = time.time()
             self._first = False
 
@@ -33,7 +35,7 @@ class FigureEightMoveToStartNode(LBRPositionControlNode):
         alpha = t / self._duration
         q = (
             1.0 - alpha
-        ) * self._current_joint_state + alpha * self._start_joint_positon
+        ) * self._initial_joint_position + alpha * self._start_joint_positon
 
         if alpha > 1.0:
             self.command(self._start_joint_positon)  # avoid overshooting
