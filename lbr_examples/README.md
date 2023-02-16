@@ -28,7 +28,7 @@ ros2 run lbr_examples lbr_command_node.py
 Simple motion planning and control example. The end-effector follows a simple figure-of-eight pattern. Implementation in [scripts/figure_eight_move_to_start.py](scripts/figure_eight_move_to_start.py) and [scripts/figure_eight_node.py](scripts/figure_eight_node.py).
 - Launch robot
 ```shell
-ros2 launch lbr_bringup lbr_bringup.launch.py model:=med7 sim:=true controller:=forward_position_controller
+ros2 launch lbr_bringup lbr_bringup.launch.py model:=med7 sim:=true controller:=forward_position_controller rviz_config:=fig8_config
 ```
 
 - Move robot to start position
