@@ -38,7 +38,7 @@ ros2 run lbr_examples figure_eight_move_to_start.py
 
 - Run commanding node
 ```shell
-ros2 run lbr_Examples figure_eight_node.py
+ros2 run lbr_examples figure_eight_node.py
 ```
 
 ## C++
