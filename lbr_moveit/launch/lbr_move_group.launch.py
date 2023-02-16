@@ -122,8 +122,11 @@ def launch_setup(context, *args, **kwargs):
     )
 
     # RViz
+    rviz_config_filename = LaunchConfiguration("rviz_config").perform(context)
+    if not rviz_config_filename.endswith('.rviz'):
+        rviz_config_filename += '.rviz'
     rviz_config = PathJoinSubstitution(
-        [FindPackageShare("lbr_description"), "config/config.rviz"]
+        [FindPackageShare("lbr_description"), "config/" + rviz_config_filename]
     )
 
     rviz = Node(
@@ -182,6 +185,14 @@ def generate_launch_description():
             name="sim",
             default_value="true",
             description="Launch robot in simulation or on real setup.",
+        )
+    )
+
+    launch_args.append(
+        DeclareLaunchArgument(
+            name="rviz_config",
+            default_value="config",
+            description="Rviz configuration file.",
         )
     )
 
