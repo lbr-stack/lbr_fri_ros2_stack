@@ -32,7 +32,7 @@ class Controller:
         dq = builder.get_model_state(self.name, 0, time_deriv=1)
         builder.add_cost_term("min_dq", 0.1 * optas.sumsqr(dq))
         self.solver = optas.CasADiSolver(
-            builder.build(), throw_error_when_solver_failed=True
+            builder.build(), error_on_fail=True
         ).setup("ipopt")
         self.solution = None
 
