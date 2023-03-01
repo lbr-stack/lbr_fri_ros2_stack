@@ -23,10 +23,11 @@ class Controller(object):
         dx_gain: np.ndarray = np.array([1.0, 1.0, 1.0, 20.0, 40.0, 60.0]),
         smooth: float = 0.02,
     ) -> None:
-
         robot = optas.RobotModel(urdf_string=urdf_string)
-        J = robot.get_geometric_jacobian_function(end_link_name, root_link_name)
-        self.jacobian = lambda q: J(q).toarray()  # toarray: convert casadi.DM -> numpy.ndarray
+        J = robot.get_global_link_geometric_jacobian_function(end_link_name)
+        self.jacobian = lambda q: J(
+            q
+        ).toarray()  # toarray: convert casadi.DM -> numpy.ndarray
 
         self.f_threshold_ = f_threshold
         self.dq_gain_ = np.diag(dq_gain)
