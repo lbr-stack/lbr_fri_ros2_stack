@@ -24,7 +24,7 @@ class LBRJointStatePublisher(Node):
         )
 
     def _callback(self, msg):
-        dq = np.array(self.msg.position) - np.array(msg.measured_joint_position)
+        dq = np.array(msg.measured_joint_position) - np.array(self.msg.position)
         dt = float(msg.sample_time)
         dqdt = dq / dt
         self.msg.velocity = dqdt.tolist()
