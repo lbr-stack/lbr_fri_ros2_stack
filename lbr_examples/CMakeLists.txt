@@ -16,7 +16,7 @@ ament_target_dependencies(
     lbr_fri_msgs
 )
 
-install(    
+install(
     PROGRAMS
         scripts/admittance_control_node.py
         scripts/lbr_command_node.py
@@ -30,7 +30,7 @@ install(
   DESTINATION share/${PROJECT_NAME}
 )
 
-install(    
+install(
     TARGETS lbr_command_node
     RUNTIME DESTINATION lib/${PROJECT_NAME}
 )
