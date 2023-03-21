@@ -7,7 +7,6 @@
     <xacro:property name="joint_damping" value="10.0"/>
     <xacro:property name="joint_friction" value="0.1"/>
     <xacro:property name="max_effort" value="100"/>
-    <xacro:property name="max_velocity" value="10"/>
 
     <!-- includes -->
     <xacro:include filename="$(find lbr_description)/urdf/materials.urdf.xacro"/>
@@ -49,7 +48,7 @@
             <parent link="${robot_name}_link_0"/>
             <child link="${robot_name}_link_1"/>
             <axis xyz="0.0 0.0 1.0"/>
-            <limit effort="${max_effort}" lower="${-170 * PI / 180}" upper="${170 * PI / 180}" velocity="${max_velocity}"/>
+            <limit effort="${max_effort}" lower="${-170 * PI / 180}" upper="${170 * PI / 180}" velocity="${98 * PI / 180}"/>
             <dynamics damping="${joint_damping}" friction="${joint_friction}"/>
         </joint>
 
@@ -79,7 +78,7 @@
             <parent link="${robot_name}_link_1"/>
             <child link="${robot_name}_link_2"/>
             <axis xyz="0.0 1.0 0.0"/>
-            <limit effort="${max_effort}" lower="${-120 * PI / 180}" upper="${120 * PI / 180}" velocity="${max_velocity}"/>
+            <limit effort="${max_effort}" lower="${-120 * PI / 180}" upper="${120 * PI / 180}" velocity="${98 * PI / 180}"/>
             <dynamics damping="${joint_damping}" friction="${joint_friction}"/>
         </joint>
 
@@ -109,7 +108,7 @@
             <parent link="${robot_name}_link_2"/>
             <child link="${robot_name}_link_3"/>
             <axis xyz="0.0 0.0 1.0"/>
-            <limit effort="${max_effort}" lower="${-170 * PI / 180}" upper="${170 * PI / 180}" velocity="${max_velocity}"/>
+            <limit effort="${max_effort}" lower="${-170 * PI / 180}" upper="${170 * PI / 180}" velocity="${100 * PI / 180}"/>
             <dynamics damping="${joint_damping}" friction="${joint_friction}"/>
         </joint>
 
@@ -139,7 +138,7 @@
             <parent link="${robot_name}_link_3"/>
             <child link="${robot_name}_link_4"/>
             <axis xyz="0.0 -1.0 0.0"/>
-            <limit effort="${max_effort}" lower="${-120 * PI / 180}" upper="${120 * PI / 180}" velocity="${max_velocity}"/>
+            <limit effort="${max_effort}" lower="${-120 * PI / 180}" upper="${120 * PI / 180}" velocity="${130 * PI / 180}"/>
             <dynamics damping="${joint_damping}" friction="${joint_friction}"/>
         </joint>
 
@@ -169,7 +168,7 @@
             <parent link="${robot_name}_link_4"/>
             <child link="${robot_name}_link_5"/>
             <axis xyz="0.0 0.0 1.0"/>
-            <limit effort="${max_effort}" lower="${-170 * PI / 180}" upper="${170 * PI / 180}" velocity="${max_velocity}"/>
+            <limit effort="${max_effort}" lower="${-170 * PI / 180}" upper="${170 * PI / 180}" velocity="${140 * PI / 180}"/>
             <dynamics damping="${joint_damping}" friction="${joint_friction}"/>
         </joint>
 
@@ -199,7 +198,7 @@
             <parent link="${robot_name}_link_5"/>
             <child link="${robot_name}_link_6"/>
             <axis xyz="0.0 1.0 0.0"/>
-            <limit effort="${max_effort}" lower="${-120 * PI / 180}" upper="${120 * PI / 180}" velocity="${max_velocity}"/>
+            <limit effort="${max_effort}" lower="${-120 * PI / 180}" upper="${120 * PI / 180}" velocity="${180 * PI / 180}"/>
             <dynamics damping="${joint_damping}" friction="${joint_friction}"/>
         </joint>
 
@@ -229,7 +228,7 @@
             <parent link="${robot_name}_link_6"/>
             <child link="${robot_name}_link_7"/>
             <axis xyz="0.0 0.0 1.0"/>
-            <limit effort="${max_effort}" lower="${-175 * PI / 180}" upper="${175 * PI / 180}" velocity="${max_velocity}"/>
+            <limit effort="${max_effort}" lower="${-175 * PI / 180}" upper="${175 * PI / 180}" velocity="${180 * PI / 180}"/>
             <dynamics damping="${joint_damping}" friction="${joint_friction}"/>
         </joint>
 
