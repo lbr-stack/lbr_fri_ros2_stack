@@ -4,7 +4,6 @@ ROS2 packages for the KUKA LBR, including communication to the real robot via th
 ## Build Status
 ![Build status](https://github.com/KCL-BMEIS/lbr_fri_ros2_stack/actions/workflows/build.yml/badge.svg?branch=humble)
 
-
 ## First Steps
 Install [colcon](https://docs.ros.org/en/humble/Tutorials/Colcon-Tutorial.html#install-colcon) and [rosdep](https://docs.ros.org/en/crystal/Installation/Linux-Install-Binary.html#installing-and-initializing-rosdep). Build this repository
 ```shell
