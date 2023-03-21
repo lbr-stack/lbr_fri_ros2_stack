@@ -1,5 +1,6 @@
 import math
 import os
+import xml.etree.ElementTree as ET
 from typing import Tuple
 
 import pytest
@@ -15,14 +16,14 @@ from .lbr_model_specifications import (
 
 
 @pytest.fixture
-def setup_urdf_and_reference(kuka_id: str) -> Tuple[Robot, LBRSpecification]:
-    r"""Setup URDF and reference specifications.
+def setup_xml_and_reference(kuka_id: str) -> Tuple[str, LBRSpecification]:
+    r"""Setup XML containing URDF and reference specifications.
 
     Args:
         kuka_id (str): The KUKA model ID.
 
     Return:
-        (Tuple[Robot, LBRSpecification]): The URDF file to be tested against the LBRSpecification reference.
+        (Tuple[str, LBRSpecification]): The URDF as XML string file to be tested against the LBRSpecification reference.
     """
     lbr_specification = LBR_SPECIFICATIONS_DICT[kuka_id]
 
@@ -39,15 +40,16 @@ def setup_urdf_and_reference(kuka_id: str) -> Tuple[Robot, LBRSpecification]:
     )
 
     xml = xacro.process(path)
-    urdf = URDF.from_xml_string(xml)
-    return urdf, lbr_specification
+    return xml, lbr_specification
 
 
 @pytest.mark.parametrize("kuka_id", LBR_SPECIFICATIONS_DICT)
 def test_mass(
-    setup_urdf_and_reference: Tuple[Robot, LBRSpecification], abs_tol: float = 1.0e-5
+    setup_xml_and_reference: Tuple[str, LBRSpecification], abs_tol: float = 1.0e-5
 ) -> None:
-    urdf, lbr_specification = setup_urdf_and_reference
+    xml, lbr_specification = setup_xml_and_reference
+    urdf = URDF.from_xml_string(xml)
+
     mass_in_urdf = 0.0
     for link in urdf.links:
         if link:
@@ -62,9 +64,10 @@ def test_mass(
 
 @pytest.mark.parametrize("kuka_id", LBR_SPECIFICATIONS_DICT)
 def test_position_limits(
-    setup_urdf_and_reference: Tuple[Robot, LBRSpecification], abs_tol: float = 1.0e-5
+    setup_xml_and_reference: Tuple[str, LBRSpecification], abs_tol: float = 1.0e-5
 ) -> None:
-    urdf, lbr_specification = setup_urdf_and_reference
+    xml, lbr_specification = setup_xml_and_reference
+    urdf = URDF.from_xml_string(xml)
 
     for joint in urdf.joints:
         if joint.type == "revolute":
@@ -77,7 +80,7 @@ def test_position_limits(
             )
             if not math.isclose(urdf_min_position, kuka_min_position, abs_tol=abs_tol):
                 raise ValueError(
-                    f"Expected minimum joint position {kuka_min_position} rad, found {urdf_min_position} rad for model {lbr_specification.name}."
+                    f"Expected minimum joint position {kuka_min_position} rad, found {urdf_min_position} rad for model {lbr_specification.name} and joint {kuka_joint_name}/{urdf_joint_name}."
                 )
 
             urdf_max_position = joint.limit.upper
@@ -86,15 +89,16 @@ def test_position_limits(
             )
             if not math.isclose(urdf_max_position, kuka_max_position, abs_tol=abs_tol):
                 raise ValueError(
-                    f"Expected maximum joint position {kuka_max_position} rad, found {urdf_max_position} rad for model {lbr_specification.name}."
+                    f"Expected maximum joint position {kuka_max_position} rad, found {urdf_max_position} rad for model {lbr_specification.name} and joint {kuka_joint_name}/{urdf_joint_name}."
                 )
 
 
 @pytest.mark.parametrize("kuka_id", LBR_SPECIFICATIONS_DICT)
 def test_velocity_limits(
-    setup_urdf_and_reference: Tuple[Robot, LBRSpecification], abs_tol: float = 1.0e-5
+    setup_xml_and_reference: Tuple[str, LBRSpecification], abs_tol: float = 1.0e-5
 ) -> None:
-    urdf, lbr_specification = setup_urdf_and_reference
+    xml, lbr_specification = setup_xml_and_reference
+    urdf = URDF.from_xml_string(xml)
 
     for joint in urdf.joints:
         if joint.type == "revolute":
@@ -107,5 +111,44 @@ def test_velocity_limits(
             )
             if not math.isclose(urdf_max_velocity, kuka_max_velcoity, abs_tol=abs_tol):
                 raise ValueError(
-                    f"Expected minimum joint position {kuka_max_velcoity} rad/s, found {urdf_max_velocity} rad/s for model {lbr_specification.name}."
+                    f"Expected minimum joint position {kuka_max_velcoity} rad/s, found {urdf_max_velocity} rad/s for model {lbr_specification.name} and joint {kuka_joint_name}/{urdf_joint_name}."
                 )
+
+
+@pytest.mark.parametrize("kuka_id", LBR_SPECIFICATIONS_DICT)
+def test_position_limits_ros2_control(
+    setup_xml_and_reference: Tuple[str, LBRSpecification], abs_tol: float = 1.0e-5
+) -> None:
+    xml, lbr_specification = setup_xml_and_reference
+    xml = ET.ElementTree(ET.fromstring(xml))
+    for joint in xml.find("ros2_control").iter("joint"):
+        urdf_joint_name = "_".join(joint.get("name").split("_")[-2:])
+        kuka_joint_name = URDF_TO_KUKA_JOINT_NAME_DICT[urdf_joint_name]
+
+        for command_interface in joint.iter("command_interface"):
+            if command_interface.get("name") == "position":
+                for param in command_interface.iter("param"):
+                    if param.get("name") == "min":
+                        urdf_min_position = float(param.text)
+                        kuka_min_position = math.radians(
+                            lbr_specification.joint_limits[kuka_joint_name].min_position
+                        )
+                        if not math.isclose(
+                            urdf_min_position, kuka_min_position, abs_tol=abs_tol
+                        ):
+                            raise ValueError(
+                                f"Expected minimum joint position {kuka_min_position} rad, found {urdf_min_position} rad for model {lbr_specification.name} and position command interface joint {kuka_joint_name}/{urdf_joint_name}."
+                            )
+                    elif param.get("name") == "max":
+                        urdf_max_position = float(param.text)
+                        kuka_max_position = math.radians(
+                            lbr_specification.joint_limits[kuka_joint_name].max_position
+                        )
+                        if not math.isclose(
+                            urdf_max_position, kuka_max_position, abs_tol=abs_tol
+                        ):
+                            raise ValueError(
+                                f"Expected maximum joint position {kuka_max_position} rad, found {urdf_max_position} rad for model {lbr_specification.name} and position command interface joint {kuka_joint_name}/{urdf_joint_name}."
+                            )
+                    else:
+                        raise ValueError("Couldn't find name.")
