@@ -99,7 +99,6 @@ bool LBR::valid_joint_position_command(const std::vector<double>& joint_position
   }
   for (std::size_t i = 0; i < JOINT_DOF; ++i) {
     if (std::isnan(joint_position_command[i])) {
-      printf("Received nan joint position command on joint %lu.\n", i);
       return false;
     }
   }
@@ -114,7 +113,6 @@ bool LBR::valid_wrench_command(const std::vector<double>& wrench_command) {
   }
   for (std::size_t i = 0; i < CARTESIAN_DOF; ++i) {
     if (std::isnan(wrench_command[i])) {
-      printf("Received nan wrench command on axis %lu.\n", i);
       return false;
     }
   }
@@ -129,7 +127,6 @@ bool LBR::valid_torque_command(const std::vector<double>& torque_command) {
   }
   for (std::size_t i = 0; i < JOINT_DOF; ++i) {
     if (std::isnan(torque_command[i])) {
-      printf("Received nan torque command on joint %lu.\n", i);
       return false;
     }
   }
