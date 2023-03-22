@@ -473,10 +473,10 @@ bool LBRHardwareInterface::spawn_rt_layer_() {
         std::make_shared<realtime_tools::RealtimeBuffer<lbr_fri_msgs::msg::LBRState::SharedPtr>>(
             nullptr);
     lbr_state_sub_ = node_->create_subscription<lbr_fri_msgs::msg::LBRState>(
-        "/lbr_state", rclcpp::SystemDefaultsQoS(),
+        "/lbr_state", rclcpp::SensorDataQoS(),
         std::bind(&LBRHardwareInterface::lbr_state_cb_, this, std::placeholders::_1));
     lbr_command_pub_ = node_->create_publisher<lbr_fri_msgs::msg::LBRCommand>(
-        "/lbr_command", rclcpp::SystemDefaultsQoS());
+        "/lbr_command", rclcpp::SensorDataQoS());
     rt_lbr_command_pub_ =
         std::make_shared<realtime_tools::RealtimePublisher<lbr_fri_msgs::msg::LBRCommand>>(
             lbr_command_pub_);
@@ -494,12 +494,12 @@ bool LBRHardwareInterface::spawn_clients_() {
   }
 
   list_ctrl_clt_ = node_->create_client<controller_manager_msgs::srv::ListControllers>(
-      "/controller_manager/list_controllers", rmw_qos_profile_system_default);
+      "/controller_manager/list_controllers", rmw_qos_profile_services_default);
   switch_ctrl_clt_ = node_->create_client<controller_manager_msgs::srv::SwitchController>(
-      "/controller_manager/switch_controller", rmw_qos_profile_system_default);
+      "/controller_manager/switch_controller", rmw_qos_profile_services_default);
 
   app_connect_clt_ = node_->create_client<lbr_fri_msgs::srv::AppConnect>(
-      "/lbr_app/connect", rmw_qos_profile_system_default);
+      "/lbr_app/connect", rmw_qos_profile_services_default);
   if (!wait_for_service_<lbr_fri_msgs::srv::AppConnect>(app_connect_clt_)) {
     RCLCPP_ERROR(node_->get_logger(), "Failed.");
     return false;
@@ -507,7 +507,7 @@ bool LBRHardwareInterface::spawn_clients_() {
   RCLCPP_INFO(node_->get_logger(), "Done.");
 
   app_disconnect_clt_ = node_->create_client<lbr_fri_msgs::srv::AppDisconnect>(
-      "/lbr_app/disconnect", rmw_qos_profile_system_default);
+      "/lbr_app/disconnect", rmw_qos_profile_services_default);
   if (!wait_for_service_<lbr_fri_msgs::srv::AppDisconnect>(app_disconnect_clt_)) {
     RCLCPP_ERROR(node_->get_logger(), "Failed.");
     return false;
