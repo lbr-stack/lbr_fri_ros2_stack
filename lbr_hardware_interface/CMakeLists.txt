@@ -54,7 +54,7 @@ ament_target_dependencies(
 
 pluginlib_export_plugin_description_file(hardware_interface lbr_hardware_interface.xml)
 
-# Export for downstream usage, see https://docs.ros.org/en/foxy/Guides/Ament-CMake-Documentation.html
+# Export for downstream usage, see https://docs.ros.org/en/galactic/Guides/Ament-CMake-Documentation.html
 ament_export_targets(
   ${PROJECT_NAME}_export HAS_LIBRARY_TARGET
 )

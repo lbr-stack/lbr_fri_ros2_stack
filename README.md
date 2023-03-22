@@ -1,7 +1,10 @@
 # LBR FRI ROS2 Stack
 ROS2 packages for the KUKA LBR, including communication to the real robot via the Fast Robot Interface ([FRI](https://github.com/KCL-BMEIS/fri)), [MoveIt2](https://moveit.ros.org/) integration and [Gazebo](http://gazebosim.org/) simulation support. Included are the `iiwa7`, `iiwa14`, `med7`, and `med14`. To get going, follow the [First Steps](#first-steps).
 
-# First Steps
+## Build Status
+![Build status](https://github.com/KCL-BMEIS/lbr_fri_ros2_stack/actions/workflows/build.yml/badge.svg?branch=galactic)
+
+## First Steps
 Install [colcon](https://docs.ros.org/en/galactic/Tutorials/Colcon-Tutorial.html#install-colcon) and [rosdep](https://docs.ros.org/en/crystal/Installation/Linux-Install-Binary.html#installing-and-initializing-rosdep). Build this repository
 ```shell
 mkdir -p lbr_fri_ros2_stack_ws/src && cd lbr_fri_ros2_stack_ws
@@ -21,19 +24,19 @@ source install/setup.bash
 ros2 launch lbr_bringup lbr_bringup.launch.py model:=med7 sim:=false # model:=[iiwa7/iiwa14/med7/med14]
 ```
 
-# Real Setup
-## Setup the Controller
+## Real Setup
+### Setup the Controller
 The controller (Sunrise Cabinet) receives commands from the ROS machine via the FRI. Therefore, the server application has to be pushed onto the Sunrise Cabinet.
 - Connect an ethernet cable to port X66 on the Sunrise Cabinet
 - By default, the controller's IP address is `172.31.1.147`, set your IP to `172.31.1.148` and ping the KUKA Sunrise Cabinet
 - [Install Sunrise Workbench](#install-sunrise-workbench) (Windows required)
 - [Synchronize the Server Application](#synchronize-the-server-application)
-### Install Sunrise Workbench
+#### Install Sunrise Workbench
 This step requires Windows as OS. Sunrise Workbench is KUKA's Java IDE that allows you to program the LBR. 
 * Download it from the [RViM shared folder](https://emckclac.sharepoint.com/:u:/s/MT-BMEIS-RVIM/ETBf6gp3Ko5EvtJVziR8MZ4BLdeX8ysF13jTVmVreq0iZA?e=XJyagD) 
 * Extract the .zip file and run the Sunrise Workbench Setup
 * Follow the install instructions
-### Synchronize the Server Application
+#### Synchronize the Server Application
 To push the server application that handles the communication to the robot
  - Create a new project in Sunrise Workbench, File -> New -> Sunrise project
  - Copy the contents of [server](server) to the `src` folder inside the Sunrise project 
@@ -41,7 +44,7 @@ To push the server application that handles the communication to the robot
  - Install settings to the controller, in the Installation tab of the StationSetup.cat, press install
  - Synchronize the Sunrise project
 
-# Additional Resources
+## Additional Resources
 Additional resources can be found on the school's [Sharepoint](https://emckclac.sharepoint.com).
  - Hardware
     - [LBR Med Quickstart](https://emckclac.sharepoint.com/sites/MT-BMEIS-RVIM/Shared%20Documents/docs/inventory/kuka_lbr_med_7_R800/LBR_Med_Quick_Start_en.pdf)

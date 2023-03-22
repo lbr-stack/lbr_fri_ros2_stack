@@ -1,6 +1,16 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
-    <xacro:macro name="lbr_hardware_interface" params="sim:=^|true remote_host:=^|INADDR_ANY port_id:=^|30200 robot_name:=^|lbr">
+    <xacro:macro name="lbr_hardware_interface"
+        params="
+        joint_0_position_limit
+        joint_1_position_limit
+        joint_2_position_limit
+        joint_3_position_limit
+        joint_4_position_limit
+        joint_5_position_limit
+        joint_6_position_limit
+        effort_limit
+        sim:=^|true remote_host:=^|INADDR_ANY port_id:=^|30200 robot_name:=^|lbr">
         <!-- arg for control mode -->
 
         <ros2_control name="lbr_hardware_interface" type="system">
@@ -18,24 +28,25 @@
                 </hardware>
             </xacro:unless>
 
-            <!-- define lbr specific state interfaces as sensor, see https://github.com/ros-controls/roadmap/blob/master/design_drafts/components_architecture_and_urdf_examples.md -->
+            <!-- define lbr specific state interfaces as sensor, see
+            https://github.com/ros-controls/roadmap/blob/master/design_drafts/components_architecture_and_urdf_examples.md -->
             <xacro:unless value="${sim}">
                 <sensor name="${robot_name}_fri_sensor">
                     <!-- see KUKA::FRI::LBRState -->
-                    <state_interface name="sample_time"/>
-                    <state_interface name="session_state"/>
-                    <state_interface name="connection_quality"/>
-                    <state_interface name="safety_state"/>
-                    <state_interface name="operation_mode"/>
-                    <state_interface name="drive_state"/>
-                    <state_interface name="client_command_mode"/>
-                    <state_interface name="overlay_type"/>
-                    <state_interface name="control_mode"/>
+                    <state_interface name="sample_time" />
+                    <state_interface name="session_state" />
+                    <state_interface name="connection_quality" />
+                    <state_interface name="safety_state" />
+                    <state_interface name="operation_mode" />
+                    <state_interface name="drive_state" />
+                    <state_interface name="client_command_mode" />
+                    <state_interface name="overlay_type" />
+                    <state_interface name="control_mode" />
 
-                    <state_interface name="time_stamp_sec"/>
-                    <state_interface name="time_stamp_nano_sec"/>
+                    <state_interface name="time_stamp_sec" />
+                    <state_interface name="time_stamp_nano_sec" />
 
-                    <state_interface name="tracking_performance"/>
+                    <state_interface name="tracking_performance" />
                 </sensor>
             </xacro:unless>
 
@@ -43,135 +54,135 @@
             <joint name="${robot_name}_joint_0">
                 <command_interface name="position">
                     <!-- better to use radians as min max first -->
-                    <param name="min">-1</param>
-                    <param name="max"> 1</param>
+                    <param name="min">-${joint_0_position_limit}</param>
+                    <param name="max"> ${joint_0_position_limit}</param>
                 </command_interface>
                 <command_interface name="effort">
-                    <param name="min">-1</param>
-                    <param name="max"> 1</param>
+                    <param name="min">-${effort_limit}</param>
+                    <param name="max"> ${effort_limit}</param>
                 </command_interface>
-                <state_interface name="position"/>
-                <state_interface name="velocity"/>
-                <state_interface name="effort"/>
+                <state_interface name="position" />
+                <state_interface name="velocity" />
+                <state_interface name="effort" />
                 <xacro:unless value="${sim}">
-                    <state_interface name="commanded_joint_position"/>
-                    <state_interface name="commanded_torque"/>
-                    <state_interface name="external_torque"/>
-                    <state_interface name="ipo_joint_position"/>
+                    <state_interface name="commanded_joint_position" />
+                    <state_interface name="commanded_torque" />
+                    <state_interface name="external_torque" />
+                    <state_interface name="ipo_joint_position" />
                 </xacro:unless>
             </joint>
             <joint name="${robot_name}_joint_1">
                 <command_interface name="position">
-                    <param name="min">-1</param>
-                    <param name="max"> 1</param>
+                    <param name="min">-${joint_1_position_limit}</param>
+                    <param name="max"> ${joint_1_position_limit}</param>
                 </command_interface>
                 <command_interface name="effort">
-                    <param name="min">-1</param>
-                    <param name="max"> 1</param>
+                    <param name="min">-${effort_limit}</param>
+                    <param name="max"> ${effort_limit}</param>
                 </command_interface>
-                <state_interface name="position"/>
-                <state_interface name="velocity"/>
-                <state_interface name="effort"/>
+                <state_interface name="position" />
+                <state_interface name="velocity" />
+                <state_interface name="effort" />
                 <xacro:unless value="${sim}">
-                    <state_interface name="commanded_joint_position"/>
-                    <state_interface name="commanded_torque"/>
-                    <state_interface name="external_torque"/>
-                    <state_interface name="ipo_joint_position"/>
+                    <state_interface name="commanded_joint_position" />
+                    <state_interface name="commanded_torque" />
+                    <state_interface name="external_torque" />
+                    <state_interface name="ipo_joint_position" />
                 </xacro:unless>
             </joint>
             <joint name="${robot_name}_joint_2">
                 <command_interface name="position">
-                    <param name="min">-1</param>
-                    <param name="max"> 1</param>
+                    <param name="min">-${joint_2_position_limit}</param>
+                    <param name="max"> ${joint_2_position_limit}</param>
                 </command_interface>
                 <command_interface name="effort">
-                    <param name="min">-1</param>
-                    <param name="max"> 1</param>
+                    <param name="min">-${effort_limit}</param>
+                    <param name="max"> ${effort_limit}</param>
                 </command_interface>
-                <state_interface name="position"/>
-                <state_interface name="velocity"/>
-                <state_interface name="effort"/>
+                <state_interface name="position" />
+                <state_interface name="velocity" />
+                <state_interface name="effort" />
                 <xacro:unless value="${sim}">
-                    <state_interface name="commanded_joint_position"/>
-                    <state_interface name="commanded_torque"/>
-                    <state_interface name="external_torque"/>
-                    <state_interface name="ipo_joint_position"/>
+                    <state_interface name="commanded_joint_position" />
+                    <state_interface name="commanded_torque" />
+                    <state_interface name="external_torque" />
+                    <state_interface name="ipo_joint_position" />
                 </xacro:unless>
             </joint>
             <joint name="${robot_name}_joint_3">
                 <command_interface name="position">
-                    <param name="min">-1</param>
-                    <param name="max"> 1</param>
+                    <param name="min">-${joint_3_position_limit}</param>
+                    <param name="max"> ${joint_3_position_limit}</param>
                 </command_interface>
                 <command_interface name="effort">
-                    <param name="min">-1</param>
-                    <param name="max"> 1</param>
+                    <param name="min">-${effort_limit}</param>
+                    <param name="max"> ${effort_limit}</param>
                 </command_interface>
-                <state_interface name="position"/>
-                <state_interface name="velocity"/>
-                <state_interface name="effort"/>
+                <state_interface name="position" />
+                <state_interface name="velocity" />
+                <state_interface name="effort" />
                 <xacro:unless value="${sim}">
-                    <state_interface name="commanded_joint_position"/>
-                    <state_interface name="commanded_torque"/>
-                    <state_interface name="external_torque"/>
-                    <state_interface name="ipo_joint_position"/>
+                    <state_interface name="commanded_joint_position" />
+                    <state_interface name="commanded_torque" />
+                    <state_interface name="external_torque" />
+                    <state_interface name="ipo_joint_position" />
                 </xacro:unless>
             </joint>
             <joint name="${robot_name}_joint_4">
                 <command_interface name="position">
-                    <param name="min">-1</param>
-                    <param name="max"> 1</param>
+                    <param name="min">-${joint_4_position_limit}</param>
+                    <param name="max"> ${joint_4_position_limit}</param>
                 </command_interface>
                 <command_interface name="effort">
-                    <param name="min">-1</param>
-                    <param name="max"> 1</param>
+                    <param name="min">-${effort_limit}</param>
+                    <param name="max"> ${effort_limit}</param>
                 </command_interface>
-                <state_interface name="position"/>
-                <state_interface name="velocity"/>
-                <state_interface name="effort"/>
+                <state_interface name="position" />
+                <state_interface name="velocity" />
+                <state_interface name="effort" />
                 <xacro:unless value="${sim}">
-                    <state_interface name="commanded_joint_position"/>
-                    <state_interface name="commanded_torque"/>
-                    <state_interface name="external_torque"/>
-                    <state_interface name="ipo_joint_position"/>
+                    <state_interface name="commanded_joint_position" />
+                    <state_interface name="commanded_torque" />
+                    <state_interface name="external_torque" />
+                    <state_interface name="ipo_joint_position" />
                 </xacro:unless>
             </joint>
             <joint name="${robot_name}_joint_5">
                 <command_interface name="position">
-                    <param name="min">-1</param>
-                    <param name="max"> 1</param>
+                    <param name="min">-${joint_5_position_limit}</param>
+                    <param name="max"> ${joint_5_position_limit}</param>
                 </command_interface>
                 <command_interface name="effort">
-                    <param name="min">-1</param>
-                    <param name="max"> 1</param>
+                    <param name="min">-${effort_limit}</param>
+                    <param name="max"> ${effort_limit}</param>
                 </command_interface>
-                <state_interface name="position"/>
-                <state_interface name="velocity"/>
-                <state_interface name="effort"/>
+                <state_interface name="position" />
+                <state_interface name="velocity" />
+                <state_interface name="effort" />
                 <xacro:unless value="${sim}">
-                    <state_interface name="commanded_joint_position"/>
-                    <state_interface name="commanded_torque"/>
-                    <state_interface name="external_torque"/>
-                    <state_interface name="ipo_joint_position"/>
+                    <state_interface name="commanded_joint_position" />
+                    <state_interface name="commanded_torque" />
+                    <state_interface name="external_torque" />
+                    <state_interface name="ipo_joint_position" />
                 </xacro:unless>
             </joint>
             <joint name="${robot_name}_joint_6">
                 <command_interface name="position">
-                    <param name="min">-1</param>
-                    <param name="max"> 1</param>
+                    <param name="min">-${joint_6_position_limit}</param>
+                    <param name="max"> ${joint_6_position_limit}</param>
                 </command_interface>
                 <command_interface name="effort">
-                    <param name="min">-1</param>
-                    <param name="max"> 1</param>
+                    <param name="min">-${effort_limit}</param>
+                    <param name="max"> ${effort_limit}</param>
                 </command_interface>
-                <state_interface name="position"/>
-                <state_interface name="velocity"/>
-                <state_interface name="effort"/>
+                <state_interface name="position" />
+                <state_interface name="velocity" />
+                <state_interface name="effort" />
                 <xacro:unless value="${sim}">
-                    <state_interface name="commanded_joint_position"/>
-                    <state_interface name="commanded_torque"/>
-                    <state_interface name="external_torque"/>
-                    <state_interface name="ipo_joint_position"/>
+                    <state_interface name="commanded_joint_position" />
+                    <state_interface name="commanded_torque" />
+                    <state_interface name="external_torque" />
+                    <state_interface name="ipo_joint_position" />
                 </xacro:unless>
             </joint>
         </ros2_control>
