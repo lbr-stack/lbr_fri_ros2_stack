@@ -4,14 +4,14 @@
 <robot name="iiwa14" xmlns:xacro="http://www.ros.org/wiki/xacro">
 
     <!-- include the lbr iiwa macro -->
-    <xacro:include filename="$(find lbr_description)/urdf/iiwa14/iiwa14_description.urdf.xacro"/>
+    <xacro:include filename="$(find lbr_description)/urdf/iiwa14/iiwa14_description.urdf.xacro" />
 
-    <xacro:arg name="robot_name" default="lbr"/>
-    <xacro:arg name="sim" default="true"/>
+    <xacro:arg name="robot_name" default="lbr" />
+    <xacro:arg name="sim" default="true" />
 
     <!-- fix to world -->
-    <link name="world"/>
+    <link name="world" />
 
     <!-- iiwa -->
-    <xacro:iiwa14 parent="world" robot_name="$(arg robot_name)" sim="$(arg sim)"/>
+    <xacro:iiwa14 parent="world" robot_name="$(arg robot_name)" sim="$(arg sim)" />
 </robot>

@@ -5,6 +5,8 @@ on:
   pull_request:
     branches:
       - foxy
+  schedule:
+    - cron: '0 0 * * 0'
 
 # ros 2 ci: https://github.com/marketplace/actions/ros-2-ci-action
 # doc: https://ubuntu.com/blog/ros-2-ci-with-github-actions

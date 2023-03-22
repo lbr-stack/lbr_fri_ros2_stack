@@ -4,14 +4,14 @@
 <robot name="med7" xmlns:xacro="http://www.ros.org/wiki/xacro">
 
     <!-- include the lbr med macro -->
-    <xacro:include filename="$(find lbr_description)/urdf/med7/med7_description.urdf.xacro"/>
+    <xacro:include filename="$(find lbr_description)/urdf/med7/med7_description.urdf.xacro" />
 
-    <xacro:arg name="robot_name" default="lbr"/>
-    <xacro:arg name="sim" default="true"/>
+    <xacro:arg name="robot_name" default="lbr" />
+    <xacro:arg name="sim" default="true" />
 
     <!-- fix to world -->
-    <link name="world"/>
+    <link name="world" />
 
     <!-- med -->
-    <xacro:med7 parent="world" robot_name="$(arg robot_name)" sim="$(arg sim)"/>
+    <xacro:med7 parent="world" robot_name="$(arg robot_name)" sim="$(arg sim)" />
 </robot>
