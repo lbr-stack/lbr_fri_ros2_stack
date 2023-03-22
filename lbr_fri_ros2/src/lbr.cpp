@@ -73,12 +73,20 @@ bool LBR::valid_command(const lbr_fri_msgs::msg::LBRCommand::SharedPtr lbr_comma
     }
     break;
   case KUKA::FRI::EClientCommandMode::WRENCH:
+    if (!valid_joint_position_command(lbr_command->joint_position)) {
+      printf("Attempted to command invalid joint position.\n");
+      return false;
+    }
     if (!valid_wrench_command(lbr_command->wrench)) {
       printf("Attempted to command invalid wrench.\n");
       return false;
     }
     break;
   case KUKA::FRI::EClientCommandMode::TORQUE:
+    if (!valid_joint_position_command(lbr_command->joint_position)) {
+      printf("Attempted to command invalid joint position.\n");
+      return false;
+    }
     if (!valid_torque_command(lbr_command->torque)) {
       printf("Attempted to command invalid torques.\n");
       return false;
