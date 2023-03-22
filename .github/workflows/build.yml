@@ -4,7 +4,7 @@ on:
   push:
   pull_request:
     branches:
-      - foxy
+      - galactic
   schedule:
     - cron: '0 0 * * 0'
 
@@ -19,9 +19,9 @@ jobs:
     steps:
       - uses: ros-tooling/setup-ros@v0.2
         with:
-          required-ros-distributions: foxy
+          required-ros-distributions: galactic
       - uses: ros-tooling/action-ros-ci@v0.2
         with:
           package-name: lbr_fri_ros2_stack
-          target-ros2-distro: foxy
-          vcs-repo-file-url: https://raw.githubusercontent.com/KCL-BMEIS/lbr_fri_ros2_stack/foxy/lbr_fri_ros2_stack/repos.yml
+          target-ros2-distro: galactic
+          vcs-repo-file-url: https://raw.githubusercontent.com/KCL-BMEIS/lbr_fri_ros2_stack/galactic/lbr_fri_ros2_stack/repos.yml
