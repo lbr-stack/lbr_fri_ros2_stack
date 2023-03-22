@@ -1,45 +1,46 @@
 #include "lbr_hardware_interface/lbr_hardware_interface.hpp"
 
 namespace lbr_hardware_interface {
-CallbackReturn LBRHardwareInterface::on_init(const hardware_interface::HardwareInfo &info) {
+hardware_interface::return_type
+LBRHardwareInterface::configure(const hardware_interface::HardwareInfo &info) {
   node_ = std::make_shared<rclcpp::Node>("fri_hardware_interface_node");
 
-  auto ret = hardware_interface::SystemInterface::on_init(info);
-  if (ret != CallbackReturn::SUCCESS) {
+  auto ret = configure_default(info);
+  if (ret != hardware_interface::return_type::OK) {
     RCLCPP_ERROR(node_->get_logger(), "Failed to initialize SystemInterface.");
     return ret;
   }
 
   if (!init_lbr_()) {
-    return CallbackReturn::ERROR;
+    return hardware_interface::return_type::ERROR;
   }
 
   if (!init_command_interfaces_()) {
-    return CallbackReturn::ERROR;
+    return hardware_interface::return_type::ERROR;
   }
 
   if (!init_state_interfaces_()) {
-    return CallbackReturn::ERROR;
+    return hardware_interface::return_type::ERROR;
   }
 
   if (!init_last_hw_states_()) {
-    return CallbackReturn::ERROR;
+    return hardware_interface::return_type::ERROR;
   }
 
   if (!verify_number_of_joints_()) {
-    return CallbackReturn::ERROR;
+    return hardware_interface::return_type::ERROR;
   }
 
   if (!verify_joint_command_interfaces_()) {
-    return CallbackReturn::ERROR;
+    return hardware_interface::return_type::ERROR;
   }
 
   if (!verify_joint_state_interfaces_()) {
-    return CallbackReturn::ERROR;
+    return hardware_interface::return_type::ERROR;
   }
 
   if (!verify_sensors_()) {
-    return CallbackReturn::ERROR;
+    return hardware_interface::return_type::ERROR;
   }
 
   // read port_id and remote_host from lbr.ros2_control.xacro
@@ -50,15 +51,15 @@ CallbackReturn LBRHardwareInterface::on_init(const hardware_interface::HardwareI
 
   if (port_id_ < 30200 || port_id_ > 30209) {
     RCLCPP_ERROR(node_->get_logger(), "Expected port_id in [30200, 30209]. Found %d.", port_id_);
-    return CallbackReturn::ERROR;
+    return hardware_interface::return_type::ERROR;
   }
 
   if (!spawn_rt_layer_()) {
-    return CallbackReturn::ERROR;
+    return hardware_interface::return_type::ERROR;
   }
 
   if (!spawn_clients_()) {
-    return CallbackReturn::ERROR;
+    return hardware_interface::return_type::ERROR;
   }
 
   node_thread_ = std::make_unique<std::thread>([this]() {
@@ -66,7 +67,7 @@ CallbackReturn LBRHardwareInterface::on_init(const hardware_interface::HardwareI
     disconnect_();
   });
 
-  return CallbackReturn::SUCCESS;
+  return hardware_interface::return_type::OK;
 }
 
 std::vector<hardware_interface::StateInterface> LBRHardwareInterface::export_state_interfaces() {
@@ -158,20 +159,20 @@ hardware_interface::return_type LBRHardwareInterface::prepare_command_mode_switc
   return hardware_interface::return_type::OK;
 }
 
-CallbackReturn LBRHardwareInterface::on_activate(const rclcpp_lifecycle::State &/*previous_state*/) {
+hardware_interface::return_type LBRHardwareInterface::start() {
   if (!connect_()) {
     RCLCPP_ERROR(node_->get_logger(), "Failed to connect to robot.");
-    return CallbackReturn::ERROR;
+    return hardware_interface::return_type::ERROR;
   }
-  return CallbackReturn::SUCCESS;
+  return hardware_interface::return_type::OK;
 }
 
-CallbackReturn LBRHardwareInterface::on_deactivate(const rclcpp_lifecycle::State &/*previous_state*/) {
+hardware_interface::return_type LBRHardwareInterface::stop() {
   if (!disconnect_()) {
     RCLCPP_ERROR(node_->get_logger(), "Failed to disconnect from robot.");
-    return CallbackReturn::ERROR;
+    return hardware_interface::return_type::ERROR;
   }
-  return CallbackReturn::SUCCESS;
+  return hardware_interface::return_type::OK;
 }
 
 hardware_interface::return_type LBRHardwareInterface::read() {
