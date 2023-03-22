@@ -1,7 +1,7 @@
 # Message that holds commands that are exposed through the
 # Fast Robot Interface (FRI).
 #
-# Following commands are exposes (refer to KUKA::FRI::LBRCommand in friLBRCommand.h for documentation)
+# Following commands are exposed (refer to KUKA::FRI::LBRCommand in friLBRCommand.h for documentation)
 #
 #  * joint_position [rad]
 #  * wrench [N/Nm]
