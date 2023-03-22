@@ -70,17 +70,6 @@ def launch_setup(context, *args, **kwargs):
         ],
     )
 
-    lbr_state_broadcaster = Node(
-        package="controller_manager",
-        executable="spawner.py",
-        arguments=[
-            "lbr_state_broadcaster",
-            "--controller-manager",
-            "/controller_manager",
-        ],
-        condition=UnlessCondition(LaunchConfiguration("sim")),
-    )
-
     controller = Node(
         package="controller_manager",
         executable="spawner.py",
@@ -95,7 +84,6 @@ def launch_setup(context, *args, **kwargs):
         controller_manager,
         robot_state_publisher,
         joint_state_broadcaster,
-        lbr_state_broadcaster,
         controller,
     ]
 
