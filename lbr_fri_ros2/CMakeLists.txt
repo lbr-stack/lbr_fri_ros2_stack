@@ -17,7 +17,7 @@ add_library(lbr_fri_ros2
   SHARED 
     src/lbr_app_node.cpp
     src/lbr_client.cpp
-    src/lbr.cpp
+    src/lbr_intermediary.cpp
 )
 
 target_include_directories(${PROJECT_NAME}

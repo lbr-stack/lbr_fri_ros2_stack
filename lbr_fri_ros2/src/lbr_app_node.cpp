@@ -35,8 +35,8 @@ LBRAppNode::LBRAppNode(const std::string &node_name, const int &port_id,
       std::make_shared<realtime_tools::RealtimePublisher<lbr_fri_msgs::msg::LBRState>>(
           lbr_state_pub_);
 
-  lbr_ = std::make_shared<LBR>();
-  lbr_client_ = std::make_shared<LBRClient>(lbr_);
+  lbr_intermediary_ = std::make_shared<LBRIntermediary>();
+  lbr_client_ = std::make_shared<LBRClient>(lbr_intermediary_);
   connection_ = std::make_unique<KUKA::FRI::UdpConnection>();
   app_ = std::make_unique<KUKA::FRI::ClientApplication>(*connection_, *lbr_client_);
 
@@ -96,15 +96,11 @@ bool LBRAppNode::connect_(const int &port_id, const char *const remote_host) {
         while (success && connected_ && rclcpp::ok()) {
           try {
             auto lbr_command = *lbr_command_rt_buf_->readFromRT();
-            if (lbr_->valid_command(lbr_command)) {
-              lbr_->command = lbr_command;
-            }
+            lbr_intermediary_->command_to_buffer(lbr_command);
             success = app_->step();
-            if (lbr_->valid_state()) {
-              if (lbr_state_rt_pub_->trylock()) {
-                lbr_state_rt_pub_->msg_ = *lbr_->state;
-                lbr_state_rt_pub_->unlockAndPublish();
-              }
+            if (lbr_state_rt_pub_->trylock()) {
+              lbr_intermediary_->buffer_to_state(lbr_state_rt_pub_->msg_);
+              lbr_state_rt_pub_->unlockAndPublish();
             }
           } catch (const std::exception &e) {
             RCLCPP_ERROR(get_logger(), e.what());
