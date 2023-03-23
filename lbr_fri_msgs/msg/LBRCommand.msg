@@ -7,6 +7,6 @@
 #  * wrench [N/Nm]
 #  * torque [Nm]
 
-float64[] joint_position
-float64[] wrench
-float64[] torque
+float64[7] joint_position
+float64[6] wrench
+float64[7] torque

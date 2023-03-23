@@ -37,10 +37,10 @@ int8 control_mode
 uint32 time_stamp_sec
 uint32 time_stamp_nano_sec
 
-float64[] measured_joint_position
-float64[] commanded_joint_position
-float64[] measured_torque
-float64[] commanded_torque
-float64[] external_torque
-float64[] ipo_joint_position
+float64[7] measured_joint_position
+float64[7] commanded_joint_position
+float64[7] measured_torque
+float64[7] commanded_torque
+float64[7] external_torque
+float64[7] ipo_joint_position
 float64 tracking_performance
