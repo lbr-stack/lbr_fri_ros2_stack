@@ -7,7 +7,7 @@ LBRClient::LBRClient(const std::shared_ptr<lbr_fri_ros2::LBRIntermediary> lbr_in
 void LBRClient::onStateChange(KUKA::FRI::ESessionState old_state,
                               KUKA::FRI::ESessionState new_state) {
   printf("LBR switched from %s to %s.\n", session_state_to_string_(old_state).c_str(),
-         session_state_to_string(new_state).c_str());
+         session_state_to_string_(new_state).c_str());
 }
 void LBRClient::monitor() { state_to_buffer_(); }
 
