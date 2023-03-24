@@ -1,7 +1,6 @@
 #include "lbr_fri_ros2/lbr_intermediary.hpp"
 
 namespace lbr_fri_ros2 {
-
 LBRIntermediary::LBRIntermediary() {
   if (!reset_buffers_()) {
     throw std::runtime_error("Failed to reset buffers.");

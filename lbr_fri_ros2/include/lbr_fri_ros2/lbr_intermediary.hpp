@@ -15,7 +15,6 @@
 #include "lbr_fri_msgs/msg/lbr_state.hpp"
 
 namespace lbr_fri_ros2 {
-
 class LBRIntermediary {
   static const uint8_t JOINT_DOF = KUKA::FRI::LBRState::NUMBER_OF_JOINTS;
   static const uint8_t CARTESIAN_DOF = 6;

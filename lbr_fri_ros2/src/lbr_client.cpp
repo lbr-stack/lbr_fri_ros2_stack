@@ -1,28 +1,43 @@
 #include "lbr_fri_ros2/lbr_client.hpp"
 
 namespace lbr_fri_ros2 {
-
 LBRClient::LBRClient(const std::shared_ptr<lbr_fri_ros2::LBRIntermediary> lbr_intermediary)
     : lbr_intermediary_(lbr_intermediary){};
 
 void LBRClient::onStateChange(KUKA::FRI::ESessionState old_state,
                               KUKA::FRI::ESessionState new_state) {
-  printf("LBR switched from %s to %s.\n", session_state_to_string(old_state).c_str(),
+  printf("LBR switched from %s to %s.\n", session_state_to_string_(old_state).c_str(),
          session_state_to_string(new_state).c_str());
 }
-void LBRClient::monitor() { lbr_intermediary_->state_to_buffer(robotState()); }
+void LBRClient::monitor() { state_to_buffer_(); }
 
 void LBRClient::waitForCommand() {
   KUKA::FRI::LBRClient::waitForCommand();
-  lbr_intermediary_->state_to_buffer(robotState());
+  state_to_buffer_();
+  if (robotState().getClientCommandMode() == KUKA::FRI::EClientCommandMode::WRENCH ||
+      robotState().getClientCommandMode() == KUKA::FRI::EClientCommandMode::TORQUE) {
+    buffer_to_command_();
+  }
 }
 
 void LBRClient::command() {
-  lbr_intermediary_->state_to_buffer(robotState());
-  lbr_intermediary_->buffer_to_command(robotCommand());
+  state_to_buffer_();
+  buffer_to_command_();
 }
 
-std::string LBRClient::session_state_to_string(const KUKA::FRI::ESessionState &state) {
+void LBRClient::buffer_to_command_() {
+  if (!lbr_intermediary_->buffer_to_command(robotCommand())) {
+    throw std::runtime_error("Failed to write buffer to command.");
+  }
+}
+
+void LBRClient::state_to_buffer_() {
+  if (!lbr_intermediary_->state_to_buffer(robotState())) {
+    throw std::runtime_error("Failed to write state to buffer.");
+  }
+}
+
+std::string LBRClient::session_state_to_string_(const KUKA::FRI::ESessionState &state) {
   switch (state) {
   case KUKA::FRI::ESessionState::IDLE:
     return "IDLE";

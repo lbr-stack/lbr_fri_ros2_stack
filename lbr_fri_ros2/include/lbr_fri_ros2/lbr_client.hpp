@@ -2,6 +2,7 @@
 #define LBR_FRI_ROS2__LBR_CLIENT_HPP_
 
 #include <memory>
+#include <stdexcept>
 
 #include "fri/friClientIf.h"
 #include "fri/friLBRClient.h"
@@ -20,7 +21,10 @@ public:
   void command() override;
 
 protected:
-  std::string session_state_to_string(const KUKA::FRI::ESessionState &state);
+  void buffer_to_command_();
+  void state_to_buffer_();
+
+  std::string session_state_to_string_(const KUKA::FRI::ESessionState &state);
 
   const std::shared_ptr<lbr_fri_ros2::LBRIntermediary> lbr_intermediary_;
 };
