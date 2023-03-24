@@ -257,7 +257,7 @@ bool LBRIntermediary::lbr_state_is_nan_(
         std::isnan(lbr_state->commanded_torque[i]) || std::isnan(lbr_state->external_torque[i]) ||
         std::isnan(lbr_state->measured_joint_position[i]) ||
         std::isnan(lbr_state->measured_torque[i])) {
-      printf("Found nan for state in joint %d.\n", i);
+      printf("Found nan for state in joint %lu.\n", i);
       return false;
     }
   }
@@ -265,7 +265,7 @@ bool LBRIntermediary::lbr_state_is_nan_(
       lbr_state->session_state == KUKA::FRI::COMMANDING_ACTIVE) {
     for (std::size_t i = 0; i < lbr_state->ipo_joint_position.size(); ++i) {
       if (std::isnan(lbr_state->ipo_joint_position[i])) {
-        printf("Found nan for interpolated joint position in joint %d.\n", i);
+        printf("Found nan for interpolated joint position in joint %lu.\n", i);
         return false;
       }
     }
