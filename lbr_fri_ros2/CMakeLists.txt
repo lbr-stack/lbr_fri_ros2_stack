@@ -18,6 +18,7 @@ add_library(lbr_fri_ros2
     src/lbr_app_node.cpp
     src/lbr_client.cpp
     src/lbr_intermediary.cpp
+    src/lbr_limit_guard.cpp
 )
 
 target_include_directories(${PROJECT_NAME}
