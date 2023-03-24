@@ -23,6 +23,9 @@ class LBRIntermediary {
   using JointArray = decltype(lbr_fri_msgs::msg::LBRCommand::joint_position);
   using WrenchArray = decltype(lbr_fri_msgs::msg::LBRCommand::wrench);
 
+  static constexpr auto JOINT_ZEROS = JointArray{0.};
+  static constexpr auto WRENCH_ZEROS = WrenchArray{0.};
+
 public:
   LBRIntermediary();
 
@@ -43,6 +46,8 @@ protected:
   bool valid_joint_position_command_(const JointArray &joint_position_command) const;
   bool valid_wrench_command_(const WrenchArray &wrench_command) const;
   bool valid_torque_command_(const JointArray &torque_command) const;
+
+  bool valid_lbr_state_(const lbr_fri_msgs::msg::LBRState::ConstSharedPtr lbr_state) const;
 
   lbr_fri_msgs::msg::LBRCommand::SharedPtr lbr_command_buffer_;
   lbr_fri_msgs::msg::LBRState::SharedPtr lbr_state_buffer_;

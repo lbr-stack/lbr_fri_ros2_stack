@@ -90,22 +90,27 @@ bool LBRIntermediary::buffer_to_command(KUKA::FRI::LBRCommand &lbr_command) cons
         return false;
       }
     } else {
-      switch (lbr_state_buffer_->client_command_mode) {
-      case KUKA::FRI::EClientCommandMode::NO_COMMAND_MODE:
-        return true;
-      case KUKA::FRI::EClientCommandMode::POSITION:
-        lbr_command.setJointPosition(lbr_state_buffer_->measured_joint_position.data());
-        return true;
-      case KUKA::FRI::EClientCommandMode::WRENCH:
-        lbr_command.setJointPosition(lbr_state_buffer_->measured_joint_position.data());
-        // lbr_command.setJointPosition(lbr_state_buffer_->measured_joint_position());
-        return true;
-      case KUKA::FRI::EClientCommandMode::TORQUE:
-        lbr_command.setJointPosition(lbr_state_buffer_->measured_joint_position.data());
-        // lbr_command.setJointPosition(lbr_state_buffer_->measured_joint_position());
-        return true;
-      default:
-        printf("Unknown EClientCommandMode provided.\n");
+      if (valid_lbr_state_(lbr_state_buffer_)) {
+        switch (lbr_state_buffer_->client_command_mode) {
+        case KUKA::FRI::EClientCommandMode::NO_COMMAND_MODE:
+          return true;
+        case KUKA::FRI::EClientCommandMode::POSITION:
+          lbr_command.setJointPosition(lbr_state_buffer_->measured_joint_position.data());
+          return true;
+        case KUKA::FRI::EClientCommandMode::WRENCH:
+          lbr_command.setJointPosition(lbr_state_buffer_->measured_joint_position.data());
+          lbr_command.setWrench(WRENCH_ZEROS.data());
+          return true;
+        case KUKA::FRI::EClientCommandMode::TORQUE:
+          lbr_command.setJointPosition(lbr_state_buffer_->measured_joint_position.data());
+          lbr_command.setTorque(JOINT_ZEROS.data());
+          return true;
+        default:
+          printf("Unknown EClientCommandMode provided.\n");
+          return false;
+        }
+      } else {
+        printf("Attempted to set command from invalid state.\n");
         return false;
       }
     }
@@ -230,6 +235,51 @@ bool LBRIntermediary::valid_torque_command_(const JointArray &torque_command) co
     if (std::isnan(torque_command[i])) {
       return false;
     }
+  }
+  return true;
+}
+
+bool LBRIntermediary::valid_lbr_state_(
+    const lbr_fri_msgs::msg::LBRState::ConstSharedPtr lbr_state) const {
+  if (!lbr_state) {
+    printf("Found no state.\n");
+    return false;
+  }
+  if (lbr_state->commanded_joint_position.size() != JOINT_DOF ||
+      lbr_state->commanded_torque.size() != JOINT_DOF ||
+      lbr_state->external_torque.size() != JOINT_DOF ||
+      lbr_state->ipo_joint_position.size() != JOINT_DOF ||
+      lbr_state->measured_joint_position.size() != JOINT_DOF ||
+      lbr_state->measured_torque.size() != JOINT_DOF) {
+    printf("State of invalid size found.\n");
+    return false;
+  }
+  for (uint8_t i = 0; i < JOINT_DOF; ++i) {
+    if (std::isnan(lbr_state->commanded_joint_position[i]) ||
+        std::isnan(lbr_state->commanded_torque[i]) || std::isnan(lbr_state->external_torque[i]) ||
+        std::isnan(lbr_state->measured_joint_position[i]) ||
+        std::isnan(lbr_state->measured_torque[i])) {
+      printf("Found nan for state in joint %d.\n", i);
+      return false;
+    }
+  }
+  if (lbr_state->session_state == KUKA::FRI::COMMANDING_WAIT ||
+      lbr_state->session_state == KUKA::FRI::COMMANDING_ACTIVE) {
+    for (uint8_t i = 0; i < JOINT_DOF; ++i) {
+      if (std::isnan(lbr_state->ipo_joint_position[i])) {
+        printf("Found nan for interpolated joint position in joint %d.\n", i);
+        return false;
+      }
+    }
+  }
+  if (std::isnan(lbr_state->client_command_mode) || std::isnan(lbr_state->connection_quality) ||
+      std::isnan(lbr_state->control_mode) || std::isnan(lbr_state->drive_state) ||
+      std::isnan(lbr_state->operation_mode) || std::isnan(lbr_state->overlay_type) ||
+      std::isnan(lbr_state->safety_state) || std::isnan(lbr_state->sample_time) ||
+      std::isnan(lbr_state->session_state) || std::isnan(lbr_state->time_stamp_nano_sec) ||
+      std::isnan(lbr_state->time_stamp_sec) || std::isnan(lbr_state->tracking_performance)) {
+    printf("Found nan in other state variables.\n");
+    return false;
   }
   return true;
 }
