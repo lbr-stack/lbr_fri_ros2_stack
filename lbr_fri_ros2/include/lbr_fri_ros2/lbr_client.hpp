@@ -21,6 +21,7 @@ public:
   void command() override;
 
 protected:
+  void zero_command_();
   void buffer_to_command_();
   void state_to_buffer_();
 

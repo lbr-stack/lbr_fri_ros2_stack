@@ -1,6 +1,22 @@
 #include "lbr_fri_ros2/lbr_intermediary.hpp"
 
 namespace lbr_fri_ros2 {
+bool LBRIntermediary::zero_command_buffer(const KUKA::FRI::LBRState &lbr_state) {
+  try {
+    auto commanded_joint_position = lbr_state.getCommandedJointPosition();
+    std::copy(commanded_joint_position,
+              commanded_joint_position + KUKA::FRI::LBRState::NUMBER_OF_JOINTS,
+              lbr_command_buffer_.joint_position.begin());
+    lbr_command_buffer_.wrench.fill(0.);
+    lbr_command_buffer_.torque.fill(0.);
+
+  } catch (const std::exception &e) {
+    printf("Failed to zero the command.\n%s", e.what());
+    return false;
+  }
+  return true;
+}
+
 bool LBRIntermediary::command_to_buffer(
     const lbr_fri_msgs::msg::LBRCommand::ConstSharedPtr lbr_command) {
   if (!lbr_command) {
@@ -12,44 +28,23 @@ bool LBRIntermediary::command_to_buffer(
 
 bool LBRIntermediary::buffer_to_command(KUKA::FRI::LBRCommand &lbr_command) const {
   try {
-    if (lbr_state_buffer_.client_command_mode == KUKA::FRI::ESessionState::COMMANDING_ACTIVE) {
-      switch (lbr_state_buffer_.client_command_mode) {
-      case KUKA::FRI::EClientCommandMode::NO_COMMAND_MODE:
-        return true;
-      case KUKA::FRI::EClientCommandMode::POSITION:
-        lbr_command.setJointPosition(lbr_command_buffer_.joint_position.data());
-        return true;
-      case KUKA::FRI::EClientCommandMode::WRENCH:
-        lbr_command.setJointPosition(lbr_command_buffer_.joint_position.data());
-        lbr_command.setWrench(lbr_command_buffer_.wrench.data());
-        return true;
-      case KUKA::FRI::EClientCommandMode::TORQUE:
-        lbr_command.setJointPosition(lbr_command_buffer_.joint_position.data());
-        lbr_command.setTorque(lbr_command_buffer_.torque.data());
-        return true;
-      default:
-        printf("Unknown EClientCommandMode provided.\n");
-        return false;
-      }
-    } else {
-      switch (lbr_state_buffer_.client_command_mode) {
-      case KUKA::FRI::EClientCommandMode::NO_COMMAND_MODE:
-        return true;
-      case KUKA::FRI::EClientCommandMode::POSITION:
-        lbr_command.setJointPosition(lbr_state_buffer_.commanded_joint_position.data());
-        return true;
-      case KUKA::FRI::EClientCommandMode::WRENCH:
-        lbr_command.setJointPosition(lbr_state_buffer_.commanded_joint_position.data());
-        lbr_command.setWrench(WRENCH_ZEROS.data());
-        return true;
-      case KUKA::FRI::EClientCommandMode::TORQUE:
-        lbr_command.setJointPosition(lbr_state_buffer_.commanded_joint_position.data());
-        lbr_command.setTorque(JOINT_ZEROS.data());
-        return true;
-      default:
-        printf("Unknown EClientCommandMode provided.\n");
-        return false;
-      }
+    switch (lbr_state_buffer_.client_command_mode) {
+    case KUKA::FRI::EClientCommandMode::NO_COMMAND_MODE:
+      return true;
+    case KUKA::FRI::EClientCommandMode::POSITION:
+      lbr_command.setJointPosition(lbr_command_buffer_.joint_position.data());
+      return true;
+    case KUKA::FRI::EClientCommandMode::WRENCH:
+      lbr_command.setJointPosition(lbr_command_buffer_.joint_position.data());
+      lbr_command.setWrench(lbr_command_buffer_.wrench.data());
+      return true;
+    case KUKA::FRI::EClientCommandMode::TORQUE:
+      lbr_command.setJointPosition(lbr_command_buffer_.joint_position.data());
+      lbr_command.setTorque(lbr_command_buffer_.torque.data());
+      return true;
+    default:
+      printf("Unknown EClientCommandMode provided.\n");
+      return false;
     }
   } catch (const std::exception &e) {
     printf("Failed to move buffer to command.\n%s", e.what());

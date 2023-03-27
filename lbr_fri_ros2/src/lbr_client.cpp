@@ -14,15 +14,18 @@ void LBRClient::monitor() { state_to_buffer_(); }
 void LBRClient::waitForCommand() {
   KUKA::FRI::LBRClient::waitForCommand();
   state_to_buffer_();
-  if (robotState().getClientCommandMode() == KUKA::FRI::EClientCommandMode::WRENCH ||
-      robotState().getClientCommandMode() == KUKA::FRI::EClientCommandMode::TORQUE) {
-    buffer_to_command_();
-  }
+  zero_command_();
 }
 
 void LBRClient::command() {
   state_to_buffer_();
   buffer_to_command_();
+}
+
+void LBRClient::zero_command_() {
+  if (!lbr_intermediary_->zero_command_buffer(robotState())) {
+    throw std::runtime_error("Failed to zero the command.");
+  }
 }
 
 void LBRClient::buffer_to_command_() {

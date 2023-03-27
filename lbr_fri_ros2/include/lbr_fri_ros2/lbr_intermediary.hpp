@@ -22,6 +22,7 @@ class LBRIntermediary {
 public:
   LBRIntermediary() = default;
 
+  bool zero_command_buffer(const KUKA::FRI::LBRState &lbr_state);
   bool command_to_buffer(const lbr_fri_msgs::msg::LBRCommand::ConstSharedPtr lbr_command);
   bool buffer_to_command(KUKA::FRI::LBRCommand &lbr_command) const;
 
