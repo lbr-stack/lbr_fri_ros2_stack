@@ -20,7 +20,14 @@ install(
     PROGRAMS
         scripts/admittance_control_node.py
         scripts/lbr_command_node.py
+	scripts/lbr_joint_state_publisher.py
+	scripts/lbr_ext_torque_example.py
     DESTINATION lib/${PROJECT_NAME}
+)
+
+install(
+  DIRECTORY launch rviz_config
+  DESTINATION share/${PROJECT_NAME}
 )
 
 install(
