@@ -35,7 +35,13 @@ LBRAppNode::LBRAppNode(const std::string &node_name, const int &port_id,
       std::make_shared<realtime_tools::RealtimePublisher<lbr_fri_msgs::msg::LBRState>>(
           lbr_state_pub_);
 
-  lbr_intermediary_ = std::make_shared<LBRIntermediary>();
+  std::string robot_description;
+  declare_parameter<std::string>("robot_description");
+  if (!get_parameter("robot_description", robot_description)) {
+    throw std::runtime_error("Failed to receive robot_description parameter.");
+  }
+
+  lbr_intermediary_ = std::make_shared<LBRIntermediary>(LBRCommandGuard{robot_description});
   lbr_client_ = std::make_shared<LBRClient>(lbr_intermediary_);
   connection_ = std::make_unique<KUKA::FRI::UdpConnection>();
   app_ = std::make_unique<KUKA::FRI::ClientApplication>(*connection_, *lbr_client_);

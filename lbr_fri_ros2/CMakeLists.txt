@@ -7,11 +7,12 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
+find_package(fri REQUIRED)
+find_package(lbr_fri_msgs REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(realtime_tools REQUIRED)
 find_package(std_srvs REQUIRED)
-find_package(lbr_fri_msgs REQUIRED)
-find_package(fri REQUIRED)
+find_package(urdf REQUIRED)
 
 add_library(lbr_fri_ros2
   SHARED 
@@ -26,20 +27,22 @@ target_include_directories(${PROJECT_NAME}
 )
 
 ament_target_dependencies(${PROJECT_NAME}
+  fri
+  lbr_fri_msgs
   rclcpp
   realtime_tools
   std_srvs
-  lbr_fri_msgs
-  fri
+  urdf
 )
 
 ament_export_targets(${PROJECT_NAME}_export HAS_LIBRARY_TARGET)
 ament_export_dependencies(
+  fri
+  lbr_fri_msgs
   rclcpp
   realtime_tools
   std_srvs
-  lbr_fri_msgs
-  fri
+  urdf
 )
 
 install(

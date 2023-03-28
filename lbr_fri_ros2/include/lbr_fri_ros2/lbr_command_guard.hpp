@@ -7,6 +7,8 @@
 #include <cstdio>
 #include <string>
 
+#include "urdf/model.h"
+
 #include "fri/friClientIf.h"
 
 #include "lbr_fri_msgs/msg/lbr_command.hpp"
@@ -20,6 +22,7 @@ public:
   LBRCommandGuard() = delete;
   LBRCommandGuard(const JointArray &min_position, const JointArray &max_position,
                   const JointArray &max_velocity, const JointArray &max_torque);
+  LBRCommandGuard(const std::string &robot_description);
 
   bool is_valid_command(const lbr_fri_msgs::msg::LBRCommand &lbr_command,
                         const lbr_fri_msgs::msg::LBRState &lbr_state) const;

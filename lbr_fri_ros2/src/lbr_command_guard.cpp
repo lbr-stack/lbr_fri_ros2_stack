@@ -6,6 +6,30 @@ LBRCommandGuard::LBRCommandGuard(const JointArray &min_position, const JointArra
     : min_position_(min_position), max_position_(max_position), max_velocity_(max_velocity),
       max_torque_(max_torque) {}
 
+LBRCommandGuard::LBRCommandGuard(const std::string &robot_description) {
+  urdf::Model model;
+  if (!model.initString(robot_description)) {
+    throw std::runtime_error("Failed to intialize urdf model from robot description.");
+  }
+  std::size_t jnt_cnt = 0;
+  for (const auto &name_joint_pair : model.joints_) {
+    const auto joint = name_joint_pair.second;
+    if (joint->type == urdf::Joint::REVOLUTE) {
+      if (jnt_cnt > std::tuple_size<lbr_fri_msgs::msg::LBRState::_measured_joint_position_type>()) {
+        throw std::runtime_error("Found too many joints in robot description.");
+      }
+      min_position_[jnt_cnt] = joint->limits->lower;
+      max_position_[jnt_cnt] = joint->limits->upper;
+      max_velocity_[jnt_cnt] = joint->limits->velocity;
+      max_torque_[jnt_cnt] = joint->limits->effort;
+      ++jnt_cnt;
+    }
+  }
+  if (jnt_cnt != std::tuple_size<lbr_fri_msgs::msg::LBRState::_measured_joint_position_type>()) {
+    throw std::runtime_error("Didn't find expected number of joints in robot description");
+  };
+}
+
 bool LBRCommandGuard::is_valid_command(const lbr_fri_msgs::msg::LBRCommand &lbr_command,
                                        const lbr_fri_msgs::msg::LBRState &lbr_state) const {
   switch (lbr_state.client_command_mode) {
