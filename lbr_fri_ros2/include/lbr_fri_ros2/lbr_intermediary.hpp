@@ -13,12 +13,6 @@
 
 namespace lbr_fri_ros2 {
 class LBRIntermediary {
-  using JointArray = decltype(lbr_fri_msgs::msg::LBRCommand::joint_position);
-  using WrenchArray = decltype(lbr_fri_msgs::msg::LBRCommand::wrench);
-
-  static constexpr auto JOINT_ZEROS = JointArray{0.};
-  static constexpr auto WRENCH_ZEROS = WrenchArray{0.};
-
 public:
   LBRIntermediary() = default;
 

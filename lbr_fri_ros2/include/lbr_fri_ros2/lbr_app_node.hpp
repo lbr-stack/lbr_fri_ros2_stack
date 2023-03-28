@@ -42,6 +42,8 @@ protected:
   bool connect_(const int &port_id = 30200, const char *const remote_host = NULL);
   bool disconnect_();
 
+  void step_();
+
   std::unique_ptr<std::thread> app_step_thread_;
 
   const char *remote_host_;
