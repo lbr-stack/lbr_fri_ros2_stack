@@ -1,6 +1,9 @@
 #include "lbr_fri_ros2/lbr_intermediary.hpp"
 
 namespace lbr_fri_ros2 {
+LBRIntermediary::LBRIntermediary(const lbr_fri_ros2::LBRCommandGuard &lbr_command_guard)
+    : lbr_command_guard_(std::make_unique<LBRCommandGuard>(lbr_command_guard)) {}
+
 bool LBRIntermediary::zero_command_buffer(const KUKA::FRI::LBRState &lbr_state) {
   try {
     auto commanded_joint_position = lbr_state.getCommandedJointPosition();
@@ -22,8 +25,11 @@ bool LBRIntermediary::command_to_buffer(
   if (!lbr_command) {
     return false;
   }
-  lbr_command_buffer_ = *lbr_command;
-  return true;
+  if (lbr_command_guard_->is_valid_command(*lbr_command, lbr_state_buffer_)) {
+    lbr_command_buffer_ = *lbr_command;
+    return true;
+  }
+  return false;
 }
 
 bool LBRIntermediary::buffer_to_command(KUKA::FRI::LBRCommand &lbr_command) const {
