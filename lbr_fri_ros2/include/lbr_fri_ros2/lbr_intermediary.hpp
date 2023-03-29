@@ -26,6 +26,9 @@ public:
   bool state_to_buffer(const KUKA::FRI::LBRState &lbr_state);
   bool buffer_to_state(lbr_fri_msgs::msg::LBRState &lbr_state) const;
 
+  inline const lbr_fri_msgs::msg::LBRCommand &lbr_command() const { return lbr_command_buffer_; };
+  inline const lbr_fri_msgs::msg::LBRState &lbr_state() const { return lbr_state_buffer_; };
+
 protected:
   std::unique_ptr<lbr_fri_ros2::LBRCommandGuard> lbr_command_guard_;
   lbr_fri_msgs::msg::LBRCommand lbr_command_buffer_;
