@@ -11,21 +11,9 @@ LBRHardwareInterface::on_init(const hardware_interface::HardwareInfo &system_inf
     return ret;
   }
 
-  if (!init_lbr_()) {
-    return controller_interface::CallbackReturn::ERROR;
-  }
-
-  if (!init_command_interfaces_()) {
-    return controller_interface::CallbackReturn::ERROR;
-  }
-
-  if (!init_state_interfaces_()) {
-    return controller_interface::CallbackReturn::ERROR;
-  }
-
-  if (!init_last_hw_states_()) {
-    return controller_interface::CallbackReturn::ERROR;
-  }
+  init_command_interfaces_();
+  init_state_interfaces_();
+  init_last_hw_states_();
 
   if (!verify_number_of_joints_()) {
     return controller_interface::CallbackReturn::ERROR;
@@ -137,25 +125,6 @@ LBRHardwareInterface::export_command_interfaces() {
 hardware_interface::return_type LBRHardwareInterface::prepare_command_mode_switch(
     const std::vector<std::string> & /*start_interfaces*/,
     const std::vector<std::string> & /*stop_interfaces*/) {
-  // if (!command_mode_init_)
-  // {
-  //     command_mode_init_ = true;
-  //     return hardware_interface::return_type::OK;
-  // }
-  // else
-  // {
-  // if (start_interfaces != stop_interfaces)
-  // {
-  //     RCLCPP_ERROR(
-  //         node_->get_logger(),
-  //         "FRI does not support command mode switches.");
-  //     return hardware_interface::return_type::ERROR;
-  // }
-  // else
-  // {
-  //     return hardware_interface::return_type::OK;
-  // }
-  // }
   return hardware_interface::return_type::OK;
 }
 
@@ -179,117 +148,57 @@ LBRHardwareInterface::on_deactivate(const rclcpp_lifecycle::State &) {
 
 hardware_interface::return_type LBRHardwareInterface::read(const rclcpp::Time & /*time*/,
                                                            const rclcpp::Duration & /*period*/) {
-  lbr_->state = *rt_lbr_state_buf_->readFromRT();
+  auto lbr_state = *rt_lbr_state_buf_->readFromRT();
 
-  if (!lbr_->state) {
+  if (!lbr_state) {
     RCLCPP_ERROR(node_->get_logger(), "Failed to read lbr_state.");
     return hardware_interface::return_type::ERROR;
   }
 
-  if (lbr_->valid_state()) {
-    hw_sample_time_ = lbr_->state->sample_time;
-    hw_session_state_ = static_cast<double>(lbr_->state->session_state);
-    hw_connection_quality_ = static_cast<double>(lbr_->state->connection_quality);
-    hw_safety_state_ = static_cast<double>(lbr_->state->safety_state);
-    hw_operation_mode_ = static_cast<double>(lbr_->state->operation_mode);
-    hw_drive_state_ = static_cast<double>(lbr_->state->drive_state);
-    hw_client_command_mode_ = static_cast<double>(lbr_->state->client_command_mode);
-    hw_overlay_type_ = static_cast<double>(lbr_->state->overlay_type);
-    hw_control_mode_ = static_cast<double>(lbr_->state->control_mode);
+  hw_sample_time_ = lbr_state->sample_time;
+  hw_session_state_ = static_cast<double>(lbr_state->session_state);
+  hw_connection_quality_ = static_cast<double>(lbr_state->connection_quality);
+  hw_safety_state_ = static_cast<double>(lbr_state->safety_state);
+  hw_operation_mode_ = static_cast<double>(lbr_state->operation_mode);
+  hw_drive_state_ = static_cast<double>(lbr_state->drive_state);
+  hw_client_command_mode_ = static_cast<double>(lbr_state->client_command_mode);
+  hw_overlay_type_ = static_cast<double>(lbr_state->overlay_type);
+  hw_control_mode_ = static_cast<double>(lbr_state->control_mode);
 
-    hw_time_stamp_sec_ = static_cast<double>(lbr_->state->time_stamp_sec);
-    hw_time_stamp_nano_sec_ = static_cast<double>(lbr_->state->time_stamp_nano_sec);
+  hw_time_stamp_sec_ = static_cast<double>(lbr_state->time_stamp_sec);
+  hw_time_stamp_nano_sec_ = static_cast<double>(lbr_state->time_stamp_nano_sec);
 
-    hw_position_.assign(lbr_->state->measured_joint_position.begin(),
-                        lbr_->state->measured_joint_position.end());
-    hw_commanded_joint_position_.assign(lbr_->state->commanded_joint_position.begin(),
-                                        lbr_->state->commanded_joint_position.end());
-    hw_effort_.assign(lbr_->state->measured_torque.begin(), lbr_->state->measured_torque.end());
-    hw_commanded_torque_.assign(lbr_->state->commanded_torque.begin(),
-                                lbr_->state->commanded_torque.end());
-    hw_external_torque_.assign(lbr_->state->external_torque.begin(),
-                               lbr_->state->external_torque.end());
-    hw_ipo_joint_position_.assign(lbr_->state->ipo_joint_position.begin(),
-                                  lbr_->state->ipo_joint_position.end());
-
-    hw_tracking_performance_ = lbr_->state->tracking_performance;
-
-    compute_hw_velocity_();
-    if (!update_last_hw_states_()) {
-      return hardware_interface::return_type::ERROR;
-    }
-  }
+  std::copy(lbr_state->measured_joint_position.cbegin(), lbr_state->measured_joint_position.cend(),
+            hw_position_.begin());
+  std::copy(lbr_state->commanded_joint_position.cbegin(),
+            lbr_state->commanded_joint_position.cend(), hw_commanded_joint_position_.begin());
+  std::copy(lbr_state->measured_torque.cbegin(), lbr_state->measured_torque.cend(),
+            hw_effort_.begin());
+  std::copy(lbr_state->commanded_torque.cbegin(), lbr_state->commanded_torque.cend(),
+            hw_commanded_torque_.begin());
+  std::copy(lbr_state->external_torque.cbegin(), lbr_state->external_torque.cend(),
+            hw_commanded_torque_.begin());
+  std::copy(lbr_state->ipo_joint_position.cbegin(), lbr_state->ipo_joint_position.cend(),
+            hw_ipo_joint_position_.begin());
+  hw_tracking_performance_ = lbr_state->tracking_performance;
+  compute_hw_velocity_();
+  update_last_hw_states_();
 
   return hardware_interface::return_type::OK;
 }
 
 hardware_interface::return_type LBRHardwareInterface::write(const rclcpp::Time & /*time*/,
                                                             const rclcpp::Duration & /*period*/) {
-  lbr_->command->joint_position.assign(hw_position_command_.begin(), hw_position_command_.end());
-  lbr_->command->torque.assign(hw_effort_command_.begin(), hw_effort_command_.end());
-  if (lbr_->valid_command(lbr_->command)) {
-    if (rt_lbr_command_pub_->trylock()) {
-      rt_lbr_command_pub_->msg_ = *lbr_->command;
-      rt_lbr_command_pub_->unlockAndPublish();
-    }
+  if (rt_lbr_command_pub_->trylock()) {
+    std::copy(hw_position_command_.cbegin(), hw_position_command_.cend(),
+              rt_lbr_command_pub_->msg_.joint_position.begin());
+    rt_lbr_command_pub_->msg_.wrench.fill(std::numeric_limits<double>::quiet_NaN());
+    std::copy(hw_effort_command_.cbegin(), hw_effort_command_.cend(),
+              rt_lbr_command_pub_->msg_.torque.begin());
+    rt_lbr_command_pub_->unlockAndPublish();
   }
   return hardware_interface::return_type::OK;
 }
-
-// TODO: re-load controllers
-// auto re_load_ctrl = [this]() -> void {
-
-//     // poll current controllers
-//     auto list_ctrl_request =
-//     std::make_shared<controller_manager_msgs::srv::ListControllers::Request>(); auto
-//     list_ctrl_future = list_ctrl_clt_->async_send_request(list_ctrl_request); if
-//     (rclcpp::spin_until_future_complete(node_, list_ctrl_future, std::chrono::milliseconds(100))
-//     != rclcpp::FutureReturnCode::SUCCESS) {
-//         RCLCPP_ERROR(node_->get_logger(), "Failed to call service %s.",
-//         list_ctrl_clt_->get_service_name()); return;
-//     };
-
-//     std::vector<std::string> controllers;
-//     for (auto& controller: list_ctrl_future.get()->controller) {
-//         RCLCPP_INFO(node_->get_logger(), "Found controller: %s", controller.name.c_str());
-//         controllers.push_back(controller.name);
-//     }
-
-//     if (controllers.size() == 0) {
-//         RCLCPP_INFO(node_->get_logger(), "No controllers found.");
-//         return;
-//     }
-
-//     // switch current controllers
-//     auto switch_ctrl_request =
-//     std::make_shared<controller_manager_msgs::srv::SwitchController::Request>();
-//     switch_ctrl_request->strictness =
-//     controller_manager_msgs::srv::SwitchController::Request::STRICT;
-//     switch_ctrl_request->start_asap = true;
-//     switch_ctrl_request->stop_controllers = controllers;
-//     switch_ctrl_request->start_controllers = controllers;
-//     auto switch_ctrl_future = switch_ctrl_clt_->async_send_request(switch_ctrl_request);
-
-//     // wait until switch_ctrl_future
-//     if (rclcpp::spin_until_future_complete(node_, switch_ctrl_future,
-//     std::chrono::milliseconds(100)) == rclcpp::FutureReturnCode::SUCCESS) {
-//         if (switch_ctrl_future.get()->ok) {
-//             RCLCPP_INFO(node_->get_logger(), "Re-loaded controllers.");
-
-//             // set commanded state to current state, see
-//             https://github.com/ros-controls/ros2_control/issues/674 hw_position_command_ =
-//             hw_position_; hw_effort_command_ = hw_effort_; fri_and_controllers_in_sync_ = true;
-//         } else {
-//             RCLCPP_ERROR(node_->get_logger(), "Failed to re-load controllers.");
-//         }
-//     } else {
-//         RCLCPP_ERROR(node_->get_logger(), "Failed to call service %s.",
-//         switch_ctrl_clt_->get_service_name());
-//     }
-// };
-
-// auto re_load_ctrl_thread = std::thread(re_load_ctrl);
-// re_load_ctrl_thread.detach();
 
 template <typename ServiceT>
 bool LBRHardwareInterface::wait_for_service_(
@@ -305,68 +214,40 @@ bool LBRHardwareInterface::wait_for_service_(
   return spawned;
 }
 
-bool LBRHardwareInterface::init_lbr_() {
-  try {
-    lbr_ = std::make_unique<lbr_fri_ros2::LBR>();
-  } catch (const std::exception &e) {
-    RCLCPP_ERROR(node_->get_logger(), "Failed to initialize LBR.\n%s.", e.what());
-    return false;
-  }
-  return true;
+void LBRHardwareInterface::init_command_interfaces_() {
+  hw_position_command_.fill(std::numeric_limits<double>::quiet_NaN());
+  hw_effort_command_.fill(std::numeric_limits<double>::quiet_NaN());
 }
 
-bool LBRHardwareInterface::init_command_interfaces_() {
-  try {
-    hw_position_command_.resize(lbr_fri_ros2::LBR::JOINT_DOF,
-                                std::numeric_limits<double>::quiet_NaN());
-    hw_effort_command_.resize(lbr_fri_ros2::LBR::JOINT_DOF,
-                              std::numeric_limits<double>::quiet_NaN());
-  } catch (const std::exception &e) {
-    RCLCPP_ERROR(node_->get_logger(), "Failed to initialize command interfaces.\n%s", e.what());
-    return false;
-  }
-  return true;
-}
+void LBRHardwareInterface::init_state_interfaces_() {
+  hw_sample_time_ = std::numeric_limits<double>::quiet_NaN();
+  hw_session_state_ = std::numeric_limits<double>::quiet_NaN();
+  hw_connection_quality_ = std::numeric_limits<double>::quiet_NaN();
+  hw_safety_state_ = std::numeric_limits<double>::quiet_NaN();
+  hw_operation_mode_ = std::numeric_limits<double>::quiet_NaN();
+  hw_drive_state_ = std::numeric_limits<double>::quiet_NaN();
+  hw_client_command_mode_ = std::numeric_limits<double>::quiet_NaN();
+  hw_overlay_type_ = std::numeric_limits<double>::quiet_NaN();
+  hw_control_mode_ = std::numeric_limits<double>::quiet_NaN();
 
-bool LBRHardwareInterface::init_state_interfaces_() {
-  try {
-    hw_sample_time_ = std::numeric_limits<double>::quiet_NaN();
-    hw_session_state_ = std::numeric_limits<double>::quiet_NaN();
-    hw_connection_quality_ = std::numeric_limits<double>::quiet_NaN();
-    hw_safety_state_ = std::numeric_limits<double>::quiet_NaN();
-    hw_operation_mode_ = std::numeric_limits<double>::quiet_NaN();
-    hw_drive_state_ = std::numeric_limits<double>::quiet_NaN();
-    hw_client_command_mode_ = std::numeric_limits<double>::quiet_NaN();
-    hw_overlay_type_ = std::numeric_limits<double>::quiet_NaN();
-    hw_control_mode_ = std::numeric_limits<double>::quiet_NaN();
+  hw_time_stamp_sec_ = std::numeric_limits<double>::quiet_NaN();
+  hw_time_stamp_nano_sec_ = std::numeric_limits<double>::quiet_NaN();
 
-    hw_time_stamp_sec_ = std::numeric_limits<double>::quiet_NaN();
-    hw_time_stamp_nano_sec_ = std::numeric_limits<double>::quiet_NaN();
+  hw_position_.fill(std::numeric_limits<double>::quiet_NaN());
+  hw_commanded_joint_position_.fill(std::numeric_limits<double>::quiet_NaN());
+  hw_effort_.fill(std::numeric_limits<double>::quiet_NaN());
+  hw_commanded_torque_.fill(std::numeric_limits<double>::quiet_NaN());
+  hw_external_torque_.fill(std::numeric_limits<double>::quiet_NaN());
+  hw_ipo_joint_position_.fill(std::numeric_limits<double>::quiet_NaN());
+  hw_tracking_performance_ = std::numeric_limits<double>::quiet_NaN();
 
-    hw_position_.resize(lbr_fri_ros2::LBR::JOINT_DOF, std::numeric_limits<double>::quiet_NaN());
-    hw_commanded_joint_position_.resize(lbr_fri_ros2::LBR::JOINT_DOF,
-                                        std::numeric_limits<double>::quiet_NaN());
-    hw_effort_.resize(lbr_fri_ros2::LBR::JOINT_DOF, std::numeric_limits<double>::quiet_NaN());
-    hw_commanded_torque_.resize(lbr_fri_ros2::LBR::JOINT_DOF,
-                                std::numeric_limits<double>::quiet_NaN());
-    hw_external_torque_.resize(lbr_fri_ros2::LBR::JOINT_DOF,
-                               std::numeric_limits<double>::quiet_NaN());
-    hw_ipo_joint_position_.resize(lbr_fri_ros2::LBR::JOINT_DOF,
-                                  std::numeric_limits<double>::quiet_NaN());
-    hw_tracking_performance_ = std::numeric_limits<double>::quiet_NaN();
-
-    hw_velocity_.resize(lbr_fri_ros2::LBR::JOINT_DOF, std::numeric_limits<double>::quiet_NaN());
-  } catch (const std::exception &e) {
-    RCLCPP_ERROR(node_->get_logger(), "Failed to initialize state interfaces.\n%s", e.what());
-    return false;
-  }
-  return true;
+  hw_velocity_.fill(std::numeric_limits<double>::quiet_NaN());
 }
 
 bool LBRHardwareInterface::verify_number_of_joints_() {
-  if (info_.joints.size() != lbr_fri_ros2::LBR::JOINT_DOF) {
+  if (info_.joints.size() != KUKA::FRI::LBRState::NUMBER_OF_JOINTS) {
     RCLCPP_ERROR(node_->get_logger(), "Expected %d joints in URDF. Found %ld.",
-                 lbr_fri_ros2::LBR::JOINT_DOF, info_.joints.size());
+                 KUKA::FRI::LBRState::NUMBER_OF_JOINTS, info_.joints.size());
     return false;
   }
   return true;
@@ -493,21 +374,22 @@ bool LBRHardwareInterface::spawn_clients_() {
     return false;
   }
 
-  list_ctrl_clt_ = node_->create_client<controller_manager_msgs::srv::ListControllers>(
-      "/controller_manager/list_controllers", rmw_qos_profile_services_default);
-  switch_ctrl_clt_ = node_->create_client<controller_manager_msgs::srv::SwitchController>(
-      "/controller_manager/switch_controller", rmw_qos_profile_services_default);
-
+  std::string app_connect_service_name = "/lbr_app/connect";
   app_connect_clt_ = node_->create_client<lbr_fri_msgs::srv::AppConnect>(
-      "/lbr_app/connect", rmw_qos_profile_services_default);
+      app_connect_service_name, rmw_qos_profile_services_default);
+  RCLCPP_INFO(node_->get_logger(), "Waiting for service %s to spawn...",
+              app_connect_service_name.c_str());
   if (!wait_for_service_<lbr_fri_msgs::srv::AppConnect>(app_connect_clt_)) {
     RCLCPP_ERROR(node_->get_logger(), "Failed.");
     return false;
   }
   RCLCPP_INFO(node_->get_logger(), "Done.");
 
+  std::string app_disconnect_service_name = "/lbr_app/disconnect";
   app_disconnect_clt_ = node_->create_client<lbr_fri_msgs::srv::AppDisconnect>(
-      "/lbr_app/disconnect", rmw_qos_profile_services_default);
+      app_disconnect_service_name, rmw_qos_profile_services_default);
+  RCLCPP_INFO(node_->get_logger(), "Waiting for service %s to spawn...",
+              app_disconnect_service_name.c_str());
   if (!wait_for_service_<lbr_fri_msgs::srv::AppDisconnect>(app_disconnect_clt_)) {
     RCLCPP_ERROR(node_->get_logger(), "Failed.");
     return false;
@@ -558,29 +440,16 @@ double LBRHardwareInterface::time_stamps_to_sec_(const double &sec, const double
   return sec + nano_sec / 1.e9;
 }
 
-bool LBRHardwareInterface::init_last_hw_states_() {
-  try {
-    last_hw_position_.resize(lbr_fri_ros2::LBR::JOINT_DOF,
-                             std::numeric_limits<double>::quiet_NaN());
-    last_hw_time_stamp_sec_ = std::numeric_limits<double>::quiet_NaN();
-    last_hw_time_stamp_nano_sec_ = std::numeric_limits<double>::quiet_NaN();
-  } catch (const std::exception &e) {
-    RCLCPP_ERROR(node_->get_logger(), "Failed to init last hw states.");
-    return false;
-  }
-  return true;
+void LBRHardwareInterface::init_last_hw_states_() {
+  last_hw_position_.fill(std::numeric_limits<double>::quiet_NaN());
+  last_hw_time_stamp_sec_ = std::numeric_limits<double>::quiet_NaN();
+  last_hw_time_stamp_nano_sec_ = std::numeric_limits<double>::quiet_NaN();
 }
 
-bool LBRHardwareInterface::update_last_hw_states_() {
-  try {
-    last_hw_position_ = hw_position_;
-    last_hw_time_stamp_sec_ = hw_time_stamp_sec_;
-    last_hw_time_stamp_nano_sec_ = hw_time_stamp_nano_sec_;
-  } catch (const std::exception &e) {
-    RCLCPP_ERROR(node_->get_logger(), "Failed to update last hw states.");
-    return false;
-  }
-  return true;
+void LBRHardwareInterface::update_last_hw_states_() {
+  last_hw_position_ = hw_position_;
+  last_hw_time_stamp_sec_ = hw_time_stamp_sec_;
+  last_hw_time_stamp_nano_sec_ = hw_time_stamp_nano_sec_;
 }
 
 void LBRHardwareInterface::compute_hw_velocity_() {
@@ -595,7 +464,7 @@ void LBRHardwareInterface::compute_hw_velocity_() {
     return;
   }
 
-  for (uint8_t i = 0; i < lbr_fri_ros2::LBR::JOINT_DOF; ++i) {
+  for (uint8_t i = 0; i < KUKA::FRI::LBRState::NUMBER_OF_JOINTS; ++i) {
     hw_velocity_[i] = (hw_position_[i] - last_hw_position_[i]) /
                       (time_stamps_to_sec_(hw_time_stamp_sec_, hw_time_stamp_nano_sec_) -
                        time_stamps_to_sec_(last_hw_time_stamp_sec_, last_hw_time_stamp_nano_sec_));
