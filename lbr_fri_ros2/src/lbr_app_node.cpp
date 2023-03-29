@@ -134,6 +134,10 @@ void LBRAppNode::step_() {
   bool success = true;
   while (success && connected_ && rclcpp::ok()) {
     try {
+      if (lbr_intermediary_->lbr_state().session_state ==
+          KUKA::FRI::ESessionState::COMMANDING_WAIT) {
+        lbr_command_rt_buf_->reset();
+      }
       auto lbr_command = *lbr_command_rt_buf_->readFromRT();
       lbr_intermediary_->command_to_buffer(lbr_command);
       success = app_->step();
