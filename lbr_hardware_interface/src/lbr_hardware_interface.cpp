@@ -155,6 +155,11 @@ hardware_interface::return_type LBRHardwareInterface::read(const rclcpp::Time & 
     return hardware_interface::return_type::ERROR;
   }
 
+  if (exit_commanding_active_(static_cast<KUKA::FRI::ESessionState>(hw_session_state_),
+                              static_cast<KUKA::FRI::ESessionState>(lbr_state->session_state))) {
+    return hardware_interface::return_type::ERROR;
+  }
+
   hw_sample_time_ = lbr_state->sample_time;
   hw_session_state_ = static_cast<double>(lbr_state->session_state);
   hw_connection_quality_ = static_cast<double>(lbr_state->connection_quality);
@@ -396,6 +401,15 @@ bool LBRHardwareInterface::spawn_clients_() {
   }
   RCLCPP_INFO(node_->get_logger(), "Done.");
   return true;
+}
+
+bool LBRHardwareInterface::exit_commanding_active_(const KUKA::FRI::ESessionState &previous_state,
+                                                   const KUKA::FRI::ESessionState &session_state) {
+  if (previous_state == KUKA::FRI::ESessionState::COMMANDING_ACTIVE &&
+      previous_state != session_state) {
+    return true;
+  }
+  return false;
 }
 
 bool LBRHardwareInterface::connect_() {

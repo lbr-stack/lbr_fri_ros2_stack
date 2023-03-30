@@ -65,6 +65,10 @@ protected:
   bool spawn_rt_layer_();
   bool spawn_clients_();
 
+  // monitor end of commanding active
+  bool exit_commanding_active_(const KUKA::FRI::ESessionState &previous_state,
+                               const KUKA::FRI::ESessionState &session_state);
+
   // connect to - disconnect from robot
   bool connect_();
   bool disconnect_();
