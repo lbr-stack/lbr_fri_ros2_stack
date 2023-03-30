@@ -19,11 +19,11 @@ public:
     omega_ = 2. * M_PI / get_parameter("period").as_double();
 
     lbr_state_sub_ = create_subscription<lbr_fri_msgs::msg::LBRState>(
-        "/lbr_state", rclcpp::SystemDefaultsQoS(),
+        "/lbr_state", rclcpp::SensorDataQoS(),
         std::bind(&LBRCommandNode::lbr_state_sub_cb_, this, std::placeholders::_1));
 
-    lbr_command_pub_ = create_publisher<lbr_fri_msgs::msg::LBRCommand>("/lbr_command",
-                                                                       rclcpp::SystemDefaultsQoS());
+    lbr_command_pub_ =
+        create_publisher<lbr_fri_msgs::msg::LBRCommand>("/lbr_command", rclcpp::SensorDataQoS());
 
     lbr_command_timer_ = create_wall_timer(std::chrono::milliseconds(10),
                                            std::bind(&LBRCommandNode::timer_cb_, this));
