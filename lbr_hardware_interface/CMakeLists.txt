@@ -12,7 +12,6 @@ endif()
 
 find_package(ament_cmake REQUIRED)
 find_package(hardware_interface REQUIRED)
-find_package(controller_manager_msgs REQUIRED)
 find_package(controller_interface REQUIRED)
 find_package(pluginlib REQUIRED)
 find_package(rclcpp REQUIRED)
@@ -42,7 +41,6 @@ target_include_directories(
 ament_target_dependencies(
   ${PROJECT_NAME}
   hardware_interface
-  controller_manager_msgs
   controller_interface
   pluginlib
   rclcpp
@@ -61,7 +59,6 @@ ament_export_targets(
 
 ament_export_dependencies(
   hardware_interface
-  controller_manager_msgs
   controller_interface
   pluginlib
   rclcpp
