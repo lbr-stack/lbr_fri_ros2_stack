@@ -19,8 +19,9 @@
 
 #include "lbr_fri_msgs/srv/app_connect.hpp"
 #include "lbr_fri_msgs/srv/app_disconnect.hpp"
-#include "lbr_fri_ros2/lbr.hpp"
 #include "lbr_fri_ros2/lbr_client.hpp"
+#include "lbr_fri_ros2/lbr_command_guard.hpp"
+#include "lbr_fri_ros2/lbr_intermediary.hpp"
 
 namespace lbr_fri_ros2 {
 class LBRAppNode : public rclcpp::Node {
@@ -42,6 +43,8 @@ protected:
   bool connect_(const int &port_id = 30200, const char *const remote_host = NULL);
   bool disconnect_();
 
+  void step_();
+
   std::unique_ptr<std::thread> app_step_thread_;
 
   const char *remote_host_;
@@ -58,7 +61,7 @@ protected:
   rclcpp::Publisher<lbr_fri_msgs::msg::LBRState>::SharedPtr lbr_state_pub_;
   std::shared_ptr<realtime_tools::RealtimePublisher<lbr_fri_msgs::msg::LBRState>> lbr_state_rt_pub_;
 
-  std::shared_ptr<LBR> lbr_;
+  std::shared_ptr<LBRIntermediary> lbr_intermediary_;
   std::shared_ptr<LBRClient> lbr_client_;
   std::unique_ptr<KUKA::FRI::UdpConnection> connection_;
   std::unique_ptr<KUKA::FRI::ClientApplication> app_;

@@ -21,9 +21,9 @@ def configure_lbr(context):
     lbr_bringup = LBRBringUp(sim=sim)
     lbr_bringup.add_robot_description(
         package="lbr_description", xacro_file=f"urdf/{model}/{model}.urdf.xacro"
-    ).add_robot().add_controller_manager(
+    ).add_controller_manager(
         package=controller_package, controller_configurations_file=controller_file
-    ).add_controller(
+    ).add_robot().add_controller(
         "joint_state_broadcaster"
     ).add_controller(
         controller

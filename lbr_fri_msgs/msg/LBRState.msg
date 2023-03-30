@@ -1,7 +1,7 @@
 # Message that holds states that are exposed through the
 # Fast Robot Interface (FRI).
 #
-# Following states are exposes (refer to KUKA::FRI::LBRState in friLBRState.h for documentation)
+# Following states are exposed (refer to KUKA::FRI::LBRState in friLBRState.h for documentation)
 #
 #  * sample_time [s]
 #  * session_state [#]
@@ -37,10 +37,10 @@ int8 control_mode
 uint32 time_stamp_sec
 uint32 time_stamp_nano_sec
 
-float64[] measured_joint_position
-float64[] commanded_joint_position
-float64[] measured_torque
-float64[] commanded_torque
-float64[] external_torque
-float64[] ipo_joint_position
+float64[7] measured_joint_position
+float64[7] commanded_joint_position
+float64[7] measured_torque
+float64[7] commanded_torque
+float64[7] external_torque
+float64[7] ipo_joint_position
 float64 tracking_performance
