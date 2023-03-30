@@ -13,30 +13,36 @@ LBRAppNode::LBRAppNode(const std::string &node_name, const int &port_id,
   connected_ = false;
 
   app_connect_srv_ = create_service<lbr_fri_msgs::srv::AppConnect>(
-      "/lbr_app/connect",
+      "~/connect",
       std::bind(&LBRAppNode::app_connect_cb_, this, std::placeholders::_1, std::placeholders::_2),
-      rmw_qos_profile_system_default);
+      rmw_qos_profile_services_default);
 
   app_disconnect_srv_ = create_service<lbr_fri_msgs::srv::AppDisconnect>(
-      "/lbr_app/disconnect",
+      "~/disconnect",
       std::bind(&LBRAppNode::app_disconnect_cb_, this, std::placeholders::_1,
                 std::placeholders::_2),
-      rmw_qos_profile_system_default);
+      rmw_qos_profile_services_default);
 
   lbr_command_rt_buf_ =
       std::make_shared<realtime_tools::RealtimeBuffer<lbr_fri_msgs::msg::LBRCommand::SharedPtr>>(
           nullptr);
   lbr_command_sub_ = create_subscription<lbr_fri_msgs::msg::LBRCommand>(
-      "/lbr_command", rclcpp::SystemDefaultsQoS(),
+      "/lbr_command", rclcpp::SensorDataQoS(),
       std::bind(&LBRAppNode::lbr_command_sub_cb_, this, std::placeholders::_1));
   lbr_state_pub_ =
-      create_publisher<lbr_fri_msgs::msg::LBRState>("/lbr_state", rclcpp::SystemDefaultsQoS());
+      create_publisher<lbr_fri_msgs::msg::LBRState>("/lbr_state", rclcpp::SensorDataQoS());
   lbr_state_rt_pub_ =
       std::make_shared<realtime_tools::RealtimePublisher<lbr_fri_msgs::msg::LBRState>>(
           lbr_state_pub_);
 
-  lbr_ = std::make_shared<LBR>();
-  lbr_client_ = std::make_shared<LBRClient>(lbr_);
+  std::string robot_description;
+  declare_parameter<std::string>("robot_description");
+  if (!get_parameter("robot_description", robot_description)) {
+    throw std::runtime_error("Failed to receive robot_description parameter.");
+  }
+
+  lbr_intermediary_ = std::make_shared<LBRIntermediary>(LBRCommandGuard{robot_description});
+  lbr_client_ = std::make_shared<LBRClient>(lbr_intermediary_);
   connection_ = std::make_unique<KUKA::FRI::UdpConnection>();
   app_ = std::make_unique<KUKA::FRI::ClientApplication>(*connection_, *lbr_client_);
 
@@ -90,33 +96,7 @@ bool LBRAppNode::connect_(const int &port_id, const char *const remote_host) {
     if (connected_) {
       port_id_ = port_id;
       remote_host_ = remote_host;
-
-      auto app_step = [this]() {
-        bool success = true;
-        while (success && connected_ && rclcpp::ok()) {
-          try {
-            auto lbr_command = *lbr_command_rt_buf_->readFromRT();
-            if (lbr_->valid_command(lbr_command)) {
-              lbr_->command = lbr_command;
-            }
-            success = app_->step();
-            if (lbr_->valid_state()) {
-              if (lbr_state_rt_pub_->trylock()) {
-                lbr_state_rt_pub_->msg_ = *lbr_->state;
-                lbr_state_rt_pub_->unlockAndPublish();
-              }
-            }
-          } catch (const std::exception &e) {
-            RCLCPP_ERROR(get_logger(), e.what());
-            break;
-          }
-        }
-        if (connected_) {
-          disconnect_();
-        }
-      };
-
-      app_step_thread_ = std::make_unique<std::thread>(app_step);
+      app_step_thread_ = std::make_unique<std::thread>(std::bind(&LBRAppNode::step_, this));
     }
   } else {
     RCLCPP_INFO(get_logger(), "Port already open.");
@@ -148,5 +128,30 @@ bool LBRAppNode::disconnect_() {
   }
   app_step_thread_.release();
   return !connected_;
+}
+
+void LBRAppNode::step_() {
+  bool success = true;
+  while (success && connected_ && rclcpp::ok()) {
+    try {
+      if (lbr_intermediary_->lbr_state().session_state ==
+          KUKA::FRI::ESessionState::COMMANDING_WAIT) {
+        lbr_command_rt_buf_->reset();
+      }
+      auto lbr_command = *lbr_command_rt_buf_->readFromRT();
+      lbr_intermediary_->command_to_buffer(lbr_command);
+      success = app_->step();
+      if (lbr_state_rt_pub_->trylock()) {
+        lbr_intermediary_->buffer_to_state(lbr_state_rt_pub_->msg_);
+        lbr_state_rt_pub_->unlockAndPublish();
+      }
+    } catch (const std::exception &e) {
+      RCLCPP_ERROR(get_logger(), e.what());
+      break;
+    }
+  }
+  if (connected_) {
+    disconnect_();
+  }
 }
 } // end of namespace lbr_fri_ros2

@@ -1,6 +1,5 @@
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, OpaqueFunction
-
 from lbr_bringup.launch_bundles import lbr_launch
 
 
@@ -13,9 +12,7 @@ def generate_launch_description():
     )
 
     robot_name_arg = DeclareLaunchArgument(
-        name="robot_name",
-        default_value="lbr",
-        description="The robot's name."
+        name="robot_name", default_value="lbr", description="The robot's name."
     )
 
     sim_arg = DeclareLaunchArgument(
