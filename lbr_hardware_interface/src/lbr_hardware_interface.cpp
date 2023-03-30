@@ -157,6 +157,7 @@ hardware_interface::return_type LBRHardwareInterface::read(const rclcpp::Time & 
 
   if (exit_commanding_active_(static_cast<KUKA::FRI::ESessionState>(hw_session_state_),
                               static_cast<KUKA::FRI::ESessionState>(lbr_state->session_state))) {
+    RCLCPP_INFO(node_->get_logger(), "LBR left COMMANDING_ACTIVE. Please re-load controllers.");
     return hardware_interface::return_type::ERROR;
   }
 
@@ -403,10 +404,11 @@ bool LBRHardwareInterface::spawn_clients_() {
   return true;
 }
 
-bool LBRHardwareInterface::exit_commanding_active_(const KUKA::FRI::ESessionState &previous_state,
-                                                   const KUKA::FRI::ESessionState &session_state) {
-  if (previous_state == KUKA::FRI::ESessionState::COMMANDING_ACTIVE &&
-      previous_state != session_state) {
+bool LBRHardwareInterface::exit_commanding_active_(
+    const KUKA::FRI::ESessionState &previous_session_state,
+    const KUKA::FRI::ESessionState &session_state) {
+  if (previous_session_state == KUKA::FRI::ESessionState::COMMANDING_ACTIVE &&
+      previous_session_state != session_state) {
     return true;
   }
   return false;

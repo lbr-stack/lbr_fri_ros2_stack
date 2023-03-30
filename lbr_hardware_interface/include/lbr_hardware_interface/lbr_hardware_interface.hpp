@@ -66,7 +66,7 @@ protected:
   bool spawn_clients_();
 
   // monitor end of commanding active
-  bool exit_commanding_active_(const KUKA::FRI::ESessionState &previous_state,
+  bool exit_commanding_active_(const KUKA::FRI::ESessionState &previous_session_state,
                                const KUKA::FRI::ESessionState &session_state);
 
   // connect to - disconnect from robot
