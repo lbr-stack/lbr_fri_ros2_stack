@@ -174,7 +174,7 @@ class LBRBringUp:
     def add_robot_description(
         self,
         package: str = "lbr_description",
-        xacro_file: str = "urdf/iiwa7/iiwa7.urdf.xacro"
+        xacro_file: str = "urdf/iiwa7/iiwa7.urdf.xacro",
     ):
         self.robot_description_ = {
             "robot_description": xacro.process(
@@ -194,15 +194,14 @@ class LBRBringUp:
             return self.add_lbr_spinner()
 
     def add_lbr_spinner(
-        self,
-        package: str = "lbr_fri_ros2",
-        executable: str = "lbr_spinner"
+        self, package: str = "lbr_fri_ros2", executable: str = "lbr_spinner"
     ):
         self.lbr_spinner_node_ = Node(
             package=package,
             executable=executable,
             emulate_tty=True,
             output="screen",
+            parameters=[self.robot_description],
         )
         self.launch_description_.add_action(self.lbr_spinner_node_)
         return self
