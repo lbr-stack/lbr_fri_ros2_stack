@@ -157,7 +157,7 @@ hardware_interface::return_type LBRHardwareInterface::read(const rclcpp::Time & 
 
   if (exit_commanding_active_(static_cast<KUKA::FRI::ESessionState>(hw_session_state_),
                               static_cast<KUKA::FRI::ESessionState>(lbr_state->session_state))) {
-    RCLCPP_INFO(node_->get_logger(), "LBR left COMMANDING_ACTIVE. Please re-run lbr_bringup.");
+    RCLCPP_INFO(node_->get_logger(), "LBR left COMMANDING_ACTIVE. Please re-run lbr_launch.");
     return hardware_interface::return_type::ERROR;
   }
 

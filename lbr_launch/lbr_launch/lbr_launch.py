@@ -10,7 +10,7 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.actions import Node
 
 
-class LBRBringUp:
+class LBRLaunch:
     robot_name_: str
     sim: bool
 
@@ -56,7 +56,7 @@ class LBRBringUp:
 
     def add_controller_manager(
         self,
-        package: str = "lbr_bringup",
+        package: str = "lbr_launch",
         controller_configurations_file: str = "config/lbr_controllers.yml",
     ):
         # Gazebo adds it's own controller manager
