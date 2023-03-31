@@ -1,5 +1,5 @@
-#ifndef LBR_FRI_ROS2__LBR_APP_NODE_HPP_
-#define LBR_FRI_ROS2__LBR_APP_NODE_HPP_
+#ifndef LBR_FRI_ROS2__LBR_APP_HPP_
+#define LBR_FRI_ROS2__LBR_APP_HPP_
 
 #include <atomic>
 #include <future>
@@ -11,7 +11,6 @@
 #include "rclcpp/rclcpp.hpp"
 #include "realtime_tools/realtime_buffer.h"
 #include "realtime_tools/realtime_publisher.h"
-#include "std_srvs/srv/empty.hpp"
 
 #include "fri/friClientApplication.h"
 #include "fri/friClientIf.h"
@@ -24,13 +23,15 @@
 #include "lbr_fri_ros2/lbr_intermediary.hpp"
 
 namespace lbr_fri_ros2 {
-class LBRAppNode : public rclcpp::Node {
+class LBRApp : public rclcpp::Node {
 public:
-  LBRAppNode(const std::string &node_name, const int &port_id = 30200,
-             const char *const remote_host = NULL);
-  ~LBRAppNode();
+  LBRApp(const rclcpp::NodeOptions &options);
+  ~LBRApp();
 
 protected:
+  void declare_parameters_();
+  void get_parameters_();
+
   void app_connect_cb_(const lbr_fri_msgs::srv::AppConnect::Request::SharedPtr request,
                        lbr_fri_msgs::srv::AppConnect::Response::SharedPtr response);
 
@@ -67,4 +68,4 @@ protected:
   std::unique_ptr<KUKA::FRI::ClientApplication> app_;
 };
 } // end of namespace lbr_fri_ros2
-#endif // LBR_FRI_ROS2__LBR_APP_NODE_HPP_
+#endif // LBR_FRI_ROS2__LBR_APP_HPP_

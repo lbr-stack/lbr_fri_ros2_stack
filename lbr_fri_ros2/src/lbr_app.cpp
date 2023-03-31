@@ -1,26 +1,20 @@
-#include "lbr_fri_ros2/lbr_app_node.hpp"
+#include "lbr_fri_ros2/lbr_app.hpp"
 
 namespace lbr_fri_ros2 {
-LBRAppNode::LBRAppNode(const std::string &node_name, const int &port_id,
-                       const char *const remote_host)
-    : rclcpp::Node(node_name) {
-  if (!valid_port_(port_id)) {
-    throw std::range_error("Invalid port_id provided.");
-  }
-  port_id_ = port_id;
-  remote_host_ = remote_host;
+LBRApp::LBRApp(const rclcpp::NodeOptions &options) : rclcpp::Node("lbr_app", options) {
+  declare_parameters_();
+  get_parameters_();
 
   connected_ = false;
 
   app_connect_srv_ = create_service<lbr_fri_msgs::srv::AppConnect>(
       "~/connect",
-      std::bind(&LBRAppNode::app_connect_cb_, this, std::placeholders::_1, std::placeholders::_2),
+      std::bind(&LBRApp::app_connect_cb_, this, std::placeholders::_1, std::placeholders::_2),
       rmw_qos_profile_services_default);
 
   app_disconnect_srv_ = create_service<lbr_fri_msgs::srv::AppDisconnect>(
       "~/disconnect",
-      std::bind(&LBRAppNode::app_disconnect_cb_, this, std::placeholders::_1,
-                std::placeholders::_2),
+      std::bind(&LBRApp::app_disconnect_cb_, this, std::placeholders::_1, std::placeholders::_2),
       rmw_qos_profile_services_default);
 
   lbr_command_rt_buf_ =
@@ -28,7 +22,7 @@ LBRAppNode::LBRAppNode(const std::string &node_name, const int &port_id,
           nullptr);
   lbr_command_sub_ = create_subscription<lbr_fri_msgs::msg::LBRCommand>(
       "/lbr_command", rclcpp::SensorDataQoS(),
-      std::bind(&LBRAppNode::lbr_command_sub_cb_, this, std::placeholders::_1));
+      std::bind(&LBRApp::lbr_command_sub_cb_, this, std::placeholders::_1));
   lbr_state_pub_ =
       create_publisher<lbr_fri_msgs::msg::LBRState>("/lbr_state", rclcpp::SensorDataQoS());
   lbr_state_rt_pub_ =
@@ -50,10 +44,26 @@ LBRAppNode::LBRAppNode(const std::string &node_name, const int &port_id,
   connect_(port_id_, remote_host_);
 }
 
-LBRAppNode::~LBRAppNode() { disconnect_(); }
+LBRApp::~LBRApp() { disconnect_(); }
 
-void LBRAppNode::app_connect_cb_(const lbr_fri_msgs::srv::AppConnect::Request::SharedPtr request,
-                                 lbr_fri_msgs::srv::AppConnect::Response::SharedPtr response) {
+void LBRApp::declare_parameters_() {
+  declare_parameter<int>("port_id", 30200);
+  declare_parameter<std::string>("remote_host", "");
+}
+
+void LBRApp::get_parameters_() {
+  int port_id = get_parameter("port_id").as_int();
+  std::string remote_host = get_parameter("remote_host").as_string();
+
+  if (!valid_port_(port_id)) {
+    throw std::range_error("Invalid port_id provided.");
+  }
+  port_id_ = port_id;
+  remote_host_ = remote_host.empty() ? NULL : remote_host.c_str();
+}
+
+void LBRApp::app_connect_cb_(const lbr_fri_msgs::srv::AppConnect::Request::SharedPtr request,
+                             lbr_fri_msgs::srv::AppConnect::Response::SharedPtr response) {
   const char *remote_host = request->remote_host.empty() ? NULL : request->remote_host.c_str();
   try {
     response->connected = connect_(request->port_id, remote_host);
@@ -63,7 +73,7 @@ void LBRAppNode::app_connect_cb_(const lbr_fri_msgs::srv::AppConnect::Request::S
   }
 }
 
-void LBRAppNode::app_disconnect_cb_(
+void LBRApp::app_disconnect_cb_(
     const lbr_fri_msgs::srv::AppDisconnect::Request::SharedPtr /*request*/,
     lbr_fri_msgs::srv::AppDisconnect::Response::SharedPtr response) {
   try {
@@ -74,11 +84,11 @@ void LBRAppNode::app_disconnect_cb_(
   }
 }
 
-void LBRAppNode::lbr_command_sub_cb_(const lbr_fri_msgs::msg::LBRCommand::SharedPtr lbr_command) {
+void LBRApp::lbr_command_sub_cb_(const lbr_fri_msgs::msg::LBRCommand::SharedPtr lbr_command) {
   lbr_command_rt_buf_->writeFromNonRT(lbr_command);
 }
 
-bool LBRAppNode::valid_port_(const int &port_id) {
+bool LBRApp::valid_port_(const int &port_id) {
   if (port_id < 30200 || port_id > 30209) {
     RCLCPP_ERROR(get_logger(), "Expected port_id id in [30200, 30209], got %d.", port_id);
     return false;
@@ -86,7 +96,7 @@ bool LBRAppNode::valid_port_(const int &port_id) {
   return true;
 }
 
-bool LBRAppNode::connect_(const int &port_id, const char *const remote_host) {
+bool LBRApp::connect_(const int &port_id, const char *const remote_host) {
   RCLCPP_INFO(get_logger(), "Attempting to open UDP socket for LBR server...");
   if (!connected_) {
     if (!valid_port_(port_id)) {
@@ -96,7 +106,7 @@ bool LBRAppNode::connect_(const int &port_id, const char *const remote_host) {
     if (connected_) {
       port_id_ = port_id;
       remote_host_ = remote_host;
-      app_step_thread_ = std::make_unique<std::thread>(std::bind(&LBRAppNode::step_, this));
+      app_step_thread_ = std::make_unique<std::thread>(std::bind(&LBRApp::step_, this));
     }
   } else {
     RCLCPP_INFO(get_logger(), "Port already open.");
@@ -109,7 +119,7 @@ bool LBRAppNode::connect_(const int &port_id, const char *const remote_host) {
   return connected_;
 }
 
-bool LBRAppNode::disconnect_() {
+bool LBRApp::disconnect_() {
   RCLCPP_INFO(get_logger(), "Attempting to close UDP socket for LBR server...");
   if (connected_) {
     app_->disconnect();
@@ -130,7 +140,7 @@ bool LBRAppNode::disconnect_() {
   return !connected_;
 }
 
-void LBRAppNode::step_() {
+void LBRApp::step_() {
   bool success = true;
   while (success && connected_ && rclcpp::ok()) {
     try {
@@ -155,3 +165,7 @@ void LBRAppNode::step_() {
   }
 }
 } // end of namespace lbr_fri_ros2
+
+#include "rclcpp_components/register_node_macro.hpp"
+
+RCLCPP_COMPONENTS_REGISTER_NODE(lbr_fri_ros2::LBRApp);
