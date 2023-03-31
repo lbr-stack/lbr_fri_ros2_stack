@@ -17,7 +17,7 @@ class LBRLaunch:
     robot_description_: dict
     launch_description_: LaunchDescription
 
-    lbr_spinner_node_: Node
+    lbr_app_node_: Node
     gazebo_spawn_entity_: Node
     controller_manager_: Node
     controller_spawners_: Dict[str, Node]
@@ -31,7 +31,7 @@ class LBRLaunch:
         self.robot_description_ = None
         self.launch_description_ = LaunchDescription()
 
-        self.lbr_spinner_node_ = None
+        self.lbr_app_node_ = None
         self.gazebo_spawn_entity_ = None
         self.controller_manager_ = None
         self.controller_spawners_ = {}
@@ -191,19 +191,17 @@ class LBRLaunch:
         if self.sim_:
             return self.add_gazebo()
         else:
-            return self.add_lbr_spinner()
+            return self.add_lbr_app()
 
-    def add_lbr_spinner(
-        self, package: str = "lbr_fri_ros2", executable: str = "lbr_spinner"
-    ):
-        self.lbr_spinner_node_ = Node(
+    def add_lbr_app(self, package: str = "lbr_fri_ros2", executable: str = "lbr_app"):
+        self.lbr_app_node_ = Node(
             package=package,
             executable=executable,
             emulate_tty=True,
             output="screen",
             parameters=[self.robot_description],
         )
-        self.launch_description_.add_action(self.lbr_spinner_node_)
+        self.launch_description_.add_action(self.lbr_app_node_)
         return self
 
     def add_gazebo(self):
