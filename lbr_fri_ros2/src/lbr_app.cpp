@@ -90,14 +90,15 @@ void LBRApp::lbr_command_sub_cb_(const lbr_fri_msgs::msg::LBRCommand::SharedPtr 
 
 bool LBRApp::valid_port_(const int &port_id) {
   if (port_id < 30200 || port_id > 30209) {
-    RCLCPP_ERROR(get_logger(), "Expected port_id id in [30200, 30209], got %d.", port_id);
+    RCLCPP_ERROR(get_logger(), "Expected port_id in [30200, 30209], got %d.", port_id);
     return false;
   }
   return true;
 }
 
 bool LBRApp::connect_(const int &port_id, const char *const remote_host) {
-  RCLCPP_INFO(get_logger(), "Attempting to open UDP socket for LBR server...");
+  RCLCPP_INFO(get_logger(), "Attempting to open UDP socket with port_id %d for LBR server...",
+              port_id);
   if (!connected_) {
     if (!valid_port_(port_id)) {
       throw std::range_error("Invalid port_id provided.");
@@ -120,7 +121,8 @@ bool LBRApp::connect_(const int &port_id, const char *const remote_host) {
 }
 
 bool LBRApp::disconnect_() {
-  RCLCPP_INFO(get_logger(), "Attempting to close UDP socket for LBR server...");
+  RCLCPP_INFO(get_logger(), "Attempting to close UDP socket with port_id %d for LBR server...",
+              port_id_);
   if (connected_) {
     app_->disconnect();
     connected_ = false;
