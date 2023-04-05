@@ -5,7 +5,7 @@
         <!-- ros_control-plugin -->
         <gazebo>
             <plugin name="gazebo_ros2_control" filename="libgazebo_ros2_control.so">
-                <parameters>$(find lbr_launch)/config/lbr_controllers.yml</parameters>
+                <parameters>$(find lbr_bringup)/config/lbr_controllers.yml</parameters>
                 <robotNamespace>/${robot_name}</robotNamespace>
             </plugin>
         </gazebo>

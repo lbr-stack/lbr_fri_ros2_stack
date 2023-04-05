@@ -2,7 +2,7 @@ from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, OpaqueFunction
 from launch.substitutions import LaunchConfiguration
 
-from lbr_launch import LBRLaunch
+from lbr_bringup import LBRBringup
 
 
 def configure_lbr(context):
@@ -18,8 +18,8 @@ def configure_lbr(context):
     controller_file = LaunchConfiguration("controller_file").perform(context)
     controller = LaunchConfiguration("controller").perform(context)
 
-    lbr_launch = LBRLaunch(sim=sim)
-    lbr_launch.add_robot_description(
+    lbr_bringup = LBRBringup(sim=sim)
+    lbr_bringup.add_robot_description(
         package="lbr_description", xacro_file=f"urdf/{model}/{model}.urdf.xacro"
     ).add_controller_manager(
         package=controller_package, controller_configurations_file=controller_file
@@ -29,7 +29,7 @@ def configure_lbr(context):
         controller
     ).add_robot_state_publisher().add_rviz2()
 
-    return lbr_launch.launch_description.entities
+    return lbr_bringup.launch_description.entities
 
 
 def generate_launch_description():
@@ -49,7 +49,7 @@ def generate_launch_description():
 
     controller_package_arg = DeclareLaunchArgument(
         name="controller_package",
-        default_value="lbr_launch",
+        default_value="lbr_bringup",
         description="The package containing the controller_file.",
     )
 
