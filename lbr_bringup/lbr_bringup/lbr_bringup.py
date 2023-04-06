@@ -111,7 +111,7 @@ class LBRBringup:
         joint_state_broadcaster = "joint_state_broadcaster"
         if not joint_state_broadcaster in self.controller_spawners_:
             raise RuntimeError(
-                f"The {joint_state_broadcaster} controller needs to be added prior to adding rviz2."
+                f"The {joint_state_broadcaster} controller needs to be added prior to adding the robot_state_publisher."
             )
         self.robot_state_publisher_ = Node(
             package="robot_state_publisher",
@@ -120,7 +120,7 @@ class LBRBringup:
             parameters=[self.robot_description_],
         )
 
-        # Don't wait on joint_state_broadcaster in case of simulation.
+        # Don't wait on robot_state_publisher in case of simulation.
         # Gazebo requires robot_description to load joint_state_broadcaster!
         if self.sim_:
             self.launch_description_.add_action(self.robot_state_publisher_)
