@@ -28,16 +28,16 @@ namespace lbr_fri_ros2 {
  * topics. Performs limit checks on commands.
  *
  * Subscriptions:
- * - <b>/lbr_command</b> of type lbr_fri_msgs::msg::LBRCommand
+ * - <b>/lbr_command</b> (lbr_fri_msgs::msg::LBRCommand)
  *
  * Publishers:
- * - <b>/lbr_state</b> of type lbr_fri_msgs::msg::LBRState
+ * - <b>/lbr_state</b> (lbr_fri_msgs::msg::LBRState)
  *
  * Services:
- * - <b>~/connect</b> of type lbr_fri_msgs::srv::AppConnect
+ * - <b>~/connect</b> (lbr_fri_msgs::srv::AppConnect)
  * Opens UDP port to FRI. Creates #app_step_thread_ thread via #app_connect_cb_ that calls #step_ to
  * communicate with the robot.
- * - <b>~/disconnect</b> of type lbr_fri_msgs::srv::AppDisconnect
+ * - <b>~/disconnect</b> (lbr_fri_msgs::srv::AppDisconnect)
  * Closes UDP port to FRI. Finishes #app_step_thread_ thread via #app_disconnect_cb_ through ending
  * #step_.
  *
@@ -90,7 +90,7 @@ protected:
    * @brief Callback to <b>/lbr_command</b> topic. Writes command into #lbr_command_rt_buf_
    * buffer.
    *
-   * @param[in] lbr_command Command of type lbr_fri_msgs::msg::LBRCommand
+   * @param[in] lbr_command Command (lbr_fri_msgs::msg::LBRCommand)
    */
   void lbr_command_sub_cb_(const lbr_fri_msgs::msg::LBRCommand::SharedPtr lbr_command);
 
@@ -137,36 +137,36 @@ protected:
    */
   void step_();
 
-  std::unique_ptr<std::thread> app_step_thread_; /**< Thread running the #step_ method*/
+  std::unique_ptr<std::thread> app_step_thread_; /**< Thread running the #step_ method.*/
 
-  const char *remote_host_; /**< The remote host's IP address*/
-  int port_id_;             /**< The UDP port id*/
+  const char *remote_host_; /**< The remote host's IP address.*/
+  int port_id_;             /**< The UDP port id.*/
 
-  std::atomic<bool> connected_; /**< True if UDP port open and communication running*/
+  std::atomic<bool> connected_; /**< True if UDP port open and communication running.*/
 
   rclcpp::Service<lbr_fri_msgs::srv::AppConnect>::SharedPtr
-      app_connect_srv_; /**< Service to connect to robot via #app_connect_cb_ callback*/
+      app_connect_srv_; /**< Service to connect to robot via #app_connect_cb_ callback.*/
   rclcpp::Service<lbr_fri_msgs::srv::AppDisconnect>::SharedPtr
-      app_disconnect_srv_; /**< Service to disconnect from robot via #app_disconnect_cb_ callback*/
+      app_disconnect_srv_; /**< Service to disconnect from robot via #app_disconnect_cb_ callback.*/
 
   std::shared_ptr<realtime_tools::RealtimeBuffer<lbr_fri_msgs::msg::LBRCommand::SharedPtr>>
       lbr_command_rt_buf_; /**< Realtime-safe buffer for receiving lbr_fri_msgs::msg::LBRCommand
-                              commands*/
+                              commands.*/
   rclcpp::Subscription<lbr_fri_msgs::msg::LBRCommand>::SharedPtr
-      lbr_command_sub_; /**< Subscribtion to lbr_fri_msgs::msg::LBRCommand commands*/
+      lbr_command_sub_; /**< Subscribtion to lbr_fri_msgs::msg::LBRCommand commands.*/
   rclcpp::Publisher<lbr_fri_msgs::msg::LBRState>::SharedPtr
-      lbr_state_pub_; /**< Publisher of lbr_fri_msgs::msg::LBRState*/
+      lbr_state_pub_; /**< Publisher of lbr_fri_msgs::msg::LBRState.*/
   std::shared_ptr<realtime_tools::RealtimePublisher<lbr_fri_msgs::msg::LBRState>>
-      lbr_state_rt_pub_; /**< Realtime-safe publisher of lbr_fri_msgs::msg::LBRState*/
+      lbr_state_rt_pub_; /**< Realtime-safe publisher of lbr_fri_msgs::msg::LBRState.*/
 
   std::shared_ptr<LBRIntermediary>
-      lbr_intermediary_; /**< lbr_fri_ros2::LBRIntermediary object, shared with #lbr_client_*/
+      lbr_intermediary_; /**< lbr_fri_ros2::LBRIntermediary object, shared with #lbr_client_.*/
   std::shared_ptr<LBRClient>
-      lbr_client_; /**< Writes commands / reads states from #lbr_intermediary_ to robot*/
+      lbr_client_; /**< Writes commands / reads states from #lbr_intermediary_ to robot.*/
   std::unique_ptr<KUKA::FRI::UdpConnection>
-      connection_; /**< UDP connection for reading states / writing commands */
+      connection_; /**< UDP connection for reading states / writing commands.*/
   std::unique_ptr<KUKA::FRI::ClientApplication>
-      app_; /**< FRI client application that callbacks #lbr_client_ methods*/
+      app_; /**< FRI client application that callbacks #lbr_client_ methods.*/
 };
 } // end of namespace lbr_fri_ros2
 #endif // LBR_FRI_ROS2__LBR_APP_HPP_
