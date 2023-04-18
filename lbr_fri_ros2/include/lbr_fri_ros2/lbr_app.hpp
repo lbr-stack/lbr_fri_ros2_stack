@@ -24,17 +24,33 @@
 
 namespace lbr_fri_ros2 {
 /**
- * @brief Node for exposing FRI commands / states to realtime-safe topics.
+ * @brief Node for exposing FRI methods to services and FRI commands / states to realtime-safe
+ * topics. Performs limit checks on commands.
  *
- * Robot commands of type lbr_fri_msgs::msg::LBRCommand are subscribed to from
- * <b>/lbr_command</b>. Robot states of type lbr_fri_msgs::msg::LBRState are published to
- * <b>/lbr_state</b>. TODO
+ * Subscriptions:
+ * - <b>/lbr_command</b> of type lbr_fri_msgs::msg::LBRCommand
  *
- * Commands
+ * Publishers:
+ * - <b>/lbr_state</b> of type lbr_fri_msgs::msg::LBRState
+ *
+ * Services:
+ * - <b>~/connect</b> of type lbr_fri_msgs::srv::AppConnect
+ * Opens UDP port to FRI. Creates #app_step_thread_ thread via #app_connect_cb_ that calls #step_ to
+ * communicate with the robot.
+ * - <b>~/disconnect</b> of type lbr_fri_msgs::srv::AppDisconnect
+ * Closes UDP port to FRI. Finishes #app_step_thread_ thread via #app_disconnect_cb_ through ending
+ * #step_.
  *
  */
 class LBRApp : public rclcpp::Node {
 public:
+  /**
+   * @brief Construct a new LBRApp object.
+   *
+   * @param options Node options
+   *
+   * @throws std::runtime error if no robot_description in node parameters
+   */
   LBRApp(const rclcpp::NodeOptions &options);
   ~LBRApp();
 
@@ -48,7 +64,7 @@ protected:
   /**
    * @brief Gets parameters for this node and writes them into members. Checks validity.
    *
-   * @throws std::runtime_error for invalid parameters
+   * @throws std::range_error for invalid port_id in node parameters
    */
   void get_parameters_();
 
@@ -94,6 +110,9 @@ protected:
    * @param[in] remote_host The address of the remote host
    * @return true if successfully opened / already open
    * @return false if failed to open
+   *
+   * @throws std::range_error if invalid port_id
+   *
    */
   bool connect_(const int &port_id = 30200, const char *const remote_host = NULL);
 
@@ -102,12 +121,18 @@ protected:
    *
    * @return true if closed successfully / already closed
    * @return false if failed to close
+   *
+   * @throws std::runtime_error if #app_step_thread_ fails to join
+   *
    */
   bool disconnect_();
 
   /**
-   * @brief Reads commands from <b>/lbr_command</b> and writes them into #lbr_intermediary_.
-   * Calls #app_::step(), which callbacks #lbr_client_. #lbr_client_ shares #lbr_intermediary_ and TODO
+   * @brief Exchanges commands / states between ROS and the FRI.
+   *
+   * Reads commands from <b>/lbr_command</b> and writes them into #lbr_intermediary_.
+   * Calls step() on #app_, which callbacks #lbr_client_ to read commands from #lbr_intermediary_
+   * and write states to #lbr_intermediary_. Writes states to <b>/lbr_state</b>.
    *
    */
   void step_();
@@ -119,22 +144,29 @@ protected:
 
   std::atomic<bool> connected_; /**< True if UDP port open and communication running*/
 
-  rclcpp::Service<lbr_fri_msgs::srv::AppConnect>::SharedPtr app_connect_srv_;
-  rclcpp::Service<lbr_fri_msgs::srv::AppDisconnect>::SharedPtr app_disconnect_srv_;
+  rclcpp::Service<lbr_fri_msgs::srv::AppConnect>::SharedPtr
+      app_connect_srv_; /**< Service to connect to robot via #app_connect_cb_ callback*/
+  rclcpp::Service<lbr_fri_msgs::srv::AppDisconnect>::SharedPtr
+      app_disconnect_srv_; /**< Service to disconnect from robot via #app_disconnect_cb_ callback*/
 
   std::shared_ptr<realtime_tools::RealtimeBuffer<lbr_fri_msgs::msg::LBRCommand::SharedPtr>>
-      lbr_command_rt_buf_; /**< Realtime buffer for receiving lbr_fri_msgs::msg::LBRCommand
+      lbr_command_rt_buf_; /**< Realtime-safe buffer for receiving lbr_fri_msgs::msg::LBRCommand
                               commands*/
-  rclcpp::Subscription<lbr_fri_msgs::msg::LBRCommand>::SharedPtr lbr_command_sub_;
-  rclcpp::Publisher<lbr_fri_msgs::msg::LBRState>::SharedPtr lbr_state_pub_;
-  std::shared_ptr<realtime_tools::RealtimePublisher<lbr_fri_msgs::msg::LBRState>> lbr_state_rt_pub_;
+  rclcpp::Subscription<lbr_fri_msgs::msg::LBRCommand>::SharedPtr
+      lbr_command_sub_; /**< Subscribtion to lbr_fri_msgs::msg::LBRCommand commands*/
+  rclcpp::Publisher<lbr_fri_msgs::msg::LBRState>::SharedPtr
+      lbr_state_pub_; /**< Publisher of lbr_fri_msgs::msg::LBRState*/
+  std::shared_ptr<realtime_tools::RealtimePublisher<lbr_fri_msgs::msg::LBRState>>
+      lbr_state_rt_pub_; /**< Realtime-safe publisher of lbr_fri_msgs::msg::LBRState*/
 
   std::shared_ptr<LBRIntermediary>
-      lbr_intermediary_; /**< Shared lbr_fri_ros2::LBRIntermediary object with #lbr_client_*/
+      lbr_intermediary_; /**< lbr_fri_ros2::LBRIntermediary object, shared with #lbr_client_*/
   std::shared_ptr<LBRClient>
       lbr_client_; /**< Writes commands / reads states from #lbr_intermediary_ to robot*/
-  std::unique_ptr<KUKA::FRI::UdpConnection> connection_;
-  std::unique_ptr<KUKA::FRI::ClientApplication> app_;
+  std::unique_ptr<KUKA::FRI::UdpConnection>
+      connection_; /**< UDP connection for reading states / writing commands */
+  std::unique_ptr<KUKA::FRI::ClientApplication>
+      app_; /**< FRI client application that callbacks #lbr_client_ methods*/
 };
 } // end of namespace lbr_fri_ros2
 #endif // LBR_FRI_ROS2__LBR_APP_HPP_
