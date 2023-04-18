@@ -28,7 +28,7 @@ namespace lbr_fri_ros2 {
  *
  * Robot commands of type lbr_fri_msgs::msg::LBRCommand are subscribed to from
  * <b>/lbr_command</b>. Robot states of type lbr_fri_msgs::msg::LBRState are published to
- * <b>/lbr_state</b>.
+ * <b>/lbr_state</b>. TODO
  *
  * Commands
  *
@@ -107,7 +107,7 @@ protected:
 
   /**
    * @brief Reads commands from <b>/lbr_command</b> and writes them into #lbr_intermediary_.
-   * Calls #app_::step(), which callbacks #lbr_client_. #lbr_client_ shares #lbr_intermediary_ and
+   * Calls #app_::step(), which callbacks #lbr_client_. #lbr_client_ shares #lbr_intermediary_ and TODO
    *
    */
   void step_();
