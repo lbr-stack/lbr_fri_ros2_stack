@@ -22,7 +22,7 @@ public:
   /**
    * @brief Construct a new LBRClient object.
    *
-   * @param lbr_intermediary Shared pointer to lbr_fri_ros2::LBRIntermediary for command injection
+   * @param[in] lbr_intermediary Shared pointer to lbr_fri_ros2::LBRIntermediary for command injection
    * and state extraction.
    */
   LBRClient(const std::shared_ptr<lbr_fri_ros2::LBRIntermediary> lbr_intermediary);
@@ -30,8 +30,8 @@ public:
   /**
    * @brief Prints state change to terminal.
    *
-   * @param old_state The robot's old state
-   * @param new_state The robot's new state
+   * @param[in] old_state The robot's old state
+   * @param[in] new_state The robot's new state
    */
   void onStateChange(KUKA::FRI::ESessionState old_state,
                      KUKA::FRI::ESessionState new_state) override;
