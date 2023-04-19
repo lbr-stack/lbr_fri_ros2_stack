@@ -20,6 +20,7 @@ namespace lbr_fri_ros2 {
  *
  */
 class LBRCommandGuard {
+protected:
   using JointArray = lbr_fri_msgs::msg::LBRState::_measured_joint_position_type;
 
 public:
@@ -51,8 +52,8 @@ public:
    * @return true if lbr_command is valid
    * @return false if lbr_command is invalid
    */
-  bool is_valid_command(const lbr_fri_msgs::msg::LBRCommand &lbr_command,
-                        const lbr_fri_msgs::msg::LBRState &lbr_state) const;
+  virtual bool is_valid_command(const lbr_fri_msgs::msg::LBRCommand &lbr_command,
+                                const lbr_fri_msgs::msg::LBRState &lbr_state) const;
 
 protected:
   /**
@@ -69,10 +70,12 @@ protected:
    * @brief Checks for joint position limits.
    *
    * @param[in] lbr_command The desired command
+   * @param[in] lbr_state The current state
    * @return true if lbr_command in position limits
    * @return false if lbr_command outside position limits
    */
-  bool command_in_position_limits_(const lbr_fri_msgs::msg::LBRCommand &lbr_command) const;
+  virtual bool command_in_position_limits_(const lbr_fri_msgs::msg::LBRCommand &lbr_command,
+                                           const lbr_fri_msgs::msg::LBRState & /*lbr_state*/) const;
 
   /**
    * @brief Checks for joint velocity limits.
@@ -82,8 +85,8 @@ protected:
    * @return true if lbr_command in velocity limits
    * @return false if lbr_command outside velocity limits
    */
-  bool command_in_velocity_limits_(const lbr_fri_msgs::msg::LBRCommand &lbr_command,
-                                   const lbr_fri_msgs::msg::LBRState &lbr_state) const;
+  virtual bool command_in_velocity_limits_(const lbr_fri_msgs::msg::LBRCommand &lbr_command,
+                                           const lbr_fri_msgs::msg::LBRState &lbr_state) const;
 
   /**
    * @brief Checks for joint torque limits.
@@ -93,13 +96,44 @@ protected:
    * @return true if lbr_command in torque limits
    * @return false if lbr_command outside torque limits
    */
-  bool command_in_torque_limits_(const lbr_fri_msgs::msg::LBRCommand &lbr_command,
-                                 const lbr_fri_msgs::msg::LBRState &lbr_state) const;
+  virtual bool command_in_torque_limits_(const lbr_fri_msgs::msg::LBRCommand &lbr_command,
+                                         const lbr_fri_msgs::msg::LBRState &lbr_state) const;
 
   JointArray min_position_; /**< Minimum joint position [rad].*/
   JointArray max_position_; /**< Maximum joint position [rad].*/
   JointArray max_velocity_; /**< Maximum joint velocity [rad/s].*/
   JointArray max_torque_;   /**< Maximum joint torque [Nm].*/
+};
+
+/**
+ * @brief Adds early stopping to LBRCommandGuard.
+ *
+ */
+class LBREarlyStopCommandGuard : public LBRCommandGuard {
+public:
+  LBREarlyStopCommandGuard() = delete;
+
+  /**
+   * @brief Construct a new LBREarlyStopCommandGuard object.
+   *
+   * @param robot_description String containing URDF robot rescription
+   */
+  LBREarlyStopCommandGuard(const std::string &robot_description)
+      : LBRCommandGuard(robot_description){};
+
+protected:
+  /**
+   * @brief Checks for joint position limits and guarantees an early stop given the maximum
+   * velocity.
+   *
+   * @param[in] lbr_command The desired command
+   * @param[in] lbr_state The current state
+   * @return true if lbr_command in position limits
+   * @return false if lbr_command outside position limits
+   */
+  virtual bool
+  command_in_position_limits_(const lbr_fri_msgs::msg::LBRCommand &lbr_command,
+                              const lbr_fri_msgs::msg::LBRState &lbr_state) const override;
 };
 } // end of namespace lbr_fri_ros2
 #endif // LBR_FRI_ROS2__LBR_COMMAND_GUARD_HPP_

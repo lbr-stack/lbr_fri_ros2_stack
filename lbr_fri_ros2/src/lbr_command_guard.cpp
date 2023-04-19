@@ -39,7 +39,7 @@ bool LBRCommandGuard::is_valid_command(const lbr_fri_msgs::msg::LBRCommand &lbr_
     if (is_nan_(lbr_command.joint_position.cbegin(), lbr_command.joint_position.cend())) {
       return false;
     }
-    if (!command_in_position_limits_(lbr_command)) {
+    if (!command_in_position_limits_(lbr_command, lbr_state)) {
       return false;
     }
     if (!command_in_velocity_limits_(lbr_command, lbr_state)) {
@@ -53,7 +53,7 @@ bool LBRCommandGuard::is_valid_command(const lbr_fri_msgs::msg::LBRCommand &lbr_
     if (is_nan_(lbr_command.wrench.cbegin(), lbr_command.wrench.cend())) {
       return false;
     }
-    if (!command_in_position_limits_(lbr_command)) {
+    if (!command_in_position_limits_(lbr_command, lbr_state)) {
       return false;
     }
     if (!command_in_velocity_limits_(lbr_command, lbr_state)) {
@@ -67,7 +67,7 @@ bool LBRCommandGuard::is_valid_command(const lbr_fri_msgs::msg::LBRCommand &lbr_
     if (is_nan_(lbr_command.torque.cbegin(), lbr_command.torque.cend())) {
       return false;
     }
-    if (!command_in_position_limits_(lbr_command)) {
+    if (!command_in_position_limits_(lbr_command, lbr_state)) {
       return false;
     }
     if (!command_in_velocity_limits_(lbr_command, lbr_state)) {
@@ -87,7 +87,8 @@ bool LBRCommandGuard::is_nan_(const double *begin, const double *end) const {
 }
 
 bool LBRCommandGuard::command_in_position_limits_(
-    const lbr_fri_msgs::msg::LBRCommand &lbr_command) const {
+    const lbr_fri_msgs::msg::LBRCommand &lbr_command,
+    const lbr_fri_msgs::msg::LBRState & /*lbr_state*/) const {
   for (std::size_t i = 0; i < lbr_command.joint_position.size(); ++i) {
     if (lbr_command.joint_position[i] < min_position_[i] ||
         lbr_command.joint_position[i] > max_position_[i]) {
@@ -117,6 +118,21 @@ bool LBRCommandGuard::command_in_torque_limits_(
     const lbr_fri_msgs::msg::LBRState &lbr_state) const {
   for (std::size_t i = 0; i < lbr_command.torque.size(); ++i) {
     if (std::abs(lbr_command.torque[i] + lbr_state.external_torque[i]) > max_torque_[i]) {
+      printf("Position command not in limits for joint %ld.\n", i);
+      return false;
+    }
+  }
+  return true;
+}
+
+bool LBREarlyStopCommandGuard::command_in_position_limits_(
+    const lbr_fri_msgs::msg::LBRCommand &lbr_command,
+    const lbr_fri_msgs::msg::LBRState &lbr_state) const {
+  for (std::size_t i = 0; i < lbr_command.joint_position.size(); ++i) {
+    if (lbr_command.joint_position[i] <
+            min_position_[i] + max_velocity_[i] * lbr_state.sample_time ||
+        lbr_command.joint_position[i] >
+            max_position_[i] - max_velocity_[i] * lbr_state.sample_time) {
       printf("Position command not in limits for joint %ld.\n", i);
       return false;
     }

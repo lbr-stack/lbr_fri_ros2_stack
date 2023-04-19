@@ -35,7 +35,8 @@ LBRApp::LBRApp(const rclcpp::NodeOptions &options) : rclcpp::Node("lbr_app", opt
     throw std::runtime_error("Failed to receive robot_description parameter.");
   }
 
-  lbr_intermediary_ = std::make_shared<LBRIntermediary>(LBRCommandGuard{robot_description});
+  lbr_intermediary_ =
+      std::make_shared<LBRIntermediary>(LBREarlyStopCommandGuard{robot_description});
   lbr_client_ = std::make_shared<LBRClient>(lbr_intermediary_);
   connection_ = std::make_unique<KUKA::FRI::UdpConnection>();
   app_ = std::make_unique<KUKA::FRI::ClientApplication>(*connection_, *lbr_client_);
