@@ -3,7 +3,7 @@
 <package format="3">
   <name>lbr_demos</name>
   <version>1.0.0</version>
-  <description>Examples for controlling the LBR robots through the Fast Robot Interface (FRI).</description>
+  <description>Demos for controlling the LBR robots through the Fast Robot Interface (FRI).</description>
   <maintainer email="martin.huber@kcl.ac.uk">mhubii</maintainer>
   <license>MIT</license>
 

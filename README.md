@@ -6,6 +6,22 @@ ROS 2 packages for the KUKA LBR, including communication to the real robot via t
 ## Documentation
 Full documentation available [here](https://lbr-fri-ros2-stack-doc.readthedocs.io/en/latest/).
 
+## Quick Start
+Install [colcon](https://docs.ros.org/en/humble/Tutorials/Colcon-Tutorial.html#install-colcon), [rosdep](https://docs.ros.org/en/crystal/Installation/Linux-Install-Binary.html#installing-and-initializing-rosdep) and [vcstool](https://github.com/dirk-thomas/vcstool#how-to-install-vcstool). Build this repository
+```shell
+mkdir -p lbr_fri_ros2_stack_ws/src && cd lbr_fri_ros2_stack_ws
+wget https://raw.githubusercontent.com/KCL-BMEIS/lbr_fri_ros2_stack/humble/lbr_fri_ros2_stack/repos.yml -P src
+vcs import src < src/repos.yml
+rosdep install --from-paths src --ignore-src -r -y
+colcon build
+```
+Next, launch the simulation via
+```shell
+source install/setup.bash
+ros2 launch lbr_bringup lbr_bringup.launch.py model:=med7 sim:=true # model:=[iiwa7/iiwa14/med7/med14]
+```
+Now, run the [demos](lbr_demos/README.md). To get started with the real robot, checkout the [Documentation](#documentation) above.
+
 ## Acknowledgements
 <img src="https://www.kcl.ac.uk/newimages/Wellcome-EPSRC-Centre-medical-engineering-logo.xa827df3f.JPG?f=webp" alt="wellcome" height="45" width="65" align="left">
 

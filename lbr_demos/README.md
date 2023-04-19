@@ -1,5 +1,5 @@
-# LBR Examples
-Simple examples for controlling the LBR robots through the Fast Robot Interface (FRI).
+# LBR Demos
+Simple demos for controlling the LBR robots through the Fast Robot Interface (FRI).
 
 ## Python
 ### Admittance Control
