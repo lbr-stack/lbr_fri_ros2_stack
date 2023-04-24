@@ -10,7 +10,7 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.actions import Node
 
 
-class LBRBringup:
+class LBRBringUp:
     robot_name_: str
     sim: bool
 
