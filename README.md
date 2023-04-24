@@ -1,4 +1,4 @@
-# lbr_fri_ros2
+# lbr_fri_ros2_stack
 ![Build status](https://github.com/KCL-BMEIS/lbr_fri_ros2_stack/actions/workflows/build.yml/badge.svg?branch=humble) ![GitHub](https://img.shields.io/github/license/KCL-BMEIS/lbr_fri_ros2_stack) 
 [![Documentation Status](https://readthedocs.org/projects/lbr-fri-ros2-stack-doc/badge/?version=humble)](https://lbr-fri-ros2-stack-doc.readthedocs.io/en/humble/?badge=humble)
 
