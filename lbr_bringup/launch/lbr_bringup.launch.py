@@ -5,11 +5,11 @@ from launch.launch_description import LaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import Command, FindExecutable, PathJoinSubstitution
 from launch.substitutions.launch_configuration import LaunchConfiguration
+from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 
 
 def launch_setup(context, *args, **kwargs):
-
     # Evaluate frequently used variables
     model = LaunchConfiguration("model").perform(context)
 
@@ -34,12 +34,12 @@ def launch_setup(context, *args, **kwargs):
     )
 
     # Load LBR FRI ROS2
-    lbr_spinner = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            PathJoinSubstitution(
-                [FindPackageShare("lbr_fri_ros2"), "launch", "lbr_spinner.launch.py"]
-            )
-        ),
+    lbr_app_node = Node(
+        package="lbr_fri_ros2",
+        executable="lbr_app",
+        emulate_tty=True,
+        output="screen",
+        parameters=[{"robot_description", robot_description_content}],
         condition=UnlessCondition(LaunchConfiguration("sim")),
     )
 
@@ -98,11 +98,10 @@ def launch_setup(context, *args, **kwargs):
         ],
     )
 
-    return [lbr_spinner, simulation, control, move_group]
+    return [lbr_app_node, simulation, control, move_group]
 
 
 def generate_launch_description():
-
     # Launch arguments
     launch_args = []
 
