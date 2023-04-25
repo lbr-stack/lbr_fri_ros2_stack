@@ -7,68 +7,93 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
+find_package(fri REQUIRED)
+find_package(lbr_fri_msgs REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(rclcpp_components REQUIRED)
 find_package(realtime_tools REQUIRED)
 find_package(std_srvs REQUIRED)
-find_package(lbr_fri_msgs REQUIRED)
-find_package(fri REQUIRED)
+find_package(urdf REQUIRED)
 
+# lbr_fri_ros2
 add_library(lbr_fri_ros2
   SHARED 
-    src/lbr_app_node.cpp
     src/lbr_client.cpp
-    src/lbr.cpp
+    src/lbr_command_guard.cpp
+    src/lbr_intermediary.cpp
 )
 
-target_include_directories(${PROJECT_NAME}
-  PRIVATE include
+target_include_directories(lbr_fri_ros2
+  PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
 )
 
-ament_target_dependencies(${PROJECT_NAME}
-  rclcpp
-  realtime_tools
-  std_srvs
-  lbr_fri_msgs
+ament_target_dependencies(lbr_fri_ros2
   fri
+  lbr_fri_msgs
+  urdf
 )
 
-ament_export_targets(${PROJECT_NAME}_export HAS_LIBRARY_TARGET)
+ament_export_targets(lbr_fri_ros2_export HAS_LIBRARY_TARGET)
 ament_export_dependencies(
-  rclcpp
-  realtime_tools
-  std_srvs
-  lbr_fri_msgs
   fri
+  lbr_fri_msgs
+  urdf
 )
 
 install(
   DIRECTORY include/
   DESTINATION include
 )
-  
+
 install(
-  TARGETS ${PROJECT_NAME}
-  EXPORT ${PROJECT_NAME}_export
+  TARGETS lbr_fri_ros2
+  EXPORT lbr_fri_ros2_export
   LIBRARY DESTINATION lib
-  ARCHIVE DESTINATION lib
-  INCLUDES DESTINATION include
-)
-
-add_executable(lbr_spinner src/lbr_spinner.cpp)
-target_include_directories(lbr_spinner PRIVATE include)
-target_link_libraries(lbr_spinner ${PROJECT_NAME})
-ament_target_dependencies(lbr_spinner
-  rclcpp
-)
-
-install(
-  TARGETS lbr_spinner
-  RUNTIME DESTINATION lib/${PROJECT_NAME}
 )
 
 install(
   DIRECTORY launch
-  DESTINATION share/${PROJECT_NAME}
+  DESTINATION share/lbr_fri_ros2
+)
+
+# lbr_app_component
+add_library(lbr_app_component
+  SHARED
+    src/lbr_app.cpp
+)
+
+target_include_directories(lbr_app_component
+  PRIVATE include
+)
+
+target_link_libraries(lbr_app_component
+  lbr_fri_ros2
+)
+
+ament_target_dependencies(lbr_app_component
+  rclcpp
+  rclcpp_components
+  realtime_tools
+  fri
+  lbr_fri_msgs
+)
+
+rclcpp_components_register_node(lbr_app_component
+  PLUGIN lbr_fri_ros2::LBRApp
+  EXECUTABLE lbr_app
+)
+
+install(
+  TARGETS lbr_app_component
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION lib/lbr_fri_ros2
+)
+
+install(
+  DIRECTORY launch
+  DESTINATION share/lbr_fri_ros2
 )
 
 install(
