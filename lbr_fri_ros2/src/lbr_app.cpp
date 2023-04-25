@@ -30,7 +30,7 @@ LBRApp::LBRApp(const rclcpp::NodeOptions &options) : rclcpp::Node("lbr_app", opt
           lbr_state_pub_);
 
   std::string robot_description;
-  declare_parameter("robot_description");
+  declare_parameter<std::string>("robot_description");
   if (!get_parameter("robot_description", robot_description)) {
     throw std::runtime_error("Failed to receive robot_description parameter.");
   }
