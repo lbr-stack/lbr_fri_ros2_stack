@@ -9,13 +9,12 @@ LBRApp::LBRApp(const rclcpp::NodeOptions &options) : rclcpp::Node("lbr_app", opt
 
   app_connect_srv_ = create_service<lbr_fri_msgs::srv::AppConnect>(
       "~/connect",
-      std::bind(&LBRAppNode::app_connect_cb_, this, std::placeholders::_1, std::placeholders::_2),
+      std::bind(&LBRApp::app_connect_cb_, this, std::placeholders::_1, std::placeholders::_2),
       rclcpp::ServicesQoS());
 
   app_disconnect_srv_ = create_service<lbr_fri_msgs::srv::AppDisconnect>(
       "~/disconnect",
-      std::bind(&LBRAppNode::app_disconnect_cb_, this, std::placeholders::_1,
-                std::placeholders::_2),
+      std::bind(&LBRApp::app_disconnect_cb_, this, std::placeholders::_1, std::placeholders::_2),
       rclcpp::ServicesQoS());
 
   lbr_command_rt_buf_ =
