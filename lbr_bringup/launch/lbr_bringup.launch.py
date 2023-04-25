@@ -1,9 +1,13 @@
+import os
+
+import xacro
+from ament_index_python import get_package_share_directory
 from launch.actions import IncludeLaunchDescription, OpaqueFunction
 from launch.actions.declare_launch_argument import DeclareLaunchArgument
 from launch.conditions import IfCondition, UnlessCondition
 from launch.launch_description import LaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import Command, FindExecutable, PathJoinSubstitution
+from launch.substitutions import PathJoinSubstitution
 from launch.substitutions.launch_configuration import LaunchConfiguration
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
@@ -14,24 +18,17 @@ def launch_setup(context, *args, **kwargs):
     model = LaunchConfiguration("model").perform(context)
 
     # Load robot description
-    robot_description_content = Command(
-        [
-            FindExecutable(name="xacro"),
-            " ",
-            PathJoinSubstitution(
-                [
-                    FindPackageShare("lbr_description"),
-                    "urdf/{}/{}.urdf.xacro".format(model, model),
-                ]
+    robot_description = {
+        "robot_description": xacro.process(
+            os.path.join(
+                get_package_share_directory("lbr_description"),
+                "urdf",
+                model,
+                f"{model}.urdf.xacro",
             ),
-            " ",
-            "robot_name:=",
-            LaunchConfiguration("robot_name"),
-            " ",
-            "sim:=",
-            LaunchConfiguration("sim"),
-        ]
-    )
+            mappings={"sim": "false"},
+        )
+    }
 
     # Load LBR FRI ROS2
     lbr_app_node = Node(
@@ -39,7 +36,7 @@ def launch_setup(context, *args, **kwargs):
         executable="lbr_app",
         emulate_tty=True,
         output="screen",
-        parameters=[{"robot_description", robot_description_content}],
+        parameters=[robot_description],
         condition=UnlessCondition(LaunchConfiguration("sim")),
     )
 
@@ -51,7 +48,7 @@ def launch_setup(context, *args, **kwargs):
             )
         ),
         launch_arguments=[
-            ("robot_description", robot_description_content),
+            ("robot_description", robot_description["robot_description"]),
             (
                 "controller_configurations_package",
                 LaunchConfiguration("controller_configurations_package"),
@@ -84,7 +81,7 @@ def launch_setup(context, *args, **kwargs):
             )
         ),
         launch_arguments=[
-            ("robot_description", robot_description_content),
+            ("robot_description", robot_description["robot_description"]),
             (
                 "moveit_controller_configurations_package",
                 LaunchConfiguration("moveit_controller_configurations_package"),
