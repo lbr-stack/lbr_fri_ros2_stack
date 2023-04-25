@@ -1,5 +1,5 @@
-# LBR Examples
-Simple examples for controlling the LBR robots through the Fast Robot Interface (FRI).
+# LBR Demos
+Simple demos for controlling the LBR robots through the Fast Robot Interface (FRI).
 
 ## Python
 ### Admittance Control
@@ -10,7 +10,7 @@ ros2 launch lbr_bringup lbr_bringup.launch.py model:=iiwa7 sim:=false
 ```
 - Launch admittance control (make sure Python dependencies are installed)
 ```shell
-ros2 run lbr_examples admittance_control_node.py
+ros2 run lbr_demos admittance_control_node.py
 ```
 
 ### LBR Command
@@ -21,7 +21,7 @@ ros2 launch lbr_bringup lbr_bringup.launch.py model:=iiwa7 sim:=false
 ```
 - Launch commanding node
 ```shell
-ros2 run lbr_examples lbr_command_node.py
+ros2 run lbr_demos lbr_command_node.py
 ```
 
 ## C++
@@ -33,5 +33,5 @@ ros2 launch lbr_bringup lbr_bringup.launch.py model:=iiwa7 sim:=false
 ```
 - Launch commanding node
 ```shell
-ros2 run lbr_examples lbr_command_node
+ros2 run lbr_demos lbr_command_node
 ```
