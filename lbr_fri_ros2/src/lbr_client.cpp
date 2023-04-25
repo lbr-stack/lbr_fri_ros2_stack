@@ -2,7 +2,7 @@
 
 namespace lbr_fri_ros2 {
 LBRClient::LBRClient(const std::shared_ptr<lbr_fri_ros2::LBRIntermediary> lbr_intermediary)
-    : lbr_intermediary_(lbr_intermediary){};
+    : lbr_intermediary_(lbr_intermediary){}
 
 void LBRClient::onStateChange(KUKA::FRI::ESessionState old_state,
                               KUKA::FRI::ESessionState new_state) {

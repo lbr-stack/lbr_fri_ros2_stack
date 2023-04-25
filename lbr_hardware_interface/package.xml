@@ -3,7 +3,7 @@
 <package format="3">
   <name>lbr_hardware_interface</name>
   <version>1.0.0</version>
-  <description>ROS2 hardware hardware_interface for KUKA LBR through Fast Robot Interface (FRI).</description>
+  <description>ROS 2 hardware hardware_interface for KUKA LBR through Fast Robot Interface (FRI).</description>
   <maintainer email="martin.huber@kcl.ac.uk">mhubii</maintainer>
   <license>MIT</license>
 

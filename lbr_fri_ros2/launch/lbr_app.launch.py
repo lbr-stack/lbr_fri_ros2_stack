@@ -23,15 +23,15 @@ def launch_setup(context: LaunchContext):
         )
     }
 
-    lbr_spinner_node = Node(
+    lbr_app_node = Node(
         package="lbr_fri_ros2",
-        executable="lbr_spinner",
+        executable="lbr_app",
         emulate_tty=True,
         output="screen",
         parameters=[robot_description],
     )
 
-    return [lbr_spinner_node]
+    return [lbr_app_node]
 
 
 def generate_launch_description():
