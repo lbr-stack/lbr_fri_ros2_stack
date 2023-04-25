@@ -171,4 +171,4 @@ void LBRApp::step_() {
 
 #include "rclcpp_components/register_node_macro.hpp"
 
-RCLCPP_COMPONENTS_REGISTER_NODE(lbr_fri_ros2::LBRApp);
+RCLCPP_COMPONENTS_REGISTER_NODE(lbr_fri_ros2::LBRApp)
