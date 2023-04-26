@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(lbr_standalone_cpp_demos/)
+project(lbr_standalone_cpp_demos)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
@@ -7,20 +7,53 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
-# uncomment the following section in order to fill in
-# further dependencies manually.
-# find_package(<dependency> REQUIRED)
+find_package(fri REQUIRED)
+find_package(lbr_fri_msgs REQUIRED)
+find_package(rclcpp REQUIRED)
 
-if(BUILD_TESTING)
-  find_package(ament_lint_auto REQUIRED)
-  # the following line skips the linter which checks for copyrights
-  # comment the line when a copyright and license is added to all source files
-  set(ament_cmake_copyright_FOUND TRUE)
-  # the following line skips cpplint (only works in a git repo)
-  # comment the line when this package is in a git repo and when
-  # a copyright and license is added to all source files
-  set(ament_cmake_cpplint_FOUND TRUE)
-  ament_lint_auto_find_test_dependencies()
-endif()
+# joint sine overlay
+add_executable(joint_sine_overlay_node
+  src/joint_sine_overlay_node.cpp
+)
+
+ament_target_dependencies(joint_sine_overlay_node
+  fri  
+  lbr_fri_msgs
+  rclcpp
+)
+
+# torque sine overlay
+add_executable(torque_sine_overlay_node
+  src/torque_sine_overlay_node.cpp
+)
+
+ament_target_dependencies(torque_sine_overlay_node
+  fri  
+  lbr_fri_msgs
+  rclcpp
+)
+
+# wrench sine overlay
+add_executable(wrench_sine_overlay_node
+  src/wrench_sine_overlay_node.cpp
+)
+
+ament_target_dependencies(wrench_sine_overlay_node
+  fri  
+  lbr_fri_msgs
+  rclcpp
+)
+
+install(TARGETS
+  joint_sine_overlay_node
+  torque_sine_overlay_node
+  wrench_sine_overlay_node
+  DESTINATION lib/${PROJECT_NAME}
+)
+
+install(DIRECTORY
+  launch
+  DESTINATION share/${PROJECT_NAME}
+)
 
 ament_package()
