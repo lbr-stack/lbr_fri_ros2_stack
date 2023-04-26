@@ -12,12 +12,12 @@
 #include "lbr_fri_msgs/msg/lbr_command.hpp"
 #include "lbr_fri_msgs/msg/lbr_state.hpp"
 
-class JointSineOverlay : public rclcpp::Node {
+class JointSineOverlayNode : public rclcpp::Node {
   static constexpr double amplitude_ = 0.04; // rad
   static constexpr double frequency_ = 0.25; // Hz
 
 public:
-  JointSineOverlay(const std::string &node_name) : Node(node_name), phase_(0.) {
+  JointSineOverlayNode(const std::string &node_name) : Node(node_name), phase_(0.) {
     // create publisher to /lbr_command
     lbr_command_pub_ = this->create_publisher<lbr_fri_msgs::msg::LBRCommand>(
         "/lbr_command", rclcpp::SensorDataQoS());
@@ -25,7 +25,7 @@ public:
     // create subscription to /lbr_state
     lbr_state_sub_ = this->create_subscription<lbr_fri_msgs::msg::LBRState>(
         "/lbr_state", rclcpp::SensorDataQoS(),
-        std::bind(&JointSineOverlay::lbr_state_cb_, this, std::placeholders::_1));
+        std::bind(&JointSineOverlayNode::lbr_state_cb_, this, std::placeholders::_1));
   };
 
 protected:
@@ -54,7 +54,7 @@ protected:
 
 int main(int argc, char **argv) {
   rclcpp::init(argc, argv);
-  rclcpp::spin(std::make_shared<JointSineOverlay>("joint_sine_overlay_node"));
+  rclcpp::spin(std::make_shared<JointSineOverlayNode>("joint_sine_overlay_node"));
   rclcpp::shutdown();
   return 0;
 };
