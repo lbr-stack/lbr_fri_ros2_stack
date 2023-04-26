@@ -1,6 +1,6 @@
 from setuptools import setup
 
-package_name = 'lbr_standalone_python_demos'
+package_name = 'lbr_fri_ros2_python_demos'
 
 setup(
     name=package_name,

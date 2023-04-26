@@ -30,10 +30,10 @@ def generate_launch_description() -> LaunchDescription:
         ],
     )
 
-    wrench_sine_overlay_node = Node(
-        package="lbr_standalone_cpp_demos",
-        executable="wrench_sine_overlay_node",
+    torque_sine_overlay_node = Node(
+        package="lbr_fri_ros2_cpp_demos",
+        executable="torque_sine_overlay_node",
         output="screen",
     )
 
-    return LaunchDescription([model_arg, lbr_app, wrench_sine_overlay_node])
+    return LaunchDescription([model_arg, lbr_app, torque_sine_overlay_node])
