@@ -2,7 +2,7 @@
 
 namespace lbr_fri_ros2 {
 LBRClient::LBRClient(const std::shared_ptr<lbr_fri_ros2::LBRIntermediary> lbr_intermediary)
-    : lbr_intermediary_(lbr_intermediary){}
+    : lbr_intermediary_(lbr_intermediary) {}
 
 void LBRClient::onStateChange(KUKA::FRI::ESessionState old_state,
                               KUKA::FRI::ESessionState new_state) {
@@ -14,7 +14,8 @@ void LBRClient::monitor() { state_to_buffer_(); }
 void LBRClient::waitForCommand() {
   KUKA::FRI::LBRClient::waitForCommand();
   state_to_buffer_();
-  zero_command_();
+  zero_buffer_();
+  buffer_to_command_();
 }
 
 void LBRClient::command() {
@@ -22,7 +23,7 @@ void LBRClient::command() {
   buffer_to_command_();
 }
 
-void LBRClient::zero_command_() {
+void LBRClient::zero_buffer_() {
   if (!lbr_intermediary_->zero_command_buffer(robotState())) {
     throw std::runtime_error("Failed to zero the command.");
   }
