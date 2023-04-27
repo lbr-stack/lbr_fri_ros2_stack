@@ -1,7 +1,7 @@
 # LBR FRI ROS2 C++ Demos
 Collection of basic usage examples for the `lbr_fri_ros2` through C++.
 
-🤝 **Note**: These demos closely follow KUKA's FRI example applications.
+🤝 **Note**: These demos are compatible with and closely follow KUKA's FRI example applications.
 
 ⚠️ **General Safety**: Do always execute in `T1` mode first.
 
