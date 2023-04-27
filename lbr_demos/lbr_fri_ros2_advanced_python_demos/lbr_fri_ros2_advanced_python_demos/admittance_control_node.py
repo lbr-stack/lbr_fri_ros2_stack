@@ -1,4 +1,3 @@
-#!/usr/bin/python3
 import os
 
 import kinpy
@@ -6,7 +5,7 @@ import numpy as np
 import rclpy
 import xacro
 from ament_index_python import get_package_share_directory
-from rclpy import qos
+from rclpy.qos import qos_profile_sensor_data
 from rclpy.node import Node
 
 from lbr_fri_msgs.msg import LBRCommand, LBRState
@@ -92,10 +91,10 @@ class AdmittanceControlNode(Node):
 
         # publishers and subscribers
         self.lbr_state_sub_ = self.create_subscription(
-            LBRState, "/lbr_state", self.lbr_state_cb_, qos.qos_profile_system_default
+            LBRState, "/lbr_state", self.lbr_state_cb_, qos_profile_sensor_data
         )
         self.lbr_command_pub_ = self.create_publisher(
-            LBRCommand, "/lbr_command", qos.qos_profile_system_default
+            LBRCommand, "/lbr_command", qos_profile_sensor_data
         )
         self.lbr_command_timer_ = self.create_timer(self.dt_, self.timer_cb_)
 
@@ -145,7 +144,3 @@ def main(args=None):
     admittance_control_node = AdmittanceControlNode()
     rclpy.spin(admittance_control_node)
     rclpy.shutdown()
-
-
-if __name__ == "__main__":
-    main()
