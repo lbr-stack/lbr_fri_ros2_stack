@@ -1,37 +1,29 @@
 # LBR Demos
-Simple demos for controlling the LBR robots through the Fast Robot Interface (FRI).
+Demos for controlling the LBR through the Fast Robot Interface (FRI) from ROS 2.
 
-## Python
-### Admittance Control
-Demonstrates how to perform a hand-guiding application. Implementation in [scripts/admittance_control_node.py](scripts/admittance_control_node.py)
-- Launch robot (works best if LBRServer is started with 10ms send period)
-```shell
-ros2 launch lbr_bringup lbr_bringup.launch.py model:=iiwa7 sim:=false
-```
-- Launch admittance control (make sure Python dependencies are installed)
-```shell
-ros2 run lbr_demos admittance_control_node.py
-```
+⚠️ **General Safety**: Do always execute in `T1` mode on the real robot first.
 
-### LBR Command
-Demonstrates how to read from and write to LBR robot by rotating the last joint. Implementation in [scripts/lbr_command_node.py](scripts/lbr_command_node.py)
-- Launch robot
-```shell
-ros2 launch lbr_bringup lbr_bringup.launch.py model:=iiwa7 sim:=false
-```
-- Launch commanding node
-```shell
-ros2 run lbr_demos lbr_command_node.py
-```
+## LBR FRI ROS 2 Demos
+🤝 **Note**: These demos are compatible with and closely follow KUKA's FRI example applications.
 
-## C++
-### LBR Command
-Demonstrates how to read from and write to LBR robot by rotating the last joint. Implementation in [src/lbr_command_node.cpp](src/lbr_command_node.cpp)
-- Launch robot
-```shell
-ros2 launch lbr_bringup lbr_bringup.launch.py model:=iiwa7 sim:=false
-```
-- Launch commanding node
-```shell
-ros2 run lbr_demos lbr_command_node
-```
+🫣 **Note**: A real robot is required to run these demos.
+
+### Python Demos
+[Python examples](lbr_fri_ros2_python_demos/) for sending commands to `/lbr_command` and reading states from `/lbr_state`.
+
+### Advanced Python Demos
+[Advanced Python examples](lbr_fri_ros2_advanced_python_demos/) for sending commands to `/lbr_command` and reading states from `/lbr_state`.
+
+### C++ Demos
+[C++ examples](lbr_fri_ros2_cpp_demos/) examples for sending commands to `/lbr_command` and reading states from `/lbr_state`.
+
+## LBR ROS2 Control Demos
+These demos demonstrate the LBR integration into the ROS 2 ecosystem. 
+
+🙌 **Note**: These demos run in simulation **and** on the real robot.
+
+### Python Demos
+[Python examples](lbr_fri_ros2_python_demos/) for using the LBR through `ros2_control` controllers.
+
+### C++ Demos
+[C++ examples](lbr_fri_ros2_cpp_demos/) for using the LBR through `ros2_control` controllers.
