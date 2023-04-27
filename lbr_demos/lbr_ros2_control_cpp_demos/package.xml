@@ -3,7 +3,7 @@
 <package format="3">
   <name>lbr_ros2_control_cpp_demos</name>
   <version>1.0.0</version>
-  <description>C++ demos for the LBR ros2_control integration</description>
+  <description>C++ demos for the LBR ros2_control integration.</description>
   <maintainer email="martin.huber@kcl.ac.uk">mhubii</maintainer>
   <license>MIT</license>
 
@@ -14,6 +14,11 @@
   <depend>rclcpp</depend>
   <depend>rclcpp_action</depend>
   <depend>trajectory_msgs</depend>
+
+  <exec_depend>lbr_bringup</exec_depend>
+  <exec_depend>lbr_description</exec_depend>
+  <exec_depend>lbr_fri_ros2</exec_depend>
+  <exec_depend>lbr_hardware_interface</exec_depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>

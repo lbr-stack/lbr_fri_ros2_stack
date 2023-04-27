@@ -34,7 +34,7 @@ public:
 
     control_msgs::action::FollowJointTrajectory::Goal joint_trajectory_goal;
     int32_t goal_sec_tolerance = 1;
-    joint_trajectory_goal.goal_time_tolerance.sec = 1;
+    joint_trajectory_goal.goal_time_tolerance.sec = goal_sec_tolerance;
 
     trajectory_msgs::msg::JointTrajectoryPoint point;
     point.positions = positions;
@@ -47,6 +47,7 @@ public:
 
     joint_trajectory_goal.trajectory.points.push_back(point);
 
+    // send goal
     auto goal_future = joint_trajectory_action_client_->async_send_goal(joint_trajectory_goal);
     rclcpp::spin_until_future_complete(this->get_node_base_interface(), goal_future);
     auto goal_handle = goal_future.get();
@@ -56,6 +57,7 @@ public:
     }
     RCLCPP_INFO(this->get_logger(), "Goal was accepted by server.");
 
+    // wait for result
     auto result_future = joint_trajectory_action_client_->async_get_result(goal_handle);
     rclcpp::spin_until_future_complete(this->get_node_base_interface(), result_future,
                                        std::chrono::seconds(sec_from_start + goal_sec_tolerance));
