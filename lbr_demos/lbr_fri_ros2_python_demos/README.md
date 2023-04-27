@@ -1,6 +1,8 @@
 # LBR FRI ROS2 Python Demos
 Collection of basic usage examples for the `lbr_fri_ros2` through Python. **Note**: These demos closely follow `KUKA`'s `FRI` example applications.
 
+⚠️ **General Safety**: Do always execute in `T1` mode first.
+
 ## Joint Sine Overlay
 1. Launch the `LBRJointSineOverlay` application on the `KUKA smartPAD`.
 
