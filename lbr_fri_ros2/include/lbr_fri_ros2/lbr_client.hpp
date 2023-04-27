@@ -62,10 +62,10 @@ public:
 
 protected:
   /**
-   * @brief Sets command to commanded state.
+   * @brief Sets buffer to commanded state.
    *
    */
-  void zero_command_();
+  void zero_buffer_();
 
   /**
    * @brief Writes command from #lbr_intermediary_ to #robotState.
