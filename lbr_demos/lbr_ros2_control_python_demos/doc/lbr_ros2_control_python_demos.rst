@@ -28,6 +28,7 @@ Real Robot
 ~~~~~~~~~~
 1. Launch the ``LBRServer`` application on the ``KUKA smartPAD``.
 2. Select
+
     - ``FRI send period``: ``10 ms``
     - ``IP address``: ``your configuration``
     - ``FRI control mode``: ``POSITION_CONTROL`` or ``JOINT_IMPEDANCE_CONTROL``
