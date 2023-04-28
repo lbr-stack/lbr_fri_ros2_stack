@@ -33,4 +33,4 @@ Real Robot
     - ``IP address``: ``your configuration``
     - ``FRI control mode``: ``POSITION_CONTROL`` or ``JOINT_IMPEDANCE_CONTROL``
     - ``FRI client command mode``: ``POSITION``
-3. Proceed with steps 1 and 2 from `Simulation`_` but with ``sim:=false``.
+3. Proceed with steps 1 and 2 from `Simulation`_ but with ``sim:=false``.
