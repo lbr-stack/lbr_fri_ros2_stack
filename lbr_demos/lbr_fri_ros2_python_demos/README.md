@@ -1,4 +1,4 @@
-# LBR FRI ROS2 Python Demos
+# LBR FRI ROS 2 Python Demos
 Collection of basic usage examples for the `lbr_fri_ros2` through Python.
 
 🤝 **Note**: These demos are compatible with and closely follow KUKA's FRI example applications.

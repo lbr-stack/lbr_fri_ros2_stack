@@ -1,4 +1,4 @@
-# LBR FRI ROS2 C++ Demos
+# LBR FRI ROS 2 C++ Demos
 Collection of basic usage examples for the `lbr_fri_ros2` through C++.
 
 🤝 **Note**: These demos are compatible with and closely follow KUKA's FRI example applications.
