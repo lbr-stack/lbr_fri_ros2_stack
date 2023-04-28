@@ -14,10 +14,10 @@ Admittance Controller
 
     ros2 launch lbr_fri_ros2 lbr_app.launch.py model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
 
-1. Run the admittance control node:
+3. Run the admittance control node:
 
 .. code-block:: bash
 
     ros2 run lbr_fri_ros2_advanced_python_demos admittance_control_node
 
-1. Now gently move the robot at the end-effector.
+4. Now gently move the robot at the end-effector.
