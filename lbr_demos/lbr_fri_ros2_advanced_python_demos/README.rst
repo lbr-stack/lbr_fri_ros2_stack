@@ -1,9 +1,11 @@
-# LBR FRI ROS 2 Advanced Python Demos
+LBR FRI ROS 2 Advanced Python Demos
+===================================
 Collection of advanced usage examples for the `lbr_fri_ros2` through Python.
 
 ⚠️ **General Safety**: Do always execute in `T1` mode first.
 
-## Admittance Controller
+Admittance Controller
+---------------------
 ⚠️ **Warning**: Not well behaved around singularities, put robot in a well-behaved configuration first, e.g. `A1 = 0°`, `A2 = -30°`, `A3 = 0°`, `A4 = 60°`, `A5 = 0°`, `A6 = -90°`, `A7 = 0°`. Can be done using the `smartPAD` in `T1` mode.
 1. Launch the `LBRServer` application on the `KUKA smartPAD`.
 2. Launch the robot driver:
