@@ -1,6 +1,6 @@
 LBR FRI ROS 2 C++ Demos
 =======================
-Collection of basic usage examples for the ``lbr_fri_ros2`` through C++.
+Collection of basic usage examples for the ``lbr_fri_ros2`` package through C++.
 
 🤝 **Note**: These demos are compatible with and closely follow KUKA's FRI example applications.
 
@@ -10,7 +10,7 @@ Joint Sine Overlay
 ------------------
 1. Launch the ``LBRJointSineOverlay`` application on the ``KUKA smartPAD``.
 
-2. Launch [joint_sine_overlay](launch/joint_sine_overlay.launch.py) launch file:
+2. Launch the `joint_sine_overlay.launch.py <https://github.com/KCL-BMEIS/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_fri_ros2_cpp_demos/launch/joint_sine_overlay.launch.py>`_ launch file:
 
 .. code-block:: bash
 
@@ -22,7 +22,7 @@ Torque Sine Overlay
 -------------------
 1. Launch the ``LBRTorqueSineOverlay`` application on the ``KUKA smartPAD``.
 
-2. Launch [torque_sine_overlay](launch/torque_sine_overlay.launch.py) launch file:
+2. Launch the `torque_sine_overlay.launch.py <https://github.com/KCL-BMEIS/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_fri_ros2_cpp_demos/launch/torque_sine_overlay.launch.py>`_ launch file:
 
 .. code-block:: bash
 
@@ -34,7 +34,7 @@ Wrench Sine Overlay
 -------------------
 1. Launch the ``LBRWrenchSineOverlay`` application on the ``KUKA smartPAD``.
 
-2. Launch [wrench_sine_overlay](launch/wrench_sine_overlay.launch.py) launch file:
+2. Launch the `wrench_sine_overlay.launch.py <https://github.com/KCL-BMEIS/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_fri_ros2_cpp_demos/launch/wrench_sine_overlay.launch.py>`_ launch file:
 
 .. code-block:: bash
 
