@@ -12,15 +12,15 @@ Simulation
 ~~~~~~~~~~
 1. Launch the ``LBRBringup``:
 
-.. code-block:: console
+.. code-block:: bash
 
-    $ ros2 launch lbr_bringup lbr_bringup.launch.py sim:=true model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
+    ros2 launch lbr_bringup lbr_bringup.launch.py sim:=true model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
 
 2. Run the [lbr_joint_trajectory_executioner_node](lbr_ros2_control_python_demos/lbr_joint_trajectory_executioner_node.py):
 
-.. code-block:: console
+.. code-block:: bash
 
-    $ ros2 run lbr_ros2_control_python_demos lbr_joint_trajectory_executioner_node
+    ros2 run lbr_ros2_control_python_demos lbr_joint_trajectory_executioner_node
 
 The robot will twist, then move to the zero configuration.
 

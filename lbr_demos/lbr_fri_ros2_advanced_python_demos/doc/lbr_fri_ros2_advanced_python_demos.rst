@@ -10,14 +10,14 @@ Admittance Controller
 1. Launch the ``LBRServer`` application on the ``KUKA smartPAD``.
 2. Launch the robot driver:
 
-.. code-block:: console
+.. code-block:: bash
 
-    $ ros2 launch lbr_fri_ros2 lbr_app.launch.py model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
+    ros2 launch lbr_fri_ros2 lbr_app.launch.py model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
 
 1. Run the admittance control node:
 
-.. code-block:: console
+.. code-block:: bash
 
-    $ ros2 run lbr_fri_ros2_advanced_python_demos admittance_control_node
+    ros2 run lbr_fri_ros2_advanced_python_demos admittance_control_node
 
 1. Now gently move the robot at the end-effector.
