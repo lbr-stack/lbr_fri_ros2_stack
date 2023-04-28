@@ -11,14 +11,17 @@ Joint Trajectory Controller
 Simulation
 ~~~~~~~~~~
 1. Launch the ``LBRBringup``:
-```shell
-ros2 launch lbr_bringup lbr_bringup.launch.py sim:=true model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
-```
+
+.. code-block:: console
+
+    $ ros2 launch lbr_bringup lbr_bringup.launch.py sim:=true model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
 
 2. Run the [lbr_joint_trajectory_executioner_node](src/lbr_joint_trajectory_executioner_node.cpp):
-```shell
-ros2 run lbr_ros2_control_cpp_demos lbr_joint_trajectory_executioner_node
-```
+
+.. code-block:: console
+
+    $ ros2 run lbr_ros2_control_cpp_demos lbr_joint_trajectory_executioner_node
+
 The robot will twist, then move to the zero configuration.
 
 Real Robot
