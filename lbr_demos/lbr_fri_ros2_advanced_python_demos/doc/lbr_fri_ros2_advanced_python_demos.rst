@@ -14,7 +14,7 @@ Admittance Controller
 
     ros2 launch lbr_fri_ros2 lbr_app.launch.py model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
 
-3. Run the admittance control node:
+3. Run the `admittance_control_node.py <https://github.com/KCL-BMEIS/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_fri_ros2_advanced_python_demos/lbr_fri_ros2_advanced_python_demos/admittance_control_node.py>`_:
 
 .. code-block:: bash
 

@@ -16,7 +16,7 @@ Joint Sine Overlay
 
     ros2 launch lbr_fri_ros2_cpp_demos joint_sine_overlay.launch.py model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
 
-The robot will move to the initial position via position control, then execute a rotation on joint ``A1 = lbr_joint_0``. A sinusoidal motion is overlayed on joint ``A4 = lbr_joint_3`` via [joint_sine_overlay_node.cpp](src/joint_sine_overlay_node.cpp).
+The robot will move to the initial position via position control, then execute a rotation on joint ``A1 = lbr_joint_0``. A sinusoidal motion is overlayed on joint ``A4 = lbr_joint_3`` via `joint_sine_overlay_node <https://github.com/KCL-BMEIS/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_fri_ros2_cpp_demos/src/joint_sine_overlay_node.cpp>`_.
 
 Torque Sine Overlay
 -------------------
@@ -28,7 +28,7 @@ Torque Sine Overlay
 
     ros2 launch lbr_fri_ros2_cpp_demos torque_sine_overlay.launch.py model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
 
-The robot will move to the initial position via joint impedance control. A sinusoidal torque is overlayed on joint ``A4 = lbr_joint_3`` via [torque_sine_overlay_node.cpp](src/torque_sine_overlay_node.cpp).
+The robot will move to the initial position via joint impedance control. A sinusoidal torque is overlayed on joint ``A4 = lbr_joint_3`` via `torque_sine_overlay_node <https://github.com/KCL-BMEIS/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_fri_ros2_cpp_demos/src/torque_sine_overlay_node.cpp>`_.
 
 Wrench Sine Overlay
 -------------------
@@ -40,4 +40,4 @@ Wrench Sine Overlay
 
     ros2 launch lbr_fri_ros2_cpp_demos wrench_sine_overlay.launch.py model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
 
-The robot will move to the initial position via cartesian impedance control. A sinusoidal force is overlayed on the x- and y-axis via [wrench_sine_overlay_node.cpp](src/wrench_sine_overlay_node.cpp).
+The robot will move to the initial position via cartesian impedance control. A sinusoidal force is overlayed on the x- and y-axis via `wrench_sine_overlay_node <https://github.com/KCL-BMEIS/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_fri_ros2_cpp_demos/src/wrench_sine_overlay_node.cpp>`_.
