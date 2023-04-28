@@ -13,9 +13,9 @@ LBR FRI ROS 2 Demos
 .. toctree::
     :maxdepth: 1
 
-    lbr_fri_ros2_python_demos/README
-    lbr_fri_ros2_advanced_python_demos/README
-    lbr_fri_ros2_cpp_demos/README
+    ../lbr_fri_ros2_python_demos/README
+    ../lbr_fri_ros2_advanced_python_demos/README
+    ../lbr_fri_ros2_cpp_demos/README
 
 LBR ROS 2 Control Demos
 -----------------------
@@ -26,5 +26,5 @@ These demos demonstrate the LBR integration into the ROS 2 ecosystem through ``r
 .. toctree::
     :maxdepth: 1
 
-    lbr_fri_ros2_python_demos/README
-    lbr_fri_ros2_cpp_demos/README
+    ../lbr_fri_ros2_python_demos/README
+    ../lbr_fri_ros2_cpp_demos/README
