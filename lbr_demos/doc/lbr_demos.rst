@@ -8,7 +8,7 @@ LBR FRI ROS 2 Demos
 -------------------
 🤝 **Note**: These demos are compatible with and closely follow KUKA's FRI example applications. They send commands to ``/lbr_command`` and read states from ``/lbr_state``.
 
-🫣 **Note**: A real robot is required to run these demos.
+🫣 **Note**: A real robot is required to run these demos. If you are interested in simulation, please check out the `LBR ROS 2 Control Demos`_ below.
 
 .. toctree::
     :titlesonly:
