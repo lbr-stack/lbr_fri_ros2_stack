@@ -2,9 +2,11 @@ LBR FRI ROS 2 Python Demos
 ==========================
 Collection of basic usage examples for the ``lbr_fri_ros2`` package through Python.
 
-🤝 **Note**: These demos are compatible with and closely follow KUKA's FRI example applications.
+.. note::
+    🤝 These demos are compatible with and closely follow KUKA's FRI example applications.
 
-⚠️ **General Safety**: Do always execute in ``T1`` mode first.
+.. warning::
+    ⚠️ Do always execute in ``T1`` mode first.
 
 Joint Sine Overlay
 ------------------

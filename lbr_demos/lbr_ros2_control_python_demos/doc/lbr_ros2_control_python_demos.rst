@@ -2,9 +2,11 @@ LBR ROS 2 Control Python Demos
 ==============================
 Collection of basic usage examples for the ``lbr_fri_hardware_interface`` through Python.
 
-🙌 **Note**: These examples can be run in simulation **and** on the real robot.
+.. note::
+    🙌 These examples can be run in simulation **and** on the real robot.
 
-⚠️ **General Safety**: Do always execute in simulation first, then in ``T1`` mode on the real robot.
+.. warning::
+    ⚠️ Do always execute in simulation first, then in ``T1`` mode on the real robot.
 
 Joint Trajectory Controller
 ---------------------------
