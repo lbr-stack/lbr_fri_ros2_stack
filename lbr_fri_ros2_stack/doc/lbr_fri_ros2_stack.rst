@@ -8,11 +8,12 @@ Collection of packages for controlling the KUKA LBR iiwa / med through ROS 2.
 - ``lbr_fri_msgs``: ``IDL``-equivalent of KUKA's ``nanopb`` message definitions.
 - ``lbr_fri_ros2``: Exposes ``fri`` to ROS 2 topics / services.
 - ``lbr_hardware_interface``: ``ros2_control`` hardware interface for the LBR.
-- ``fri``: Integration of KUKA's Fast Research Interface (FRI) into ROS 2 ``ament_cmake`` build system.
+- ``fri``: Integration of KUKA's Fast Robot Interface (FRI) into ROS 2 ``ament_cmake`` build system.
 
 Installation
 ------------
-ℹ️ For the real robot, additional steps are required, follow :ref:`Robot Setup`.
+.. note::
+    For the real robot, additional steps are required, follow :ref:`Robot Setup`.  
 
 1. Install `colcon <https://docs.ros.org/en/humble/Tutorials/Colcon-Tutorial.html#install-colcon>`_, `rosdep <https://docs.ros.org/en/crystal/Installation/Linux-Install-Binary.html#installing-and-initializing-rosdep>`_ and `vcstool <https://github.com/dirk-thomas/vcstool#how-to-install-vcstool>`_.
 2. Install the ``lbr_fri_ros2_stack``:
