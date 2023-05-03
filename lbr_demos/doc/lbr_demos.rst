@@ -3,7 +3,7 @@ LBR Demos
 Demos for controlling the LBR through the Fast Robot Interface (FRI) from ROS 2.
 
 .. warning::
-    ⚠️ On the real robot first, do always execute in ``T1`` mode.
+    ⚠️ On the real robot, do always execute in ``T1`` mode first.
 
 LBR FRI ROS 2 Demos
 -------------------
