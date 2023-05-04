@@ -10,7 +10,10 @@ Admittance Controller
 .. warning::
     ⚠️ Not well behaved around singularities, put the robot in a well-behaved configuration first, e.g. ``A1 = 0°``, ``A2 = -30°``, ``A3 = 0°``, ``A4 = 60°``, ``A5 = 0°``, ``A6 = -90°``, ``A7 = 0°``. This can be done using the ``smartPAD`` in ``T1`` mode.
 
-1. Launch the ``LBRServer`` application on the ``KUKA smartPAD``.
+1. .. dropdown:: Launch the ``LBRServer`` application on the ``KUKA smartPAD``
+
+    .. thumbnail:: ../../doc/img/applications_lbr_server.png
+
 2. Launch the robot driver:
 
 .. code-block:: bash

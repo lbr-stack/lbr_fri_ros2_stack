@@ -28,7 +28,10 @@ The robot will twist, then move to the zero configuration.
 
 Real Robot
 ~~~~~~~~~~
-1. Launch the ``LBRServer`` application on the ``KUKA smartPAD``.
+1. .. dropdown:: Launch the ``LBRServer`` application on the ``KUKA smartPAD``
+
+    .. thumbnail:: ../../doc/img/applications_lbr_server.png
+
 2. Select
 
     - ``FRI send period``: ``10 ms``
