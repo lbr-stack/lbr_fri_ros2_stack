@@ -115,3 +115,21 @@ Install Applications to the Robot
 
 .. note::
     You can now fully use the :ref:`LBR FRI ROS 2 Stack`.
+
+Troubleshooting
+----------------
+Activation
+~~~~~~~~~~
+Executing applications through the ``smartPAD`` might require ``Safety maintenance technician`` rights. To activate:
+
+- .. dropdown:: On the ``smartPAD``, navigate to ``Safety``
+
+    .. thumbnail:: img/controller/highlighted/activation_safety.png
+
+- .. dropdown:: Navigate to ``Activation``
+
+    .. thumbnail:: img/controller/highlighted/activation_activation.png
+
+- .. dropdown:: Follow ``Activation`` and enter password. See section **9.4 User management** in `KUKA Sunrise.OS Med 1.15, KUKA Sunrise.Workbench Med 1.15, Operating and Programming Instructions for System Integrators`_ under :ref:`Additional Resources` to find the password.
+
+    .. thumbnail:: img/controller/highlighted/activation_activate.png
