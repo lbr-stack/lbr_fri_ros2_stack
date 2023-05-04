@@ -17,8 +17,8 @@ LBR FRI ROS 2 Demos
     :titlesonly:
 
     LBR FRI ROS 2 Advanced Python Demos <../lbr_fri_ros2_advanced_python_demos/doc/lbr_fri_ros2_advanced_python_demos.rst>
-    LBR FRI ROS 2 C++ Demos <../lbr_fri_ros2_python_demos/doc/lbr_fri_ros2_python_demos.rst>
-    LBR FRI ROS 2 Python Demos <../lbr_fri_ros2_cpp_demos/doc/lbr_fri_ros2_cpp_demos.rst>
+    LBR FRI ROS 2 C++ Demos <../lbr_fri_ros2_cpp_demos/doc/lbr_fri_ros2_cpp_demos.rst>
+    LBR FRI ROS 2 Python Demos <../lbr_fri_ros2_python_demos/doc/lbr_fri_ros2_python_demos.rst>
 
 LBR ROS 2 Control Demos
 -----------------------
