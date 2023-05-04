@@ -1,6 +1,6 @@
 LBR FRI ROS 2
 =============
-The ``lbr_fri_ros2`` package provides a ROS 2 interface for the KUKA LBRs. It is meant to run stand-alone **and** within ``ros2_control``. For demonstrations see :doc:`LBR Demos <../../lbr_demos/doc/lbr_demos>`.
+The ``lbr_fri_ros2`` package provides a ROS 2 interface for the KUKA LBRs. It is designed to run stand-alone **and** within ``ros2_control``.
 
 Software Architecture
 ---------------------
@@ -23,11 +23,6 @@ TODO:
 - LBRIntermediary (shared)
 - LBRCommandGuard (command check)
 
-Full API
-~~~~~~~~
-``Doxygen`` generated documentation of the full API can be found here:
-
-.. toctree::
-
-    fri <../../../docs/doxygen/fri/html/hierarchy>
-    lbr_fri_ros2 <../../../docs/doxygen/lbr_fri_ros2/html/hierarchy>
+API
+~~~
+For the ``Doxygen`` generated API, checkout `lbr_fri_ros2 <../../../docs/doxygen/lbr_fri_ros2/html/hierarchy.html>`_.
