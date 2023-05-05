@@ -22,8 +22,8 @@ public:
   /**
    * @brief Construct a new LBRClient object.
    *
-   * @param[in] lbr_intermediary Shared pointer to lbr_fri_ros2::LBRIntermediary for command injection
-   * and state extraction.
+   * @param[in] lbr_intermediary Shared pointer to lbr_fri_ros2::LBRIntermediary for command
+   * injection and state extraction.
    */
   LBRClient(const std::shared_ptr<lbr_fri_ros2::LBRIntermediary> lbr_intermediary);
 
