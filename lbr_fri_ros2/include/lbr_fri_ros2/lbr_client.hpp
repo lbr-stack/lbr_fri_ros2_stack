@@ -62,22 +62,22 @@ public:
 
 protected:
   /**
-   * @brief Sets buffer to commanded state.
+   * @brief Sets #lbr_intermediary_ to commanded state.
    *
    */
-  void zero_buffer_();
+  void zero_intermediary_();
 
   /**
    * @brief Writes command from #lbr_intermediary_ to #robotState.
    *
    */
-  void buffer_to_command_();
+  void intermediary_to_command_();
 
   /**
    * @brief Writes state from #robotState to #lbr_intermediary_.
    *
    */
-  void state_to_buffer_();
+  void state_to_intermediary_();
 
   std::string
   session_state_to_string_(const KUKA::FRI::ESessionState
