@@ -2,6 +2,34 @@ LBR FRI ROS 2
 =============
 The ``lbr_fri_ros2`` package provides a ROS 2 interface for the KUKA LBRs. It is designed to run stand-alone **and** within ``ros2_control``.
 
+Quick Start
+-----------
+.. warning::
+    Do always execute in ``T1`` mode first.
+
+.. note::
+    Make sure you followed the install instructions in :ref:`Robot Setup`.
+
+1. .. dropdown:: Launch the ``LBRServer`` application on the ``KUKA smartPAD``
+
+    .. thumbnail:: ../../lbr_demos/doc/img/applications_lbr_server.png
+
+2. Run the :lbr_fri_ros2:`LBRApp <lbr_fri_ros2::LBRApp>` node via `lbr_app.launch.py <https://github.com/KCL-BMEIS/lbr_fri_ros2_stack/blob/humble/lbr_fri_ros2/launch/lbr_app.launch.py>`_:
+
+.. code-block:: bash
+
+    ros2 launch lbr_fri_ros2 lbr_app.launch.py model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
+
+This does 2 things:
+
+    - Loads the ``robot_description`` (for joint limits)
+    - Runs the :lbr_fri_ros2:`LBRApp <lbr_fri_ros2::LBRApp>` node, which
+        
+        - Publishes robot states to ``/lbr_state``
+        - Reads robot commands from ``/lbr_command``
+
+See :ref:`LBR Demos` for more examples.
+
 Software Architecture
 ---------------------
 An overview of the software architecture is shown :ref:`below <target to software architecture figure>`:
