@@ -12,9 +12,9 @@
 #include "realtime_tools/realtime_buffer.h"
 #include "realtime_tools/realtime_publisher.h"
 
-#include "fri/friClientApplication.h"
-#include "fri/friClientIf.h"
-#include "fri/friUdpConnection.h"
+#include "friClientApplication.h"
+#include "friClientIf.h"
+#include "friUdpConnection.h"
 
 #include "lbr_fri_msgs/srv/app_connect.hpp"
 #include "lbr_fri_msgs/srv/app_disconnect.hpp"

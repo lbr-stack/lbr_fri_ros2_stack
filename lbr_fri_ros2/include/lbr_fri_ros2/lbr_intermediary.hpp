@@ -5,9 +5,9 @@
 #include <stdexcept>
 
 #include "fri/FRIMessages.pb.h"
-#include "fri/friClientIf.h"
-#include "fri/friLBRCommand.h"
-#include "fri/friLBRState.h"
+#include "friClientIf.h"
+#include "friLBRCommand.h"
+#include "friLBRState.h"
 
 #include "lbr_fri_msgs/msg/lbr_command.hpp"
 #include "lbr_fri_msgs/msg/lbr_state.hpp"

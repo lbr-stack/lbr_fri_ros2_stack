@@ -18,7 +18,7 @@ find_package(rclcpp REQUIRED)
 find_package(realtime_tools REQUIRED)
 find_package(lbr_fri_msgs REQUIRED)
 find_package(lbr_fri_ros2 REQUIRED)
-find_package(fri REQUIRED)
+# find_package(fri REQUIRED)
 
 # Define targets
 add_library(
@@ -26,6 +26,9 @@ add_library(
   SHARED
   src/lbr_hardware_interface.cpp
 )
+
+# Add fri sub directory
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../fri/fri)
 
 # Add include directories for target
 target_include_directories(
@@ -47,7 +50,7 @@ ament_target_dependencies(
   realtime_tools
   lbr_fri_msgs
   lbr_fri_ros2
-  fri
+  # fri
 )
 
 pluginlib_export_plugin_description_file(hardware_interface lbr_hardware_interface.xml)
@@ -65,8 +68,10 @@ ament_export_dependencies(
   realtime_tools
   lbr_fri_msgs
   lbr_fri_ros2
-  fri
+  # fri
 )
+
+target_link_libraries(${PROJECT_NAME} PUBLIC fri)
 
 install(
   DIRECTORY include/

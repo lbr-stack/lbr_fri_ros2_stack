@@ -9,7 +9,7 @@
 
 #include "urdf/model.h"
 
-#include "fri/friClientIf.h"
+#include "friClientIf.h"
 
 #include "lbr_fri_msgs/msg/lbr_command.hpp"
 #include "lbr_fri_msgs/msg/lbr_state.hpp"
