@@ -37,7 +37,7 @@ bool LBRIntermediary::buffer_to_command(KUKA::FRI::LBRCommand &lbr_command) cons
     switch (lbr_state_buffer_.client_command_mode) {
     case KUKA::FRI::EClientCommandMode::NO_COMMAND_MODE:
       return true;
-    case KUKA::FRI::EClientCommandMode::POSITION:
+    case KUKA::FRI::EClientCommandMode::JOINT_POSITION:
       lbr_command.setJointPosition(lbr_command_buffer_.joint_position.data());
       return true;
     case KUKA::FRI::EClientCommandMode::WRENCH:

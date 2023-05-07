@@ -35,7 +35,7 @@ bool LBRCommandGuard::is_valid_command(const lbr_fri_msgs::msg::LBRCommand &lbr_
   switch (lbr_state.client_command_mode) {
   case KUKA::FRI::EClientCommandMode::NO_COMMAND_MODE:
     return false;
-  case KUKA::FRI::EClientCommandMode::POSITION:
+  case KUKA::FRI::EClientCommandMode::JOINT_POSITION:
     if (is_nan_(lbr_command.joint_position.cbegin(), lbr_command.joint_position.cend())) {
       return false;
     }
