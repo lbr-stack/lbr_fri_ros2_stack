@@ -12,13 +12,13 @@ Collection of packages for controlling the KUKA LBR iiwa / med through ROS 2.
 
 Installation
 ------------
-1. Install `colcon <https://docs.ros.org/en/humble/Tutorials/Colcon-Tutorial.html#install-colcon>`_, `rosdep <https://docs.ros.org/en/crystal/Installation/Linux-Install-Binary.html#installing-and-initializing-rosdep>`_ and `vcstool <https://github.com/dirk-thomas/vcstool#how-to-install-vcstool>`_.
+1. Install `colcon <https://docs.ros.org/en/rolling/Tutorials/Colcon-Tutorial.html#install-colcon>`_, `rosdep <https://docs.ros.org/en/crystal/Installation/Linux-Install-Binary.html#installing-and-initializing-rosdep>`_ and `vcstool <https://github.com/dirk-thomas/vcstool#how-to-install-vcstool>`_.
 2. Install the ``lbr_fri_ros2_stack``:
 
 .. code-block:: bash
 
     mkdir -p lbr_fri_ros2_stack_ws/src && cd lbr_fri_ros2_stack_ws
-    wget https://raw.githubusercontent.com/KCL-BMEIS/lbr_fri_ros2_stack/humble/lbr_fri_ros2_stack/repos.yml -P src
+    wget https://raw.githubusercontent.com/KCL-BMEIS/lbr_fri_ros2_stack/rolling/lbr_fri_ros2_stack/repos.yml -P src
     vcs import src < src/repos.yml
     rosdep install --from-paths src --ignore-src -r -y
     colcon build

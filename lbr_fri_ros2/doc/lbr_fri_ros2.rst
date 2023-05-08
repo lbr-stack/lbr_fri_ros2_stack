@@ -14,7 +14,7 @@ Quick Start
 
     .. thumbnail:: ../../lbr_demos/doc/img/applications_lbr_server.png
 
-2. Run the :lbr_fri_ros2:`LBRApp <lbr_fri_ros2::LBRApp>` node via `lbr_app.launch.py <https://github.com/KCL-BMEIS/lbr_fri_ros2_stack/blob/humble/lbr_fri_ros2/launch/lbr_app.launch.py>`_:
+2. Run the :lbr_fri_ros2:`LBRApp <lbr_fri_ros2::LBRApp>` node via `lbr_app.launch.py <https://github.com/KCL-BMEIS/lbr_fri_ros2_stack/blob/rolling/lbr_fri_ros2/launch/lbr_app.launch.py>`_:
 
 .. code-block:: bash
 
