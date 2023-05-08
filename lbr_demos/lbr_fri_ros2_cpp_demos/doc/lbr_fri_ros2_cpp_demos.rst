@@ -1,0 +1,51 @@
+LBR FRI ROS 2 C++ Demos
+=======================
+Collection of basic usage examples for the ``lbr_fri_ros2`` package through C++.
+
+.. note::
+    These demos are compatible with and closely follow KUKA's FRI example applications.
+
+.. warning::
+    Do always execute in ``T1`` mode first.
+
+Joint Sine Overlay
+------------------
+1. .. dropdown:: Launch the ``LBRJointSineOverlay`` application on the ``KUKA smartPAD``
+
+    .. thumbnail:: ../../doc/img/applications_joint_sine_overlay.png
+
+2. Launch the `joint_sine_overlay.launch.py <https://github.com/KCL-BMEIS/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_fri_ros2_cpp_demos/launch/joint_sine_overlay.launch.py>`_ launch file:
+
+.. code-block:: bash
+
+    ros2 launch lbr_fri_ros2_cpp_demos joint_sine_overlay.launch.py model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
+
+The robot will move to the initial position via position control, then execute a rotation on joint ``A1 = lbr_joint_0``. A sinusoidal motion is overlayed on joint ``A4 = lbr_joint_3`` via `joint_sine_overlay_node <https://github.com/KCL-BMEIS/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_fri_ros2_cpp_demos/src/joint_sine_overlay_node.cpp>`_.
+
+Torque Sine Overlay
+-------------------
+1. .. dropdown:: Launch the ``LBRTorqueSineOverlay`` application on the ``KUKA smartPAD``
+
+    .. thumbnail:: ../../doc/img/applications_torque_sine_overlay.png
+
+2. Launch the `torque_sine_overlay.launch.py <https://github.com/KCL-BMEIS/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_fri_ros2_cpp_demos/launch/torque_sine_overlay.launch.py>`_ launch file:
+
+.. code-block:: bash
+
+    ros2 launch lbr_fri_ros2_cpp_demos torque_sine_overlay.launch.py model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
+
+The robot will move to the initial position via joint impedance control. A sinusoidal torque is overlayed on joint ``A4 = lbr_joint_3`` via `torque_sine_overlay_node <https://github.com/KCL-BMEIS/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_fri_ros2_cpp_demos/src/torque_sine_overlay_node.cpp>`_.
+
+Wrench Sine Overlay
+-------------------
+1. .. dropdown:: Launch the ``LBRWrenchSineOverlay`` application on the ``KUKA smartPAD``
+
+    .. thumbnail:: ../../doc/img/applications_wrench_sine_overlay.png
+
+2. Launch the `wrench_sine_overlay.launch.py <https://github.com/KCL-BMEIS/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_fri_ros2_cpp_demos/launch/wrench_sine_overlay.launch.py>`_ launch file:
+
+.. code-block:: bash
+
+    ros2 launch lbr_fri_ros2_cpp_demos wrench_sine_overlay.launch.py model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
+
+The robot will move to the initial position via cartesian impedance control. A sinusoidal force is overlayed on the x- and y-axis via `wrench_sine_overlay_node <https://github.com/KCL-BMEIS/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_fri_ros2_cpp_demos/src/wrench_sine_overlay_node.cpp>`_.
