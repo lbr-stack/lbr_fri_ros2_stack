@@ -9,33 +9,33 @@ void LBRClient::onStateChange(KUKA::FRI::ESessionState old_state,
   printf("LBR switched from %s to %s.\n", session_state_to_string_(old_state).c_str(),
          session_state_to_string_(new_state).c_str());
 }
-void LBRClient::monitor() { state_to_buffer_(); }
+void LBRClient::monitor() { state_to_intermediary_(); }
 
 void LBRClient::waitForCommand() {
   KUKA::FRI::LBRClient::waitForCommand();
-  state_to_buffer_();
-  zero_buffer_();
-  buffer_to_command_();
+  state_to_intermediary_();
+  zero_intermediary_();
+  intermediary_to_command_();
 }
 
 void LBRClient::command() {
-  state_to_buffer_();
-  buffer_to_command_();
+  state_to_intermediary_();
+  intermediary_to_command_();
 }
 
-void LBRClient::zero_buffer_() {
+void LBRClient::zero_intermediary_() {
   if (!lbr_intermediary_->zero_command_buffer(robotState())) {
     throw std::runtime_error("Failed to zero the command.");
   }
 }
 
-void LBRClient::buffer_to_command_() {
+void LBRClient::intermediary_to_command_() {
   if (!lbr_intermediary_->buffer_to_command(robotCommand())) {
     throw std::runtime_error("Failed to write buffer to command.");
   }
 }
 
-void LBRClient::state_to_buffer_() {
+void LBRClient::state_to_intermediary_() {
   if (!lbr_intermediary_->state_to_buffer(robotState())) {
     throw std::runtime_error("Failed to write state to buffer.");
   }
