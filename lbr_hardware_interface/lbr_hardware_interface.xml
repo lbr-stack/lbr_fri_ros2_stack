@@ -3,6 +3,6 @@
     <class type="lbr_hardware_interface::LBRHardwareInterface"
            base_class_type="hardware_interface::SystemInterface"/>
     <description>
-        ROS2 control hardware interface for KUKA LBR robots using the Fast Robot Interface (FRI).
+        ROS 2 control hardware interface for KUKA LBRs using the Fast Robot Interface (FRI).
     </description>
 </library>
