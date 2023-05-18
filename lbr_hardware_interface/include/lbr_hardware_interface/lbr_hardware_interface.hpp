@@ -16,7 +16,7 @@
 #include "realtime_tools/realtime_buffer.h"
 #include "realtime_tools/realtime_publisher.h"
 
-#include "fri/friLBRState.h"
+#include "friLBRState.h"
 
 #include "lbr_fri_msgs/msg/lbr_command.hpp"
 #include "lbr_fri_msgs/msg/lbr_state.hpp"

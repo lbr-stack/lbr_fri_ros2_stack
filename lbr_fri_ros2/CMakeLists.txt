@@ -7,7 +7,8 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
-find_package(fri REQUIRED)
+find_package(fri_vendor REQUIRED)
+find_package(FRIClient REQUIRED)
 find_package(lbr_fri_msgs REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_components REQUIRED)
@@ -30,14 +31,18 @@ target_include_directories(lbr_fri_ros2
 )
 
 ament_target_dependencies(lbr_fri_ros2
-  fri
   lbr_fri_msgs
   urdf
 )
 
+target_link_libraries(lbr_fri_ros2
+  FRIClient::FRIClient
+)
+
 ament_export_targets(lbr_fri_ros2_export HAS_LIBRARY_TARGET)
 ament_export_dependencies(
-  fri
+  fri_vendor
+  FRIClient
   lbr_fri_msgs
   urdf
 )
@@ -68,16 +73,16 @@ target_include_directories(lbr_app_component
   PRIVATE include
 )
 
-target_link_libraries(lbr_app_component
-  lbr_fri_ros2
-)
-
 ament_target_dependencies(lbr_app_component
   rclcpp
+  urdf
   rclcpp_components
   realtime_tools
-  fri
   lbr_fri_msgs
+)
+
+target_link_libraries(lbr_app_component
+  FRIClient::FRIClient
 )
 
 rclcpp_components_register_node(lbr_app_component

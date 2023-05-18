@@ -18,7 +18,8 @@ find_package(rclcpp REQUIRED)
 find_package(realtime_tools REQUIRED)
 find_package(lbr_fri_msgs REQUIRED)
 find_package(lbr_fri_ros2 REQUIRED)
-find_package(fri REQUIRED)
+find_package(fri_vendor REQUIRED)
+find_package(FRIClient REQUIRED)
 
 # Define targets
 add_library(
@@ -47,7 +48,11 @@ ament_target_dependencies(
   realtime_tools
   lbr_fri_msgs
   lbr_fri_ros2
-  fri
+  fri_vendor
+)
+
+target_link_libraries(${PROJECT_NAME}
+  FRIClient::FRIClient
 )
 
 pluginlib_export_plugin_description_file(hardware_interface lbr_hardware_interface.xml)
@@ -65,7 +70,8 @@ ament_export_dependencies(
   realtime_tools
   lbr_fri_msgs
   lbr_fri_ros2
-  fri
+  fri_vendor
+  FRIClient
 )
 
 install(

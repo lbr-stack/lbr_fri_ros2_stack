@@ -4,8 +4,7 @@
 #include <memory>
 #include <stdexcept>
 
-#include "fri/friClientIf.h"
-#include "fri/friLBRClient.h"
+#include "friLBRClient.h"
 
 #include "lbr_fri_ros2/lbr_intermediary.hpp"
 

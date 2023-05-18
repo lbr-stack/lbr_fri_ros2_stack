@@ -9,7 +9,7 @@
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
-  <depend>fri</depend>
+  <depend>fri_vendor</depend>
   <depend>lbr_fri_msgs</depend>
   <depend>rclcpp</depend>
   <depend>realtime_tools</depend>

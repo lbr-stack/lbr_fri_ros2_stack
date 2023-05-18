@@ -3,7 +3,7 @@
 #include <string>
 
 // include fri for number of joints
-#include "fri/friLBRState.h"
+#include "friLBRState.h"
 
 #include "control_msgs/action/follow_joint_trajectory.hpp"
 #include "rclcpp/rclcpp.hpp"
