@@ -18,7 +18,7 @@ class LBRBringUp:
     robot_description_: dict
     launch_description_: LaunchDescription
 
-    lbr_spinner_node_: Node
+    lbr_app_node_: Node
     gazebo_spawn_entity_: Node
     controller_manager_: Node
     controller_spawners_: Dict[str, Node]
@@ -32,7 +32,7 @@ class LBRBringUp:
         self.robot_description_ = None
         self.launch_description_ = LaunchDescription()
 
-        self.lbr_spinner_node_ = None
+        self.lbr_app_node_ = None
         self.gazebo_spawn_entity_ = None
         self.controller_manager_ = None
         self.controller_spawners_ = {}
@@ -112,7 +112,7 @@ class LBRBringUp:
         joint_state_broadcaster = "joint_state_broadcaster"
         if not joint_state_broadcaster in self.controller_spawners_:
             raise RuntimeError(
-                f"The {joint_state_broadcaster} controller needs to be added prior to adding rviz2."
+                f"The {joint_state_broadcaster} controller needs to be added prior to adding the robot_state_publisher."
             )
         self.robot_state_publisher_ = Node(
             package="robot_state_publisher",
@@ -121,7 +121,7 @@ class LBRBringUp:
             parameters=[self.robot_description_],
         )
 
-        # Don't wait on joint_state_broadcaster in case of simulation.
+        # Don't wait on robot_state_publisher in case of simulation.
         # Gazebo requires robot_description to load joint_state_broadcaster!
         if self.sim_:
             self.launch_description_.add_action(self.robot_state_publisher_)
@@ -191,19 +191,17 @@ class LBRBringUp:
         if self.sim_:
             return self.add_gazebo()
         else:
-            return self.add_lbr_spinner()
+            return self.add_lbr_app()
 
-    def add_lbr_spinner(
-        self, package: str = "lbr_fri_ros2", executable: str = "lbr_spinner"
-    ):
-        self.lbr_spinner_node_ = Node(
+    def add_lbr_app(self, package: str = "lbr_fri_ros2", executable: str = "lbr_app"):
+        self.lbr_app_node_ = Node(
             package=package,
             executable=executable,
             emulate_tty=True,
             output="screen",
             parameters=[self.robot_description],
         )
-        self.launch_description_.add_action(self.lbr_spinner_node_)
+        self.launch_description_.add_action(self.lbr_app_node_)
         return self
 
     def add_gazebo(self):
