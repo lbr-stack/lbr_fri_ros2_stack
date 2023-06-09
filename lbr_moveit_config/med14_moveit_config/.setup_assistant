@@ -1,0 +1,23 @@
+moveit_setup_assistant_config:
+  urdf:
+    package: lbr_description
+    relative_path: urdf/med14/med14.urdf.xacro
+  srdf:
+    relative_path: config/med14.srdf
+  package_settings:
+    author_name: mhubii
+    author_email: martin.huber@kcl.ac.uk
+    generated_timestamp: 1686315597
+  control_xacro:
+    command:
+      []
+    state:
+      []
+  modified_urdf:
+    xacros:
+      - control_xacro
+  control_xacro:
+    command:
+      []
+    state:
+      []
