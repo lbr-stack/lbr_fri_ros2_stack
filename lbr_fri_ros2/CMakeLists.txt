@@ -82,7 +82,7 @@ ament_target_dependencies(lbr_app_component
 )
 
 target_link_libraries(lbr_app_component
-  FRIClient::FRIClient
+  lbr_fri_ros2
 )
 
 rclcpp_components_register_node(lbr_app_component
