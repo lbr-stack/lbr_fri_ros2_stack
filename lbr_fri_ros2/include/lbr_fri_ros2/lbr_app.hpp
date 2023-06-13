@@ -21,14 +21,8 @@
 
 namespace lbr_fri_ros2 {
 /**
- * @brief Node for exposing FRI methods to services and FRI commands / states to realtime-safe
- * topics. Performs limit checks on commands.
- *
- * Subscriptions:
- * - <b>/lbr_command</b> (lbr_fri_msgs::msg::LBRCommand)
- *
- * Publishers:
- * - <b>/lbr_state</b> (lbr_fri_msgs::msg::LBRState)
+ * @brief The LBRApp has a node for exposing FRI methods to services. It shares this node with the
+ * #lbr_client_, which reads commands / write states via real-time safe topics.
  *
  * Services:
  * - <b>~/connect</b> (lbr_fri_msgs::srv::AppConnect)
@@ -55,13 +49,13 @@ public:
 
 protected:
   /**
-   * @brief Declares parameters for this node.
+   * @brief Declares parameters for node.
    *
    */
   void declare_parameters_();
 
   /**
-   * @brief Gets parameters for this node and writes them into members. Checks validity.
+   * @brief Gets parameters for node and writes them into members. Checks validity.
    *
    * @throws std::range_error for invalid port_id in node parameters
    */
@@ -121,9 +115,8 @@ protected:
   /**
    * @brief Exchanges commands / states between ROS and the FRI.
    *
-   * Reads commands from <b>/lbr_command</b> and writes them into #lbr_intermediary_.
-   * Calls step() on #app_, which callbacks #lbr_client_ to read commands from #lbr_intermediary_
-   * and write states to #lbr_intermediary_. Writes states to <b>/lbr_state</b>.
+   * Calls step() on #app_, which callbacks #lbr_client_. #lbr_client_ reads commands / write states
+   * through real-time safe topics.
    *
    */
   void step_();
@@ -142,8 +135,7 @@ protected:
   rclcpp::Service<lbr_fri_msgs::srv::AppDisconnect>::SharedPtr
       app_disconnect_srv_; /**< Service to disconnect from robot via #app_disconnect_cb_ callback.*/
 
-  std::shared_ptr<LBRClient>
-      lbr_client_; /**< Writes commands / reads states from #lbr_intermediary_ to robot.*/
+  std::shared_ptr<LBRClient> lbr_client_; /**< Writes commands to / reads states from robot.*/
   std::unique_ptr<KUKA::FRI::UdpConnection>
       connection_; /**< UDP connection for reading states / writing commands.*/
   std::unique_ptr<KUKA::FRI::ClientApplication>

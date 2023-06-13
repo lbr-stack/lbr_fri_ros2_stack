@@ -18,8 +18,8 @@
 
 namespace lbr_fri_ros2 {
 /**
- * @brief Simple implementation of KUKA::FRI::LBRClient. Allows for command injection and state
- * extraction via a shared lbr_fri_ros2::LBRIntermediary object.
+ * @brief Simple implementation of KUKA::FRI::LBRClient. Has a shared node for reading commands from
+ * / writing states to real-time safe topics.
  *
  */
 class LBRClient : public KUKA::FRI::LBRClient {
@@ -29,10 +29,13 @@ public:
   /**
    * @brief Construct a new LBRClient object.
    *
-   * @param[in] lbr_intermediary Shared pointer to lbr_fri_ros2::LBRIntermediary for command
-   * injection and state extraction.
+   * @param[in] node Shared node for reading commands from / writing states to real-time safe
+   * topics.
+   * @param[in] lbr_command_guard Command guard for validating incoming commands.
+   *
    */
-  LBRClient(const rclcpp::Node::SharedPtr node, const lbr_fri_ros2::LBRCommandGuard& lbr_command_guard);
+  LBRClient(const rclcpp::Node::SharedPtr node,
+            const lbr_fri_ros2::LBRCommandGuard &lbr_command_guard);
 
   /**
    * @brief Prints state change to terminal.
@@ -45,24 +48,22 @@ public:
 
   /**
    * @brief Called when robot in KUKA::FRI::MONITORING_WAIT and
-   * KUKA::FRI::MONITORING_READY state. Writes state from #robotState to
-   * #lbr_intermediary_.
+   * KUKA::FRI::MONITORING_READY state. Publishes state from #robotState via #lbr_state_rt_pub_.
    *
    */
   void monitor() override;
 
   /**
-   * @brief Called when robot in KUKA::FRI::COMMANDING_WAIT state. Writes state from
-   * #robotState to #lbr_intermediary_ and sets #robotCommand to commanded
-   * state via LBRClient#zero_command_.
+   * @brief Called when robot in KUKA::FRI::COMMANDING_WAIT state. Publishes state from #robotState
+   * via #lbr_state_rt_pub_ and sets #robotCommand if in command mode KUKA::FRI::WRENCH or
+   * KUKA::FRI::TORQUE.
    *
    */
   void waitForCommand() override;
 
   /**
-   * @brief Called when robot in KUKA::FRI::COMMANDING_ACTIVE state. Writes state
-   * from #robotState to #lbr_intermediary_. Writes command from #lbr_intermediary_ to
-   * #robotCommand.
+   * @brief Called when robot in KUKA::FRI::COMMANDING_ACTIVE state. Publishes state from
+   * #robotState via #lbr_state_rt_pub_. Writes command from #lbr_command_rt_buf_ to #robotCommand.
    *
    */
   void command() override;
@@ -74,7 +75,8 @@ protected:
 
   rclcpp::Node::SharedPtr node_; /**< Shared pointer to node.*/
 
-  std::unique_ptr<lbr_fri_ros2::LBRCommandGuard> lbr_command_guard_;
+  std::unique_ptr<lbr_fri_ros2::LBRCommandGuard>
+      lbr_command_guard_; /**< Validating commands prior to writing them to #robotCommand.*/
 
   std::shared_ptr<realtime_tools::RealtimeBuffer<lbr_fri_msgs::msg::LBRCommand::SharedPtr>>
       lbr_command_rt_buf_; /**< Realtime-safe buffer for receiving lbr_fri_msgs::msg::LBRCommand
@@ -93,7 +95,7 @@ private:
       {KUKA::FRI::ESessionState::MONITORING_READY, "MONITORING_READY"},
       {KUKA::FRI::ESessionState::COMMANDING_WAIT, "COMMANDING_WAIT"},
       {KUKA::FRI::ESessionState::COMMANDING_ACTIVE, "COMMANDING_ACTIVE"},
-  };
+  }; /** Map for converting KUKA::FRI::ESessionState to readable strings.*/
 };
 } // end of namespace lbr_fri_ros2
 #endif // LBR_FRI_ROS2__LBR_CLIENT_HPP_
