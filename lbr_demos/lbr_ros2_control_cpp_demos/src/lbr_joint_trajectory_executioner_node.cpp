@@ -38,6 +38,8 @@ public:
 
     trajectory_msgs::msg::JointTrajectoryPoint point;
     point.positions = positions;
+    point.velocities.resize(KUKA::FRI::LBRState::NUMBER_OF_JOINTS, 0.0);
+    point.effort.resize(KUKA::FRI::LBRState::NUMBER_OF_JOINTS, 0.0);
     point.time_from_start.sec = sec_from_start;
 
     for (std::size_t i = 0; i < KUKA::FRI::LBRState::NUMBER_OF_JOINTS; ++i) {
