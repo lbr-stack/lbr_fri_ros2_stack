@@ -9,8 +9,6 @@
 #include <thread>
 
 #include "rclcpp/rclcpp.hpp"
-#include "realtime_tools/realtime_buffer.h"
-#include "realtime_tools/realtime_publisher.h"
 
 #include "fri/friClientApplication.h"
 #include "fri/friClientIf.h"
@@ -20,7 +18,6 @@
 #include "lbr_fri_msgs/srv/app_disconnect.hpp"
 #include "lbr_fri_ros2/lbr_client.hpp"
 #include "lbr_fri_ros2/lbr_command_guard.hpp"
-#include "lbr_fri_ros2/lbr_intermediary.hpp"
 
 namespace lbr_fri_ros2 {
 /**
@@ -42,7 +39,7 @@ namespace lbr_fri_ros2 {
  * #step_.
  *
  */
-class LBRApp : public rclcpp::Node {
+class LBRApp {
 public:
   /**
    * @brief Construct a new LBRApp object.
@@ -53,6 +50,8 @@ public:
    */
   LBRApp(const rclcpp::NodeOptions &options);
   ~LBRApp();
+
+  rclcpp::node_interfaces::NodeBaseInterface::SharedPtr get_node_base_interface() const;
 
 protected:
   /**
@@ -85,14 +84,6 @@ protected:
    */
   void app_disconnect_cb_(const lbr_fri_msgs::srv::AppDisconnect::Request::SharedPtr /*request*/,
                           lbr_fri_msgs::srv::AppDisconnect::Response::SharedPtr response);
-
-  /**
-   * @brief Callback to <b>/lbr_command</b> topic. Writes command into #lbr_command_rt_buf_
-   * buffer.
-   *
-   * @param[in] lbr_command Command (lbr_fri_msgs::msg::LBRCommand)
-   */
-  void lbr_command_sub_cb_(const lbr_fri_msgs::msg::LBRCommand::SharedPtr lbr_command);
 
   /**
    * @brief Checks for valid port id.
@@ -137,6 +128,8 @@ protected:
    */
   void step_();
 
+  rclcpp::Node::SharedPtr node_; /**< Node handle.*/
+
   std::unique_ptr<std::thread> app_step_thread_; /**< Thread running the #step_ method.*/
 
   const char *remote_host_; /**< The remote host's IP address.*/
@@ -149,18 +142,6 @@ protected:
   rclcpp::Service<lbr_fri_msgs::srv::AppDisconnect>::SharedPtr
       app_disconnect_srv_; /**< Service to disconnect from robot via #app_disconnect_cb_ callback.*/
 
-  std::shared_ptr<realtime_tools::RealtimeBuffer<lbr_fri_msgs::msg::LBRCommand::SharedPtr>>
-      lbr_command_rt_buf_; /**< Realtime-safe buffer for receiving lbr_fri_msgs::msg::LBRCommand
-                              commands.*/
-  rclcpp::Subscription<lbr_fri_msgs::msg::LBRCommand>::SharedPtr
-      lbr_command_sub_; /**< Subscribtion to lbr_fri_msgs::msg::LBRCommand commands.*/
-  rclcpp::Publisher<lbr_fri_msgs::msg::LBRState>::SharedPtr
-      lbr_state_pub_; /**< Publisher of lbr_fri_msgs::msg::LBRState.*/
-  std::shared_ptr<realtime_tools::RealtimePublisher<lbr_fri_msgs::msg::LBRState>>
-      lbr_state_rt_pub_; /**< Realtime-safe publisher of lbr_fri_msgs::msg::LBRState.*/
-
-  std::shared_ptr<LBRIntermediary>
-      lbr_intermediary_; /**< lbr_fri_ros2::LBRIntermediary object, shared with #lbr_client_.*/
   std::shared_ptr<LBRClient>
       lbr_client_; /**< Writes commands / reads states from #lbr_intermediary_ to robot.*/
   std::unique_ptr<KUKA::FRI::UdpConnection>

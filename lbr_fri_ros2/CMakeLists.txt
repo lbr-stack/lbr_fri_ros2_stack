@@ -20,7 +20,6 @@ add_library(lbr_fri_ros2
   SHARED 
     src/lbr_client.cpp
     src/lbr_command_guard.cpp
-    src/lbr_intermediary.cpp
 )
 
 target_include_directories(lbr_fri_ros2
@@ -32,6 +31,8 @@ target_include_directories(lbr_fri_ros2
 ament_target_dependencies(lbr_fri_ros2
   fri
   lbr_fri_msgs
+  rclcpp
+  realtime_tools
   urdf
 )
 
@@ -39,6 +40,8 @@ ament_export_targets(lbr_fri_ros2_export HAS_LIBRARY_TARGET)
 ament_export_dependencies(
   fri
   lbr_fri_msgs
+  rclcpp
+  realtime_tools
   urdf
 )
 
@@ -75,7 +78,6 @@ target_link_libraries(lbr_app_component
 ament_target_dependencies(lbr_app_component
   rclcpp
   rclcpp_components
-  realtime_tools
   fri
   lbr_fri_msgs
 )

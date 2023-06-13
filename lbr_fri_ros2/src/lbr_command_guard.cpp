@@ -15,7 +15,7 @@ LBRCommandGuard::LBRCommandGuard(const std::string &robot_description) {
   for (const auto &name_joint_pair : model.joints_) {
     const auto joint = name_joint_pair.second;
     if (joint->type == urdf::Joint::REVOLUTE) {
-      if (jnt_cnt > std::tuple_size<lbr_fri_msgs::msg::LBRState::_measured_joint_position_type>()) {
+      if (jnt_cnt > std::tuple_size<JointArray>()) {
         throw std::runtime_error("Found too many joints in robot description.");
       }
       min_position_[jnt_cnt] = joint->limits->lower;
@@ -25,18 +25,18 @@ LBRCommandGuard::LBRCommandGuard(const std::string &robot_description) {
       ++jnt_cnt;
     }
   }
-  if (jnt_cnt != std::tuple_size<lbr_fri_msgs::msg::LBRState::_measured_joint_position_type>()) {
-    throw std::runtime_error("Didn't find expected number of joints in robot description");
+  if (jnt_cnt != std::tuple_size<JointArray>()) {
+    throw std::runtime_error("Didn't find expected number of joints in robot description.");
   };
 }
 
-bool LBRCommandGuard::is_valid_command(const lbr_fri_msgs::msg::LBRCommand &lbr_command,
-                                       const lbr_fri_msgs::msg::LBRState &lbr_state) const {
-  switch (lbr_state.client_command_mode) {
+bool LBRCommandGuard::is_valid_command(const lbr_fri_msgs::msg::LBRCommand::SharedPtr lbr_command,
+                                       const KUKA::FRI::LBRState &lbr_state) const {
+  switch (lbr_state.getClientCommandMode()) {
   case KUKA::FRI::EClientCommandMode::NO_COMMAND_MODE:
     return false;
   case KUKA::FRI::EClientCommandMode::POSITION:
-    if (is_nan_(lbr_command.joint_position.cbegin(), lbr_command.joint_position.cend())) {
+    if (is_nan_(lbr_command->joint_position.cbegin(), lbr_command->joint_position.cend())) {
       return false;
     }
     if (!command_in_position_limits_(lbr_command, lbr_state)) {
@@ -47,10 +47,10 @@ bool LBRCommandGuard::is_valid_command(const lbr_fri_msgs::msg::LBRCommand &lbr_
     }
     return true;
   case KUKA::FRI::EClientCommandMode::WRENCH:
-    if (is_nan_(lbr_command.joint_position.cbegin(), lbr_command.joint_position.cend())) {
+    if (is_nan_(lbr_command->joint_position.cbegin(), lbr_command->joint_position.cend())) {
       return false;
     }
-    if (is_nan_(lbr_command.wrench.cbegin(), lbr_command.wrench.cend())) {
+    if (is_nan_(lbr_command->wrench.cbegin(), lbr_command->wrench.cend())) {
       return false;
     }
     if (!command_in_position_limits_(lbr_command, lbr_state)) {
@@ -58,10 +58,10 @@ bool LBRCommandGuard::is_valid_command(const lbr_fri_msgs::msg::LBRCommand &lbr_
     }
     return true;
   case KUKA::FRI::EClientCommandMode::TORQUE:
-    if (is_nan_(lbr_command.joint_position.cbegin(), lbr_command.joint_position.cend())) {
+    if (is_nan_(lbr_command->joint_position.cbegin(), lbr_command->joint_position.cend())) {
       return false;
     }
-    if (is_nan_(lbr_command.torque.cbegin(), lbr_command.torque.cend())) {
+    if (is_nan_(lbr_command->torque.cbegin(), lbr_command->torque.cend())) {
       return false;
     }
     if (!command_in_position_limits_(lbr_command, lbr_state)) {
@@ -81,11 +81,11 @@ bool LBRCommandGuard::is_nan_(const double *begin, const double *end) const {
 }
 
 bool LBRCommandGuard::command_in_position_limits_(
-    const lbr_fri_msgs::msg::LBRCommand &lbr_command,
-    const lbr_fri_msgs::msg::LBRState & /*lbr_state*/) const {
-  for (std::size_t i = 0; i < lbr_command.joint_position.size(); ++i) {
-    if (lbr_command.joint_position[i] < min_position_[i] ||
-        lbr_command.joint_position[i] > max_position_[i]) {
+    const lbr_fri_msgs::msg::LBRCommand::SharedPtr lbr_command,
+    const KUKA::FRI::LBRState & /*lbr_state*/) const {
+  for (std::size_t i = 0; i < lbr_command->joint_position.size(); ++i) {
+    if (lbr_command->joint_position[i] < min_position_[i] ||
+        lbr_command->joint_position[i] > max_position_[i]) {
       printf("Position command not in limits for joint %ld.\n", i);
       return false;
     }
@@ -94,11 +94,11 @@ bool LBRCommandGuard::command_in_position_limits_(
 }
 
 bool LBRCommandGuard::command_in_velocity_limits_(
-    const lbr_fri_msgs::msg::LBRCommand &lbr_command,
-    const lbr_fri_msgs::msg::LBRState &lbr_state) const {
-  const double &dt = lbr_state.sample_time;
-  for (std::size_t i = 0; i < lbr_command.joint_position[i]; ++i) {
-    if (std::abs(lbr_command.joint_position[i] - lbr_state.measured_joint_position[i]) / dt >
+    const lbr_fri_msgs::msg::LBRCommand::SharedPtr lbr_command,
+    const KUKA::FRI::LBRState &lbr_state) const {
+  const double &dt = lbr_state.getSampleTime();
+  for (std::size_t i = 0; i < lbr_command->joint_position[i]; ++i) {
+    if (std::abs(lbr_command->joint_position[i] - lbr_state.getMeasuredJointPosition()[i]) / dt >
         max_velocity_[i]) {
       printf("Velocity not in limits for joint %ld.\n", i);
       return false;
@@ -108,10 +108,10 @@ bool LBRCommandGuard::command_in_velocity_limits_(
 }
 
 bool LBRCommandGuard::command_in_torque_limits_(
-    const lbr_fri_msgs::msg::LBRCommand &lbr_command,
-    const lbr_fri_msgs::msg::LBRState &lbr_state) const {
-  for (std::size_t i = 0; i < lbr_command.torque.size(); ++i) {
-    if (std::abs(lbr_command.torque[i] + lbr_state.external_torque[i]) > max_torque_[i]) {
+    const lbr_fri_msgs::msg::LBRCommand::SharedPtr lbr_command,
+    const KUKA::FRI::LBRState &lbr_state) const {
+  for (std::size_t i = 0; i < lbr_command->torque.size(); ++i) {
+    if (std::abs(lbr_command->torque[i] + lbr_state.getExternalTorque()[i]) > max_torque_[i]) {
       printf("Position command not in limits for joint %ld.\n", i);
       return false;
     }
@@ -120,13 +120,13 @@ bool LBRCommandGuard::command_in_torque_limits_(
 }
 
 bool LBREarlyStopCommandGuard::command_in_position_limits_(
-    const lbr_fri_msgs::msg::LBRCommand &lbr_command,
-    const lbr_fri_msgs::msg::LBRState &lbr_state) const {
-  for (std::size_t i = 0; i < lbr_command.joint_position.size(); ++i) {
-    if (lbr_command.joint_position[i] <
-            min_position_[i] + max_velocity_[i] * lbr_state.sample_time ||
-        lbr_command.joint_position[i] >
-            max_position_[i] - max_velocity_[i] * lbr_state.sample_time) {
+    const lbr_fri_msgs::msg::LBRCommand::SharedPtr lbr_command,
+    const KUKA::FRI::LBRState &lbr_state) const {
+  for (std::size_t i = 0; i < lbr_command->joint_position.size(); ++i) {
+    if (lbr_command->joint_position[i] <
+            min_position_[i] + max_velocity_[i] * lbr_state.getSampleTime() ||
+        lbr_command->joint_position[i] >
+            max_position_[i] - max_velocity_[i] * lbr_state.getSampleTime()) {
       printf("Position command not in limits for joint %ld.\n", i);
       return false;
     }
