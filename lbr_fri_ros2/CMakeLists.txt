@@ -7,11 +7,11 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
+find_package(control_toolbox REQUIRED)
 find_package(fri REQUIRED)
 find_package(lbr_fri_msgs REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_components REQUIRED)
-find_package(realtime_tools REQUIRED)
 find_package(urdf REQUIRED)
 
 # lbr_fri_ros2
@@ -29,19 +29,19 @@ target_include_directories(lbr_fri_ros2
 )
 
 ament_target_dependencies(lbr_fri_ros2
+  control_toolbox
   fri
   lbr_fri_msgs
   rclcpp
-  realtime_tools
   urdf
 )
 
 ament_export_targets(lbr_fri_ros2_export HAS_LIBRARY_TARGET)
 ament_export_dependencies(
+  control_toolbox
   fri
   lbr_fri_msgs
   rclcpp
-  realtime_tools
   urdf
 )
 
