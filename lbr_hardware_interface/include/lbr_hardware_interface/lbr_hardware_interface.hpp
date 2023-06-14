@@ -13,8 +13,6 @@
 #include "hardware_interface/types/hardware_interface_type_values.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp_lifecycle/state.hpp"
-#include "realtime_tools/realtime_buffer.h"
-#include "realtime_tools/realtime_publisher.h"
 
 #include "fri/friLBRState.h"
 
@@ -127,12 +125,10 @@ protected:
   const char *remote_host_;
 
   // publisher for sending commands / subscriber to receive goals
-  std::shared_ptr<realtime_tools::RealtimeBuffer<lbr_fri_msgs::msg::LBRState::SharedPtr>>
-      rt_lbr_state_buf_;
+  lbr_fri_msgs::msg::LBRCommand lbr_command_;
+  lbr_fri_msgs::msg::LBRState lbr_state_;
   rclcpp::Subscription<lbr_fri_msgs::msg::LBRState>::SharedPtr lbr_state_sub_;
   rclcpp::Publisher<lbr_fri_msgs::msg::LBRCommand>::SharedPtr lbr_command_pub_;
-  std::shared_ptr<realtime_tools::RealtimePublisher<lbr_fri_msgs::msg::LBRCommand>>
-      rt_lbr_command_pub_;
 
   // clients to connect to / disconnect from LBR
   rclcpp::Client<lbr_fri_msgs::srv::AppConnect>::SharedPtr app_connect_clt_;

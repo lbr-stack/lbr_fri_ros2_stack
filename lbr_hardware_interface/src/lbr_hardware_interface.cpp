@@ -155,45 +155,38 @@ LBRHardwareInterface::on_deactivate(const rclcpp_lifecycle::State &) {
 
 hardware_interface::return_type LBRHardwareInterface::read(const rclcpp::Time & /*time*/,
                                                            const rclcpp::Duration & /*period*/) {
-  auto lbr_state = *rt_lbr_state_buf_->readFromRT();
-
-  if (!lbr_state) {
-    RCLCPP_ERROR(hw_node_->get_logger(), "Failed to read lbr_state.");
-    return hardware_interface::return_type::ERROR;
-  }
-
   if (exit_commanding_active_(static_cast<KUKA::FRI::ESessionState>(hw_session_state_),
-                              static_cast<KUKA::FRI::ESessionState>(lbr_state->session_state))) {
+                              static_cast<KUKA::FRI::ESessionState>(lbr_state_.session_state))) {
     RCLCPP_ERROR(hw_node_->get_logger(), "LBR left COMMANDING_ACTIVE. Please re-run lbr_bringup.");
     return hardware_interface::return_type::ERROR;
   }
 
-  hw_sample_time_ = lbr_state->sample_time;
-  hw_session_state_ = static_cast<double>(lbr_state->session_state);
-  hw_connection_quality_ = static_cast<double>(lbr_state->connection_quality);
-  hw_safety_state_ = static_cast<double>(lbr_state->safety_state);
-  hw_operation_mode_ = static_cast<double>(lbr_state->operation_mode);
-  hw_drive_state_ = static_cast<double>(lbr_state->drive_state);
-  hw_client_command_mode_ = static_cast<double>(lbr_state->client_command_mode);
-  hw_overlay_type_ = static_cast<double>(lbr_state->overlay_type);
-  hw_control_mode_ = static_cast<double>(lbr_state->control_mode);
+  hw_sample_time_ = lbr_state_.sample_time;
+  hw_session_state_ = static_cast<double>(lbr_state_.session_state);
+  hw_connection_quality_ = static_cast<double>(lbr_state_.connection_quality);
+  hw_safety_state_ = static_cast<double>(lbr_state_.safety_state);
+  hw_operation_mode_ = static_cast<double>(lbr_state_.operation_mode);
+  hw_drive_state_ = static_cast<double>(lbr_state_.drive_state);
+  hw_client_command_mode_ = static_cast<double>(lbr_state_.client_command_mode);
+  hw_overlay_type_ = static_cast<double>(lbr_state_.overlay_type);
+  hw_control_mode_ = static_cast<double>(lbr_state_.control_mode);
 
-  hw_time_stamp_sec_ = static_cast<double>(lbr_state->time_stamp_sec);
-  hw_time_stamp_nano_sec_ = static_cast<double>(lbr_state->time_stamp_nano_sec);
+  hw_time_stamp_sec_ = static_cast<double>(lbr_state_.time_stamp_sec);
+  hw_time_stamp_nano_sec_ = static_cast<double>(lbr_state_.time_stamp_nano_sec);
 
-  std::copy(lbr_state->measured_joint_position.cbegin(), lbr_state->measured_joint_position.cend(),
+  std::copy(lbr_state_.measured_joint_position.cbegin(), lbr_state_.measured_joint_position.cend(),
             hw_position_.begin());
-  std::copy(lbr_state->commanded_joint_position.cbegin(),
-            lbr_state->commanded_joint_position.cend(), hw_commanded_joint_position_.begin());
-  std::copy(lbr_state->measured_torque.cbegin(), lbr_state->measured_torque.cend(),
+  std::copy(lbr_state_.commanded_joint_position.cbegin(),
+            lbr_state_.commanded_joint_position.cend(), hw_commanded_joint_position_.begin());
+  std::copy(lbr_state_.measured_torque.cbegin(), lbr_state_.measured_torque.cend(),
             hw_effort_.begin());
-  std::copy(lbr_state->commanded_torque.cbegin(), lbr_state->commanded_torque.cend(),
+  std::copy(lbr_state_.commanded_torque.cbegin(), lbr_state_.commanded_torque.cend(),
             hw_commanded_torque_.begin());
-  std::copy(lbr_state->external_torque.cbegin(), lbr_state->external_torque.cend(),
+  std::copy(lbr_state_.external_torque.cbegin(), lbr_state_.external_torque.cend(),
             hw_commanded_torque_.begin());
-  std::copy(lbr_state->ipo_joint_position.cbegin(), lbr_state->ipo_joint_position.cend(),
+  std::copy(lbr_state_.ipo_joint_position.cbegin(), lbr_state_.ipo_joint_position.cend(),
             hw_ipo_joint_position_.begin());
-  hw_tracking_performance_ = lbr_state->tracking_performance;
+  hw_tracking_performance_ = lbr_state_.tracking_performance;
   compute_hw_velocity_();
   update_last_hw_states_();
 
@@ -208,12 +201,8 @@ hardware_interface::return_type LBRHardwareInterface::write(const rclcpp::Time &
       return hardware_interface::return_type::OK;
     }
 
-    if (rt_lbr_command_pub_->trylock()) {
-      std::copy(hw_position_command_.cbegin(), hw_position_command_.cend(),
-                rt_lbr_command_pub_->msg_.joint_position.begin());
-      rt_lbr_command_pub_->unlockAndPublish();
-    }
-    return hardware_interface::return_type::OK;
+    std::copy(hw_position_command_.cbegin(), hw_position_command_.cend(),
+              lbr_command_.joint_position.begin());
   }
 
   if (hw_client_command_mode_ == KUKA::FRI::EClientCommandMode::TORQUE) {
@@ -222,16 +211,12 @@ hardware_interface::return_type LBRHardwareInterface::write(const rclcpp::Time &
       return hardware_interface::return_type::OK;
     }
 
-    if (rt_lbr_command_pub_->trylock()) {
-      std::copy(hw_position_command_.cbegin(), hw_position_command_.cend(),
-                rt_lbr_command_pub_->msg_.joint_position.begin());
-      std::copy(hw_effort_command_.cbegin(), hw_effort_command_.cend(),
-                rt_lbr_command_pub_->msg_.torque.begin());
-      rt_lbr_command_pub_->unlockAndPublish();
-    }
-    return hardware_interface::return_type::OK;
+    std::copy(hw_position_command_.cbegin(), hw_position_command_.cend(),
+              lbr_command_.joint_position.begin());
+    std::copy(hw_effort_command_.cbegin(), hw_effort_command_.cend(), lbr_command_.torque.begin());
   }
 
+  lbr_command_pub_->publish(lbr_command_);
   return hardware_interface::return_type::OK;
 }
 
@@ -385,17 +370,11 @@ bool LBRHardwareInterface::spawn_rt_layer_() {
   }
 
   try {
-    rt_lbr_state_buf_ =
-        std::make_shared<realtime_tools::RealtimeBuffer<lbr_fri_msgs::msg::LBRState::SharedPtr>>(
-            nullptr);
     lbr_state_sub_ = hw_node_->create_subscription<lbr_fri_msgs::msg::LBRState>(
         "/lbr_state", rclcpp::SensorDataQoS(),
         std::bind(&LBRHardwareInterface::lbr_state_cb_, this, std::placeholders::_1));
     lbr_command_pub_ = hw_node_->create_publisher<lbr_fri_msgs::msg::LBRCommand>(
         "/lbr_command", rclcpp::SensorDataQoS());
-    rt_lbr_command_pub_ =
-        std::make_shared<realtime_tools::RealtimePublisher<lbr_fri_msgs::msg::LBRCommand>>(
-            lbr_command_pub_);
   } catch (const std::exception &e) {
     RCLCPP_ERROR(hw_node_->get_logger(), "Failed to spawn real time layer.\n%s.", e.what());
     return false;
@@ -478,7 +457,7 @@ bool LBRHardwareInterface::disconnect_() {
 }
 
 void LBRHardwareInterface::lbr_state_cb_(const lbr_fri_msgs::msg::LBRState::SharedPtr lbr_state) {
-  rt_lbr_state_buf_->writeFromNonRT(lbr_state);
+  lbr_state_ = *lbr_state;
 }
 
 double LBRHardwareInterface::time_stamps_to_sec_(const double &sec, const double &nano_sec) const {

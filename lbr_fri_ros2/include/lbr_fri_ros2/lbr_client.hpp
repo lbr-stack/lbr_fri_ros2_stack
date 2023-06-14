@@ -5,9 +5,8 @@
 #include <memory>
 #include <stdexcept>
 
+#include "control_toolbox/filters.hpp"
 #include "rclcpp/rclcpp.hpp"
-#include "realtime_tools/realtime_buffer.h"
-#include "realtime_tools/realtime_publisher.h"
 
 #include "fri/friClientIf.h"
 #include "fri/friLBRClient.h"
@@ -34,8 +33,7 @@ public:
    * @param[in] lbr_command_guard Command guard for validating incoming commands.
    *
    */
-  LBRClient(const rclcpp::Node::SharedPtr node,
-            const lbr_fri_ros2::LBRCommandGuard &lbr_command_guard);
+  LBRClient(const rclcpp::Node::SharedPtr node, std::unique_ptr<LBRCommandGuard> lbr_command_guard);
 
   /**
    * @brief Prints state change to terminal.
@@ -71,22 +69,20 @@ public:
 protected:
   void pub_lbr_state_();
   void lbr_command_sub_cb_(const lbr_fri_msgs::msg::LBRCommand::SharedPtr lbr_command);
-  void init_lbr_command_rt_buf_();
+  void init_lbr_command_();
 
   rclcpp::Node::SharedPtr node_; /**< Shared pointer to node.*/
 
-  std::unique_ptr<lbr_fri_ros2::LBRCommandGuard>
+  lbr_fri_msgs::msg::LBRCommand lbr_command_;
+  lbr_fri_msgs::msg::LBRState lbr_state_;
+
+  std::unique_ptr<LBRCommandGuard>
       lbr_command_guard_; /**< Validating commands prior to writing them to #robotCommand.*/
 
-  std::shared_ptr<realtime_tools::RealtimeBuffer<lbr_fri_msgs::msg::LBRCommand::SharedPtr>>
-      lbr_command_rt_buf_; /**< Realtime-safe buffer for receiving lbr_fri_msgs::msg::LBRCommand
-                              commands.*/
   rclcpp::Subscription<lbr_fri_msgs::msg::LBRCommand>::SharedPtr
       lbr_command_sub_; /**< Subscribtion to lbr_fri_msgs::msg::LBRCommand commands.*/
   rclcpp::Publisher<lbr_fri_msgs::msg::LBRState>::SharedPtr
       lbr_state_pub_; /**< Publisher of lbr_fri_msgs::msg::LBRState.*/
-  std::shared_ptr<realtime_tools::RealtimePublisher<lbr_fri_msgs::msg::LBRState>>
-      lbr_state_rt_pub_; /**< Realtime-safe publisher of lbr_fri_msgs::msg::LBRState.*/
 
 private:
   std::map<int, std::string> KUKA_FRI_STATE_MAP{

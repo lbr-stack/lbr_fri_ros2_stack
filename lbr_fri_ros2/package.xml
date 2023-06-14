@@ -13,7 +13,6 @@
   <depend>lbr_fri_msgs</depend>
   <depend>rclcpp</depend>
   <depend>rclcpp_components</depend>
-  <depend>realtime_tools</depend>
   <depend>urdf</depend>
 
   <test_depend>ament_lint_auto</test_depend>

@@ -52,7 +52,7 @@ public:
    * @return true if lbr_command is valid
    * @return false if lbr_command is invalid
    */
-  virtual bool is_valid_command(const lbr_fri_msgs::msg::LBRCommand::SharedPtr lbr_command,
+  virtual bool is_valid_command(const lbr_fri_msgs::msg::LBRCommand &lbr_command,
                                 const KUKA::FRI::LBRState &lbr_state) const;
 
 protected:
@@ -74,9 +74,8 @@ protected:
    * @return true if lbr_command in position limits
    * @return false if lbr_command outside position limits
    */
-  virtual bool
-  command_in_position_limits_(const lbr_fri_msgs::msg::LBRCommand::SharedPtr lbr_command,
-                              const KUKA::FRI::LBRState & /*lbr_state*/) const;
+  virtual bool command_in_position_limits_(const lbr_fri_msgs::msg::LBRCommand &lbr_command,
+                                           const KUKA::FRI::LBRState & /*lbr_state*/) const;
 
   /**
    * @brief Checks for joint velocity limits.
@@ -86,9 +85,8 @@ protected:
    * @return true if lbr_command in velocity limits
    * @return false if lbr_command outside velocity limits
    */
-  virtual bool
-  command_in_velocity_limits_(const lbr_fri_msgs::msg::LBRCommand::SharedPtr lbr_command,
-                              const KUKA::FRI::LBRState &lbr_state) const;
+  virtual bool command_in_velocity_limits_(const lbr_fri_msgs::msg::LBRCommand &lbr_command,
+                                           const KUKA::FRI::LBRState &lbr_state) const;
 
   /**
    * @brief Checks for joint torque limits.
@@ -98,7 +96,7 @@ protected:
    * @return true if lbr_command in torque limits
    * @return false if lbr_command outside torque limits
    */
-  virtual bool command_in_torque_limits_(const lbr_fri_msgs::msg::LBRCommand::SharedPtr lbr_command,
+  virtual bool command_in_torque_limits_(const lbr_fri_msgs::msg::LBRCommand &lbr_command,
                                          const KUKA::FRI::LBRState &lbr_state) const;
 
   JointArray min_position_; /**< Minimum joint position [rad].*/
@@ -133,9 +131,8 @@ protected:
    * @return true if lbr_command in position limits
    * @return false if lbr_command outside position limits
    */
-  virtual bool
-  command_in_position_limits_(const lbr_fri_msgs::msg::LBRCommand::SharedPtr lbr_command,
-                              const KUKA::FRI::LBRState &lbr_state) const override;
+  virtual bool command_in_position_limits_(const lbr_fri_msgs::msg::LBRCommand &lbr_command,
+                                           const KUKA::FRI::LBRState &lbr_state) const override;
 };
 } // end of namespace lbr_fri_ros2
 #endif // LBR_FRI_ROS2__LBR_COMMAND_GUARD_HPP_
