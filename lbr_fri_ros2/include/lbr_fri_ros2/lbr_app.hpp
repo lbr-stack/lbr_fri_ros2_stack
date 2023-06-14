@@ -26,11 +26,11 @@ namespace lbr_fri_ros2 {
  *
  * Services:
  * - <b>~/connect</b> (lbr_fri_msgs::srv::AppConnect)
- * Opens UDP port to FRI. Creates #app_step_thread_ thread via #app_connect_cb_ that calls #step_ to
+ * Opens UDP port to FRI. Creates #run_thread_ thread via #app_connect_cb_ that calls #run_ to
  * communicate with the robot.
  * - <b>~/disconnect</b> (lbr_fri_msgs::srv::AppDisconnect)
- * Closes UDP port to FRI. Finishes #app_step_thread_ thread via #app_disconnect_cb_ through ending
- * #step_.
+ * Closes UDP port to FRI. Finishes #run_thread_ thread via #app_disconnect_cb_ through ending
+ * #run_.
  *
  */
 class LBRApp {
@@ -38,14 +38,12 @@ public:
   /**
    * @brief Construct a new LBRApp object.
    *
-   * @param options Node options
+   * @param node Shared node
    *
    * @throws std::runtime error if no robot_description in node parameters
    */
-  LBRApp(const rclcpp::NodeOptions &options);
+  LBRApp(const rclcpp::Node::SharedPtr node);
   ~LBRApp();
-
-  rclcpp::node_interfaces::NodeBaseInterface::SharedPtr get_node_base_interface() const;
 
 protected:
   /**
@@ -89,7 +87,7 @@ protected:
   bool valid_port_(const int &port_id);
 
   /**
-   * @brief Opens a UDP port and spawns the #app_step_thread_.
+   * @brief Opens a UDP port and spawns the #run_thread_.
    *
    * @param[in] port_id The port id, allowed values [30200, 30209]
    * @param[in] remote_host The address of the remote host
@@ -102,12 +100,12 @@ protected:
   bool connect_(const int &port_id = 30200, const char *const remote_host = NULL);
 
   /**
-   * @brief Closes the UDP port and joins the #app_step_thread_.
+   * @brief Closes the UDP port and joins the #run_thread_.
    *
    * @return true if closed successfully / already closed
    * @return false if failed to close
    *
-   * @throws std::runtime_error if #app_step_thread_ fails to join
+   * @throws std::runtime_error if #run_thread_ fails to join
    *
    */
   bool disconnect_();
@@ -119,11 +117,11 @@ protected:
    * through real-time safe topics.
    *
    */
-  void step_();
+  void run_();
 
   rclcpp::Node::SharedPtr node_; /**< Node handle.*/
 
-  std::unique_ptr<std::thread> app_step_thread_; /**< Thread running the #step_ method.*/
+  std::unique_ptr<std::thread> run_thread_; /**< Thread running the #run_ method.*/
 
   const char *remote_host_; /**< The remote host's IP address.*/
   int port_id_;             /**< The UDP port id.*/

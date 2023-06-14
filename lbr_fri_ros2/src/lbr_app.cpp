@@ -1,8 +1,7 @@
 #include "lbr_fri_ros2/lbr_app.hpp"
 
 namespace lbr_fri_ros2 {
-LBRApp::LBRApp(const rclcpp::NodeOptions &options)
-    : node_(std::make_shared<rclcpp::Node>("lbr_app", options)) {
+LBRApp::LBRApp(const rclcpp::Node::SharedPtr node) : node_(node) {
   declare_parameters_();
   get_parameters_();
 
@@ -34,10 +33,6 @@ LBRApp::LBRApp(const rclcpp::NodeOptions &options)
 }
 
 LBRApp::~LBRApp() { disconnect_(); }
-
-rclcpp::node_interfaces::NodeBaseInterface::SharedPtr LBRApp::get_node_base_interface() const {
-  return node_->get_node_base_interface();
-}
 
 void LBRApp::declare_parameters_() {
   node_->declare_parameter<int>("port_id", 30200);
@@ -96,7 +91,7 @@ bool LBRApp::connect_(const int &port_id, const char *const remote_host) {
     if (connected_) {
       port_id_ = port_id;
       remote_host_ = remote_host;
-      app_step_thread_ = std::make_unique<std::thread>(std::bind(&LBRApp::step_, this));
+      run_thread_ = std::make_unique<std::thread>(std::bind(&LBRApp::run_, this));
     }
   } else {
     RCLCPP_INFO(node_->get_logger(), "Port already open.");
@@ -123,15 +118,15 @@ bool LBRApp::disconnect_() {
   } else {
     RCLCPP_WARN(node_->get_logger(), "Failed to close.");
   }
-  auto future = std::async(std::launch::async, &std::thread::join, app_step_thread_.get());
+  auto future = std::async(std::launch::async, &std::thread::join, run_thread_.get());
   if (future.wait_for(std::chrono::seconds(1)) != std::future_status::ready) {
     throw std::runtime_error("Could not join app step thread.");
   }
-  app_step_thread_.release();
+  run_thread_.release();
   return !connected_;
 }
 
-void LBRApp::step_() {
+void LBRApp::run_() {
   bool success = true;
   while (success && connected_ && rclcpp::ok()) {
     success = app_->step();
@@ -141,7 +136,3 @@ void LBRApp::step_() {
   }
 }
 } // end of namespace lbr_fri_ros2
-
-#include "rclcpp_components/register_node_macro.hpp"
-
-RCLCPP_COMPONENTS_REGISTER_NODE(lbr_fri_ros2::LBRApp)
