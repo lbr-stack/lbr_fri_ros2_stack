@@ -55,7 +55,7 @@ LBRHardwareInterface::on_init(const hardware_interface::HardwareInfo &system_inf
   }
 
   node_thread_ = std::make_unique<std::thread>([this]() {
-    auto executor = std::make_shared<rclcpp::executors::MultiThreadedExecutor>();
+    auto executor = std::make_shared<rclcpp::executors::SingleThreadedExecutor>();
     executor->add_node(hw_node_);
     executor->add_node(lbr_app_node_);
     executor->spin();
