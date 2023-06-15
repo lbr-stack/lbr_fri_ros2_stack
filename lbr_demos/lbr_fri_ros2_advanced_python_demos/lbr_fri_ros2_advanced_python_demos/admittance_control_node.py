@@ -5,8 +5,9 @@ import numpy as np
 import rclpy
 import xacro
 from ament_index_python import get_package_share_directory
-from rclpy.qos import qos_profile_sensor_data
+from rclpy.duration import Duration
 from rclpy.node import Node
+from rclpy.qos import QoSProfile, ReliabilityPolicy
 
 from lbr_fri_msgs.msg import LBRCommand, LBRState
 
@@ -17,9 +18,9 @@ class Controller(object):
         urdf_string: str,
         end_link_name: str = "lbr_link_ee",
         root_link_name: str = "lbr_link_0",
-        f_threshold: np.ndarray = np.array([6.0, 6.0, 6.0, 1.0, 1.0, 1.0]),
+        f_threshold: np.ndarray = np.array([2.0, 2.0, 2.0, 0.5, 0.5, 0.5]),
         dq_gain: np.ndarray = np.array([0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2]),
-        dx_gain: np.ndarray = np.array([1.0, 1.0, 1.0, 20.0, 40.0, 60.0]),
+        dx_gain: np.ndarray = np.array([2.0, 2.0, 2.0, 40.0, 80.0, 120.0]),
         smooth: float = 0.02,
     ) -> None:
         self.chain_ = kinpy.build_serial_chain_from_urdf(
@@ -91,12 +92,24 @@ class AdmittanceControlNode(Node):
 
         # publishers and subscribers
         self.lbr_state_sub_ = self.create_subscription(
-            LBRState, "/lbr_state", self.lbr_state_cb_, qos_profile_sensor_data
+            LBRState,
+            "/lbr_state",
+            self.lbr_state_cb_,
+            QoSProfile(
+                depth=1,
+                reliability=ReliabilityPolicy.RELIABLE,
+                deadline=Duration(nanoseconds=10 * 1e6),  # 10 milliseconds
+            ),
         )
         self.lbr_command_pub_ = self.create_publisher(
-            LBRCommand, "/lbr_command", qos_profile_sensor_data
+            LBRCommand,
+            "/lbr_command",
+            QoSProfile(
+                depth=1,
+                reliability=ReliabilityPolicy.RELIABLE,
+                deadline=Duration(nanoseconds=10 * 1e6),  # 10 milliseconds
+            ),
         )
-        self.lbr_command_timer_ = self.create_timer(self.dt_, self.timer_cb_)
 
         self.joint_position_buffer_len_ = int(self.get_parameter("buffer_len").value)
         self.joint_position_buffer_ = []
@@ -107,7 +120,6 @@ class AdmittanceControlNode(Node):
     def lbr_state_cb_(self, msg: LBRState) -> None:
         self.lbr_state_ = msg
 
-    def timer_cb_(self) -> None:
         if not self.lbr_state_:
             return
         # compute control

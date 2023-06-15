@@ -4,17 +4,26 @@ namespace lbr_fri_ros2 {
 LBRClient::LBRClient(const rclcpp::Node::SharedPtr node,
                      std::unique_ptr<LBRCommandGuard> lbr_command_guard)
     : node_(node), lbr_command_guard_(std::move(lbr_command_guard)) {
-  lbr_command_sub_ = node_->create_subscription<lbr_fri_msgs::msg::LBRCommand>(
-      "/lbr_command", rclcpp::SensorDataQoS(),
-      std::bind(&LBRClient::lbr_command_sub_cb_, this, std::placeholders::_1));
-  lbr_state_pub_ =
-      node_->create_publisher<lbr_fri_msgs::msg::LBRState>("/lbr_state", rclcpp::SensorDataQoS());
+
+  missed_deadlines_pub_ = 0;
+  missed_deadlines_sub_ = 0;
+
+  declare_parameters_();
+  get_parameters_();
+}
+
+void LBRClient::log_status() {
+  RCLCPP_INFO(node_->get_logger(), "LBRClient - Publisher missed deadlines: %u",
+              missed_deadlines_pub_);
+  RCLCPP_INFO(node_->get_logger(), "LBRClient - Subscription missed deadlines: %u",
+              missed_deadlines_sub_);
 }
 
 void LBRClient::onStateChange(KUKA::FRI::ESessionState old_state,
                               KUKA::FRI::ESessionState new_state) {
-  printf("LBR switched from %s to %s.\n", KUKA_FRI_STATE_MAP[old_state].c_str(),
-         KUKA_FRI_STATE_MAP[new_state].c_str());
+  init_topics_();
+  RCLCPP_INFO(node_->get_logger(), "LBR switched from %s to %s.",
+              KUKA_FRI_STATE_MAP[old_state].c_str(), KUKA_FRI_STATE_MAP[new_state].c_str());
 }
 void LBRClient::monitor() { pub_lbr_state_(); }
 
@@ -57,9 +66,70 @@ void LBRClient::command() {
     robotCommand().setTorque(lbr_command_.torque.data());
     return;
   default:
-    printf("Unknown EClientCommandMode provided.\n");
+    RCLCPP_ERROR(node_->get_logger(), "Unknown EClientCommandMode provided.");
     return;
   }
+}
+
+void LBRClient::init_lbr_command_() {
+  std::copy(robotState().getIpoJointPosition(),
+            robotState().getIpoJointPosition() + KUKA::FRI::LBRState::NUMBER_OF_JOINTS,
+            lbr_command_.joint_position.begin());
+  lbr_command_.torque.fill(0.);
+  lbr_command_.wrench.fill(0.);
+}
+
+void LBRClient::init_topics_() {
+  if (!lbr_state_pub_) {
+    auto pub_options = rclcpp::PublisherOptions();
+    pub_options.event_callbacks.deadline_callback = [this](rclcpp::QOSDeadlineOfferedInfo &) {
+      missed_deadlines_pub_++;
+    };
+
+    lbr_state_pub_ = node_->create_publisher<lbr_fri_msgs::msg::LBRState>(
+        lbr_state_topic_, rclcpp::QoS(1)
+                              .deadline(std::chrono::milliseconds(
+                                  static_cast<int64_t>(robotState().getSampleTime() * 1e3)))
+                              .reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE));
+  }
+
+  if (!lbr_command_sub_) {
+    auto memory_strategy =
+        rclcpp::strategies::message_pool_memory_strategy::MessagePoolMemoryStrategy<
+            lbr_fri_msgs::msg::LBRCommand, 1>::make_shared();
+
+    auto sub_options = rclcpp::SubscriptionOptions();
+    sub_options.event_callbacks.deadline_callback = [this](rclcpp::QOSDeadlineRequestedInfo &) {
+      missed_deadlines_sub_++;
+    };
+
+    lbr_command_sub_ = node_->create_subscription<lbr_fri_msgs::msg::LBRCommand>(
+        lbr_command_topic_,
+        rclcpp::QoS(1)
+            .deadline(
+                std::chrono::milliseconds(static_cast<int64_t>(robotState().getSampleTime() * 1e3)))
+            .reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE),
+        std::bind(&LBRClient::on_lbr_command_, this, std::placeholders::_1), sub_options,
+        memory_strategy);
+  }
+}
+
+void LBRClient::declare_parameters_() {
+  if (!node_->has_parameter("lbr_command_topic")) {
+    node_->declare_parameter<std::string>("lbr_command_topic", "/lbr_command");
+  }
+  if (!node_->has_parameter("lbr_state_topic")) {
+    node_->declare_parameter<std::string>("lbr_state_topic", "/lbr_state");
+  }
+  if (!node_->has_parameter("smoothing")) {
+    node_->declare_parameter<double>("smoothing", 0.8);
+  }
+}
+
+void LBRClient::get_parameters_() {
+  smoothing_ = node_->get_parameter("smoothing").as_double();
+  lbr_command_topic_ = node_->get_parameter("lbr_command_topic").as_string();
+  lbr_state_topic_ = node_->get_parameter("lbr_state_topic").as_string();
 }
 
 void LBRClient::pub_lbr_state_() {
@@ -103,20 +173,12 @@ void LBRClient::pub_lbr_state_() {
   lbr_state_pub_->publish(lbr_state_);
 }
 
-void LBRClient::lbr_command_sub_cb_(const lbr_fri_msgs::msg::LBRCommand::SharedPtr lbr_command) {
+void LBRClient::on_lbr_command_(const lbr_fri_msgs::msg::LBRCommand::SharedPtr lbr_command) {
   for (int i = 0; i < KUKA::FRI::LBRState::NUMBER_OF_JOINTS; ++i) {
     lbr_command_.joint_position[i] = filters::exponentialSmoothing(
-        lbr_command_.joint_position[i], lbr_command->joint_position[i], 0.98);
+        lbr_command_.joint_position[i], lbr_command->joint_position[i], smoothing_);
   }
   lbr_command_.torque = lbr_command->torque;
   lbr_command_.wrench = lbr_command->wrench;
-}
-
-void LBRClient::init_lbr_command_() {
-  std::copy(robotState().getIpoJointPosition(),
-            robotState().getIpoJointPosition() + KUKA::FRI::LBRState::NUMBER_OF_JOINTS,
-            lbr_command_.joint_position.begin());
-  lbr_command_.torque.fill(0.);
-  lbr_command_.wrench.fill(0.);
 }
 } // end of namespace lbr_fri_ros2

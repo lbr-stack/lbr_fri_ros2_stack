@@ -4,9 +4,11 @@
 #include <map>
 #include <memory>
 #include <stdexcept>
+#include <string>
 
 #include "control_toolbox/filters.hpp"
 #include "rclcpp/rclcpp.hpp"
+#include "rclcpp/strategies/message_pool_memory_strategy.hpp"
 
 #include "fri/friClientIf.h"
 #include "fri/friLBRClient.h"
@@ -34,6 +36,12 @@ public:
    *
    */
   LBRClient(const rclcpp::Node::SharedPtr node, std::unique_ptr<LBRCommandGuard> lbr_command_guard);
+
+  /**
+   * @brief Log the status of the robot to terminal.
+   *
+   */
+  void log_status();
 
   /**
    * @brief Prints state change to terminal.
@@ -67,22 +75,32 @@ public:
   void command() override;
 
 protected:
-  void pub_lbr_state_();
-  void lbr_command_sub_cb_(const lbr_fri_msgs::msg::LBRCommand::SharedPtr lbr_command);
   void init_lbr_command_();
+  void init_topics_();
+
+  void declare_parameters_();
+  void get_parameters_();
+
+  void pub_lbr_state_();
+  void on_lbr_command_(const lbr_fri_msgs::msg::LBRCommand::SharedPtr lbr_command);
 
   rclcpp::Node::SharedPtr node_; /**< Shared pointer to node.*/
+
+  uint32_t missed_deadlines_pub_, missed_deadlines_sub_;
 
   lbr_fri_msgs::msg::LBRCommand lbr_command_;
   lbr_fri_msgs::msg::LBRState lbr_state_;
 
+  std::string lbr_command_topic_, lbr_state_topic_;
+  double smoothing_;
+
   std::unique_ptr<LBRCommandGuard>
       lbr_command_guard_; /**< Validating commands prior to writing them to #robotCommand.*/
 
-  rclcpp::Subscription<lbr_fri_msgs::msg::LBRCommand>::SharedPtr
-      lbr_command_sub_; /**< Subscribtion to lbr_fri_msgs::msg::LBRCommand commands.*/
   rclcpp::Publisher<lbr_fri_msgs::msg::LBRState>::SharedPtr
       lbr_state_pub_; /**< Publisher of lbr_fri_msgs::msg::LBRState.*/
+  rclcpp::Subscription<lbr_fri_msgs::msg::LBRCommand>::SharedPtr
+      lbr_command_sub_; /**< Subscribtion to lbr_fri_msgs::msg::LBRCommand commands.*/
 
 private:
   std::map<int, std::string> KUKA_FRI_STATE_MAP{

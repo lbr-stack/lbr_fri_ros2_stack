@@ -20,11 +20,16 @@ public:
   JointSineOverlayNode(const std::string &node_name) : Node(node_name), phase_(0.) {
     // create publisher to /lbr_command
     lbr_command_pub_ = this->create_publisher<lbr_fri_msgs::msg::LBRCommand>(
-        "/lbr_command", rclcpp::SensorDataQoS());
+        "/lbr_command", rclcpp::QoS(1)
+                            .reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE)
+                            .deadline(std::chrono::milliseconds(10)));
 
     // create subscription to /lbr_state
     lbr_state_sub_ = this->create_subscription<lbr_fri_msgs::msg::LBRState>(
-        "/lbr_state", rclcpp::SensorDataQoS(),
+        "/lbr_state",
+        rclcpp::QoS(1)
+            .reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE)
+            .deadline(std::chrono::milliseconds(10)),
         std::bind(&JointSineOverlayNode::lbr_state_cb_, this, std::placeholders::_1));
   };
 
