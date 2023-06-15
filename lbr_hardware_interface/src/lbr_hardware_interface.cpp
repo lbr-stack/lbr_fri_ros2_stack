@@ -7,6 +7,11 @@ LBRHardwareInterface::on_init(const hardware_interface::HardwareInfo &system_inf
                                             rclcpp::NodeOptions().use_intra_process_comms(true));
   lbr_app_node_ = std::make_shared<rclcpp::Node>(
       "lbr_app", rclcpp::NodeOptions().use_intra_process_comms(true));
+
+  lbr_app_node_->declare_parameter<std::string>("lbr_command_topic", "/_lbr_command");
+  lbr_app_node_->declare_parameter<std::string>("lbr_state_topic", "/_lbr_state");
+  lbr_app_node_->declare_parameter<double>("smoothing", 0.8);
+
   lbr_app_ = std::make_unique<lbr_fri_ros2::LBRApp>(lbr_app_node_);
 
   auto ret = hardware_interface::SystemInterface::on_init(system_info);
@@ -40,13 +45,14 @@ LBRHardwareInterface::on_init(const hardware_interface::HardwareInfo &system_inf
   info_.hardware_parameters["remote_host"] == "INADDR_ANY"
       ? remote_host_ = NULL
       : remote_host_ = info_.hardware_parameters["remote_host"].c_str();
+  sample_time_ = std::stoi(info_.hardware_parameters["sample_time"]);
 
   if (port_id_ < 30200 || port_id_ > 30209) {
     RCLCPP_ERROR(hw_node_->get_logger(), "Expected port_id in [30200, 30209]. Found %d.", port_id_);
     return controller_interface::CallbackReturn::ERROR;
   }
 
-  if (!spawn_rt_layer_()) {
+  if (!spawn_com_layer_()) {
     return controller_interface::CallbackReturn::ERROR;
   }
 
@@ -363,18 +369,27 @@ bool LBRHardwareInterface::verify_sensors_() {
   return true;
 }
 
-bool LBRHardwareInterface::spawn_rt_layer_() {
+bool LBRHardwareInterface::spawn_com_layer_() {
   if (!hw_node_) {
     printf("No node provided.\n");
     return false;
   }
 
   try {
+    auto memory_strategy =
+        rclcpp::strategies::message_pool_memory_strategy::MessagePoolMemoryStrategy<
+            lbr_fri_msgs::msg::LBRState, 1>::make_shared();
     lbr_state_sub_ = hw_node_->create_subscription<lbr_fri_msgs::msg::LBRState>(
-        "/lbr_state", rclcpp::SensorDataQoS(),
-        std::bind(&LBRHardwareInterface::lbr_state_cb_, this, std::placeholders::_1));
+        "/_lbr_state",
+        rclcpp::QoS(1)
+            .deadline(std::chrono::milliseconds(sample_time_))
+            .reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE),
+        std::bind(&LBRHardwareInterface::lbr_state_cb_, this, std::placeholders::_1),
+        rclcpp::SubscriptionOptions(), memory_strategy);
     lbr_command_pub_ = hw_node_->create_publisher<lbr_fri_msgs::msg::LBRCommand>(
-        "/lbr_command", rclcpp::SensorDataQoS());
+        "/_lbr_command", rclcpp::QoS(1)
+                             .deadline(std::chrono::milliseconds(sample_time_))
+                             .reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE));
   } catch (const std::exception &e) {
     RCLCPP_ERROR(hw_node_->get_logger(), "Failed to spawn real time layer.\n%s.", e.what());
     return false;

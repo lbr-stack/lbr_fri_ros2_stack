@@ -12,6 +12,7 @@
 #include "hardware_interface/system_interface.hpp"
 #include "hardware_interface/types/hardware_interface_type_values.hpp"
 #include "rclcpp/rclcpp.hpp"
+#include "rclcpp/strategies/message_pool_memory_strategy.hpp"
 #include "rclcpp_lifecycle/state.hpp"
 
 #include "fri/friLBRState.h"
@@ -61,7 +62,7 @@ protected:
   bool verify_joint_command_interfaces_();
   bool verify_joint_state_interfaces_();
   bool verify_sensors_();
-  bool spawn_rt_layer_();
+  bool spawn_com_layer_();
   bool spawn_clients_();
 
   // monitor end of commanding active
@@ -123,6 +124,7 @@ protected:
   // app connect call request
   int32_t port_id_;
   const char *remote_host_;
+  uint8_t sample_time_;
 
   // publisher for sending commands / subscriber to receive goals
   lbr_fri_msgs::msg::LBRCommand lbr_command_;
