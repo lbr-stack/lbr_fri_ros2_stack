@@ -2,22 +2,20 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>lbr_fri_ros2_advanced_cpp_demos</name>
-  <version>0.0.0</version>
-  <description>TODO: Package description</description>
-  <maintainer email="m.huber_1994@hotmail.de">martin</maintainer>
-  <license>TODO: License declaration</license>
+  <version>1.0.0</version>
+  <description>Advanced C++ demos for the lbr_fri_ros2.</description>
+  <maintainer email="martin.huber@kcl.ac.uk">mhubii</maintainer>
+  <license>MIT</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
-
-  <buildtool_depend>eigen3_cmake_module</buildtool_depend>  <!-- see
-  https://github.com/ros2/eigen3_cmake_module -->
+  <buildtool_depend>eigen3_cmake_module</buildtool_depend>
 
   <depend>eigen</depend>
-  <depend>rclcpp</depend>
+  <depend>kdl_parser</depend>
   <depend>lbr_fri_ros2</depend>
   <depend>lbr_fri_msgs</depend>
   <depend>orocos_kdl</depend>
-  <depend>kdl_parser</depend>
+  <depend>rclcpp</depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>

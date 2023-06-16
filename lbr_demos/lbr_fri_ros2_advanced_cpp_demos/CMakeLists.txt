@@ -9,21 +9,25 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(eigen3_cmake_module REQUIRED)
 find_package(Eigen3 REQUIRED)
-find_package(rclcpp REQUIRED)
+find_package(kdl_parser REQUIRED)
 find_package(lbr_fri_ros2 REQUIRED)
 find_package(lbr_fri_msgs REQUIRED)
 find_package(orocos_kdl REQUIRED)
-find_package(kdl_parser REQUIRED)
+find_package(rclcpp REQUIRED)
 
 add_executable(admittance_control_node src/admittance_control_node.cpp)
 ament_target_dependencies(
   admittance_control_node
   Eigen3
-  orocos_kdl
   kdl_parser
-  rclcpp
   lbr_fri_ros2
   lbr_fri_msgs
+  orocos_kdl
+  rclcpp
+)
+
+target_include_directories(admittance_control_node
+  PRIVATE src
 )
 
 install(
