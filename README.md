@@ -4,8 +4,6 @@
 
 ROS 2 packages for the KUKA LBR, including communication to the real robot via the Fast Robot Interface ([FRI](https://github.com/KCL-BMEIS/fri)) and [Gazebo](http://gazebosim.org/) simulation support. Included are the `iiwa7`, `iiwa14`, `med7`, and `med14`.
 
-https://drive.google.com/file/d/1Zy0nncWI1yWI0Cov_44TYhKWJq_D4A6V/view?usp=sharing
-
 ## Documentation
 Full documentation available [here](https://lbr-fri-ros2-stack-doc.readthedocs.io/en/humble/index.html).
 
