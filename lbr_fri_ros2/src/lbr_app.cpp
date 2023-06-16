@@ -9,12 +9,12 @@ LBRApp::LBRApp(const rclcpp::Node::SharedPtr node) : node_(node) {
 
   app_connect_srv_ = node_->create_service<lbr_fri_msgs::srv::AppConnect>(
       "~/connect",
-      std::bind(&LBRApp::app_connect_cb_, this, std::placeholders::_1, std::placeholders::_2),
+      std::bind(&LBRApp::on_app_connect_, this, std::placeholders::_1, std::placeholders::_2),
       rmw_qos_profile_services_default);
 
   app_disconnect_srv_ = node_->create_service<lbr_fri_msgs::srv::AppDisconnect>(
       "~/disconnect",
-      std::bind(&LBRApp::app_disconnect_cb_, this, std::placeholders::_1, std::placeholders::_2),
+      std::bind(&LBRApp::on_app_disconnect_, this, std::placeholders::_1, std::placeholders::_2),
       rmw_qos_profile_services_default);
 
   std::string robot_description;
@@ -50,7 +50,7 @@ void LBRApp::get_parameters_() {
   remote_host_ = remote_host.empty() ? NULL : remote_host.c_str();
 }
 
-void LBRApp::app_connect_cb_(const lbr_fri_msgs::srv::AppConnect::Request::SharedPtr request,
+void LBRApp::on_app_connect_(const lbr_fri_msgs::srv::AppConnect::Request::SharedPtr request,
                              lbr_fri_msgs::srv::AppConnect::Response::SharedPtr response) {
   const char *remote_host = request->remote_host.empty() ? NULL : request->remote_host.c_str();
   try {
@@ -61,7 +61,7 @@ void LBRApp::app_connect_cb_(const lbr_fri_msgs::srv::AppConnect::Request::Share
   }
 }
 
-void LBRApp::app_disconnect_cb_(
+void LBRApp::on_app_disconnect_(
     const lbr_fri_msgs::srv::AppDisconnect::Request::SharedPtr /*request*/,
     lbr_fri_msgs::srv::AppDisconnect::Response::SharedPtr response) {
   try {

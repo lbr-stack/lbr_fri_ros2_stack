@@ -30,11 +30,11 @@ public:
         rclcpp::QoS(1)
             .reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE)
             .deadline(std::chrono::milliseconds(10)),
-        std::bind(&TorqueSineOverlayNode::lbr_state_cb_, this, std::placeholders::_1));
+        std::bind(&TorqueSineOverlayNode::on_lbr_state_, this, std::placeholders::_1));
   };
 
 protected:
-  void lbr_state_cb_(const lbr_fri_msgs::msg::LBRState::SharedPtr lbr_state) {
+  void on_lbr_state_(const lbr_fri_msgs::msg::LBRState::SharedPtr lbr_state) {
     lbr_command_.joint_position = lbr_state->ipo_joint_position;
 
     if (lbr_state->session_state == KUKA::FRI::COMMANDING_ACTIVE) {

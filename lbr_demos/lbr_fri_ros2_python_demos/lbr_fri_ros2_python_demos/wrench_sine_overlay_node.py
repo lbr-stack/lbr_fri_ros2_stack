@@ -33,7 +33,7 @@ class WrenchSineOverlayNode(Node):
         self.lbr_state_sub_ = self.create_subscription(
             LBRState,
             "/lbr_state",
-            self.lbr_state_cb_,
+            self.on_lbr_state_,
             QoSProfile(
                 depth=1,
                 reliability=ReliabilityPolicy.RELIABLE,
@@ -41,7 +41,7 @@ class WrenchSineOverlayNode(Node):
             ),
         )
 
-    def lbr_state_cb_(self, lbr_state: LBRState) -> None:
+    def on_lbr_state_(self, lbr_state: LBRState) -> None:
         self.lbr_command_.joint_position = lbr_state.ipo_joint_position
 
         if lbr_state.session_state == 4:  # KUKA::FRI::COMMANDING_ACTIVE == 4

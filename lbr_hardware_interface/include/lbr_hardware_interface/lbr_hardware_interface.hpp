@@ -73,7 +73,7 @@ protected:
   bool connect_();
   bool disconnect_();
 
-  void lbr_state_cb_(const lbr_fri_msgs::msg::LBRState::SharedPtr lbr_state);
+  void on_lbr_state_(const lbr_fri_msgs::msg::LBRState::SharedPtr lbr_state);
 
   const uint8_t LBR_FRI_STATE_INTERFACE_SIZE = 7;
   const uint8_t LBR_FRI_COMMAND_INTERFACE_SIZE = 2;

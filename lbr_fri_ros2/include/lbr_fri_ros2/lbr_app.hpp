@@ -26,10 +26,10 @@ namespace lbr_fri_ros2 {
  *
  * Services:
  * - <b>~/connect</b> (lbr_fri_msgs::srv::AppConnect)
- * Opens UDP port to FRI. Creates #run_thread_ thread via #app_connect_cb_ that calls #run_ to
+ * Opens UDP port to FRI. Creates #run_thread_ thread via #on_app_connect_ that calls #run_ to
  * communicate with the robot.
  * - <b>~/disconnect</b> (lbr_fri_msgs::srv::AppDisconnect)
- * Closes UDP port to FRI. Finishes #run_thread_ thread via #app_disconnect_cb_ through ending
+ * Closes UDP port to FRI. Finishes #run_thread_ thread via #on_app_disconnect_ through ending
  * #run_.
  *
  */
@@ -65,7 +65,7 @@ protected:
    * @param[in] request Request containing port_id and remote_host
    * @param[out] response Response containing connected and message
    */
-  void app_connect_cb_(const lbr_fri_msgs::srv::AppConnect::Request::SharedPtr request,
+  void on_app_connect_(const lbr_fri_msgs::srv::AppConnect::Request::SharedPtr request,
                        lbr_fri_msgs::srv::AppConnect::Response::SharedPtr response);
 
   /**
@@ -74,7 +74,7 @@ protected:
    * @param[in] request Empty request
    * @param[out] response Response containing disconnected and message
    */
-  void app_disconnect_cb_(const lbr_fri_msgs::srv::AppDisconnect::Request::SharedPtr /*request*/,
+  void on_app_disconnect_(const lbr_fri_msgs::srv::AppDisconnect::Request::SharedPtr /*request*/,
                           lbr_fri_msgs::srv::AppDisconnect::Response::SharedPtr response);
 
   /**
@@ -129,9 +129,9 @@ protected:
   std::atomic<bool> connected_; /**< True if UDP port open and communication running.*/
 
   rclcpp::Service<lbr_fri_msgs::srv::AppConnect>::SharedPtr
-      app_connect_srv_; /**< Service to connect to robot via #app_connect_cb_ callback.*/
+      app_connect_srv_; /**< Service to connect to robot via #on_app_connect_ callback.*/
   rclcpp::Service<lbr_fri_msgs::srv::AppDisconnect>::SharedPtr
-      app_disconnect_srv_; /**< Service to disconnect from robot via #app_disconnect_cb_ callback.*/
+      app_disconnect_srv_; /**< Service to disconnect from robot via #on_app_disconnect_ callback.*/
 
   std::shared_ptr<LBRClient> lbr_client_; /**< Writes commands to / reads states from robot.*/
   std::unique_ptr<KUKA::FRI::UdpConnection>

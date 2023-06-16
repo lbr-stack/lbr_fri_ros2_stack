@@ -384,7 +384,7 @@ bool LBRHardwareInterface::spawn_com_layer_() {
         rclcpp::QoS(1)
             .deadline(std::chrono::milliseconds(sample_time_))
             .reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE),
-        std::bind(&LBRHardwareInterface::lbr_state_cb_, this, std::placeholders::_1),
+        std::bind(&LBRHardwareInterface::on_lbr_state_, this, std::placeholders::_1),
         rclcpp::SubscriptionOptions(), memory_strategy);
     lbr_command_pub_ = hw_node_->create_publisher<lbr_fri_msgs::msg::LBRCommand>(
         "/_lbr_command", rclcpp::QoS(1)
@@ -471,7 +471,7 @@ bool LBRHardwareInterface::disconnect_() {
   return response->disconnected;
 }
 
-void LBRHardwareInterface::lbr_state_cb_(const lbr_fri_msgs::msg::LBRState::SharedPtr lbr_state) {
+void LBRHardwareInterface::on_lbr_state_(const lbr_fri_msgs::msg::LBRState::SharedPtr lbr_state) {
   lbr_state_ = *lbr_state;
 }
 
