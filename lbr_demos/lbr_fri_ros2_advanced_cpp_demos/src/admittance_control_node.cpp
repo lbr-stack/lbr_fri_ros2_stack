@@ -40,32 +40,29 @@ protected:
       return;
     }
 
-    smooth_lbr_state_(lbr_state, 0.95, lbr_state_, init_);
+    smooth_lbr_state_(lbr_state, 0.95);
 
     auto lbr_command = admittance_controller_->update(lbr_state_);
     lbr_command_pub_->publish(lbr_command);
   };
 
-  void smooth_lbr_state_(const lbr_fri_msgs::msg::LBRState::SharedPtr lbr_state, double alpha,
-                         lbr_fri_msgs::msg::LBRState &smooth_lbr_state, bool &init) {
-    if (!init) {
-      smooth_lbr_state = *lbr_state;
-      init = true;
+  void smooth_lbr_state_(const lbr_fri_msgs::msg::LBRState::SharedPtr lbr_state, double alpha) {
+    if (!init_) {
+      lbr_state_ = *lbr_state;
+      init_ = true;
       return;
     }
 
     for (int i = 0; i < 7; i++) {
-      smooth_lbr_state.measured_joint_position[i] =
-          lbr_state->measured_joint_position[i] * (1 - alpha) +
-          smooth_lbr_state.measured_joint_position[i] * alpha;
-      smooth_lbr_state.external_torque[i] =
-          lbr_state->external_torque[i] * (1 - alpha) + smooth_lbr_state.external_torque[i] * alpha;
+      lbr_state_.measured_joint_position[i] = lbr_state->measured_joint_position[i] * (1 - alpha) +
+                                              lbr_state_.measured_joint_position[i] * alpha;
+      lbr_state_.external_torque[i] =
+          lbr_state->external_torque[i] * (1 - alpha) + lbr_state_.external_torque[i] * alpha;
     }
   }
 
-  lbr_fri_msgs::msg::LBRState lbr_state_;
-
   bool init_{false};
+  lbr_fri_msgs::msg::LBRState lbr_state_;
 
   rclcpp::Publisher<lbr_fri_msgs::msg::LBRCommand>::SharedPtr lbr_command_pub_;
   rclcpp::Subscription<lbr_fri_msgs::msg::LBRState>::SharedPtr lbr_state_sub_;

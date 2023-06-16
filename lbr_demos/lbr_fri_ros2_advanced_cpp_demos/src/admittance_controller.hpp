@@ -72,8 +72,8 @@ protected:
   KDL::Tree tree_;
   KDL::Chain chain_;
   std::unique_ptr<KDL::ChainJntToJacSolver> jacobian_solver_;
-  Eigen::Matrix<double, KUKA::FRI::LBRState::NUMBER_OF_JOINTS, 6> jacobian_inv_;
   KDL::Jacobian jacobian_;
+  Eigen::Matrix<double, KUKA::FRI::LBRState::NUMBER_OF_JOINTS, 6> jacobian_inv_;
   KDL::JntArray q_;
   JointVector dq_;
   JointVector tau_ext_;

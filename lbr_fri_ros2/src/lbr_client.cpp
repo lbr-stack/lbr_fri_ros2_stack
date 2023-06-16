@@ -122,7 +122,7 @@ void LBRClient::declare_parameters_() {
     node_->declare_parameter<std::string>("lbr_state_topic", "/lbr_state");
   }
   if (!node_->has_parameter("smoothing")) {
-    node_->declare_parameter<double>("smoothing", 0.8);
+    node_->declare_parameter<double>("smoothing", 0.99);
   }
 }
 
