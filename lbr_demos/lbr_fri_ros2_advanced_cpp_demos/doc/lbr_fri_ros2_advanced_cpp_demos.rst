@@ -14,16 +14,10 @@ Admittance Controller
 
     .. thumbnail:: ../../doc/img/applications_lbr_server.png
 
-2. Launch the robot driver:
+2. Run the `admittance_control_node <https://github.com/KCL-BMEIS/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_fri_ros2_advanced_cpp_demos/lbr_fri_ros2_advanced_cpp_demos/admittance_control_node.cpp>`_:
 
 .. code-block:: bash
 
-    ros2 launch lbr_fri_ros2 lbr_app.launch.py model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
+    ros2 launch lbr_fri_ros2_advanced_cpp_demos admittance_control_node.launch.py model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
 
-3. Run the `admittance_control_node <https://github.com/KCL-BMEIS/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_fri_ros2_advanced_cpp_demos/lbr_fri_ros2_advanced_cpp_demos/admittance_control_node.cpp>`_:
-
-.. code-block:: bash
-
-    ros2 run lbr_fri_ros2_advanced_cpp_demos admittance_control_node
-
-4. Now gently move the robot at the end-effector.
+3. Now gently move the robot at the end-effector.
