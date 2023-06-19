@@ -1,59 +1,12 @@
-import os
-
-import kinpy
 import numpy as np
 import rclpy
-import xacro
-from ament_index_python import get_package_share_directory
-from rclpy.qos import qos_profile_sensor_data
+from rclpy.duration import Duration
 from rclpy.node import Node
+from rclpy.qos import QoSProfile, ReliabilityPolicy
 
 from lbr_fri_msgs.msg import LBRCommand, LBRState
 
-
-class Controller(object):
-    def __init__(
-        self,
-        urdf_string: str,
-        end_link_name: str = "lbr_link_ee",
-        root_link_name: str = "lbr_link_0",
-        f_threshold: np.ndarray = np.array([6.0, 6.0, 6.0, 1.0, 1.0, 1.0]),
-        dq_gain: np.ndarray = np.array([0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2]),
-        dx_gain: np.ndarray = np.array([1.0, 1.0, 1.0, 20.0, 40.0, 60.0]),
-        smooth: float = 0.02,
-    ) -> None:
-        self.chain_ = kinpy.build_serial_chain_from_urdf(
-            data=urdf_string, end_link_name=end_link_name, root_link_name=root_link_name
-        )
-
-        self.f_threshold_ = f_threshold
-        self.dq_gain_ = np.diag(dq_gain)
-        self.dx_gain_ = np.diag(dx_gain)
-        self.smooth_ = smooth
-
-        self.dof_ = len(self.chain_.get_joint_parameter_names())
-        self.dq_ = np.zeros(self.dof_)
-
-    def __call__(self, q: np.ndarray, tau_ext: np.ndarray) -> np.ndarray:
-        jacobian = self.chain_.jacobian(q)
-        # J^T fext = tau
-        if tau_ext.size != self.dof_ or q.size != self.dof_:
-            raise BufferError(
-                f"Expected joint position and torque with {self.dof_} dof, got {q.size()} amd {tau_ext.size()} dof."
-            )
-
-        jacobian_inv = np.linalg.pinv(jacobian, rcond=0.05)
-
-        f_ext = jacobian_inv.T @ tau_ext
-        f_ext = np.where(
-            abs(f_ext) > self.f_threshold_,
-            self.dx_gain_ @ np.sign(f_ext) * (abs(f_ext) - self.f_threshold_),
-            0.0,
-        )
-
-        dq = self.dq_gain_ @ jacobian_inv @ f_ext
-        self.dq_ = (1.0 - self.smooth_) * self.dq_ + self.smooth_ * dq
-        return self.dq_, f_ext
+from .admittance_controller import AdmittanceController
 
 
 class AdmittanceControlNode(Node):
@@ -61,82 +14,61 @@ class AdmittanceControlNode(Node):
         super().__init__(node_name=node_name)
 
         # parameters
-        self.declare_parameter("model", "med7")
-        self.declare_parameter("end_link_name", "lbr_link_ee")
-        self.declare_parameter("root_link_name", "lbr_link_0")
-        self.declare_parameter("command_rate", 100.0)
-        self.declare_parameter("buffer_len", 20)
+        self.declare_parameter("robot_description", "")
+        self.declare_parameter("base_link", "lbr_link_0")
+        self.declare_parameter("end_effector_link", "lbr_link_ee")
 
-        self.model_ = str(self.get_parameter("model").value)
-        self.end_link_name_ = str(self.get_parameter("end_link_name").value)
-        self.root_link_name_ = str(self.get_parameter("root_link_name").value)
-        self.dt_ = 1.0 / float(self.get_parameter("command_rate").value)
+        self.init_ = False
+        self.lbr_state_ = LBRState()
 
-        # controller
-        path = os.path.join(
-            get_package_share_directory("lbr_description"),
-            "urdf",
-            self.model_,
-            f"{self.model_}.urdf.xacro",
+        self.controller_ = AdmittanceController(
+            robot_description=str(self.get_parameter("robot_description").value),
+            base_link=str(self.get_parameter("base_link").value),
+            end_effector_link=str(self.get_parameter("end_effector_link").value),
         )
-        self.urdf_string_ = xacro.process(path)
-
-        self.controller_ = Controller(
-            urdf_string=self.urdf_string_,
-            end_link_name=self.end_link_name_,
-            root_link_name=self.root_link_name_,
-        )
-
-        self.lbr_state_ = None
 
         # publishers and subscribers
         self.lbr_state_sub_ = self.create_subscription(
-            LBRState, "/lbr_state", self.lbr_state_cb_, qos_profile_sensor_data
+            LBRState,
+            "/lbr_state",
+            self.on_lbr_state_,
+            QoSProfile(
+                depth=1,
+                reliability=ReliabilityPolicy.RELIABLE,
+                deadline=Duration(nanoseconds=10 * 1e6),  # 10 milliseconds
+            ),
         )
         self.lbr_command_pub_ = self.create_publisher(
-            LBRCommand, "/lbr_command", qos_profile_sensor_data
+            LBRCommand,
+            "/lbr_command",
+            QoSProfile(
+                depth=1,
+                reliability=ReliabilityPolicy.RELIABLE,
+                deadline=Duration(nanoseconds=10 * 1e6),  # 10 milliseconds
+            ),
         )
-        self.lbr_command_timer_ = self.create_timer(self.dt_, self.timer_cb_)
 
-        self.joint_position_buffer_len_ = int(self.get_parameter("buffer_len").value)
-        self.joint_position_buffer_ = []
+    def on_lbr_state_(self, lbr_state: LBRState) -> None:
+        self.smooth_lbr_state_(lbr_state, 0.95)
 
-        self.external_torque_buffer_len_ = int(self.get_parameter("buffer_len").value)
-        self.external_torque_buffer_ = []
+        lbr_command = self.controller_(self.lbr_state_)
+        self.lbr_command_pub_.publish(lbr_command)
 
-    def lbr_state_cb_(self, msg: LBRState) -> None:
-        self.lbr_state_ = msg
-
-    def timer_cb_(self) -> None:
-        if not self.lbr_state_:
+    def smooth_lbr_state_(self, lbr_state: LBRState, alpha: float):
+        if not self.init_:
+            self.lbr_state_ = lbr_state
+            self.init_ = True
             return
-        # compute control
-        q = np.array(self.lbr_state_.measured_joint_position.tolist())
 
-        if len(self.joint_position_buffer_) > self.joint_position_buffer_len_:
-            self.joint_position_buffer_.pop(0)
-        self.joint_position_buffer_.append(q)
+        self.lbr_state_.measured_joint_position = (
+            (1 - alpha) * np.array(self.lbr_state_.measured_joint_position.tolist())
+            + alpha * np.array(lbr_state.measured_joint_position.tolist())
+        ).data
 
-        q = np.zeros_like(q)
-        for qi in self.joint_position_buffer_:
-            q += qi / len(self.joint_position_buffer_)
-
-        tau_ext = np.array(self.lbr_state_.external_torque.tolist())
-
-        if len(self.external_torque_buffer_) > self.external_torque_buffer_len_:
-            self.external_torque_buffer_.pop(0)
-        self.external_torque_buffer_.append(tau_ext)
-
-        tau_ext = np.zeros_like(tau_ext)
-        for tau_ext_i in self.external_torque_buffer_:
-            tau_ext += tau_ext_i / len(self.external_torque_buffer_)
-
-        dq, f_ext = self.controller_(q, tau_ext)
-
-        # command
-        command = LBRCommand()
-        command.joint_position = (q + dq * self.dt_).data
-        self.lbr_command_pub_.publish(command)
+        self.lbr_state_.external_torque = (
+            (1 - alpha) * np.array(self.lbr_state_.external_torque.tolist())
+            + alpha * np.array(lbr_state.external_torque.tolist())
+        ).data
 
 
 def main(args=None):

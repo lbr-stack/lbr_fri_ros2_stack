@@ -2,12 +2,13 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>lbr_fri_ros2_advanced_python_demos</name>
-  <version>1.0.0</version>
+  <version>1.1.0</version>
   <description>Advanced Python demos for the lbr_fri_ros2.</description>
   <maintainer email="martin.huber@kcl.ac.uk">mhubii</maintainer>
   <license>MIT</license>
 
   <exec_depend>lbr_fri_msgs</exec_depend>
+  <exec_depend>lbr_fri_ros2</exec_depend>
   <exec_depend>rclpy</exec_depend>
 
   <test_depend>ament_copyright</test_depend>
