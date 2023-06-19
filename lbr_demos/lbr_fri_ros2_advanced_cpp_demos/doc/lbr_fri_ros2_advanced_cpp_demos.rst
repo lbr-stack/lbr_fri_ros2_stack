@@ -14,7 +14,7 @@ Admittance Controller
 
     .. thumbnail:: ../../doc/img/applications_lbr_server.png
 
-2. Run the `admittance_control_node <https://github.com/KCL-BMEIS/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_fri_ros2_advanced_cpp_demos/lbr_fri_ros2_advanced_cpp_demos/admittance_control_node.cpp>`_:
+2. Run the `admittance_control_node <https://github.com/KCL-BMEIS/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_fri_ros2_advanced_cpp_demos/src/admittance_control_node.cpp>`_:
 
 .. code-block:: bash
 
