@@ -33,6 +33,8 @@ class LBRJointTrajectoryExecutionerNode(Node):
 
         point = JointTrajectoryPoint()
         point.positions = positions
+        point.velocities = [0.0] * len(positions)
+        point.effort = [0.0] * len(positions)
         point.time_from_start.sec = sec_from_start
 
         for i in range(7):
