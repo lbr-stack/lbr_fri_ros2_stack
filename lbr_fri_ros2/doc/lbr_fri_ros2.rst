@@ -20,13 +20,14 @@ Quick Start
 
     ros2 launch lbr_fri_ros2 lbr_app.launch.py model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
 
-This does 2 things:
+This launch file does 2 things:
 
-    - Loads the ``robot_description`` (for joint limits)
-    - Runs the :lbr_fri_ros2:`LBRApp <lbr_fri_ros2::LBRApp>` node, which
+    - Loads the ``robot_description`` (to read joint limits)
+    - Runs the :lbr_fri_ros2:`LBRAppComponentLBRApp <lbr_fri_ros2::LBRAppComponent>`, which has instance of :lbr_fri_ros2:`LBRApp <lbr_fri_ros2::LBRApp>` to
         
-        - Publishes robot states to ``/lbr_state``
-        - Reads robot commands from ``/lbr_command``
+        - Create services to connect to / disconnect from the robot
+        - Publish robot states to ``/lbr_state`` via :lbr_fri_ros2:`LBRClient <lbr_fri_ros2::LBRClient>`
+        - Read robot commands from ``/lbr_command`` via :lbr_fri_ros2:`LBRClient <lbr_fri_ros2::LBRClient>`
 
 See :ref:`LBR Demos` for more examples.
 
@@ -60,21 +61,14 @@ The user calls :fri:`step <KUKA::FRI::ClientApplication::step()>`, which, depend
 
 The user can implement these callbacks to read states / send commands by implementing an :fri:`LBRClient <KUKA::FRI::LBRClient>`.
 
-The ``lbr_fri_ros2`` package implements an :fri:`LBRClient <KUKA::FRI::LBRClient>` in :lbr_fri_ros2:`LBRClient <lbr_fri_ros2::LBRClient>` that writes states to / reads commands from :lbr_fri_ros2:`LBRIntermediary <lbr_fri_ros2::LBRIntermediary>`.
+The ``lbr_fri_ros2`` package implements an :fri:`LBRClient <KUKA::FRI::LBRClient>` in :lbr_fri_ros2:`LBRClient <lbr_fri_ros2::LBRClient>`.
 
-The :lbr_fri_ros2:`LBRIntermediary <lbr_fri_ros2::LBRIntermediary>` is shared with :lbr_fri_ros2:`LBRApp <lbr_fri_ros2::LBRApp>`. :lbr_fri_ros2:`LBRApp <lbr_fri_ros2::LBRApp>` **exposes** the robot to ROS 2. It runs :lbr_fri_ros2:`step_ <lbr_fri_ros2::LBRApp::step_()>` in a thread, which does the following:
+The :lbr_fri_ros2:`LBRClient <lbr_fri_ros2::LBRClient>` has
 
-1. Reads commands from ``/lbr_command``.
-2. Writes commands to :lbr_fri_ros2:`LBRIntermediary <lbr_fri_ros2::LBRIntermediary::command_to_buffer>` via :lbr_fri_ros2:`command_to_buffer <lbr_fri_ros2::LBRIntermediary::command_to_buffer(const lbr_fri_msgs::msg::LBRCommand::ConstSharedPtr)>`.
-3. Calls :fri:`step <KUKA::FRI::ClientApplication::step()>`, which (through calling back :lbr_fri_ros2:`LBRClient <lbr_fri_ros2::LBRClient>`)
+ - A publisher to publish states in :lbr_fri_ros2:`pub_lbr_state_ <lbr_fri_ros2::LBRClient::pub_lbr_state_()>`.
+ - A subscription to read commands in :lbr_fri_ros2:`on_lbr_command_ <lbr_fri_ros2::LBRClient::on_lbr_command_(const lbr_fri_msgs::msg::LBRCommand::SharedPtr lbr_command)>`.
 
-    - Reads commands from :lbr_fri_ros2:`LBRIntermediary <lbr_fri_ros2::LBRIntermediary::command_to_buffer>` via :lbr_fri_ros2:`buffer_to_command <lbr_fri_ros2::LBRIntermediary::buffer_to_command(KUKA::FRI::LBRCommand &) const>`.
-    - Writes states to :lbr_fri_ros2:`LBRIntermediary <lbr_fri_ros2::LBRIntermediary::command_to_buffer>` via :lbr_fri_ros2:`state_to_buffer <lbr_fri_ros2::LBRIntermediary::state_to_buffer(const KUKA::FRI::LBRState &)>`.
-
-4. Reads states from :lbr_fri_ros2:`LBRIntermediary <lbr_fri_ros2::LBRIntermediary>` via :lbr_fri_ros2:`LBRIntermediary::buffer_to_state <lbr_fri_ros2::LBRIntermediary::buffer_to_state()>`.
-5. Publishes states to ``/lbr_state``.
-
-The publishing of states and reading of commands is implemented via ``realtime_tools`` so that :lbr_fri_ros2:`step_ <lbr_fri_ros2::LBRApp::step_()>` is executed in a real-time-safe manner.
+Commands in :lbr_fri_ros2:`on_lbr_command_ <lbr_fri_ros2::LBRClient::on_lbr_command_(const lbr_fri_msgs::msg::LBRCommand::SharedPtr lbr_command)>` are checked for validity via a :lbr_fri_ros2:`LBRCommandGuard <lbr_fri_ros2::LBRCommandGuard>`.
 
 API
 ~~~
