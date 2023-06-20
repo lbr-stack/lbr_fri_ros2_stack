@@ -1,24 +1,22 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>lbr_ros2_control_cpp_demos</name>
-  <version>1.1.0</version>
-  <description>C++ demos for the LBR ros2_control integration.</description>
+  <name>lbr_fri_ros2_advanced_cpp_demos</name>
+  <version>1.0.0</version>
+  <description>Advanced C++ demos for the lbr_fri_ros2.</description>
   <maintainer email="martin.huber@kcl.ac.uk">mhubii</maintainer>
   <license>MIT</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
+  <buildtool_depend>eigen3_cmake_module</buildtool_depend>
 
-  <depend>control_msgs</depend>
+  <depend>eigen</depend>
   <depend>fri_vendor</depend>
+  <depend>kdl_parser</depend>
+  <depend>lbr_fri_ros2</depend>
+  <depend>lbr_fri_msgs</depend>
+  <depend>orocos_kdl</depend>
   <depend>rclcpp</depend>
-  <depend>rclcpp_action</depend>
-  <depend>trajectory_msgs</depend>
-
-  <exec_depend>lbr_bringup</exec_depend>
-  <exec_depend>lbr_description</exec_depend>
-  <exec_depend>lbr_fri_ros2</exec_depend>
-  <exec_depend>lbr_hardware_interface</exec_depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
