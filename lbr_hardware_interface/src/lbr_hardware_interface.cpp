@@ -180,18 +180,18 @@ hardware_interface::return_type LBRHardwareInterface::read(const rclcpp::Time & 
   hw_time_stamp_sec_ = static_cast<double>(lbr_state_.time_stamp_sec);
   hw_time_stamp_nano_sec_ = static_cast<double>(lbr_state_.time_stamp_nano_sec);
 
-  std::copy(lbr_state_.measured_joint_position.cbegin(), lbr_state_.measured_joint_position.cend(),
-            hw_position_.begin());
-  std::copy(lbr_state_.commanded_joint_position.cbegin(),
-            lbr_state_.commanded_joint_position.cend(), hw_commanded_joint_position_.begin());
-  std::copy(lbr_state_.measured_torque.cbegin(), lbr_state_.measured_torque.cend(),
-            hw_effort_.begin());
-  std::copy(lbr_state_.commanded_torque.cbegin(), lbr_state_.commanded_torque.cend(),
-            hw_commanded_torque_.begin());
-  std::copy(lbr_state_.external_torque.cbegin(), lbr_state_.external_torque.cend(),
-            hw_commanded_torque_.begin());
-  std::copy(lbr_state_.ipo_joint_position.cbegin(), lbr_state_.ipo_joint_position.cend(),
-            hw_ipo_joint_position_.begin());
+  std::memcpy(hw_position_.data(), lbr_state_.measured_joint_position.data(),
+              sizeof(double) * KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
+  std::memcpy(hw_commanded_joint_position_.data(), lbr_state_.commanded_joint_position.data(),
+              sizeof(double) * KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
+  std::memcpy(hw_effort_.data(), lbr_state_.measured_torque.data(),
+              sizeof(double) * KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
+  std::memcpy(hw_commanded_torque_.data(), lbr_state_.commanded_torque.data(),
+              sizeof(double) * KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
+  std::memcpy(hw_external_torque_.data(), lbr_state_.external_torque.data(),
+              sizeof(double) * KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
+  std::memcpy(hw_ipo_joint_position_.data(), lbr_state_.ipo_joint_position.data(),
+              sizeof(double) * KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
   hw_tracking_performance_ = lbr_state_.tracking_performance;
   compute_hw_velocity_();
   update_last_hw_states_();
@@ -206,9 +206,8 @@ hardware_interface::return_type LBRHardwareInterface::write(const rclcpp::Time &
                     [](const double &v) { return std::isnan(v); })) {
       return hardware_interface::return_type::OK;
     }
-
-    std::copy(hw_position_command_.cbegin(), hw_position_command_.cend(),
-              lbr_command_.joint_position.begin());
+    std::memcpy(lbr_command_.joint_position.data(), hw_position_command_.data(),
+                sizeof(double) * KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
   }
 
   if (hw_client_command_mode_ == KUKA::FRI::EClientCommandMode::TORQUE) {
@@ -216,10 +215,10 @@ hardware_interface::return_type LBRHardwareInterface::write(const rclcpp::Time &
                     [](const double &v) { return std::isnan(v); })) {
       return hardware_interface::return_type::OK;
     }
-
-    std::copy(hw_position_command_.cbegin(), hw_position_command_.cend(),
-              lbr_command_.joint_position.begin());
-    std::copy(hw_effort_command_.cbegin(), hw_effort_command_.cend(), lbr_command_.torque.begin());
+    std::memcpy(lbr_command_.joint_position.data(), hw_position_command_.data(),
+                sizeof(double) * KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
+    std::memcpy(lbr_command_.torque.data(), hw_effort_command_.data(),
+                sizeof(double) * KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
   }
 
   lbr_command_pub_->publish(lbr_command_);

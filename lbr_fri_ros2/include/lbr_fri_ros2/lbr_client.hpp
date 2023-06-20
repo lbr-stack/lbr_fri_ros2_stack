@@ -1,6 +1,7 @@
 #ifndef LBR_FRI_ROS2__LBR_CLIENT_HPP_
 #define LBR_FRI_ROS2__LBR_CLIENT_HPP_
 
+#include <cstring>
 #include <map>
 #include <memory>
 #include <stdexcept>

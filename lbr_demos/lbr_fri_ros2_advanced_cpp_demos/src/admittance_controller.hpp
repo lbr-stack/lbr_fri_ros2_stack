@@ -1,6 +1,7 @@
 #ifndef LBR_FRI_ROS2_ADVANCED_CPP_DEMOS__ADMITTANCE_CONTROLLER_HPP_
 #define LBR_FRI_ROS2_ADVANCED_CPP_DEMOS__ADMITTANCE_CONTROLLER_HPP_
 
+#include <cstring>
 #include <string>
 
 #include "kdl/chain.hpp"
@@ -40,9 +41,10 @@ public:
   };
 
   const lbr_fri_msgs::msg::LBRCommand &update(const lbr_fri_msgs::msg::LBRState &lbr_state) {
-    std::copy(lbr_state.measured_joint_position.begin(), lbr_state.measured_joint_position.end(),
-              q_.data.data());
-    std::copy(lbr_state.external_torque.begin(), lbr_state.external_torque.end(), tau_ext_.data());
+    std::memcpy(q_.data.data(), lbr_state.measured_joint_position.data(),
+                sizeof(double) * KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
+    std::memcpy(tau_ext_.data(), lbr_state.external_torque.data(),
+                sizeof(double) * KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
 
     jacobian_solver_->JntToJac(q_, jacobian_);
 
