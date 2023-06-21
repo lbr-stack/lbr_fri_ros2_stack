@@ -24,6 +24,6 @@ Admittance Controller
 
 .. code-block:: bash
 
-    ros2 run lbr_fri_ros2_advanced_python_demos admittance_control_node
+    ros2 launch lbr_fri_ros2_advanced_python_demos admittance_control_node.launch.py model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
 
 4. Now gently move the robot at the end-effector.

@@ -20,16 +20,21 @@ public:
   JointSineOverlayNode(const std::string &node_name) : Node(node_name), phase_(0.) {
     // create publisher to /lbr_command
     lbr_command_pub_ = this->create_publisher<lbr_fri_msgs::msg::LBRCommand>(
-        "/lbr_command", rclcpp::SensorDataQoS());
+        "/lbr_command", rclcpp::QoS(1)
+                            .reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE)
+                            .deadline(std::chrono::milliseconds(10)));
 
     // create subscription to /lbr_state
     lbr_state_sub_ = this->create_subscription<lbr_fri_msgs::msg::LBRState>(
-        "/lbr_state", rclcpp::SensorDataQoS(),
-        std::bind(&JointSineOverlayNode::lbr_state_cb_, this, std::placeholders::_1));
+        "/lbr_state",
+        rclcpp::QoS(1)
+            .reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE)
+            .deadline(std::chrono::milliseconds(10)),
+        std::bind(&JointSineOverlayNode::on_lbr_state_, this, std::placeholders::_1));
   };
 
 protected:
-  void lbr_state_cb_(const lbr_fri_msgs::msg::LBRState::SharedPtr lbr_state) {
+  void on_lbr_state_(const lbr_fri_msgs::msg::LBRState::SharedPtr lbr_state) {
     lbr_command_.joint_position = lbr_state->ipo_joint_position;
 
     if (lbr_state->session_state == KUKA::FRI::COMMANDING_ACTIVE) {

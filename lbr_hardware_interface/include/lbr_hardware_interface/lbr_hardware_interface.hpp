@@ -1,6 +1,7 @@
 #ifndef LBR_HARDWARE_INTERFACE__LBR_HARDWARE_INTERFACE_HPP_
 #define LBR_HARDWARE_INTERFACE__LBR_HARDWARE_INTERFACE_HPP_
 
+#include <cstring>
 #include <future>
 #include <memory>
 #include <stdexcept>
@@ -13,8 +14,8 @@
 #include "hardware_interface/types/hardware_interface_status_values.hpp"
 #include "hardware_interface/types/hardware_interface_type_values.hpp"
 #include "rclcpp/rclcpp.hpp"
-#include "realtime_tools/realtime_buffer.h"
-#include "realtime_tools/realtime_publisher.h"
+#include "rclcpp/strategies/message_pool_memory_strategy.hpp"
+#include "rclcpp_lifecycle/state.hpp"
 
 #include "fri/friLBRState.h"
 
@@ -22,6 +23,7 @@
 #include "lbr_fri_msgs/msg/lbr_state.hpp"
 #include "lbr_fri_msgs/srv/app_connect.hpp"
 #include "lbr_fri_msgs/srv/app_disconnect.hpp"
+#include "lbr_fri_ros2/lbr_app.hpp"
 #include "lbr_hardware_interface/lbr_hardware_interface_type_values.hpp"
 
 namespace lbr_hardware_interface {
@@ -59,7 +61,7 @@ protected:
   bool verify_joint_command_interfaces_();
   bool verify_joint_state_interfaces_();
   bool verify_sensors_();
-  bool spawn_rt_layer_();
+  bool spawn_com_layer_();
   bool spawn_clients_();
 
   // monitor end of commanding active
@@ -70,14 +72,16 @@ protected:
   bool connect_();
   bool disconnect_();
 
-  void lbr_state_cb_(const lbr_fri_msgs::msg::LBRState::SharedPtr lbr_state);
+  void on_lbr_state_(const lbr_fri_msgs::msg::LBRState::SharedPtr lbr_state);
 
   const uint8_t LBR_FRI_STATE_INTERFACE_SIZE = 7;
   const uint8_t LBR_FRI_COMMAND_INTERFACE_SIZE = 2;
   const uint8_t LBR_FRI_SENSOR_SIZE = 12;
 
   // node for handling communication
-  rclcpp::Node::SharedPtr node_;
+  rclcpp::Node::SharedPtr hw_node_;
+  rclcpp::Node::SharedPtr lbr_app_node_;
+  std::unique_ptr<lbr_fri_ros2::LBRApp> lbr_app_;
 
   // exposed state interfaces
   double hw_sample_time_;
@@ -119,14 +123,13 @@ protected:
   // app connect call request
   int32_t port_id_;
   const char *remote_host_;
+  uint8_t sample_time_;
 
   // publisher for sending commands / subscriber to receive goals
-  std::shared_ptr<realtime_tools::RealtimeBuffer<lbr_fri_msgs::msg::LBRState::SharedPtr>>
-      rt_lbr_state_buf_;
+  lbr_fri_msgs::msg::LBRCommand lbr_command_;
+  lbr_fri_msgs::msg::LBRState lbr_state_;
   rclcpp::Subscription<lbr_fri_msgs::msg::LBRState>::SharedPtr lbr_state_sub_;
   rclcpp::Publisher<lbr_fri_msgs::msg::LBRCommand>::SharedPtr lbr_command_pub_;
-  std::shared_ptr<realtime_tools::RealtimePublisher<lbr_fri_msgs::msg::LBRCommand>>
-      rt_lbr_command_pub_;
 
   // clients to connect to / disconnect from LBR
   rclcpp::Client<lbr_fri_msgs::srv::AppConnect>::SharedPtr app_connect_clt_;
