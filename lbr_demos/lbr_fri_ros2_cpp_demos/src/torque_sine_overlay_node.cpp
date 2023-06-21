@@ -62,4 +62,4 @@ int main(int argc, char **argv) {
   rclcpp::spin(std::make_shared<TorqueSineOverlayNode>("torque_sine_overlay_node"));
   rclcpp::shutdown();
   return 0;
-};
+}

@@ -16,7 +16,7 @@ LBRHardwareInterface::configure(const hardware_interface::HardwareInfo &info) {
 
   auto ret = configure_default(info);
   if (ret != hardware_interface::return_type::OK) {
-    RCLCPP_ERROR(node_->get_logger(), "Failed to initialize SystemInterface.");
+    RCLCPP_ERROR(hw_node_->get_logger(), "Failed to initialize SystemInterface.");
     return ret;
   }
 

@@ -18,8 +18,8 @@ LBRApp::LBRApp(const rclcpp::Node::SharedPtr node) : node_(node) {
       rmw_qos_profile_services_default);
 
   std::string robot_description;
-  declare_parameter("robot_description");
-  if (!get_parameter("robot_description", robot_description)) {
+  node_->declare_parameter("robot_description");
+  if (!node_->get_parameter("robot_description", robot_description)) {
     throw std::runtime_error("Failed to receive robot_description parameter.");
   }
 
