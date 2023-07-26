@@ -10,7 +10,7 @@ LBRHardwareInterface::on_init(const hardware_interface::HardwareInfo &system_inf
 
   lbr_app_node_->declare_parameter<std::string>("lbr_command_topic", "/_lbr_command");
   lbr_app_node_->declare_parameter<std::string>("lbr_state_topic", "/_lbr_state");
-  lbr_app_node_->declare_parameter<double>("smoothing", 0.8);
+  lbr_app_node_->declare_parameter<double>("smoothing", 0.);
 
   lbr_app_ = std::make_unique<lbr_fri_ros2::LBRApp>(lbr_app_node_);
 
@@ -61,6 +61,14 @@ LBRHardwareInterface::on_init(const hardware_interface::HardwareInfo &system_inf
   }
 
   node_thread_ = std::make_unique<std::thread>([this]() {
+    // rt prio
+    struct sched_param param;
+    param.sched_priority = 99;
+    if (sched_setscheduler(0, SCHED_FIFO, &param) != 0) {
+      RCLCPP_ERROR(hw_node_->get_logger(), "Failed to set scheduler.");
+      return;
+    }
+
     auto executor = std::make_shared<rclcpp::executors::SingleThreadedExecutor>();
     executor->add_node(hw_node_);
     executor->add_node(lbr_app_node_);

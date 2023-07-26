@@ -4,6 +4,7 @@
 #include <cstring>
 #include <future>
 #include <memory>
+#include <sched.h>
 #include <stdexcept>
 #include <string>
 #include <thread>

@@ -70,8 +70,18 @@ protected:
   std::unique_ptr<AdmittanceController> admittance_controller_;
 };
 
+#include "sched.h"
+
 int main(int argc, char **argv) {
   rclcpp::init(argc, argv);
+
+  // configure scheduling policy
+  struct sched_param param;
+  param.sched_priority = 99;
+  if (sched_setscheduler(0, SCHED_FIFO, &param) != 0) {
+    RCLCPP_ERROR(rclcpp::get_logger("rclcpp"), "sched_setscheduler failed");
+    return -1;
+  }
 
   auto executor = std::make_shared<rclcpp::executors::SingleThreadedExecutor>();
 

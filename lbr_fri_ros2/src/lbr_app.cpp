@@ -127,6 +127,14 @@ bool LBRApp::disconnect_() {
 }
 
 void LBRApp::run_() {
+  // configure rt
+  struct sched_param param;
+  param.sched_priority = 99;
+  if (sched_setscheduler(0, SCHED_FIFO, &param) != 0) {
+    RCLCPP_ERROR(node_->get_logger(), "Failed to set scheduler.");
+    return;
+  }
+
   bool success = true;
   while (success && connected_ && rclcpp::ok()) {
     success = app_->step();
