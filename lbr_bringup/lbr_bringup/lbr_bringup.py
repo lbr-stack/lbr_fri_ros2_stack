@@ -191,18 +191,7 @@ class LBRBringUp:
         if self.sim_:
             return self.add_gazebo()
         else:
-            return self.add_lbr_app()
-
-    def add_lbr_app(self, package: str = "lbr_fri_ros2", executable: str = "lbr_app"):
-        self.lbr_app_node_ = Node(
-            package=package,
-            executable=executable,
-            emulate_tty=True,
-            output="screen",
-            parameters=[self.robot_description],
-        )
-        self.launch_description_.add_action(self.lbr_app_node_)
-        return self
+            return self
 
     def add_gazebo(self):
         gazebo = IncludeLaunchDescription(
