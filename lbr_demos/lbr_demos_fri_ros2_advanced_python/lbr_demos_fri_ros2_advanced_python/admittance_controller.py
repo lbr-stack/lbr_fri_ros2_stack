@@ -40,7 +40,7 @@ class AdmittanceController(object):
 
         self.jacobian_ = self.chain_.jacobian(self.q_)
 
-        self.jacobian_inv_ = np.linalg.pinv(self.jacobian_, rcond=0.05)
+        self.jacobian_inv_ = np.linalg.pinv(self.jacobian_, rcond=0.2)
         self.f_ext_ = self.jacobian_inv_.T @ self.tau_ext_
 
         self.f_ext_ = np.where(
