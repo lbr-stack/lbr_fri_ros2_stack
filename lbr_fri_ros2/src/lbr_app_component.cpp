@@ -2,13 +2,13 @@
 
 namespace lbr_fri_ros2 {
 LBRAppComponent::LBRAppComponent(const rclcpp::NodeOptions &options) {
-  node_ = std::make_shared<rclcpp::Node>("lbr_component", options);
-  lbr_app_ = std::make_unique<lbr_fri_ros2::LBRApp>(node_);
+  lbr_node_ = std::make_shared<rclcpp::Node>("lbr", options);
+  lbr_app_ = std::make_unique<lbr_fri_ros2::LBRApp>(lbr_node_);
 }
 
 rclcpp::node_interfaces::NodeBaseInterface::SharedPtr
 LBRAppComponent::get_node_base_interface() const {
-  return node_->get_node_base_interface();
+  return lbr_node_->get_node_base_interface();
 }
 } // end of namespace lbr_fri_ros2
 

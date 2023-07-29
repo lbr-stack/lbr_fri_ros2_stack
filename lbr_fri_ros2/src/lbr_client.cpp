@@ -115,10 +115,10 @@ void LBRClient::init_topics_() {
 
 void LBRClient::declare_parameters_() {
   if (!node_->has_parameter("lbr_command_topic")) {
-    node_->declare_parameter<std::string>("lbr_command_topic", "/lbr_command");
+    node_->declare_parameter<std::string>("lbr_command_topic", "~/command");
   }
   if (!node_->has_parameter("lbr_state_topic")) {
-    node_->declare_parameter<std::string>("lbr_state_topic", "/lbr_state");
+    node_->declare_parameter<std::string>("lbr_state_topic", "~/state");
   }
   if (!node_->has_parameter("smoothing")) {
     node_->declare_parameter<double>("smoothing", 0.99);

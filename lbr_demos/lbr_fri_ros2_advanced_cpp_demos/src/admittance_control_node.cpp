@@ -23,11 +23,11 @@ public:
         this->get_parameter("end_effector_link").as_string());
 
     lbr_command_pub_ = create_publisher<lbr_fri_msgs::msg::LBRCommand>(
-        "/lbr_command", rclcpp::QoS(1)
+        "/lbr/command", rclcpp::QoS(1)
                             .reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE)
                             .deadline(std::chrono::milliseconds(10)));
     lbr_state_sub_ = create_subscription<lbr_fri_msgs::msg::LBRState>(
-        "/lbr_state",
+        "/lbr/state",
         rclcpp::QoS(1)
             .reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE)
             .deadline(std::chrono::milliseconds(10)),
@@ -73,17 +73,17 @@ protected:
 int main(int argc, char **argv) {
   rclcpp::init(argc, argv);
 
-  auto executor = std::make_shared<rclcpp::executors::SingleThreadedExecutor>();
+  auto executor = std::make_shared<rclcpp::executors::StaticSingleThreadedExecutor>();
 
-  auto lbr_app_node = std::make_shared<rclcpp::Node>(
-      "lbr_app", rclcpp::NodeOptions().use_intra_process_comms(true));
+  auto lbr_node =
+      std::make_shared<rclcpp::Node>("lbr", rclcpp::NodeOptions().use_intra_process_comms(true));
 
-  auto lbr_app = lbr_fri_ros2::LBRApp(lbr_app_node);
+  auto lbr_app = lbr_fri_ros2::LBRApp(lbr_node);
 
   auto admittance_control_node = std::make_shared<AdmittanceControlNode>(
       "admittance_control_node", rclcpp::NodeOptions().use_intra_process_comms(true));
 
-  executor->add_node(lbr_app_node);
+  executor->add_node(lbr_node);
   executor->add_node(admittance_control_node);
   executor->spin();
 

@@ -30,8 +30,8 @@ public:
 
 protected:
   std::unique_ptr<lbr_fri_ros2::LBRApp>
-      lbr_app_;                  /** #LBRApp for communicating with the hardware.<*/
-  rclcpp::Node::SharedPtr node_; /** Node for communicating with ROS.<*/
+      lbr_app_;                      /** #LBRApp for communicating with the hardware.<*/
+  rclcpp::Node::SharedPtr lbr_node_; /** Node for communicating with ROS.<*/
 };
 } // end of namespace lbr_fri_ros2
 #endif // LBR_FRI_ROS2__LBR_COMPONENT_HPP_

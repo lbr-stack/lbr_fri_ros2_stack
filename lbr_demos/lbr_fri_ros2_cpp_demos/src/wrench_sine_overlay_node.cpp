@@ -23,13 +23,13 @@ public:
       : Node(node_name), phase_x_(0.), phase_y_(0.) {
     // create publisher to /lbr_command
     lbr_command_pub_ = this->create_publisher<lbr_fri_msgs::msg::LBRCommand>(
-        "/lbr_command", rclcpp::QoS(1)
+        "/lbr/command", rclcpp::QoS(1)
                             .reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE)
                             .deadline(std::chrono::milliseconds(10)));
 
     // create subscription to /lbr_state
     lbr_state_sub_ = this->create_subscription<lbr_fri_msgs::msg::LBRState>(
-        "/lbr_state",
+        "/lbr/state",
         rclcpp::QoS(1)
             .reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE)
             .deadline(std::chrono::milliseconds(10)),

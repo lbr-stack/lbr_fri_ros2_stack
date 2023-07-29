@@ -30,7 +30,7 @@ class AdmittanceControlNode(Node):
         # publishers and subscribers
         self.lbr_state_sub_ = self.create_subscription(
             LBRState,
-            "/lbr_state",
+            "/lbr/state",
             self.on_lbr_state_,
             QoSProfile(
                 depth=1,
@@ -40,7 +40,7 @@ class AdmittanceControlNode(Node):
         )
         self.lbr_command_pub_ = self.create_publisher(
             LBRCommand,
-            "/lbr_command",
+            "/lbr/command",
             QoSProfile(
                 depth=1,
                 reliability=ReliabilityPolicy.RELIABLE,
