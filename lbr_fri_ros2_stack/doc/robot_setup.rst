@@ -81,7 +81,7 @@ Install Applications to the Robot
         .. thumbnail:: img/computer/06_station_setup_installation_synchronize.png
 
 .. note::
-    This procedure installs KUKA's FRI example applications ``LBRJointSineOverlay``, ``LBRTorqueSineOverlay`` and ``LBRWrenchSineOverlay`` to the controller. They can already be used with :ref:`LBR FRI ROS 2 Demos`. To use the full :ref:`LBR FRI ROS 2 Stack`, further install the ``LBRServer`` application.
+    This procedure installs KUKA's FRI example applications ``LBRJointSineOverlay``, ``LBRTorqueSineOverlay`` and ``LBRWrenchSineOverlay`` to the controller. They can already be used with :ref:`LBR Demos FRI ROS 2`. To use the full :ref:`LBR FRI ROS 2 Stack`, further install the ``LBRServer`` application.
 
 6. Install the ``LBRServer`` application:
 
