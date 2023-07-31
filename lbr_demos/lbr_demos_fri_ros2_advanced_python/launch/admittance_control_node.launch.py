@@ -1,27 +1,15 @@
-import os
-
-import xacro
-from ament_index_python import get_package_share_directory
 from launch import LaunchContext, LaunchDescription
 from launch.actions import DeclareLaunchArgument, OpaqueFunction
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
 
+from lbr_description import description_factory
+
 
 def launch_setup(context: LaunchContext) -> LaunchDescription:
     model = LaunchConfiguration("model").perform(context)
 
-    robot_description = {
-        "robot_description": xacro.process(
-            os.path.join(
-                get_package_share_directory("lbr_description"),
-                "urdf",
-                model,
-                f"{model}.urdf.xacro",
-            ),
-            mappings={"sim": "false"},
-        )
-    }
+    robot_description = description_factory(model=model, sim="false")
 
     admittance_control_node = Node(
         package="lbr_demos_fri_ros2_advanced_python",
