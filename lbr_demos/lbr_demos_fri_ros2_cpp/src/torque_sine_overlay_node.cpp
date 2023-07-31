@@ -18,13 +18,13 @@ class TorqueSineOverlayNode : public rclcpp::Node {
 
 public:
   TorqueSineOverlayNode(const std::string &node_name) : Node(node_name), phase_(0.) {
-    // create publisher to /lbr_command
+    // create publisher to /lbr/command
     lbr_command_pub_ = this->create_publisher<lbr_fri_msgs::msg::LBRCommand>(
         "/lbr/command", rclcpp::QoS(1)
                             .reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE)
                             .deadline(std::chrono::milliseconds(10)));
 
-    // create subscription to /lbr_state
+    // create subscription to /lbr/state
     lbr_state_sub_ = this->create_subscription<lbr_fri_msgs::msg::LBRState>(
         "/lbr/state",
         rclcpp::QoS(1)

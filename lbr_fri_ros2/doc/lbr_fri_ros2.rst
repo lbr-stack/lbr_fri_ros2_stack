@@ -26,8 +26,8 @@ This launch file does 2 things:
     - Runs the :lbr_fri_ros2:`LBRAppComponentLBRApp <lbr_fri_ros2::LBRAppComponent>`, which has instance of :lbr_fri_ros2:`LBRApp <lbr_fri_ros2::LBRApp>` to
         
         - Create services to connect to / disconnect from the robot
-        - Publish robot states to ``/lbr_state`` via :lbr_fri_ros2:`LBRClient <lbr_fri_ros2::LBRClient>`
-        - Read robot commands from ``/lbr_command`` via :lbr_fri_ros2:`LBRClient <lbr_fri_ros2::LBRClient>`
+        - Publish robot states to ``~/state`` via :lbr_fri_ros2:`LBRClient <lbr_fri_ros2::LBRClient>`
+        - Read robot commands from ``~/command`` via :lbr_fri_ros2:`LBRClient <lbr_fri_ros2::LBRClient>`
 
 See :ref:`LBR Demos` for more examples.
 

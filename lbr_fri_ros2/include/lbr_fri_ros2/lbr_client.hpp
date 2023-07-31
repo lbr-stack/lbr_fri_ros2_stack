@@ -125,10 +125,9 @@ protected:
   lbr_fri_msgs::msg::LBRCommand lbr_command_; /**< Command buffer.*/
   lbr_fri_msgs::msg::LBRState lbr_state_;     /**< State buffer.*/
 
-  std::string
-      lbr_command_topic_; /**< Command topic to be subscribed from, defaults to /lbr_command.*/
-  std::string lbr_state_topic_; /**< State topic to be published to, defaults to /lbr_state.*/
-  double smoothing_;            /**< Exponential smoothing factor for position commands.*/
+  std::string lbr_command_topic_; /**< Command topic to be subscribed from, defaults to ~/command.*/
+  std::string lbr_state_topic_;   /**< State topic to be published to, defaults to ~/state.*/
+  double smoothing_;              /**< Exponential smoothing factor for position commands.*/
 
   std::unique_ptr<LBRCommandGuard>
       lbr_command_guard_; /**< Validating commands prior to writing them to #robotCommand.*/
