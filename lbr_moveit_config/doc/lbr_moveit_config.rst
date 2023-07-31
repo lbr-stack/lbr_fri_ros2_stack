@@ -20,34 +20,75 @@ This procedure applies to all LBRs: ``iiwa7``, ``iiwa14``, ``med7``, and ``med14
 
     ros2 launch moveit_setup_assistant setup_assistant.launch.py
 
-4. .. dropdown:: Select the target ``xacro``, e.g. ``lbr_fri_ros2_stack_ws/install/lbr_description/share/lbr_description/urdf/iiwa7/iiwa7.urdf.xacro``, and ``Load Files``
+1. .. dropdown:: ``Load Files``: E.g. ``lbr_fri_ros2_stack_ws/install/lbr_description/share/lbr_description/urdf/iiwa7/iiwa7.urdf.xacro``
 
-    .. thumbnail:: img/moveit_setup_assistant.png
+    .. thumbnail:: img/00_start_screen.png
 
-5. Configure to your needs. Some configurations we used:
+- .. dropdown:: ``Generate Collision Matrix``: Generate
 
-- ``Robot Poses``: Add ``zero`` and ``transport``
-- ``MoveIt Controller``: ``Auto Add FollowJointsTrajectory``
-- ``Perception``: select ``None``
-- ``Launch``: Unselect all but ``MoveGroup Launch``, ``RViz Launch and Config``, and ``Setup Assistant Launch``
-- ``Configuration Files``: ``browse`` output folder and ``Generate Package``
+    .. thumbnail:: img/01_self_collision.png
 
-6. Some manual changes are required:
+- .. dropdown:: ``Virtual Joints``: Skip
 
-has_acceleration_limits: true
-max_acceleration: 0 to float
+    .. thumbnail:: img/02_virtual_joints.png
 
-arm_controller -> position_trajectory_controller
+- .. dropdown:: ``Planning Groups``: Add 
 
-generate_demo_launch: 
+    .. thumbnail:: img/03_planning_groups.png
 
-        {"use_sim_time": True}
-        # additional_env={"DISPLAY": ":0"},
+  - .. dropdown:: ``Planning Groups``: Select ``Kinematic Solver`` and add ``Kinematic Chain``
 
+      .. thumbnail:: img/03_define_planning_groups.png
 
-- Since ``URDF`` doesn't support acceleration limits, manually add acceleration limits in ``iiwa7_moveit_config/config/joint_limits.yaml``
-- In the ``move_group.launch.py`` use the robot descriotion from ``lbr_description``
-- In ``iiwa7_moveit_config/config/moveit_controllers.yaml`` change the ``arm_controller`` to ``position_trajectory_controller`` as in ``lbr_bringup/config/lbr_controllers.yml`` 
+  - .. dropdown:: ``Kinematic Chain``: Configure
+
+      .. thumbnail:: img/03_define_planning_groups_kinematic_chain.png
+
+- .. dropdown:: ``Robot Poses``: We add ``zero`` and ``transport``
+
+    .. thumbnail:: img/04_robot_poses.png
+
+- .. dropdown:: ``End Effectors``: Skip (you might want to add one)
+
+    .. thumbnail:: img/05_end_effectors.png
+
+- .. dropdown:: ``Passive Joints``: Skip
+
+    .. thumbnail:: img/06_passive_joints.png
+
+- .. dropdown:: ``ROS 2 Control URDF``: Skip (defined in ``lbr_description``)
+
+    .. thumbnail:: img/07_ros2_control.png
+
+- .. dropdown:: ``ROS 2 Controllers``: Skip (defined in ``lbr_bringup``)
+
+      .. thumbnail:: img/08_ros2_controllers.png
+
+- .. dropdown:: ``MoveIt Controllers``: ``Auto Add FollowJointsTrajectory``
+
+    .. thumbnail:: img/09_moveit_controllers.png
+
+- .. dropdown:: ``Perception``: Select ``None``  (you might want to add one)
+
+    .. thumbnail:: img/10_perception.png
+
+- .. dropdown:: ``Launch Files``: Only add essential
+
+    .. thumbnail:: img/11_launch_files.png
+
+- .. dropdown:: ``Author Information``: Add
+
+    .. thumbnail:: img/12_author_information.png
+
+- .. dropdown:: ``Configuration Files``:
+
+    .. thumbnail:: img/13_configuration_files.png
+
+2. Manual changes:
+
+- Manually add acceleration limits in `joint_limits.yaml <https://github.com/KCL-BMEIS/lbr_fri_ros2_stack/blob/humble/lbr_moveit_config/iiwa7_moveit_config/config/joint_limits.yaml>`_ (not supported in ``URDF``)
+- In the `move_group.launch.py <https://github.com/KCL-BMEIS/lbr_fri_ros2_stack/blob/humble/lbr_moveit_config/iiwa7_moveit_config/launch/move_group.launch.py>`_ use the robot descriotion from ``lbr_description``
+- In `moveit_controllers.yaml <https://github.com/KCL-BMEIS/lbr_fri_ros2_stack/blob/humble/lbr_moveit_config/iiwa7_moveit_config/config/moveit_controllers.yaml>`_ change the ``arm_controller`` to ``position_trajectory_controller``, as in `lbr_controllers.yml <https://github.com/KCL-BMEIS/lbr_fri_ros2_stack/blob/humble/lbr_bringup/config/lbr_controllers.yml>`_ 
 
 Update MoveIt Configuration 
 ---------------------------
