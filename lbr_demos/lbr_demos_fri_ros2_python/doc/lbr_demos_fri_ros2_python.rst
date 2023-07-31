@@ -10,11 +10,11 @@ Collection of basic usage examples for the ``lbr_fri_ros2`` package through Pyth
 
 Joint Sine Overlay
 ------------------
-1. .. dropdown:: Launch the ``LBRJointSineOverlay`` application on the ``KUKA smartPAD``
+#. .. dropdown:: Launch the ``LBRJointSineOverlay`` application on the ``KUKA smartPAD``
 
     .. thumbnail:: ../../doc/img/applications_joint_sine_overlay.png
 
-2. Launch the `joint_sine_overlay.launch.py <https://github.com/KCL-BMEIS/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_demos_fri_ros2_python/launch/joint_sine_overlay.launch.py>`_ launch file:
+#. Launch the `joint_sine_overlay.launch.py <https://github.com/KCL-BMEIS/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_demos_fri_ros2_python/launch/joint_sine_overlay.launch.py>`_ launch file:
 
 .. code-block:: bash
 
@@ -24,11 +24,11 @@ The robot will move to the initial position via position control, then execute a
 
 Torque Sine Overlay
 -------------------
-1. .. dropdown:: Launch the ``LBRTorqueSineOverlay`` application on the ``KUKA smartPAD``
+#. .. dropdown:: Launch the ``LBRTorqueSineOverlay`` application on the ``KUKA smartPAD``
 
     .. thumbnail:: ../../doc/img/applications_torque_sine_overlay.png
 
-2. Launch the `torque_sine_overlay.launch.py <https://github.com/KCL-BMEIS/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_demos_fri_ros2_python/launch/torque_sine_overlay.launch.py>`_ launch file:
+#. Launch the `torque_sine_overlay.launch.py <https://github.com/KCL-BMEIS/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_demos_fri_ros2_python/launch/torque_sine_overlay.launch.py>`_ launch file:
 
 .. code-block:: bash
 
@@ -38,11 +38,11 @@ The robot will move to the initial position via joint impedance control. A sinus
 
 Wrench Sine Overlay
 -------------------
-1. .. dropdown:: Launch the ``LBRWrenchSineOverlay`` application on the ``KUKA smartPAD``
+#. .. dropdown:: Launch the ``LBRWrenchSineOverlay`` application on the ``KUKA smartPAD``
 
     .. thumbnail:: ../../doc/img/applications_wrench_sine_overlay.png
 
-2. Launch the `wrench_sine_overlay.launch.py <https://github.com/KCL-BMEIS/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_demos_fri_ros2_python/launch/wrench_sine_overlay.launch.py>`_ launch file:
+#. Launch the `wrench_sine_overlay.launch.py <https://github.com/KCL-BMEIS/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_demos_fri_ros2_python/launch/wrench_sine_overlay.launch.py>`_ launch file:
 
 .. code-block:: bash
 

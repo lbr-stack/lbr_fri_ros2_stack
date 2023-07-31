@@ -13,8 +13,8 @@ Collection of packages for controlling the KUKA LBR iiwa / med through ROS 2.
 
 Installation
 ------------
-1. Install `colcon <https://docs.ros.org/en/humble/Tutorials/Colcon-Tutorial.html#install-colcon>`_, `rosdep <https://docs.ros.org/en/crystal/Installation/Linux-Install-Binary.html#installing-and-initializing-rosdep>`_ and `vcstool <https://github.com/dirk-thomas/vcstool#how-to-install-vcstool>`_.
-2. Install the ``lbr_fri_ros2_stack``:
+#. Install `colcon <https://docs.ros.org/en/humble/Tutorials/Colcon-Tutorial.html#install-colcon>`_, `rosdep <https://docs.ros.org/en/crystal/Installation/Linux-Install-Binary.html#installing-and-initializing-rosdep>`_ and `vcstool <https://github.com/dirk-thomas/vcstool#how-to-install-vcstool>`_.
+#. Install the ``lbr_fri_ros2_stack``:
 
 .. code-block:: bash
 
@@ -33,7 +33,7 @@ Installation
 
 Usage
 -----
-1. Launch the simulation / real robot:
+#. Launch the simulation / real robot:
 
 .. code-block:: bash
 
@@ -42,4 +42,4 @@ Usage
 
 For the real robot, set ``sim:=false`` and run the ``LBRServer`` on the ``KUKA smartPAD``, see :ref:`Install Applications to the Robot`.
 
-2. Checkout demos, see :ref:`LBR Demos`.
+#. Checkout demos, see :ref:`LBR Demos`.

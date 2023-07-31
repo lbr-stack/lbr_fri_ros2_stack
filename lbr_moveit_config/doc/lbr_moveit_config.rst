@@ -6,98 +6,100 @@ Generate MoveIt Configuration
 -----------------------------
 This procedure applies to all LBRs: ``iiwa7``, ``iiwa14``, ``med7``, and ``med14``.
 
-1. Make sure ``MoveIt 2`` is installed.
+#. Make sure ``MoveIt 2`` is installed.
 
 .. code-block:: bash
 
     sudo apt install ros-$ROS_DISTRO-moveit*
 
-2. Make sure the ``lbr_fri_ros2_stack`` is installed and **sourced**, see :ref:`Installation`.
+#. Make sure the ``lbr_fri_ros2_stack`` is installed and **sourced**, see :ref:`Installation`.
 
-3. Launch the setup assistant
+#. Launch the setup assistant
 
 .. code-block:: bash
 
     ros2 launch moveit_setup_assistant setup_assistant.launch.py
 
-1. .. dropdown:: ``Load Files``: E.g. ``lbr_fri_ros2_stack_ws/install/lbr_description/share/lbr_description/urdf/iiwa7/iiwa7.urdf.xacro``
+#. .. dropdown:: ``Load Files``: E.g. ``lbr_fri_ros2_stack_ws/install/lbr_description/share/lbr_description/urdf/iiwa7/iiwa7.urdf.xacro``
 
     .. thumbnail:: img/00_start_screen.png
 
-- .. dropdown:: ``Generate Collision Matrix``: Generate
+#. .. dropdown:: ``Generate Collision Matrix``: Generate
 
     .. thumbnail:: img/01_self_collision.png
 
-- .. dropdown:: ``Virtual Joints``: Skip
+#. .. dropdown:: ``Virtual Joints``: Skip
 
     .. thumbnail:: img/02_virtual_joints.png
 
-- .. dropdown:: ``Planning Groups``: Add 
+#. .. dropdown:: ``Planning Groups``: Add 
 
     .. thumbnail:: img/03_planning_groups.png
 
-  - .. dropdown:: ``Planning Groups``: Select ``Kinematic Solver`` and add ``Kinematic Chain``
+  #. .. dropdown:: ``Planning Groups``: Select ``Kinematic Solver`` and add ``Kinematic Chain``
 
-      .. thumbnail:: img/03_define_planning_groups.png
+        .. thumbnail:: img/03_define_planning_groups.png
 
-  - .. dropdown:: ``Kinematic Chain``: Configure
+  #. .. dropdown:: ``Kinematic Chain``: Configure
 
-      .. thumbnail:: img/03_define_planning_groups_kinematic_chain.png
+        .. thumbnail:: img/03_define_planning_groups_kinematic_chain.png
 
-- .. dropdown:: ``Robot Poses``: We add ``zero`` and ``transport``
+#. .. dropdown:: ``Robot Poses``: We add ``zero`` and ``transport``
 
     .. thumbnail:: img/04_robot_poses.png
 
-- .. dropdown:: ``End Effectors``: Skip (you might want to add one)
+#. .. dropdown:: ``End Effectors``: Skip (you might want to add one)
 
     .. thumbnail:: img/05_end_effectors.png
 
-- .. dropdown:: ``Passive Joints``: Skip
+#. .. dropdown:: ``Passive Joints``: Skip
 
     .. thumbnail:: img/06_passive_joints.png
 
-- .. dropdown:: ``ROS 2 Control URDF``: Skip (defined in ``lbr_description``)
+#. .. dropdown:: ``ROS 2 Control URDF``: Skip (defined in ``lbr_description``)
 
     .. thumbnail:: img/07_ros2_control.png
 
-- .. dropdown:: ``ROS 2 Controllers``: Skip (defined in ``lbr_bringup``)
+#. .. dropdown:: ``ROS 2 Controllers``: Skip (defined in ``lbr_bringup``)
 
-      .. thumbnail:: img/08_ros2_controllers.png
+    .. thumbnail:: img/08_ros2_controllers.png
 
-- .. dropdown:: ``MoveIt Controllers``: ``Auto Add FollowJointsTrajectory``
+#. .. dropdown:: ``MoveIt Controllers``: ``Auto Add FollowJointsTrajectory``
 
     .. thumbnail:: img/09_moveit_controllers.png
 
-- .. dropdown:: ``Perception``: Select ``None``  (you might want to add one)
+#. .. dropdown:: ``Perception``: Select ``None``  (you might want to add one)
 
     .. thumbnail:: img/10_perception.png
 
-- .. dropdown:: ``Launch Files``: Only add essential
+#. .. dropdown:: ``Launch Files``: Only add essential
 
     .. thumbnail:: img/11_launch_files.png
 
-- .. dropdown:: ``Author Information``: Add
+#. .. dropdown:: ``Author Information``: Add
 
     .. thumbnail:: img/12_author_information.png
 
-- .. dropdown:: ``Configuration Files``:
+#. .. dropdown:: ``Configuration Files``:
 
     .. thumbnail:: img/13_configuration_files.png
 
-2. Manual changes:
+#. Manual changes:
 
-- Manually add acceleration limits in `joint_limits.yaml <https://github.com/KCL-BMEIS/lbr_fri_ros2_stack/blob/humble/lbr_moveit_config/iiwa7_moveit_config/config/joint_limits.yaml>`_ (not supported in ``URDF``)
-- In the `move_group.launch.py <https://github.com/KCL-BMEIS/lbr_fri_ros2_stack/blob/humble/lbr_moveit_config/iiwa7_moveit_config/launch/move_group.launch.py>`_ use the robot descriotion from ``lbr_description``
-- In `moveit_controllers.yaml <https://github.com/KCL-BMEIS/lbr_fri_ros2_stack/blob/humble/lbr_moveit_config/iiwa7_moveit_config/config/moveit_controllers.yaml>`_ change the ``arm_controller`` to ``position_trajectory_controller``, as in `lbr_controllers.yml <https://github.com/KCL-BMEIS/lbr_fri_ros2_stack/blob/humble/lbr_bringup/config/lbr_controllers.yml>`_ 
+    #. Manually add acceleration limits in `joint_limits.yaml <https://github.com/KCL-BMEIS/lbr_fri_ros2_stack/blob/humble/lbr_moveit_config/iiwa7_moveit_config/config/joint_limits.yaml>`_ (not supported in ``URDF``)
+    
+    #. In the `move_group.launch.py <https://github.com/KCL-BMEIS/lbr_fri_ros2_stack/blob/humble/lbr_moveit_config/iiwa7_moveit_config/launch/move_group.launch.py>`_ use the robot descriotion from ``lbr_description``
+    
+    #. In `moveit_controllers.yaml <https://github.com/KCL-BMEIS/lbr_fri_ros2_stack/blob/humble/lbr_moveit_config/iiwa7_moveit_config/config/moveit_controllers.yaml>`_ change the ``arm_controller`` to ``position_trajectory_controller``, as in `lbr_controllers.yml <https://github.com/KCL-BMEIS/lbr_fri_ros2_stack/blob/humble/lbr_bringup/config/lbr_controllers.yml>`_ 
 
 Update MoveIt Configuration 
 ---------------------------
-1. Make sure the ``lbr_fri_ros2_stack`` is installed and sourced, see :ref:`Installation`.
+#. Make sure the ``lbr_fri_ros2_stack`` is installed and sourced, see :ref:`Installation`.
 
-2. Run the setup assistant for the existing configuration.
+#. Run the setup assistant for the existing configuration.
 
 .. code-block:: bash
 
     ros2 launch iiwa7_moveit_config  setup_assistant.launch.py # [iiwa7, iiwa14, med7, med14]
 
-3. Update and save the configurations, similar to :ref:`Generate MoveIt Configuration`.
+#. Update and save the configurations, similar to :ref:`Generate MoveIt Configuration`.

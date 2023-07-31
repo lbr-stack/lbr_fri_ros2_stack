@@ -10,11 +10,11 @@ Quick Start
 .. note::
     Make sure you followed the install instructions in :ref:`Robot Setup`.
 
-1. .. dropdown:: Launch the ``LBRServer`` application on the ``KUKA smartPAD``
+#. .. dropdown:: Launch the ``LBRServer`` application on the ``KUKA smartPAD``
 
     .. thumbnail:: ../../lbr_demos/doc/img/applications_lbr_server.png
 
-2. Run the :lbr_fri_ros2:`LBRApp <lbr_fri_ros2::LBRApp>` node via `lbr_app.launch.py <https://github.com/KCL-BMEIS/lbr_fri_ros2_stack/blob/humble/lbr_fri_ros2/launch/lbr_app.launch.py>`_:
+#. Run the :lbr_fri_ros2:`LBRApp <lbr_fri_ros2::LBRApp>` node via `lbr_app.launch.py <https://github.com/KCL-BMEIS/lbr_fri_ros2_stack/blob/humble/lbr_fri_ros2/launch/lbr_app.launch.py>`_:
 
 .. code-block:: bash
 
