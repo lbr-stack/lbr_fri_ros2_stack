@@ -1,17 +1,14 @@
-import os
-
-from ament_index_python import get_package_share_directory
 from launch import LaunchDescription
 from launch_ros.actions import Node
 
-from lbr_description import LBRDescriptionLaunch
+from lbr_description import LBRDescriptionMixin, RVizMixin
 
 
 def generate_launch_description() -> LaunchDescription:
     ld = LaunchDescription()
-    ld.add_action(LBRDescriptionLaunch.arg_model())
-    ld.add_action(LBRDescriptionLaunch.arg_robot_name())
-    robot_description = LBRDescriptionLaunch.description(sim=True)
+    ld.add_action(LBRDescriptionMixin.arg_model())
+    ld.add_action(LBRDescriptionMixin.arg_robot_name())
+    robot_description = LBRDescriptionMixin.description(sim=True)
     ld.add_action(
         Node(
             package="joint_state_publisher_gui",
@@ -27,15 +24,9 @@ def generate_launch_description() -> LaunchDescription:
         )
     )
     ld.add_action(
-        Node(
-            package="rviz2",
-            executable="rviz2",
-            arguments=[
-                "-d",
-                os.path.join(
-                    get_package_share_directory("lbr_description"), "config/config.rviz"
-                ),
-            ],
+        RVizMixin.node_rviz(
+            rviz_config_pkg="lbr_description",
+            rviz_config="config/config.rviz",
         )
     )
     return ld

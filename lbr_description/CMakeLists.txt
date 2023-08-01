@@ -18,7 +18,7 @@ install(
 
 ament_environment_hooks("${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}.dsv")
 
-# launch files
+# Launch mixins
 ament_python_install_package(${PROJECT_NAME})
 
 if(BUILD_TESTING)

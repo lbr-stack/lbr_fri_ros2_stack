@@ -84,7 +84,7 @@ install(
   DESTINATION share/${PROJECT_NAME}
 )
 
-# Launch files
+# Launch mixins
 ament_python_install_package(${PROJECT_NAME})
 
 ament_package()

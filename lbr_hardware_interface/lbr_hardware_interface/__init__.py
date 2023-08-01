@@ -1,1 +1,1 @@
-from .launch_util import LBRHardwareInterfaceLaunch
+from .launch_mixin import LBRHardwareInterfaceMixin

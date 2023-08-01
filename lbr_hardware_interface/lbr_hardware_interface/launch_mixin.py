@@ -6,7 +6,7 @@ from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 
 
-class LBRHardwareInterfaceLaunch:
+class LBRHardwareInterfaceMixin:
     @staticmethod
     def arg_ctrl_cfg_pkg() -> DeclareLaunchArgument:
         return DeclareLaunchArgument(
@@ -29,6 +29,7 @@ class LBRHardwareInterfaceLaunch:
             name="ctrl",
             default_value="position_trajectory_controller",
             description="Desired default controller. One of specified in ctrl_cfg.",
+            choices=["position_trajectory_controller", "forward_position_controller"],
         )
 
     @staticmethod
