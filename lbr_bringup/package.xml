@@ -8,7 +8,6 @@
   <license>MIT</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
-  <buildtool_depend>ament_cmake_python</buildtool_depend>
 
   <exec_depend>lbr_description</exec_depend>
   <exec_depend>lbr_fri_ros2</exec_depend>
