@@ -6,9 +6,11 @@ from lbr_hardware_interface import LBRHardwareInterfaceLaunch
 
 def generate_launch_description() -> LaunchDescription:
     ld = LaunchDescription()
-    ld = LBRDescriptionLaunch.add_model_arg(ld)
-    ld = LBRDescriptionLaunch.add_robot_name_arg(ld)
+    ld.add_action(LBRDescriptionLaunch.model_arg())
+    ld.add_action(LBRDescriptionLaunch.robot_name_arg())
     robot_description = LBRDescriptionLaunch.description(sim=False)
-    ld = LBRHardwareInterfaceLaunch.add_ctrl_args(ld)
-    ld = LBRHardwareInterfaceLaunch.add_nodes(ld, robot_description)
+    hw_args = LBRHardwareInterfaceLaunch.args_dict()
+    hw_nodes = LBRHardwareInterfaceLaunch.nodes_dict(robot_description)
+    {ld.add_action(hw_args[key]) for key in hw_args}
+    {ld.add_action(hw_nodes[key]) for key in hw_nodes}
     return ld

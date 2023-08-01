@@ -50,35 +50,26 @@ class LBRDescriptionLaunch:
         return robot_description
 
     @staticmethod
-    def add_model_arg(ld: LaunchDescription) -> LaunchDescription:
-        ld.add_action(
-            DeclareLaunchArgument(
-                name="model",
-                default_value="iiwa7",
-                description="The LBR model in use.",
-                choices=["iiwa7", "iiwa14", "med7", "med14"],
-            )
+    def model_arg() -> DeclareLaunchArgument:
+        return DeclareLaunchArgument(
+            name="model",
+            default_value="iiwa7",
+            description="The LBR model in use.",
+            choices=["iiwa7", "iiwa14", "med7", "med14"],
         )
-        return ld
 
     @staticmethod
-    def add_robot_name_arg(ld: LaunchDescription) -> LaunchDescription:
-        ld.add_action(
-            DeclareLaunchArgument(
-                name="robot_name",
-                default_value="lbr",
-                description="The robot's name.",
-            )
+    def robot_name_arg() -> DeclareLaunchArgument:
+        return DeclareLaunchArgument(
+            name="robot_name",
+            default_value="lbr",
+            description="The robot's name.",
         )
-        return ld
 
     @staticmethod
-    def add_sim_arg(ld: LaunchDescription) -> LaunchDescription:
-        ld.add_action(
-            DeclareLaunchArgument(
-                name="sim",
-                default_value="true",
-                description="Whether to use the simulation or not.",
-            )
+    def sim_arg() -> DeclareLaunchArgument:
+        return DeclareLaunchArgument(
+            name="sim",
+            default_value="true",
+            description="Whether to use the simulation or not.",
         )
-        return ld
