@@ -6,9 +6,9 @@ from lbr_description import LBRDescriptionLaunch
 
 def generate_launch_description() -> LaunchDescription:
     ld = LaunchDescription()
-    ld.add_action(LBRDescriptionLaunch.model_arg())
-    ld.add_action(LBRDescriptionLaunch.robot_name_arg())
-    robot_description = LBRDescriptionLaunch.descrption(sim=False)
+    ld.add_action(LBRDescriptionLaunch.arg_model())
+    ld.add_action(LBRDescriptionLaunch.arg_robot_name())
+    robot_description = LBRDescriptionLaunch.description(sim=False)
     ld.add_action(
         Node(
             package="lbr_demos_fri_ros2_advanced_python",

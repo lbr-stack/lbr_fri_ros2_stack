@@ -1,6 +1,5 @@
 from typing import Dict, Optional, Union
 
-from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument
 from launch.substitutions import (
     Command,
@@ -14,9 +13,9 @@ from launch_ros.substitutions import FindPackageShare
 class LBRDescriptionLaunch:
     @staticmethod
     def description(
-        model: Union[LaunchConfiguration, str] = None,
-        robot_name: Union[LaunchConfiguration, str] = None,
-        sim: Union[LaunchConfiguration, bool] = None,
+        model: Optional[Union[LaunchConfiguration, str]] = None,
+        robot_name: Optional[Union[LaunchConfiguration, str]] = None,
+        sim: Optional[Union[LaunchConfiguration, bool]] = None,
     ) -> Dict[str, str]:
         if model is None:
             model = LaunchConfiguration("model")
@@ -50,7 +49,7 @@ class LBRDescriptionLaunch:
         return robot_description
 
     @staticmethod
-    def model_arg() -> DeclareLaunchArgument:
+    def arg_model() -> DeclareLaunchArgument:
         return DeclareLaunchArgument(
             name="model",
             default_value="iiwa7",
@@ -59,7 +58,7 @@ class LBRDescriptionLaunch:
         )
 
     @staticmethod
-    def robot_name_arg() -> DeclareLaunchArgument:
+    def arg_robot_name() -> DeclareLaunchArgument:
         return DeclareLaunchArgument(
             name="robot_name",
             default_value="lbr",
@@ -67,7 +66,7 @@ class LBRDescriptionLaunch:
         )
 
     @staticmethod
-    def sim_arg() -> DeclareLaunchArgument:
+    def arg_sim() -> DeclareLaunchArgument:
         return DeclareLaunchArgument(
             name="sim",
             default_value="true",

@@ -6,11 +6,22 @@ from lbr_hardware_interface import LBRHardwareInterfaceLaunch
 
 def generate_launch_description() -> LaunchDescription:
     ld = LaunchDescription()
-    ld.add_action(LBRDescriptionLaunch.model_arg())
-    ld.add_action(LBRDescriptionLaunch.robot_name_arg())
+    ld.add_action(LBRDescriptionLaunch.arg_model())
+    ld.add_action(LBRDescriptionLaunch.arg_robot_name())
     robot_description = LBRDescriptionLaunch.description(sim=False)
-    hw_args = LBRHardwareInterfaceLaunch.args_dict()
-    hw_nodes = LBRHardwareInterfaceLaunch.nodes_dict(robot_description)
-    {ld.add_action(hw_args[key]) for key in hw_args}
-    {ld.add_action(hw_nodes[key]) for key in hw_nodes}
+    ld.add_action(LBRHardwareInterfaceLaunch.arg_ctrl_cfg_pkg())
+    ld.add_action(LBRHardwareInterfaceLaunch.arg_ctrl_cfg())
+    ld.add_action(LBRHardwareInterfaceLaunch.arg_ctrl())
+    ld.add_action(
+        LBRHardwareInterfaceLaunch.node_ros2_control(
+            robot_description=robot_description
+        )
+    )
+    ld.add_action(LBRHardwareInterfaceLaunch.node_joint_state_broadcaster())
+    ld.add_action(
+        LBRHardwareInterfaceLaunch.node_robot_state_publisher(
+            robot_description=robot_description
+        )
+    )
+    ld.add_action(LBRHardwareInterfaceLaunch.node_controller())
     return ld
