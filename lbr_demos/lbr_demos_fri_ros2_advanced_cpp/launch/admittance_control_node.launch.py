@@ -1,18 +1,21 @@
 from launch import LaunchDescription
 from launch_ros.actions import Node
 
-from lbr_description import LBRDescription
+from lbr_description import LBRDescriptionLaunch
 
 
 def generate_launch_description() -> LaunchDescription:
-    ld = LBRDescription(sim=False)
+    ld = LaunchDescription()
+    ld = LBRDescriptionLaunch.add_model_arg(ld)
+    ld = LBRDescriptionLaunch.add_robot_name_arg(ld)
+    robot_description = LBRDescriptionLaunch.description(sim=False)
 
     ld.add_action(
         Node(
             package="lbr_demos_fri_ros2_advanced_cpp",
             executable="admittance_control_node",
             output="screen",
-            parameters=[ld.robot_description],
+            parameters=[robot_description],
         )
     )
 

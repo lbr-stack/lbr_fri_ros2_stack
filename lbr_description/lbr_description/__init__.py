@@ -1,1 +1,1 @@
-from .lbr_description import LBRDescription
+from .launch_util import LBRDescriptionLaunch

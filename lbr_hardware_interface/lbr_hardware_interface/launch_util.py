@@ -1,28 +1,16 @@
+from typing import Dict
+
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument
 from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 
-from lbr_description import LBRDescription
 
-
-class LBRHardwareInterface(LaunchDescription):
-    def __init__(
-        self,
-    ) -> None:
-        super().__init__()
-
-        self._lbr_descrpition = LBRDescription(sim=False)
-
-        for entity in self._lbr_descrpition.entities:
-            self.add_entity(entity)
-
-        self._add_launch_arguments()
-        self._add_nodes()
-
-    def _add_launch_arguments(self) -> None:
-        self.add_action(
+class LBRHardwareInterfaceLaunch:
+    @staticmethod
+    def add_ctrl_args(ld: LaunchDescription) -> LaunchDescription:
+        ld.add_action(
             DeclareLaunchArgument(
                 name="ctrl_cfg_pkg",
                 default_value="lbr_hardware_interface",
@@ -30,7 +18,7 @@ class LBRHardwareInterface(LaunchDescription):
             )
         )
 
-        self.add_action(
+        ld.add_action(
             DeclareLaunchArgument(
                 name="ctrl_cfg",
                 default_value="config/lbr_controllers.yml",
@@ -38,17 +26,21 @@ class LBRHardwareInterface(LaunchDescription):
             )
         )
 
-        self.add_action(
+        ld.add_action(
             DeclareLaunchArgument(
                 name="ctrl",
                 default_value="position_trajectory_controller",
                 description="Desired default controller. One of specified in ctrl_cfg.",
             )
         )
+        return ld
 
-    def _add_nodes(self) -> None:
+    @staticmethod
+    def add_nodes(
+        ld: LaunchDescription, robot_description: Dict[str, str]
+    ) -> LaunchDescription:
         # controller manager
-        self.add_action(
+        ld.add_action(
             Node(
                 package="controller_manager",
                 executable="ros2_control_node",
@@ -60,13 +52,13 @@ class LBRHardwareInterface(LaunchDescription):
                             LaunchConfiguration("ctrl_cfg"),
                         ]
                     ),
-                    self._lbr_descrpition.robot_description,
+                    robot_description,
                 ],
             )
         )
 
         # joint state broadcaster
-        self.add_action(
+        ld.add_action(
             Node(
                 package="controller_manager",
                 executable="spawner",
@@ -80,7 +72,7 @@ class LBRHardwareInterface(LaunchDescription):
         )
 
         # controllers
-        self.add_action(
+        ld.add_action(
             Node(
                 package="controller_manager",
                 executable="spawner",
@@ -94,14 +86,16 @@ class LBRHardwareInterface(LaunchDescription):
         )
 
         # robot state publisher
-        self.add_action(
+        ld.add_action(
             Node(
                 package="robot_state_publisher",
                 executable="robot_state_publisher",
                 output="screen",
                 parameters=[
-                    self._lbr_descrpition.robot_description,
+                    robot_description,
                     {"use_sim_time": False},
                 ],
             )
         )
+
+        return ld
