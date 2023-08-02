@@ -38,7 +38,7 @@ Usage
 .. code-block:: bash
 
     source install/setup.bash
-    ros2 launch lbr_bringup lbr_bringup.launch.py model:=med7 sim:=true # model:=[iiwa7/iiwa14/med7/med14]
+    ros2 launch lbr_bringup bringup.launch.py model:=med7 sim:=true # model:=[iiwa7/iiwa14/med7/med14]
 
 For the real robot, set ``sim:=false`` and run the ``LBRServer`` on the ``KUKA smartPAD``, see :ref:`Install Applications to the Robot`.
 
