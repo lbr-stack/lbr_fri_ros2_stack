@@ -109,16 +109,16 @@ protected:
  * @brief Adds early stopping to LBRCommandGuard.
  *
  */
-class LBREarlyStopCommandGuard : public LBRCommandGuard {
+class LBRSafeStopCommandGuard : public LBRCommandGuard {
 public:
-  LBREarlyStopCommandGuard() = delete;
+  LBRSafeStopCommandGuard() = delete;
 
   /**
-   * @brief Construct a new LBREarlyStopCommandGuard object.
+   * @brief Construct a new LBRSafeStopCommandGuard object.
    *
    * @param robot_description String containing URDF robot rescription
    */
-  LBREarlyStopCommandGuard(const std::string &robot_description)
+  LBRSafeStopCommandGuard(const std::string &robot_description)
       : LBRCommandGuard(robot_description){};
 
 protected:
@@ -134,5 +134,15 @@ protected:
   virtual bool command_in_position_limits_(const lbr_fri_msgs::msg::LBRCommand &lbr_command,
                                            const KUKA::FRI::LBRState &lbr_state) const override;
 };
+
+/**
+ * @brief Creates an LBRCommandGuard object.
+ *
+ * @param[in] robot_description String containing URDF robot rescription
+ * @param[in] variant Which variant of LBRCommandGuard to create
+ * @return std::unique_ptr<LBRCommandGuard> Pointer to LBRCommandGuard object
+ */
+std::unique_ptr<LBRCommandGuard> lbr_command_guard_factory(const std::string &robot_description,
+                                                           const std::string &variant);
 } // end of namespace lbr_fri_ros2
 #endif // LBR_FRI_ROS2__LBR_COMMAND_GUARD_HPP_

@@ -18,7 +18,7 @@ LBRApp::LBRApp(const rclcpp::Node::SharedPtr node) : node_(node) {
       rmw_qos_profile_services_default);
 
   lbr_client_ = std::make_shared<LBRClient>(
-      node_, std::make_unique<LBREarlyStopCommandGuard>(robot_description_));
+      node_, lbr_command_guard_factory(robot_description_, command_guard_variant_));
   connection_ = std::make_unique<KUKA::FRI::UdpConnection>();
   app_ = std::make_unique<KUKA::FRI::ClientApplication>(*connection_, *lbr_client_);
 
@@ -41,6 +41,9 @@ void LBRApp::declare_parameters_() {
   if (!node_->has_parameter("robot_name")) {
     node_->declare_parameter<std::string>("robot_name", "lbr");
   }
+  if (!node_->has_parameter("command_guard_variant")) {
+    node_->declare_parameter<std::string>("command_guard_variant", "safe_stop");
+  }
 }
 
 void LBRApp::get_parameters_() {
@@ -57,6 +60,7 @@ void LBRApp::get_parameters_() {
     throw std::runtime_error("Failed to receive robot_description parameter.");
   }
   robot_name_ = node_->get_parameter("robot_name").as_string();
+  command_guard_variant_ = node_->get_parameter("command_guard_variant").as_string();
 }
 
 void LBRApp::on_app_connect_(const lbr_fri_msgs::srv::AppConnect::Request::SharedPtr request,

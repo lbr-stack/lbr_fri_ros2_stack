@@ -116,7 +116,7 @@ bool LBRCommandGuard::command_in_torque_limits_(const lbr_fri_msgs::msg::LBRComm
   return true;
 }
 
-bool LBREarlyStopCommandGuard::command_in_position_limits_(
+bool LBRSafeStopCommandGuard::command_in_position_limits_(
     const lbr_fri_msgs::msg::LBRCommand &lbr_command, const KUKA::FRI::LBRState &lbr_state) const {
   for (std::size_t i = 0; i < lbr_command.joint_position.size(); ++i) {
     if (lbr_command.joint_position[i] <
@@ -128,5 +128,16 @@ bool LBREarlyStopCommandGuard::command_in_position_limits_(
     }
   }
   return true;
+}
+
+std::unique_ptr<LBRCommandGuard> lbr_command_guard_factory(const std::string &robot_description,
+                                                           const std::string &variant) {
+  if (variant == "default") {
+    return std::make_unique<LBRCommandGuard>(robot_description);
+  }
+  if (variant == "safe_stop") {
+    return std::make_unique<LBRSafeStopCommandGuard>(robot_description);
+  }
+  throw std::runtime_error("Invalid LBRCommandGuard variant provided.");
 }
 } // end of namespace lbr_fri_ros2

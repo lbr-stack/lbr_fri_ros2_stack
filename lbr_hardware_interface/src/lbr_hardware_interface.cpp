@@ -29,6 +29,7 @@ LBRHardwareInterface::on_init(const hardware_interface::HardwareInfo &system_inf
                                              rclcpp::NodeOptions().use_intra_process_comms(true));
 
   lbr_node_->declare_parameter<std::string>("robot_name", robot_name_);
+  lbr_node_->declare_parameter<std::string>("command_guard_variant", "default");
   lbr_node_->declare_parameter<double>("smoothing", 0.8);
 
   lbr_app_ = std::make_unique<lbr_fri_ros2::LBRApp>(lbr_node_);
