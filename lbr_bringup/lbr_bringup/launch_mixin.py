@@ -1,14 +1,16 @@
-from typing import Dict, List, Union, Any
+import os
+from typing import Any, Dict, List
 
+from ament_index_python import get_package_share_directory
 from launch.actions import DeclareLaunchArgument
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
-from launch_ros.parameter_descriptions import ParameterFile, ParameterValue
-from moveit_configs_utils import MoveItConfigsBuilder, MoveItConfigs
-
+from launch_ros.parameter_descriptions import ParameterValue
+from moveit_configs_utils import MoveItConfigs, MoveItConfigsBuilder
 
 # NOTE TO SELF:
 # due to individual moveit configs, put mixins into lbr_bringup rather than lbr_moveit_config
+# most of the configs are taken from Python package moveit_configs_utils.launches
 
 
 class LBRMoveGroupMixin:
@@ -54,9 +56,6 @@ class LBRMoveGroupMixin:
     def moveit_configs_builder(
         robot_name: str, package_name: str
     ) -> MoveItConfigsBuilder:
-        import os
-        from ament_index_python import get_package_share_directory
-
         return MoveItConfigsBuilder(
             robot_name=robot_name,
             package_name=package_name,
