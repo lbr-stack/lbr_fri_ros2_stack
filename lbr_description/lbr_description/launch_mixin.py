@@ -50,7 +50,7 @@ class GazeboMixin:
 
 class LBRDescriptionMixin:
     @staticmethod
-    def description(
+    def param_robot_description(
         model: Optional[Union[LaunchConfiguration, str]] = None,
         robot_name: Optional[Union[LaunchConfiguration, str]] = None,
         sim: Optional[Union[LaunchConfiguration, bool]] = None,
@@ -110,6 +110,10 @@ class LBRDescriptionMixin:
             default_value="true",
             description="Whether to use the simulation or not.",
         )
+
+    @staticmethod
+    def param_robot_name() -> Dict[str, LaunchConfiguration]:
+        return {"robot_name": LaunchConfiguration("robot_name")}
 
 
 class RVizMixin:

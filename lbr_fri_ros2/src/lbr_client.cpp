@@ -86,10 +86,10 @@ void LBRClient::init_topics_() {
     };
 
     lbr_state_pub_ = node_->create_publisher<lbr_fri_msgs::msg::LBRState>(
-        lbr_state_topic_, rclcpp::QoS(1)
-                              .deadline(std::chrono::milliseconds(
-                                  static_cast<int64_t>(robotState().getSampleTime() * 1e3)))
-                              .reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE));
+        robot_name_ + "/state", rclcpp::QoS(1)
+                                    .deadline(std::chrono::milliseconds(
+                                        static_cast<int64_t>(robotState().getSampleTime() * 1e3)))
+                                    .reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE));
   }
 
   if (!lbr_command_sub_) {
@@ -103,7 +103,7 @@ void LBRClient::init_topics_() {
     };
 
     lbr_command_sub_ = node_->create_subscription<lbr_fri_msgs::msg::LBRCommand>(
-        lbr_command_topic_,
+        robot_name_ + "/command",
         rclcpp::QoS(1)
             .deadline(
                 std::chrono::milliseconds(static_cast<int64_t>(robotState().getSampleTime() * 1e3)))
@@ -114,11 +114,8 @@ void LBRClient::init_topics_() {
 }
 
 void LBRClient::declare_parameters_() {
-  if (!node_->has_parameter("lbr_command_topic")) {
-    node_->declare_parameter<std::string>("lbr_command_topic", "~/command");
-  }
-  if (!node_->has_parameter("lbr_state_topic")) {
-    node_->declare_parameter<std::string>("lbr_state_topic", "~/state");
+  if (!node_->has_parameter("robot_name")) {
+    node_->declare_parameter<std::string>("robot_name", "lbr");
   }
   if (!node_->has_parameter("smoothing")) {
     node_->declare_parameter<double>("smoothing", 0.99);
@@ -126,9 +123,8 @@ void LBRClient::declare_parameters_() {
 }
 
 void LBRClient::get_parameters_() {
+  robot_name_ = node_->get_parameter("robot_name").as_string();
   smoothing_ = node_->get_parameter("smoothing").as_double();
-  lbr_command_topic_ = node_->get_parameter("lbr_command_topic").as_string();
-  lbr_state_topic_ = node_->get_parameter("lbr_state_topic").as_string();
 }
 
 void LBRClient::pub_lbr_state_() {

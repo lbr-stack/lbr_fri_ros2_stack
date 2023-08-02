@@ -14,7 +14,7 @@ from lbr_hardware_interface import LBRHardwareInterfaceMixin
 def launch_setup(context: LaunchContext) -> List[LaunchDescriptionEntity]:
     ld = LaunchDescription()
 
-    robot_description = LBRDescriptionMixin.description(sim=True)
+    robot_description = LBRDescriptionMixin.param_robot_description(sim=True)
     ld.add_action(GazeboMixin.include_gazebo())  # Gazebo has its own controller manager
     spawn_entity = GazeboMixin.node_spawn_entity()
     ld.add_action(spawn_entity)

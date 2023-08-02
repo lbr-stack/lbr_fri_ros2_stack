@@ -14,7 +14,7 @@ from lbr_hardware_interface import LBRHardwareInterfaceMixin
 def launch_setup(context: LaunchContext) -> List[LaunchDescriptionEntity]:
     ld = LaunchDescription()
 
-    robot_description = LBRDescriptionMixin.description(sim=False)
+    robot_description = LBRDescriptionMixin.param_robot_description(sim=False)
     ros2_control_node = LBRHardwareInterfaceMixin.node_ros2_control(
         robot_description=robot_description
     )
