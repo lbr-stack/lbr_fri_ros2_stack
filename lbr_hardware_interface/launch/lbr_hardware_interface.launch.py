@@ -1,4 +1,6 @@
 from launch import LaunchDescription
+from launch.actions import RegisterEventHandler
+from launch.event_handlers import OnProcessStart
 
 from lbr_description import LBRDescriptionMixin
 from lbr_hardware_interface import LBRHardwareInterfaceMixin
@@ -16,14 +18,21 @@ def generate_launch_description() -> LaunchDescription:
     ld.add_action(LBRHardwareInterface.arg_ctrl_cfg_pkg())
     ld.add_action(LBRHardwareInterface.arg_ctrl_cfg())
     ld.add_action(LBRHardwareInterface.arg_ctrl())
-    ld.add_action(
-        LBRHardwareInterface.node_ros2_control(robot_description=robot_description)
+    ros2_control_node = LBRHardwareInterface.node_ros2_control(
+        robot_description=robot_description
     )
-    ld.add_action(LBRHardwareInterface.node_joint_state_broadcaster())
-    ld.add_action(
-        LBRHardwareInterface.node_robot_state_publisher(
-            robot_description=robot_description
+    ld.add_action(ros2_control_node)
+    joint_state_broadcaster = LBRHardwareInterface.node_joint_state_broadcaster()
+    controller = LBRHardwareInterface.node_controller()
+    controller_event_handler = RegisterEventHandler(
+        OnProcessStart(
+            target_action=ros2_control_node,
+            on_start=[joint_state_broadcaster, controller],
         )
     )
-    ld.add_action(LBRHardwareInterface.node_controller())
+    ld.add_action(controller_event_handler)
+    robot_state_publisher = LBRHardwareInterface.node_robot_state_publisher(
+        robot_description=robot_description
+    )
+    ld.add_action(robot_state_publisher)
     return ld
