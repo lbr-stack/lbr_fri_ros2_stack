@@ -9,5 +9,13 @@ def generate_launch_description() -> LaunchDescription:
     ld.add_action(LBRDescriptionMixin.arg_model())
     ld.add_action(LBRDescriptionMixin.arg_robot_name())
     robot_description = LBRDescriptionMixin.description(sim=False)
-    ld.add_action(LBRFRIROS2Mixin.node_lbr_app(robot_description=robot_description))
+    ld.add_action(LBRFRIROS2Mixin.arg_port_id())
+    ld.add_action(
+        LBRFRIROS2Mixin.node_lbr_app(
+            parameters=[
+                robot_description,
+                LBRFRIROS2Mixin.param_port_id(),
+            ]
+        )
+    )
     return ld
