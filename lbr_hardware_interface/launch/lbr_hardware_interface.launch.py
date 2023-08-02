@@ -14,7 +14,7 @@ def generate_launch_description() -> LaunchDescription:
     ld = LaunchDescription()
     ld.add_action(LBRHardwareInterface.arg_model())
     ld.add_action(LBRHardwareInterface.arg_robot_name())
-    robot_description = LBRHardwareInterface.description(sim=False)
+    robot_description = LBRHardwareInterface.param_robot_description(sim=False)
     ld.add_action(LBRHardwareInterface.arg_ctrl_cfg_pkg())
     ld.add_action(LBRHardwareInterface.arg_ctrl_cfg())
     ld.add_action(LBRHardwareInterface.arg_ctrl())

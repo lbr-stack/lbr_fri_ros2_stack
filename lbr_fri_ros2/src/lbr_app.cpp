@@ -29,10 +29,18 @@ LBRApp::LBRApp(const rclcpp::Node::SharedPtr node) : node_(node) {
 LBRApp::~LBRApp() { disconnect_(); }
 
 void LBRApp::declare_parameters_() {
-  node_->declare_parameter<int>("port_id", 30200);
-  node_->declare_parameter<std::string>("remote_host", "");
-  node_->declare_parameter<std::string>("robot_description", "");
-  node_->declare_parameter<std::string>("robot_name", "lbr");
+  if (!node_->has_parameter("port_id")) {
+    node_->declare_parameter<int>("port_id", 30200);
+  }
+  if (!node_->has_parameter("remote_host")) {
+    node_->declare_parameter<std::string>("remote_host", "");
+  }
+  if (!node_->has_parameter("robot_description")) {
+    node_->declare_parameter<std::string>("robot_description", "");
+  }
+  if (!node_->has_parameter("robot_name")) {
+    node_->declare_parameter<std::string>("robot_name", "lbr");
+  }
 }
 
 void LBRApp::get_parameters_() {

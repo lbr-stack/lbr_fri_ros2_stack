@@ -15,7 +15,8 @@ LBRHardwareInterface::on_init(const hardware_interface::HardwareInfo &system_inf
       ? remote_host_ = NULL
       : remote_host_ = info_.hardware_parameters["remote_host"].c_str();
   sample_time_ = std::stoi(info_.hardware_parameters["sample_time"]);
-  robot_name_ = info_.hardware_parameters["robot_name"];
+  robot_name_ =
+      "_" + info_.hardware_parameters["robot_name"]; // prefix with underscore to hide node
 
   if (port_id_ < 30200 || port_id_ > 30209) {
     RCLCPP_ERROR(lbr_node_->get_logger(), "Expected port_id in [30200, 30209]. Found %d.",
@@ -24,11 +25,10 @@ LBRHardwareInterface::on_init(const hardware_interface::HardwareInfo &system_inf
   }
 
   // setup node
-  lbr_node_ = std::make_shared<rclcpp::Node>(robot_name_,
+  lbr_node_ = std::make_shared<rclcpp::Node>(robot_name_ + "_node",
                                              rclcpp::NodeOptions().use_intra_process_comms(true));
 
-  lbr_node_->declare_parameter<std::string>("lbr_command_topic", "~/_lbr_command");
-  lbr_node_->declare_parameter<std::string>("lbr_state_topic", "~/_lbr_state");
+  lbr_node_->declare_parameter<std::string>("robot_name", robot_name_);
   lbr_node_->declare_parameter<double>("smoothing", 0.8);
 
   lbr_app_ = std::make_unique<lbr_fri_ros2::LBRApp>(lbr_node_);
@@ -379,16 +379,16 @@ bool LBRHardwareInterface::spawn_com_layer_() {
         rclcpp::strategies::message_pool_memory_strategy::MessagePoolMemoryStrategy<
             lbr_fri_msgs::msg::LBRState, 1>::make_shared();
     lbr_state_sub_ = lbr_node_->create_subscription<lbr_fri_msgs::msg::LBRState>(
-        "~/_lbr_state",
+        robot_name_ + "/state",
         rclcpp::QoS(1)
             .deadline(std::chrono::milliseconds(sample_time_))
             .reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE),
         std::bind(&LBRHardwareInterface::on_lbr_state_, this, std::placeholders::_1),
         rclcpp::SubscriptionOptions(), memory_strategy);
     lbr_command_pub_ = lbr_node_->create_publisher<lbr_fri_msgs::msg::LBRCommand>(
-        "~/_lbr_command", rclcpp::QoS(1)
-                              .deadline(std::chrono::milliseconds(sample_time_))
-                              .reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE));
+        robot_name_ + "/command", rclcpp::QoS(1)
+                                      .deadline(std::chrono::milliseconds(sample_time_))
+                                      .reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE));
   } catch (const std::exception &e) {
     RCLCPP_ERROR(lbr_node_->get_logger(), "Failed to spawn real time layer.\n%s.", e.what());
     return false;
@@ -402,7 +402,7 @@ bool LBRHardwareInterface::spawn_clients_() {
     return false;
   }
 
-  std::string app_connect_service_name = "~/connect";
+  std::string app_connect_service_name = robot_name_ + "/connect";
   app_connect_clt_ = lbr_node_->create_client<lbr_fri_msgs::srv::AppConnect>(
       app_connect_service_name, rmw_qos_profile_services_default);
   RCLCPP_INFO(lbr_node_->get_logger(), "Waiting for service %s to spawn...",
@@ -413,7 +413,7 @@ bool LBRHardwareInterface::spawn_clients_() {
   }
   RCLCPP_INFO(lbr_node_->get_logger(), "Done.");
 
-  std::string app_disconnect_service_name = "~/disconnect";
+  std::string app_disconnect_service_name = robot_name_ + "/disconnect";
   app_disconnect_clt_ = lbr_node_->create_client<lbr_fri_msgs::srv::AppDisconnect>(
       app_disconnect_service_name, rmw_qos_profile_services_default);
   RCLCPP_INFO(lbr_node_->get_logger(), "Waiting for service %s to spawn...",
