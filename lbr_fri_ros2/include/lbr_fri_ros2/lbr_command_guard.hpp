@@ -7,6 +7,7 @@
 #include <cstdio>
 #include <string>
 
+#include "rclcpp/rclcpp.hpp"
 #include "urdf/model.h"
 
 #include "fri/friClientIf.h"
@@ -29,20 +30,23 @@ public:
   /**
    * @brief Construct a new LBRCommandGuard object.
    *
+   * @param[in] node Shared node for logging
    * @param[in] min_position Minimum joint position [rad]
    * @param[in] max_position Maximum joint position [rad]
    * @param[in] max_velocity Maximum joint velocity [rad/s]
    * @param[in] max_torque Maximal torque [Nm]
    */
-  LBRCommandGuard(const JointArray &min_position, const JointArray &max_position,
-                  const JointArray &max_velocity, const JointArray &max_torque);
+  LBRCommandGuard(const rclcpp::Node::SharedPtr node, const JointArray &min_position,
+                  const JointArray &max_position, const JointArray &max_velocity,
+                  const JointArray &max_torque);
 
   /**
    * @brief Construct a new LBRCommandGuard object.
    *
+   * @param[in] node Shared node for logging
    * @param robot_description String containing URDF robot rescription
    */
-  LBRCommandGuard(const std::string &robot_description);
+  LBRCommandGuard(const rclcpp::Node::SharedPtr node, const std::string &robot_description);
 
   /**
    * @brief Checks for command validity given the current state.
@@ -99,6 +103,8 @@ protected:
   virtual bool command_in_torque_limits_(const lbr_fri_msgs::msg::LBRCommand &lbr_command,
                                          const KUKA::FRI::LBRState &lbr_state) const;
 
+  rclcpp::Node::SharedPtr node_; /**< Shared node for logging.*/
+
   JointArray min_position_; /**< Minimum joint position [rad].*/
   JointArray max_position_; /**< Maximum joint position [rad].*/
   JointArray max_velocity_; /**< Maximum joint velocity [rad/s].*/
@@ -116,10 +122,11 @@ public:
   /**
    * @brief Construct a new LBRSafeStopCommandGuard object.
    *
+   * @param[in] node Shared node for logging
    * @param robot_description String containing URDF robot rescription
    */
-  LBRSafeStopCommandGuard(const std::string &robot_description)
-      : LBRCommandGuard(robot_description){};
+  LBRSafeStopCommandGuard(const rclcpp::Node::SharedPtr node, const std::string &robot_description)
+      : LBRCommandGuard(node, robot_description){};
 
 protected:
   /**
@@ -138,11 +145,13 @@ protected:
 /**
  * @brief Creates an LBRCommandGuard object.
  *
+ * @param[in] node Shared node for logging
  * @param[in] robot_description String containing URDF robot rescription
  * @param[in] variant Which variant of LBRCommandGuard to create
  * @return std::unique_ptr<LBRCommandGuard> Pointer to LBRCommandGuard object
  */
-std::unique_ptr<LBRCommandGuard> lbr_command_guard_factory(const std::string &robot_description,
+std::unique_ptr<LBRCommandGuard> lbr_command_guard_factory(const rclcpp::Node::SharedPtr node,
+                                                           const std::string &robot_description,
                                                            const std::string &variant);
 } // end of namespace lbr_fri_ros2
 #endif // LBR_FRI_ROS2__LBR_COMMAND_GUARD_HPP_
