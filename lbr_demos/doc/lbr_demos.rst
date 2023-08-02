@@ -8,7 +8,7 @@ Demos for controlling the LBR through the Fast Robot Interface (FRI) from ROS 2.
 LBR Demos FRI ROS 2
 -------------------
 .. note::
-    These demos are compatible with and closely follow KUKA's FRI example applications. They send commands to ``~/command`` and read states from ``~/state``.
+    These demos are compatible with and closely follow KUKA's FRI example applications. They send commands to ``/lbr/command`` and read states from ``/lbr/state``.
 
 .. note::
     A real robot is required to run these demos. Make sure you followed :ref:`Robot Setup` first.

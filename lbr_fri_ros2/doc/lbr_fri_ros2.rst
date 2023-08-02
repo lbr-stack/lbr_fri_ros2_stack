@@ -26,8 +26,16 @@ This launch file does 2 things:
     - Runs the :lbr_fri_ros2:`LBRAppComponentLBRApp <lbr_fri_ros2::LBRAppComponent>`, which has an instance of :lbr_fri_ros2:`LBRApp <lbr_fri_ros2::LBRApp>` to
         
         - Create services to connect to / disconnect from the robot
-        - Publish robot states to ``~/state`` via :lbr_fri_ros2:`LBRClient <lbr_fri_ros2::LBRClient>`
-        - Read robot commands from ``~/command`` via :lbr_fri_ros2:`LBRClient <lbr_fri_ros2::LBRClient>`
+        - Publish robot states to ``/lbr/state`` via :lbr_fri_ros2:`LBRClient <lbr_fri_ros2::LBRClient>`
+        - Read robot commands from ``/lbr/command`` via :lbr_fri_ros2:`LBRClient <lbr_fri_ros2::LBRClient>`
+
+The topic names change with the robot's name. When running
+
+.. code-block:: bash
+
+    ros2 launch lbr_fri_ros2 lbr_app.launch.py robot_name:=lbr_1 model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
+
+Commands / states will be published to ``/lbr_1/state`` / ``/lbr_1/command``.
 
 See :ref:`LBR Demos` for more examples.
 
