@@ -1,8 +1,8 @@
 from typing import List
-from launch import LaunchContext
+
 from launch import LaunchDescription, LaunchDescriptionEntity
-from launch.substitutions import LaunchConfiguration
 from launch.actions import OpaqueFunction
+from launch.substitutions import LaunchConfiguration
 
 from lbr_bringup import LBRMoveGroupMixin
 from lbr_description import LBRDescriptionMixin, RVizMixin
@@ -24,16 +24,18 @@ def launch_setup(context) -> List[LaunchDescriptionEntity]:
     )
     movegroup_params = LBRMoveGroupMixin.params_move_group()
 
-    # nodes
+    # MoveGroup
     ld.add_action(
         LBRMoveGroupMixin.node_move_group(
-            parameters=[moveit_configs_builder.to_dict(), movegroup_params],
+            parameters=[
+                moveit_configs_builder.to_dict(),
+                movegroup_params,
+                {"use_sim_time": LaunchConfiguration("sim")},
+            ],
         )
     )
 
-    # rviz
-    ld.add_action(RVizMixin.arg_rviz_config_pkg())
-    ld.add_action(RVizMixin.arg_rviz_config())
+    # RViz
     rviz = RVizMixin.node_rviz(
         rviz_config_pkg=f"{model}_moveit_config",
         rviz_config="config/moveit.rviz",
@@ -53,11 +55,6 @@ def generate_launch_description() -> LaunchDescription:
     ld.add_action(LBRDescriptionMixin.arg_model())
     ld.add_action(LBRDescriptionMixin.arg_robot_name())
     ld.add_action(LBRDescriptionMixin.arg_sim())
-    robot_description = LBRDescriptionMixin.description()
-
-    # next steps:
-    # 1. any robot med7/med14 iiwa7/iiwa14
-    # 2. include configs / hide params via opaque?
 
     ld.add_action(OpaqueFunction(function=launch_setup))
 
