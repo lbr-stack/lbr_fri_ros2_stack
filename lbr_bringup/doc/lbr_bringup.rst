@@ -19,11 +19,11 @@ The ``FRI`` lets the user select a ``FRI control mode`` and a ``FRI client comma
 
 - .. dropdown:: Select ``FRI control mode``
 
-    .. thumbnail:: ../../lbr_fri_ros2_stack/doc/img/controller/lbr_server_control_mode.png
+    .. thumbnail:: ../../lbr_fri_ros2_stack/doc/img/controller/raw/lbr_server_control_mode.png
 
 - .. dropdown:: Select ``FRI client command mode``
     
-    .. thumbnail:: ../../lbr_fri_ros2_stack/doc/img/controllerlbr_server_client_command_mode.png
+    .. thumbnail:: ../../lbr_fri_ros2_stack/doc/img/controller/raw/lbr_server_client_command_mode.png
 
 The ``FRI control mode`` the mode in which the robot is controlled, and the ``FRI client command mode`` specifies the commands that the user sends.
 
