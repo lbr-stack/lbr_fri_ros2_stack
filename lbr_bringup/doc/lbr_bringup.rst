@@ -25,7 +25,7 @@ The ``FRI`` lets the user select a ``FRI control mode`` and a ``FRI client comma
     
     .. thumbnail:: ../../lbr_fri_ros2_stack/doc/img/controller/raw/lbr_server_client_command_mode.png
 
-The ``FRI control mode`` the mode in which the robot is controlled, and the ``FRI client command mode`` specifies the commands that the user sends.
+The ``FRI control mode`` specifies the mode in which the robot is controlled, and the ``FRI client command mode`` specifies the commands that the user sends.
 
 ROS 2 Control and MoveIt 2 Launch
 ---------------------------------
@@ -39,20 +39,26 @@ The ``lbr_bringup`` works for the simulation and the real robot. Run:
         rviz:=true # [true, false] \
         moveit:=true # [true, false]
 
-When using the real robot, i.e. ``sim:=false``, for the ``LBRServer``, select:
+When using the real robot
+
+.. dropdown:: Launch the ``LBRServer`` application on the ``KUKA smartPAD``
+
+    .. thumbnail:: ../../lbr_demos/doc/img/applications_lbr_server.png
+
+and select:
 
 - ``FRI send period``: ``10 ms``
 - ``IP address``: ``your configuration``
 - ``FRI control mode``: ``POSITION_CONTROL`` or ``JOINT_IMPEDANCE_CONTROL`` (will put the robot into a compliant mode)
 - ``FRI client command mode``: ``POSITION``
 
-Make sure that the ``update_rate`` in `lbr_controllers.yml <https://github.com/KCL-BMEIS/lbr_fri_ros2_stack/tree/humble/lbr_hardware_interface/config/lbr_controllers.yml>`_ is greater equal ``100`` (``FRI send period``).
+Make sure that the ``update_rate`` in `lbr_controllers.yml <https://github.com/KCL-BMEIS/lbr_fri_ros2_stack/tree/humble/lbr_hardware_interface/config/lbr_controllers.yml>`_ is greater or equal ``100`` (``FRI send period``).
 
-For using other send periods, also change the ``sample_time`` in the `lbr.ros2_control.xacro <https://github.com/KCL-BMEIS/lbr_fri_ros2_stack/blob/humble/lbr_description/ros2_control/lbr.ros2_control.xacro>`_ (automated in the future).
+For using other ``FRI send period``, also change the ``sample_time`` in the `lbr.ros2_control.xacro <https://github.com/KCL-BMEIS/lbr_fri_ros2_stack/blob/humble/lbr_description/ros2_control/lbr.ros2_control.xacro>`_ (automated in the future).
 
 Standalone Launch
 -----------------
-Standalone launch is interesting for research. It only runs on the real robot. It can e.g. be launched through:
+Standalone launch is great for research. Only the the real robot is supported. It can be launched through:
 
 .. code:: bash
 
@@ -60,7 +66,7 @@ Standalone launch is interesting for research. It only runs on the real robot. I
         model:=iiwa7 # [iiwa7, iiwa14, med7, med14] \
         robot_name:=lbr # any robot name
 
-This runs :lbr_fri_ros2:`LBRAppComponentLBRApp <lbr_fri_ros2::LBRAppComponent>`, which creates 2 topics, ``/robot_name/command`` for commands and ``/robot_name/state``. See :ref:`LBR Demos FRI ROS 2` for more examples and :ref:`LBR FRI ROS 2` for more documentation.
+This runs the :lbr_fri_ros2:`LBRAppComponentLBRApp <lbr_fri_ros2::LBRAppComponent>`, which creates 2 topics, ``/robot_name/command`` for commands and ``/robot_name/state``. See :ref:`LBR Demos FRI ROS 2` for more examples and :ref:`LBR FRI ROS 2` for more documentation.
 
 Troubleshooting
 ---------------
