@@ -79,6 +79,7 @@ Troubleshooting
 Noisy Execution
 ~~~~~~~~~~~~~~~
 Three main causes:
+
 - Frequency: Make sure the ``ros2_control_node`` runs at the same or a higher rate of the ``FRI send period``, change ``update_rate`` in `lbr_controllers.yml <https://github.com/KCL-BMEIS/lbr_fri_ros2_stack/tree/humble/lbr_hardware_interface/config/lbr_controllers.yml>`_. 
 - Standalone noise: Smoothing might be required, see :ref:`LBR Demos FRI ROS 2`.
 - Realtime priority: Set real time priority in ``code /etc/security/limits.conf``, add the line: ``user - rtprio 99``, where user is your username.
