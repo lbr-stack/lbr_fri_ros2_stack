@@ -42,4 +42,4 @@ Usage
 
 For the real robot, set ``sim:=false`` and run the ``LBRServer`` on the ``KUKA smartPAD``, see :ref:`Install Applications to the Robot`.
 
-#. Checkout demos, see :ref:`LBR Demos`.
+#. Checkout bringup and demos, see :ref:`LBR Bringup` and :ref:`LBR Demos`.
