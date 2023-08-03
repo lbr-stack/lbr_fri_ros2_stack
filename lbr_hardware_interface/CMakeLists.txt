@@ -11,6 +11,7 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 
 find_package(ament_cmake REQUIRED)
+find_package(ament_cmake_python REQUIRED)
 find_package(hardware_interface REQUIRED)
 find_package(controller_interface REQUIRED)
 find_package(pluginlib REQUIRED)
@@ -77,5 +78,13 @@ install(
     RUNTIME DESTINATION lib/${PROJECT_NAME}
     INCLUDES DESTINATION include
 )
+
+install(
+  DIRECTORY config launch
+  DESTINATION share/${PROJECT_NAME}
+)
+
+# Launch mixins
+ament_python_install_package(${PROJECT_NAME})
 
 ament_package()
