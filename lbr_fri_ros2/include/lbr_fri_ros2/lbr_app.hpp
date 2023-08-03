@@ -124,8 +124,11 @@ protected:
 
   std::unique_ptr<std::thread> run_thread_; /**< Thread running the #run_ method.*/
 
-  const char *remote_host_; /**< The remote host's IP address.*/
-  int port_id_;             /**< The UDP port id.*/
+  const char *remote_host_;           /**< The remote host's IP address.*/
+  int port_id_;                       /**< The UDP port id.*/
+  std::string robot_description_;     /**< The robot description, read from node parameters.*/
+  std::string robot_name_;            /**< The robot name, read from node parameters.*/
+  std::string command_guard_variant_; /**< The command guard, read from node parameters.*/
 
   std::atomic<bool> connected_; /**< True if UDP port open and communication running.*/
 

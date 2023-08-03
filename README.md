@@ -19,7 +19,7 @@ colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release
 Next, launch the simulation via
 ```shell
 source install/setup.bash
-ros2 launch lbr_bringup lbr_bringup.launch.py model:=med7 sim:=true # model:=[iiwa7/iiwa14/med7/med14]
+ros2 launch lbr_bringup bringup.launch.py model:=med7 sim:=true # model:=[iiwa7/iiwa14/med7/med14]
 ```
 
 Now, run the [demos](https://lbr-fri-ros2-stack-doc.readthedocs.io/en/humble/lbr_fri_ros2_stack/lbr_demos/doc/lbr_demos.html). To get started with the real robot, checkout the [Documentation](https://lbr-fri-ros2-stack-doc.readthedocs.io/en/humble/index.html) above.

@@ -26,6 +26,7 @@
                     <param name="remote_host">${remote_host}</param>
                     <param name="port_id">${port_id}</param>
                     <param name="sample_time">${sample_time}</param>
+                    <param name="robot_name">${robot_name}</param>
                 </hardware>
             </xacro:unless>
 
