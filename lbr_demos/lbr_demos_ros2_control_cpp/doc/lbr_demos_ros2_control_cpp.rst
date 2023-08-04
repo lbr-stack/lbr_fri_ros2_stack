@@ -18,7 +18,7 @@ Simulation
 
     ros2 launch lbr_bringup bringup.launch.py sim:=true model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
 
-#. Run the `lbr_joint_trajectory_executioner_node <https://github.com/KCL-BMEIS/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_demos_ros2_control_cpp/src/lbr_joint_trajectory_executioner_node.cpp>`_:
+#. Run the `lbr_joint_trajectory_executioner_node <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_demos_ros2_control_cpp/src/lbr_joint_trajectory_executioner_node.cpp>`_:
 
 .. code-block:: bash
 

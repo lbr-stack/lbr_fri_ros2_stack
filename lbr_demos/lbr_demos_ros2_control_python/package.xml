@@ -2,7 +2,7 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>lbr_demos_ros2_control_python</name>
-  <version>1.2.0</version>
+  <version>1.2.1</version>
   <description>Python demos for the LBR ros2_control integration.</description>
   <maintainer email="martin.huber@kcl.ac.uk">mhubii</maintainer>
   <license>MIT</license>
