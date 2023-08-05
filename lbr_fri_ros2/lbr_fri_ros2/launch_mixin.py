@@ -17,7 +17,11 @@ class LBRFRIROS2Mixin:
 
     @staticmethod
     def param_command_guard_variant() -> Dict[str, LaunchConfiguration]:
-        return {"command_guard_variant": LaunchConfiguration("command_guard_variant")}
+        return {
+            "command_guard_variant": LaunchConfiguration(
+                "command_guard_variant", default="safe_stop"
+            )
+        }
 
     @staticmethod
     def node_lbr_app(**kwargs) -> DeclareLaunchArgument:

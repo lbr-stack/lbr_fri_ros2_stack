@@ -57,15 +57,15 @@ class LBRDescriptionMixin:
         base_frame: Optional[Union[LaunchConfiguration, str]] = None,
     ) -> Dict[str, str]:
         if model is None:
-            model = LaunchConfiguration("model")
+            model = LaunchConfiguration("model", default="iiwa7")
         if robot_name is None:
-            robot_name = LaunchConfiguration("robot_name")
+            robot_name = LaunchConfiguration("robot_name", default="lbr")
         if sim is None:
-            sim = LaunchConfiguration("sim")
+            sim = LaunchConfiguration("sim", default="true")
         if type(sim) is bool:
             sim = "true" if sim else "false"
         if base_frame is None:
-            base_frame = LaunchConfiguration("base_frame")
+            base_frame = LaunchConfiguration("base_frame", default="world")
         robot_description = {
             "robot_description": Command(
                 [
@@ -126,15 +126,15 @@ class LBRDescriptionMixin:
 
     @staticmethod
     def param_base_frame() -> Dict[str, LaunchConfiguration]:
-        return {"base_frame": LaunchConfiguration("base_frame")}
+        return {"base_frame": LaunchConfiguration("base_frame", default="world")}
 
     @staticmethod
     def param_robot_name() -> Dict[str, LaunchConfiguration]:
-        return {"robot_name": LaunchConfiguration("robot_name")}
+        return {"robot_name": LaunchConfiguration("robot_name", default="lbr")}
 
     @staticmethod
     def param_sim() -> Dict[str, LaunchConfiguration]:
-        return {"sim": LaunchConfiguration("sim")}
+        return {"sim": LaunchConfiguration("sim", default="true")}
 
 
 class RVizMixin:
@@ -161,9 +161,13 @@ class RVizMixin:
         **kwargs
     ) -> Node:
         if rviz_config_pkg is None:
-            rviz_config_pkg = LaunchConfiguration("rviz_config_pkg")
+            rviz_config_pkg = LaunchConfiguration(
+                "rviz_config_pkg", default="lbr_description"
+            )
         if rviz_config is None:
-            rviz_config = LaunchConfiguration("rviz_config")
+            rviz_config = LaunchConfiguration(
+                "rviz_config", default="config/config.rviz"
+            )
         return Node(
             package="rviz2",
             executable="rviz2",
