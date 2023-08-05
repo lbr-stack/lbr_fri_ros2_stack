@@ -43,8 +43,8 @@ public:
     point.time_from_start.sec = sec_from_start;
 
     for (std::size_t i = 0; i < KUKA::FRI::LBRState::NUMBER_OF_JOINTS; ++i) {
-      joint_trajectory_goal.trajectory.joint_names.push_back(robot_name_ + "_joint_" +
-                                                             std::to_string(i));
+      joint_trajectory_goal.trajectory.joint_names.push_back(robot_name_ + "_A" +
+                                                             std::to_string(i + 1));
     }
 
     joint_trajectory_goal.trajectory.points.push_back(point);
