@@ -19,7 +19,7 @@ Installation
 .. code-block:: bash
 
     mkdir -p lbr_fri_ros2_stack_ws/src && cd lbr_fri_ros2_stack_ws
-    wget https://raw.githubusercontent.com/KCL-BMEIS/lbr_fri_ros2_stack/humble/lbr_fri_ros2_stack/repos.yml -P src
+    wget https://raw.githubusercontent.com/lbr-stack/lbr_fri_ros2_stack/humble/lbr_fri_ros2_stack/repos.yml -P src
     vcs import src < src/repos.yml
     rosdep install --from-paths src --ignore-src -r -y
     colcon build
