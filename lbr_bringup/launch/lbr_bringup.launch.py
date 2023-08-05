@@ -30,16 +30,6 @@ def launch_setup(context, *args, **kwargs):
         )
     }
 
-    # Load LBR FRI ROS2
-    lbr_app_node = Node(
-        package="lbr_fri_ros2",
-        executable="lbr_app",
-        emulate_tty=True,
-        output="screen",
-        parameters=[robot_description],
-        condition=UnlessCondition(LaunchConfiguration("sim")),
-    )
-
     # Load controls
     control = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
@@ -95,7 +85,7 @@ def launch_setup(context, *args, **kwargs):
         ],
     )
 
-    return [lbr_app_node, simulation, control, move_group]
+    return [simulation, control, move_group]
 
 
 def generate_launch_description():
