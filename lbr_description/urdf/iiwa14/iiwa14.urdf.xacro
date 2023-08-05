@@ -8,10 +8,11 @@
 
     <xacro:arg name="robot_name" default="lbr" />
     <xacro:arg name="sim" default="true" />
+    <xacro:arg name="base_frame" default="world" />
 
-    <!-- fix to world -->
-    <link name="world" />
+    <!-- fix to base_frame -->
+    <link name="$(arg base_frame)" />
 
     <!-- iiwa -->
-    <xacro:iiwa14 parent="world" robot_name="$(arg robot_name)" sim="$(arg sim)" />
+    <xacro:iiwa14 base_frame="$(arg base_frame)" robot_name="$(arg robot_name)" sim="$(arg sim)" />
 </robot>

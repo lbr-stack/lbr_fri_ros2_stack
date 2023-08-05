@@ -12,6 +12,7 @@ class LBRHardwareInterface(LBRDescriptionMixin, LBRHardwareInterfaceMixin):
 
 def generate_launch_description() -> LaunchDescription:
     ld = LaunchDescription()
+    ld.add_action(LBRHardwareInterface.arg_base_frame())
     ld.add_action(LBRHardwareInterface.arg_model())
     ld.add_action(LBRHardwareInterface.arg_robot_name())
     robot_description = LBRHardwareInterface.param_robot_description(sim=False)

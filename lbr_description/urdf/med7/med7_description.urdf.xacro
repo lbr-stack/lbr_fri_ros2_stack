@@ -28,11 +28,12 @@
     <xacro:include filename="$(find lbr_description)/ros2_control/lbr.ros2_control.xacro" />
 
     <!-- robot as extracted via https://github.com/syuntoku14/fusion2urdf -->
-    <xacro:macro name="med7" params="parent:=^|world robot_name:=^|lbr sim:=^|true">
+    <xacro:macro name="med7" params="base_frame:=^|world robot_name:=^|lbr sim:=^|true">
 
-        <!--joint between {parent} and link_0-->
-        <joint name="${parent}_${robot_name}_joint" type="fixed">
-            <parent link="${parent}" />
+        <!--joint
+        between {base_frame} and link_0-->
+        <joint name="${base_frame}_${robot_name}_joint" type="fixed">
+            <parent link="${base_frame}" />
             <child link="${robot_name}_link_0" />
         </joint>
 
