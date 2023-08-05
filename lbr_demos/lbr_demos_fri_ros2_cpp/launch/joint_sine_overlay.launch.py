@@ -1,39 +1,28 @@
-import os
-
-from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription
-from launch.launch_description import DeclareLaunchArgument
-from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
+
+from lbr_description import LBRDescriptionMixin
+from lbr_fri_ros2 import LBRFRIROS2Mixin
 
 
 def generate_launch_description() -> LaunchDescription:
-    model_arg = DeclareLaunchArgument(
-        name="model",
-        default_value="iiwa7",
-        description="The LBR model in use.",
-        choices=["iiwa7", "iiwa14", "med7", "med14"],
+    ld = LaunchDescription()
+    ld.add_action(LBRDescriptionMixin.arg_model())
+    ld.add_action(LBRDescriptionMixin.arg_robot_name())
+    robot_description = LBRDescriptionMixin.param_robot_description(sim=False)
+    ld.add_action(
+        LBRFRIROS2Mixin.node_lbr_app(
+            parameters=[
+                robot_description,
+                LBRDescriptionMixin.param_robot_name(),
+            ]
+        )
     )
-
-    lbr_app = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            os.path.join(
-                get_package_share_directory("lbr_fri_ros2"),
-                "launch",
-                "lbr_app.launch.py",
-            )
-        ),
-        launch_arguments=[
-            ("model", LaunchConfiguration("model")),
-        ],
+    ld.add_action(
+        Node(
+            package="lbr_demos_fri_ros2_cpp",
+            executable="joint_sine_overlay_node",
+            output="screen",
+        )
     )
-
-    joint_sine_overlay_node = Node(
-        package="lbr_demos_fri_ros2_cpp",
-        executable="joint_sine_overlay_node",
-        output="screen",
-    )
-
-    return LaunchDescription([model_arg, lbr_app, joint_sine_overlay_node])
+    return ld
