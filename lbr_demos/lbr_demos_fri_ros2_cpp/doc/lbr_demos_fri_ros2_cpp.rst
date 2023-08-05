@@ -20,7 +20,7 @@ Joint Sine Overlay
 
     ros2 launch lbr_demos_fri_ros2_cpp joint_sine_overlay.launch.py model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
 
-The robot will move to the initial position via position control, then execute a rotation on joint ``A1 = lbr_joint_0``. A sinusoidal motion is overlayed on joint ``A4 = lbr_joint_3`` via `joint_sine_overlay_node <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_demos_fri_ros2_cpp/src/joint_sine_overlay_node.cpp>`_.
+The robot will move to the initial position via position control, then execute a rotation on joint ``A1``. A sinusoidal motion is overlayed on joint ``A4`` via `joint_sine_overlay_node <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_demos_fri_ros2_cpp/src/joint_sine_overlay_node.cpp>`_.
 
 Torque Sine Overlay
 -------------------
@@ -34,7 +34,7 @@ Torque Sine Overlay
 
     ros2 launch lbr_demos_fri_ros2_cpp torque_sine_overlay.launch.py model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
 
-The robot will move to the initial position via joint impedance control. A sinusoidal torque is overlayed on joint ``A4 = lbr_joint_3`` via `torque_sine_overlay_node <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_demos_fri_ros2_cpp/src/torque_sine_overlay_node.cpp>`_.
+The robot will move to the initial position via joint impedance control. A sinusoidal torque is overlayed on joint ``A4`` via `torque_sine_overlay_node <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_demos_fri_ros2_cpp/src/torque_sine_overlay_node.cpp>`_.
 
 Wrench Sine Overlay
 -------------------

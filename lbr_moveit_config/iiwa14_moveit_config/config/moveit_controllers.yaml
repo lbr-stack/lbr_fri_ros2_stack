@@ -11,10 +11,10 @@ moveit_simple_controller_manager:
     action_ns: follow_joint_trajectory
     default: true
     joints:
-      - lbr_joint_0
-      - lbr_joint_1
-      - lbr_joint_2
-      - lbr_joint_3
-      - lbr_joint_4
-      - lbr_joint_5
-      - lbr_joint_6
+      - lbr_A1
+      - lbr_A2
+      - lbr_A3
+      - lbr_A4
+      - lbr_A5
+      - lbr_A6
+      - lbr_A7

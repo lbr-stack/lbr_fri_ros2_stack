@@ -41,8 +41,14 @@ class LBRHardwareInterfaceMixin:
                 {"use_sim_time": False},
                 PathJoinSubstitution(
                     [
-                        FindPackageShare(LaunchConfiguration("ctrl_cfg_pkg")),
-                        LaunchConfiguration("ctrl_cfg"),
+                        FindPackageShare(
+                            LaunchConfiguration(
+                                "ctrl_cfg_pkg", default="lbr_hardware_interface"
+                            )
+                        ),
+                        LaunchConfiguration(
+                            "ctrl_cfg", default="config/lbr_controllers.yml"
+                        ),
                     ]
                 ),
                 robot_description,
@@ -71,7 +77,7 @@ class LBRHardwareInterfaceMixin:
             executable="spawner",
             output="screen",
             arguments=[
-                LaunchConfiguration("ctrl"),
+                LaunchConfiguration("ctrl", default="position_trajectory_controller"),
                 "--controller-manager",
                 "/controller_manager",
             ],
