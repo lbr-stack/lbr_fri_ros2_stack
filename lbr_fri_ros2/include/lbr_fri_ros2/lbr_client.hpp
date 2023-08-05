@@ -129,6 +129,7 @@ protected:
 
   std::string robot_name_; /**< Name of the robot.*/
   double smoothing_;       /**< Exponential smoothing factor for position commands.*/
+  bool open_loop_;         /**< Flag for open loop control. Best way to command the LBRs.*/
 
   rclcpp::Publisher<lbr_fri_msgs::msg::LBRState>::SharedPtr
       lbr_state_pub_; /**< Publisher of lbr_fri_msgs::msg::LBRState.*/
