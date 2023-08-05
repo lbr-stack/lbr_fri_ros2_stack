@@ -60,7 +60,7 @@
             </collision>
         </link>
 
-        <joint name="${robot_name}_joint_0" type="revolute">
+        <joint name="${robot_name}_A1" type="revolute">
             <origin rpy="0 0 0" xyz="0.0 0.0 0.1475" />
             <parent link="${robot_name}_link_0" />
             <child link="${robot_name}_link_1" />
@@ -94,7 +94,7 @@
             </collision>
         </link>
 
-        <joint name="${robot_name}_joint_1" type="revolute">
+        <joint name="${robot_name}_A2" type="revolute">
             <origin rpy="0 0 0" xyz="-0.0 -0.0105 0.1925" />
             <parent link="${robot_name}_link_1" />
             <child link="${robot_name}_link_2" />
@@ -128,7 +128,7 @@
             </collision>
         </link>
 
-        <joint name="${robot_name}_joint_2" type="revolute">
+        <joint name="${robot_name}_A3" type="revolute">
             <origin rpy="0 0 0" xyz="0.0 0.0105 0.2075" />
             <parent link="${robot_name}_link_2" />
             <child link="${robot_name}_link_3" />
@@ -162,7 +162,7 @@
             </collision>
         </link>
 
-        <joint name="${robot_name}_joint_3" type="revolute">
+        <joint name="${robot_name}_A4" type="revolute">
             <origin rpy="0 0 0" xyz="0.0 0.0105 0.1925" />
             <parent link="${robot_name}_link_3" />
             <child link="${robot_name}_link_4" />
@@ -196,7 +196,7 @@
             </collision>
         </link>
 
-        <joint name="${robot_name}_joint_4" type="revolute">
+        <joint name="${robot_name}_A5" type="revolute">
             <origin rpy="0 0 0" xyz="-0.0 -0.0105 0.2075" />
             <parent link="${robot_name}_link_4" />
             <child link="${robot_name}_link_5" />
@@ -230,7 +230,7 @@
             </collision>
         </link>
 
-        <joint name="${robot_name}_joint_5" type="revolute">
+        <joint name="${robot_name}_A6" type="revolute">
             <origin rpy="0 0 0" xyz="0.0 -0.0707 0.1925" />
             <parent link="${robot_name}_link_5" />
             <child link="${robot_name}_link_6" />
@@ -264,7 +264,7 @@
             </collision>
         </link>
 
-        <joint name="${robot_name}_joint_6" type="revolute">
+        <joint name="${robot_name}_A7" type="revolute">
             <origin rpy="0 0 0" xyz="0.0 0.0707 0.091" />
             <parent link="${robot_name}_link_6" />
             <child link="${robot_name}_link_7" />
