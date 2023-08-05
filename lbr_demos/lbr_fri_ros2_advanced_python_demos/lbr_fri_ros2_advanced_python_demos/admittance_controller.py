@@ -1,5 +1,5 @@
-import kinpy
 import numpy as np
+import optas
 
 from lbr_fri_msgs.msg import LBRCommand, LBRState
 
@@ -16,13 +16,13 @@ class AdmittanceController(object):
     ) -> None:
         self.lbr_command_ = LBRCommand()
 
-        self.chain_ = kinpy.build_serial_chain_from_urdf(
-            data=robot_description,
-            root_link_name=base_link,
-            end_link_name=end_effector_link,
+        robot = optas.RobotModel(urdf_string=robot_description)
+        J = robot.get_geometric_jacobian_function(
+            end_effector_link, base_link, numpy_output=True
         )
+        self.jacobian_func_ = lambda q: J(q)
 
-        self.dof_ = len(self.chain_.get_joint_parameter_names())
+        self.dof_ = robot.ndof
         self.jacobian_ = np.zeros((6, self.dof_))
         self.jacobian_inv_ = np.zeros((self.dof_, 6))
         self.q = np.zeros(self.dof_)
@@ -38,7 +38,7 @@ class AdmittanceController(object):
         self.q_ = np.array(lbr_state.measured_joint_position.tolist())
         self.tau_ext_ = np.array(lbr_state.external_torque.tolist())
 
-        self.jacobian_ = self.chain_.jacobian(self.q_)
+        self.jacobian_ = self.jacobian_func_(self.q_)
 
         self.jacobian_inv_ = np.linalg.pinv(self.jacobian_, rcond=0.05)
         self.f_ext_ = self.jacobian_inv_.T @ self.tau_ext_
