@@ -49,7 +49,7 @@ void LBRClient::command() {
 
   // validate command
   if (!lbr_command_guard_->is_valid_command(lbr_command_, robotState())) {
-    // not responding -> connection lost
+    RCLCPP_ERROR(node_->get_logger(), "Invalid command received. Triggering disconnect.");
     return;
   };
 
