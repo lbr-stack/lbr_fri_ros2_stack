@@ -10,11 +10,11 @@ Quick Start
 .. note::
     Make sure you followed the install instructions in :ref:`Robot Setup`.
 
-1. .. dropdown:: Launch the ``LBRServer`` application on the ``KUKA smartPAD``
+#. .. dropdown:: Launch the ``LBRServer`` application on the ``KUKA smartPAD``
 
     .. thumbnail:: ../../lbr_demos/doc/img/applications_lbr_server.png
 
-2. Run the :lbr_fri_ros2:`LBRApp <lbr_fri_ros2::LBRApp>` node via `lbr_app.launch.py <https://github.com/KCL-BMEIS/lbr_fri_ros2_stack/blob/humble/lbr_fri_ros2/launch/lbr_app.launch.py>`_:
+#. Run the :lbr_fri_ros2:`LBRApp <lbr_fri_ros2::LBRApp>` node via `lbr_app.launch.py <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_fri_ros2/launch/lbr_app.launch.py>`_:
 
 .. code-block:: bash
 
@@ -23,11 +23,19 @@ Quick Start
 This launch file does 2 things:
 
     - Loads the ``robot_description`` (to read joint limits)
-    - Runs the :lbr_fri_ros2:`LBRAppComponentLBRApp <lbr_fri_ros2::LBRAppComponent>`, which has instance of :lbr_fri_ros2:`LBRApp <lbr_fri_ros2::LBRApp>` to
+    - Runs the :lbr_fri_ros2:`LBRAppComponentLBRApp <lbr_fri_ros2::LBRAppComponent>`, which has an instance of :lbr_fri_ros2:`LBRApp <lbr_fri_ros2::LBRApp>` to
         
         - Create services to connect to / disconnect from the robot
-        - Publish robot states to ``/lbr_state`` via :lbr_fri_ros2:`LBRClient <lbr_fri_ros2::LBRClient>`
-        - Read robot commands from ``/lbr_command`` via :lbr_fri_ros2:`LBRClient <lbr_fri_ros2::LBRClient>`
+        - Publish robot states to ``/lbr/state`` via :lbr_fri_ros2:`LBRClient <lbr_fri_ros2::LBRClient>`
+        - Read robot commands from ``/lbr/command`` via :lbr_fri_ros2:`LBRClient <lbr_fri_ros2::LBRClient>`
+
+The topic names change with the robot's name. When running
+
+.. code-block:: bash
+
+    ros2 launch lbr_fri_ros2 lbr_app.launch.py robot_name:=lbr_1 model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
+
+Commands / states will be published to ``/lbr_1/state`` / ``/lbr_1/command``.
 
 See :ref:`LBR Demos` for more examples.
 

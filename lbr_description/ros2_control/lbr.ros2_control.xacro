@@ -26,6 +26,7 @@
                     <param name="remote_host">${remote_host}</param>
                     <param name="port_id">${port_id}</param>
                     <param name="sample_time">${sample_time}</param>
+                    <param name="robot_name">${robot_name}</param>
                 </hardware>
             </xacro:unless>
 
@@ -52,7 +53,7 @@
             </xacro:unless>
 
             <!-- define joints and command/state interfaces for each joint -->
-            <joint name="${robot_name}_joint_0">
+            <joint name="${robot_name}_A1">
                 <command_interface name="position">
                     <!-- better to use radians as min max first -->
                     <param name="min">-${joint_0_position_limit}</param>
@@ -72,7 +73,7 @@
                     <state_interface name="ipo_joint_position" />
                 </xacro:unless>
             </joint>
-            <joint name="${robot_name}_joint_1">
+            <joint name="${robot_name}_A2">
                 <command_interface name="position">
                     <param name="min">-${joint_1_position_limit}</param>
                     <param name="max"> ${joint_1_position_limit}</param>
@@ -91,7 +92,7 @@
                     <state_interface name="ipo_joint_position" />
                 </xacro:unless>
             </joint>
-            <joint name="${robot_name}_joint_2">
+            <joint name="${robot_name}_A3">
                 <command_interface name="position">
                     <param name="min">-${joint_2_position_limit}</param>
                     <param name="max"> ${joint_2_position_limit}</param>
@@ -110,7 +111,7 @@
                     <state_interface name="ipo_joint_position" />
                 </xacro:unless>
             </joint>
-            <joint name="${robot_name}_joint_3">
+            <joint name="${robot_name}_A4">
                 <command_interface name="position">
                     <param name="min">-${joint_3_position_limit}</param>
                     <param name="max"> ${joint_3_position_limit}</param>
@@ -129,7 +130,7 @@
                     <state_interface name="ipo_joint_position" />
                 </xacro:unless>
             </joint>
-            <joint name="${robot_name}_joint_4">
+            <joint name="${robot_name}_A5">
                 <command_interface name="position">
                     <param name="min">-${joint_4_position_limit}</param>
                     <param name="max"> ${joint_4_position_limit}</param>
@@ -148,7 +149,7 @@
                     <state_interface name="ipo_joint_position" />
                 </xacro:unless>
             </joint>
-            <joint name="${robot_name}_joint_5">
+            <joint name="${robot_name}_A6">
                 <command_interface name="position">
                     <param name="min">-${joint_5_position_limit}</param>
                     <param name="max"> ${joint_5_position_limit}</param>
@@ -167,7 +168,7 @@
                     <state_interface name="ipo_joint_position" />
                 </xacro:unless>
             </joint>
-            <joint name="${robot_name}_joint_6">
+            <joint name="${robot_name}_A7">
                 <command_interface name="position">
                     <param name="min">-${joint_6_position_limit}</param>
                     <param name="max"> ${joint_6_position_limit}</param>

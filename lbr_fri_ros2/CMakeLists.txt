@@ -7,6 +7,7 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
+find_package(ament_cmake_python REQUIRED)
 find_package(control_toolbox REQUIRED)
 find_package(fri_vendor REQUIRED)
 find_package(FRIClient REQUIRED)
@@ -101,5 +102,8 @@ install(
   DIRECTORY launch
   DESTINATION share/lbr_fri_ros2
 )
+
+# Launch mixins
+ament_python_install_package(${PROJECT_NAME})
 
 ament_package()

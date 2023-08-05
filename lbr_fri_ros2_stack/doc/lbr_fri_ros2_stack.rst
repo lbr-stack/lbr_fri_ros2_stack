@@ -8,17 +8,18 @@ Collection of packages for controlling the KUKA LBR iiwa / med through ROS 2.
 - ``lbr_fri_msgs``: ``IDL``-equivalent of KUKA's ``nanopb`` message definitions.
 - ``lbr_fri_ros2``: Exposes ``fri`` to ROS 2 topics / services.
 - ``lbr_hardware_interface``: ``ros2_control`` hardware interface for the LBR.
+- ``lbr_moveit_config```: ``MoveIt 2`` configurations for thr LBR.
 - ``fri``: Integration of KUKA's Fast Robot Interface (FRI) into ROS 2 ``ament_cmake`` build system.
 
 Installation
 ------------
-1. Install `colcon <https://docs.ros.org/en/humble/Tutorials/Colcon-Tutorial.html#install-colcon>`_, `rosdep <https://docs.ros.org/en/crystal/Installation/Linux-Install-Binary.html#installing-and-initializing-rosdep>`_ and `vcstool <https://github.com/dirk-thomas/vcstool#how-to-install-vcstool>`_.
-2. Install the ``lbr_fri_ros2_stack``:
+#. Install `colcon <https://docs.ros.org/en/humble/Tutorials/Colcon-Tutorial.html#install-colcon>`_, `rosdep <https://docs.ros.org/en/crystal/Installation/Linux-Install-Binary.html#installing-and-initializing-rosdep>`_ and `vcstool <https://github.com/dirk-thomas/vcstool#how-to-install-vcstool>`_.
+#. Install the ``lbr_fri_ros2_stack``:
 
 .. code-block:: bash
 
     mkdir -p lbr_fri_ros2_stack_ws/src && cd lbr_fri_ros2_stack_ws
-    wget https://raw.githubusercontent.com/KCL-BMEIS/lbr_fri_ros2_stack/humble/lbr_fri_ros2_stack/repos.yml -P src
+    wget https://raw.githubusercontent.com/lbr-stack/lbr_fri_ros2_stack/humble/lbr_fri_ros2_stack/repos.yml -P src
     vcs import src < src/repos.yml
     rosdep install --from-paths src --ignore-src -r -y
     colcon build
@@ -32,13 +33,13 @@ Installation
 
 Usage
 -----
-1. Launch the simulation / real robot:
+#. Launch the simulation / real robot:
 
 .. code-block:: bash
 
     source install/setup.bash
-    ros2 launch lbr_bringup lbr_bringup.launch.py model:=med7 sim:=true # model:=[iiwa7/iiwa14/med7/med14]
+    ros2 launch lbr_bringup bringup.launch.py model:=med7 sim:=true # model:=[iiwa7/iiwa14/med7/med14]
 
 For the real robot, set ``sim:=false`` and run the ``LBRServer`` on the ``KUKA smartPAD``, see :ref:`Install Applications to the Robot`.
 
-2. Checkout demos, see :ref:`LBR Demos`.
+#. Checkout bringup and demos, see :ref:`LBR Bringup` and :ref:`LBR Demos`.

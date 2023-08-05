@@ -1,9 +1,9 @@
 repositories:
   fri_vendor:
     type: git
-    url: https://github.com/KCL-BMEIS/fri_vendor
+    url: https://github.com/lbr-stack/fri_vendor
     version: ros2
   lbr_fri_ros2_stack:
     type: git
-    url: https://github.com/KCL-BMEIS/lbr_fri_ros2_stack
+    url: https://github.com/lbr-stack/lbr_fri_ros2_stack
     version: humble
