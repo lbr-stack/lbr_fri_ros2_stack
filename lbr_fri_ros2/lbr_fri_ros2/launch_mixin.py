@@ -28,7 +28,7 @@ class LBRFRIROS2Mixin:
         return DeclareLaunchArgument(
             name="rt_prio",
             default_value="80",
-            description="Real-time priority of the FRI thread. Real-time kernel required.\n"
+            description="Realtime priority of the FRI thread. Realtime kernel required.\n"
             "\tRequires configuration in /etc/security/limits.conf. Add the line:\n"
             "\t'user - rtprio 99', where user is your username.",
         )
