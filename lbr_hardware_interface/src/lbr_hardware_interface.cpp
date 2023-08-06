@@ -202,6 +202,11 @@ hardware_interface::return_type LBRHardwareInterface::read(const rclcpp::Time & 
 
 hardware_interface::return_type LBRHardwareInterface::write(const rclcpp::Time & /*time*/,
                                                             const rclcpp::Duration & /*period*/) {
+
+  if (hw_session_state_ != KUKA::FRI::COMMANDING_ACTIVE) {
+    return hardware_interface::return_type::OK;
+  }
+
   if (hw_client_command_mode_ == KUKA::FRI::EClientCommandMode::POSITION) {
     if (std::any_of(hw_position_command_.cbegin(), hw_position_command_.cend(),
                     [](const double &v) { return std::isnan(v); })) {
