@@ -45,6 +45,9 @@ void LBRApp::declare_parameters_() {
   if (!node_->has_parameter("command_guard_variant")) {
     node_->declare_parameter<std::string>("command_guard_variant", "safe_stop");
   }
+  if (!node_->has_parameter("rt_prio")) {
+    node_->declare_parameter<int>("rt_prio", 80);
+  }
 }
 
 void LBRApp::get_parameters_() {
@@ -62,6 +65,7 @@ void LBRApp::get_parameters_() {
   }
   robot_name_ = node_->get_parameter("robot_name").as_string();
   command_guard_variant_ = node_->get_parameter("command_guard_variant").as_string();
+  rt_prio_ = node_->get_parameter("rt_prio").as_int();
 }
 
 void LBRApp::on_app_connect_(const lbr_fri_msgs::srv::AppConnect::Request::SharedPtr request,
@@ -141,6 +145,14 @@ bool LBRApp::disconnect_() {
 }
 
 void LBRApp::run_() {
+  if (realtime_tools::has_realtime_kernel()) {
+    if (!realtime_tools::configure_sched_fifo(rt_prio_)) {
+      RCLCPP_WARN(node_->get_logger(), "Failed to set FIFO realtime scheduling policy.");
+    }
+  } else {
+    RCLCPP_WARN(node_->get_logger(), "Realtime kernel recommended.");
+  }
+
   bool success = true;
   while (success && connected_ && rclcpp::ok()) {
     success = app_->step();

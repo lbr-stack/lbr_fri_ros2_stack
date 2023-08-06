@@ -9,6 +9,7 @@
 #include <thread>
 
 #include "rclcpp/rclcpp.hpp"
+#include "realtime_tools/thread_priority.hpp"
 
 #include "friClientApplication.h"
 #include "friLBRClient.h"
@@ -128,6 +129,7 @@ protected:
   std::string robot_description_;     /**< The robot description, read from node parameters.*/
   std::string robot_name_;            /**< The robot name, read from node parameters.*/
   std::string command_guard_variant_; /**< The command guard, read from node parameters.*/
+  int rt_prio_;                       /**< The real-time priority, read from node parameters.*/
 
   std::atomic<bool> connected_; /**< True if UDP port open and communication running.*/
 

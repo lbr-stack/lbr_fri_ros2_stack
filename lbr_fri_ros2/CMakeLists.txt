@@ -14,6 +14,7 @@ find_package(FRIClient REQUIRED)
 find_package(lbr_fri_msgs REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_components REQUIRED)
+find_package(realtime_tools REQUIRED)
 find_package(urdf REQUIRED)
 
 # lbr_fri_ros2
@@ -34,6 +35,7 @@ ament_target_dependencies(lbr_fri_ros2
   control_toolbox
   lbr_fri_msgs
   rclcpp
+  realtime_tools
   urdf
 )
 
@@ -48,6 +50,7 @@ ament_export_dependencies(
   FRIClient
   lbr_fri_msgs
   rclcpp
+  realtime_tools
   urdf
 )
 
