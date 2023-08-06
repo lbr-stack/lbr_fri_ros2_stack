@@ -16,7 +16,7 @@
 #include "rclcpp/strategies/message_pool_memory_strategy.hpp"
 #include "rclcpp_lifecycle/state.hpp"
 
-#include "fri/friLBRState.h"
+#include "friLBRState.h"
 
 #include "lbr_fri_msgs/msg/lbr_command.hpp"
 #include "lbr_fri_msgs/msg/lbr_state.hpp"

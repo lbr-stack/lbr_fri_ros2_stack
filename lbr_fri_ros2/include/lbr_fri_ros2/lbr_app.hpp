@@ -9,10 +9,11 @@
 #include <thread>
 
 #include "rclcpp/rclcpp.hpp"
+#include "realtime_tools/thread_priority.hpp"
 
-#include "fri/friClientApplication.h"
-#include "fri/friClientIf.h"
-#include "fri/friUdpConnection.h"
+#include "friClientApplication.h"
+#include "friLBRClient.h"
+#include "friUdpConnection.h"
 
 #include "lbr_fri_msgs/srv/app_connect.hpp"
 #include "lbr_fri_msgs/srv/app_disconnect.hpp"
@@ -22,7 +23,7 @@
 namespace lbr_fri_ros2 {
 /**
  * @brief The LBRApp has a node for exposing FRI methods to services. It shares this node with the
- * #lbr_client_, which reads commands / write states via real-time safe topics.
+ * #lbr_client_, which reads commands / write states via realtime safe topics.
  *
  * Services:
  * - <b>~/connect</b> (lbr_fri_msgs::srv::AppConnect)
@@ -114,7 +115,7 @@ protected:
    * @brief Exchanges commands / states between ROS and the FRI.
    *
    * Calls step() on #app_, which callbacks #lbr_client_. #lbr_client_ reads commands / write states
-   * through real-time safe topics.
+   * through realtime safe topics.
    *
    */
   void run_();
@@ -128,6 +129,7 @@ protected:
   std::string robot_description_;     /**< The robot description, read from node parameters.*/
   std::string robot_name_;            /**< The robot name, read from node parameters.*/
   std::string command_guard_variant_; /**< The command guard, read from node parameters.*/
+  int rt_prio_;                       /**< The realtime priority, read from node parameters.*/
 
   std::atomic<bool> connected_; /**< True if UDP port open and communication running.*/
 

@@ -11,8 +11,7 @@
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp/strategies/message_pool_memory_strategy.hpp"
 
-#include "fri/friClientIf.h"
-#include "fri/friLBRClient.h"
+#include "friLBRClient.h"
 
 #include "lbr_fri_msgs/msg/lbr_command.hpp"
 #include "lbr_fri_msgs/msg/lbr_state.hpp"

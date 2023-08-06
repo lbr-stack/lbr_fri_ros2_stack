@@ -9,6 +9,8 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(eigen3_cmake_module REQUIRED)
 find_package(Eigen3 REQUIRED)
+find_package(fri_vendor REQUIRED)
+find_package(FRIClient REQUIRED)
 find_package(kdl_parser REQUIRED)
 find_package(lbr_fri_ros2 REQUIRED)
 find_package(lbr_fri_msgs REQUIRED)
@@ -24,6 +26,10 @@ ament_target_dependencies(
   lbr_fri_msgs
   orocos_kdl
   rclcpp
+)
+
+target_link_libraries(admittance_control_node
+  FRIClient::FRIClient
 )
 
 target_include_directories(admittance_control_node

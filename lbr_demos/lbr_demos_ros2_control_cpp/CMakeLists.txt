@@ -8,7 +8,8 @@ endif()
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(control_msgs REQUIRED)
-find_package(fri REQUIRED)
+find_package(fri_vendor REQUIRED)
+find_package(FRIClient REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_action REQUIRED)
 find_package(trajectory_msgs REQUIRED)
@@ -19,10 +20,14 @@ add_executable(lbr_joint_trajectory_executioner_node
 
 ament_target_dependencies(lbr_joint_trajectory_executioner_node
   control_msgs
-  fri
+  fri_vendor
   rclcpp
   rclcpp_action
   trajectory_msgs
+)
+
+target_link_libraries(lbr_joint_trajectory_executioner_node
+  FRIClient::FRIClient
 )
 
 install(TARGETS

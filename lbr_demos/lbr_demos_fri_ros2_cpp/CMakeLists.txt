@@ -7,7 +7,8 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
-find_package(fri REQUIRED)
+find_package(fri_vendor REQUIRED)
+find_package(FRIClient REQUIRED)
 find_package(lbr_fri_msgs REQUIRED)
 find_package(rclcpp REQUIRED)
 
@@ -17,20 +18,28 @@ add_executable(joint_sine_overlay_node
 )
 
 ament_target_dependencies(joint_sine_overlay_node
-  fri  
+  fri_vendor
   lbr_fri_msgs
   rclcpp
 )
 
+target_link_libraries(joint_sine_overlay_node
+  FRIClient::FRIClient
+)
+  
 # torque sine overlay
 add_executable(torque_sine_overlay_node
   src/torque_sine_overlay_node.cpp
 )
 
 ament_target_dependencies(torque_sine_overlay_node
-  fri  
+  fri_vendor
   lbr_fri_msgs
   rclcpp
+)
+
+target_link_libraries(torque_sine_overlay_node
+  FRIClient::FRIClient
 )
 
 # wrench sine overlay
@@ -39,9 +48,13 @@ add_executable(wrench_sine_overlay_node
 )
 
 ament_target_dependencies(wrench_sine_overlay_node
-  fri  
+  fri_vendor
   lbr_fri_msgs
   rclcpp
+)
+
+target_link_libraries(wrench_sine_overlay_node
+  FRIClient::FRIClient
 )
 
 install(TARGETS

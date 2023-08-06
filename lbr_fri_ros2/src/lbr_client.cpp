@@ -148,11 +148,10 @@ void LBRClient::pub_lbr_state_() {
                 sizeof(double) * KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
   }
   if (open_loop_) {
-    std::memcpy(lbr_state_.measured_joint_position.data(), robotState().getMeasuredJointPosition(),
+    std::memcpy(lbr_state_.measured_joint_position.data(), lbr_command_.joint_position.data(),
                 sizeof(double) * KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
   } else {
-
-    std::memcpy(lbr_state_.measured_joint_position.data(), lbr_command_.joint_position.data(),
+    std::memcpy(lbr_state_.measured_joint_position.data(), robotState().getMeasuredJointPosition(),
                 sizeof(double) * KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
   }
   std::memcpy(lbr_state_.measured_torque.data(), robotState().getMeasuredTorque(),
