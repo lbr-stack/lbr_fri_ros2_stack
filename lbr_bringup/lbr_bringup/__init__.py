@@ -1,1 +1,1 @@
-from .lbr_bringup import LBRBringUp
+from .launch_mixin import LBRMoveGroupMixin

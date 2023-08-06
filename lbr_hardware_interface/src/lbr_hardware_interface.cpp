@@ -3,22 +3,36 @@
 namespace lbr_hardware_interface {
 controller_interface::CallbackReturn
 LBRHardwareInterface::on_init(const hardware_interface::HardwareInfo &system_info) {
-  hw_node_ = std::make_shared<rclcpp::Node>("fri_hardware_interface_node",
-                                            rclcpp::NodeOptions().use_intra_process_comms(true));
-  lbr_app_node_ = std::make_shared<rclcpp::Node>(
-      "lbr_app", rclcpp::NodeOptions().use_intra_process_comms(true));
-
-  lbr_app_node_->declare_parameter<std::string>("lbr_command_topic", "/_lbr_command");
-  lbr_app_node_->declare_parameter<std::string>("lbr_state_topic", "/_lbr_state");
-  lbr_app_node_->declare_parameter<double>("smoothing", 0.8);
-
-  lbr_app_ = std::make_unique<lbr_fri_ros2::LBRApp>(lbr_app_node_);
-
   auto ret = hardware_interface::SystemInterface::on_init(system_info);
   if (ret != controller_interface::CallbackReturn::SUCCESS) {
-    RCLCPP_ERROR(hw_node_->get_logger(), "Failed to initialize SystemInterface.");
+    RCLCPP_ERROR(lbr_node_->get_logger(), "Failed to initialize SystemInterface.");
     return ret;
   }
+
+  // read port_id and remote_host from lbr.ros2_control.xacro
+  port_id_ = std::stoul(info_.hardware_parameters["port_id"]);
+  info_.hardware_parameters["remote_host"] == "INADDR_ANY"
+      ? remote_host_ = NULL
+      : remote_host_ = info_.hardware_parameters["remote_host"].c_str();
+  sample_time_ = std::stoi(info_.hardware_parameters["sample_time"]);
+  robot_name_ =
+      "_" + info_.hardware_parameters["robot_name"]; // prefix with underscore to hide node
+
+  if (port_id_ < 30200 || port_id_ > 30209) {
+    RCLCPP_ERROR(lbr_node_->get_logger(), "Expected port_id in [30200, 30209]. Found %d.",
+                 port_id_);
+    return controller_interface::CallbackReturn::ERROR;
+  }
+
+  // setup node
+  lbr_node_ = std::make_shared<rclcpp::Node>(robot_name_ + "_node",
+                                             rclcpp::NodeOptions().use_intra_process_comms(true));
+
+  lbr_node_->declare_parameter<std::string>("robot_name", robot_name_);
+  lbr_node_->declare_parameter<std::string>("command_guard_variant", "default");
+  lbr_node_->declare_parameter<double>("smoothing", 0.8);
+
+  lbr_app_ = std::make_unique<lbr_fri_ros2::LBRApp>(lbr_node_);
 
   init_command_interfaces_();
   init_state_interfaces_();
@@ -40,18 +54,6 @@ LBRHardwareInterface::on_init(const hardware_interface::HardwareInfo &system_inf
     return controller_interface::CallbackReturn::ERROR;
   }
 
-  // read port_id and remote_host from lbr.ros2_control.xacro
-  port_id_ = std::stoul(info_.hardware_parameters["port_id"]);
-  info_.hardware_parameters["remote_host"] == "INADDR_ANY"
-      ? remote_host_ = NULL
-      : remote_host_ = info_.hardware_parameters["remote_host"].c_str();
-  sample_time_ = std::stoi(info_.hardware_parameters["sample_time"]);
-
-  if (port_id_ < 30200 || port_id_ > 30209) {
-    RCLCPP_ERROR(hw_node_->get_logger(), "Expected port_id in [30200, 30209]. Found %d.", port_id_);
-    return controller_interface::CallbackReturn::ERROR;
-  }
-
   if (!spawn_com_layer_()) {
     return controller_interface::CallbackReturn::ERROR;
   }
@@ -62,8 +64,7 @@ LBRHardwareInterface::on_init(const hardware_interface::HardwareInfo &system_inf
 
   node_thread_ = std::make_unique<std::thread>([this]() {
     auto executor = std::make_shared<rclcpp::executors::SingleThreadedExecutor>();
-    executor->add_node(hw_node_);
-    executor->add_node(lbr_app_node_);
+    executor->add_node(lbr_node_);
     executor->spin();
     disconnect_();
   });
@@ -144,7 +145,7 @@ hardware_interface::return_type LBRHardwareInterface::prepare_command_mode_switc
 controller_interface::CallbackReturn
 LBRHardwareInterface::on_activate(const rclcpp_lifecycle::State &) {
   if (!connect_()) {
-    RCLCPP_ERROR(hw_node_->get_logger(), "Failed to connect to robot.");
+    RCLCPP_ERROR(lbr_node_->get_logger(), "Failed to connect to robot.");
     return controller_interface::CallbackReturn::ERROR;
   }
   return controller_interface::CallbackReturn::SUCCESS;
@@ -153,7 +154,7 @@ LBRHardwareInterface::on_activate(const rclcpp_lifecycle::State &) {
 controller_interface::CallbackReturn
 LBRHardwareInterface::on_deactivate(const rclcpp_lifecycle::State &) {
   if (!disconnect_()) {
-    RCLCPP_ERROR(hw_node_->get_logger(), "Failed to disconnect from robot.");
+    RCLCPP_ERROR(lbr_node_->get_logger(), "Failed to disconnect from robot.");
     return controller_interface::CallbackReturn::ERROR;
   }
   return controller_interface::CallbackReturn::SUCCESS;
@@ -163,7 +164,7 @@ hardware_interface::return_type LBRHardwareInterface::read(const rclcpp::Time & 
                                                            const rclcpp::Duration & /*period*/) {
   if (exit_commanding_active_(static_cast<KUKA::FRI::ESessionState>(hw_session_state_),
                               static_cast<KUKA::FRI::ESessionState>(lbr_state_.session_state))) {
-    RCLCPP_ERROR(hw_node_->get_logger(), "LBR left COMMANDING_ACTIVE. Please re-run lbr_bringup.");
+    RCLCPP_ERROR(lbr_node_->get_logger(), "LBR left COMMANDING_ACTIVE. Please re-run lbr_bringup.");
     return hardware_interface::return_type::ERROR;
   }
 
@@ -180,18 +181,18 @@ hardware_interface::return_type LBRHardwareInterface::read(const rclcpp::Time & 
   hw_time_stamp_sec_ = static_cast<double>(lbr_state_.time_stamp_sec);
   hw_time_stamp_nano_sec_ = static_cast<double>(lbr_state_.time_stamp_nano_sec);
 
-  std::copy(lbr_state_.measured_joint_position.cbegin(), lbr_state_.measured_joint_position.cend(),
-            hw_position_.begin());
-  std::copy(lbr_state_.commanded_joint_position.cbegin(),
-            lbr_state_.commanded_joint_position.cend(), hw_commanded_joint_position_.begin());
-  std::copy(lbr_state_.measured_torque.cbegin(), lbr_state_.measured_torque.cend(),
-            hw_effort_.begin());
-  std::copy(lbr_state_.commanded_torque.cbegin(), lbr_state_.commanded_torque.cend(),
-            hw_commanded_torque_.begin());
-  std::copy(lbr_state_.external_torque.cbegin(), lbr_state_.external_torque.cend(),
-            hw_commanded_torque_.begin());
-  std::copy(lbr_state_.ipo_joint_position.cbegin(), lbr_state_.ipo_joint_position.cend(),
-            hw_ipo_joint_position_.begin());
+  std::memcpy(hw_position_.data(), lbr_state_.measured_joint_position.data(),
+              sizeof(double) * KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
+  std::memcpy(hw_commanded_joint_position_.data(), lbr_state_.commanded_joint_position.data(),
+              sizeof(double) * KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
+  std::memcpy(hw_effort_.data(), lbr_state_.measured_torque.data(),
+              sizeof(double) * KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
+  std::memcpy(hw_commanded_torque_.data(), lbr_state_.commanded_torque.data(),
+              sizeof(double) * KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
+  std::memcpy(hw_external_torque_.data(), lbr_state_.external_torque.data(),
+              sizeof(double) * KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
+  std::memcpy(hw_ipo_joint_position_.data(), lbr_state_.ipo_joint_position.data(),
+              sizeof(double) * KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
   hw_tracking_performance_ = lbr_state_.tracking_performance;
   compute_hw_velocity_();
   update_last_hw_states_();
@@ -201,14 +202,18 @@ hardware_interface::return_type LBRHardwareInterface::read(const rclcpp::Time & 
 
 hardware_interface::return_type LBRHardwareInterface::write(const rclcpp::Time & /*time*/,
                                                             const rclcpp::Duration & /*period*/) {
+
+  if (hw_session_state_ != KUKA::FRI::COMMANDING_ACTIVE) {
+    return hardware_interface::return_type::OK;
+  }
+
   if (hw_client_command_mode_ == KUKA::FRI::EClientCommandMode::POSITION) {
     if (std::any_of(hw_position_command_.cbegin(), hw_position_command_.cend(),
                     [](const double &v) { return std::isnan(v); })) {
       return hardware_interface::return_type::OK;
     }
-
-    std::copy(hw_position_command_.cbegin(), hw_position_command_.cend(),
-              lbr_command_.joint_position.begin());
+    std::memcpy(lbr_command_.joint_position.data(), hw_position_command_.data(),
+                sizeof(double) * KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
   }
 
   if (hw_client_command_mode_ == KUKA::FRI::EClientCommandMode::TORQUE) {
@@ -216,10 +221,10 @@ hardware_interface::return_type LBRHardwareInterface::write(const rclcpp::Time &
                     [](const double &v) { return std::isnan(v); })) {
       return hardware_interface::return_type::OK;
     }
-
-    std::copy(hw_position_command_.cbegin(), hw_position_command_.cend(),
-              lbr_command_.joint_position.begin());
-    std::copy(hw_effort_command_.cbegin(), hw_effort_command_.cend(), lbr_command_.torque.begin());
+    std::memcpy(lbr_command_.joint_position.data(), hw_position_command_.data(),
+                sizeof(double) * KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
+    std::memcpy(lbr_command_.torque.data(), hw_effort_command_.data(),
+                sizeof(double) * KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
   }
 
   lbr_command_pub_->publish(lbr_command_);
@@ -233,7 +238,7 @@ bool LBRHardwareInterface::wait_for_service_(
   bool spawned = false;
   uint8_t attempt = 0;
   while (attempt < attempts && !spawned && rclcpp::ok()) {
-    RCLCPP_INFO(hw_node_->get_logger(), "Waiting for service %s...", client->get_service_name());
+    RCLCPP_INFO(lbr_node_->get_logger(), "Waiting for service %s...", client->get_service_name());
     spawned = client->wait_for_service(timeout);
     ++attempt;
   }
@@ -272,7 +277,7 @@ void LBRHardwareInterface::init_state_interfaces_() {
 
 bool LBRHardwareInterface::verify_number_of_joints_() {
   if (info_.joints.size() != KUKA::FRI::LBRState::NUMBER_OF_JOINTS) {
-    RCLCPP_ERROR(hw_node_->get_logger(), "Expected %d joints in URDF. Found %ld.",
+    RCLCPP_ERROR(lbr_node_->get_logger(), "Expected %d joints in URDF. Found %ld.",
                  KUKA::FRI::LBRState::NUMBER_OF_JOINTS, info_.joints.size());
     return false;
   }
@@ -284,7 +289,7 @@ bool LBRHardwareInterface::verify_joint_command_interfaces_() {
   for (auto &joint : info_.joints) {
     if (joint.command_interfaces.size() != LBR_FRI_COMMAND_INTERFACE_SIZE) {
       RCLCPP_ERROR(
-          hw_node_->get_logger(),
+          lbr_node_->get_logger(),
           "Joint %s received invalid number of command interfaces. Received %ld, expected %d.",
           joint.name.c_str(), joint.command_interfaces.size(), LBR_FRI_COMMAND_INTERFACE_SIZE);
       return false;
@@ -292,7 +297,7 @@ bool LBRHardwareInterface::verify_joint_command_interfaces_() {
     for (auto &ci : joint.command_interfaces) {
       if (ci.name != hardware_interface::HW_IF_POSITION &&
           ci.name != hardware_interface::HW_IF_EFFORT) {
-        RCLCPP_ERROR(hw_node_->get_logger(),
+        RCLCPP_ERROR(lbr_node_->get_logger(),
                      "Joint %s received invalid command interface: %s. Expected %s or %s.",
                      joint.name.c_str(), ci.name.c_str(), hardware_interface::HW_IF_POSITION,
                      hardware_interface::HW_IF_EFFORT);
@@ -308,7 +313,7 @@ bool LBRHardwareInterface::verify_joint_state_interfaces_() {
   for (auto &joint : info_.joints) {
     if (joint.state_interfaces.size() != LBR_FRI_STATE_INTERFACE_SIZE) {
       RCLCPP_ERROR(
-          hw_node_->get_logger(),
+          lbr_node_->get_logger(),
           "Joint %s received invalid number of state interfaces. Received %ld, expected %d.",
           joint.name.c_str(), joint.state_interfaces.size(), LBR_FRI_STATE_INTERFACE_SIZE);
       return false;
@@ -320,7 +325,7 @@ bool LBRHardwareInterface::verify_joint_state_interfaces_() {
           si.name != HW_IF_EXTERNAL_TORQUE && si.name != HW_IF_IPO_JOINT_POSITION &&
           si.name != hardware_interface::HW_IF_VELOCITY) {
         RCLCPP_ERROR(
-            hw_node_->get_logger(),
+            lbr_node_->get_logger(),
             "Joint %s received invalid state interface: %s. Expected %s, %s, %s, %s, %s, %s or %s.",
             joint.name.c_str(), si.name.c_str(), hardware_interface::HW_IF_POSITION,
             HW_IF_COMMANDED_JOINT_POSITION, hardware_interface::HW_IF_EFFORT,
@@ -336,14 +341,14 @@ bool LBRHardwareInterface::verify_joint_state_interfaces_() {
 bool LBRHardwareInterface::verify_sensors_() {
   // check lbr specific state interfaces
   if (info_.sensors.size() > 1) {
-    RCLCPP_ERROR(hw_node_->get_logger(), "Expected 1 sensor, got %ld", info_.sensors.size());
+    RCLCPP_ERROR(lbr_node_->get_logger(), "Expected 1 sensor, got %ld", info_.sensors.size());
     return false;
   }
 
   // check all interfaces are defined in lbr.ros2_control.xacro
   const auto &lbr_fri_sensor = info_.sensors[0];
   if (lbr_fri_sensor.state_interfaces.size() != LBR_FRI_SENSOR_SIZE) {
-    RCLCPP_ERROR(hw_node_->get_logger(),
+    RCLCPP_ERROR(lbr_node_->get_logger(),
                  "Sensor %s received invalid state interface. Received %ld, expected %d. ",
                  lbr_fri_sensor.name.c_str(), lbr_fri_sensor.state_interfaces.size(),
                  LBR_FRI_SENSOR_SIZE);
@@ -360,7 +365,7 @@ bool LBRHardwareInterface::verify_sensors_() {
         si.name != HW_IF_TIME_STAMP_NANO_SEC && si.name != HW_IF_COMMANDED_JOINT_POSITION &&
         si.name != HW_IF_COMMANDED_TORQUE && si.name != HW_IF_EXTERNAL_TORQUE &&
         si.name != HW_IF_IPO_JOINT_POSITION && si.name != HW_IF_TRACKING_PERFORMANCE) {
-      RCLCPP_ERROR(hw_node_->get_logger(), "Sensor %s received invalid state interface %s.",
+      RCLCPP_ERROR(lbr_node_->get_logger(), "Sensor %s received invalid state interface %s.",
                    lbr_fri_sensor.name.c_str(), si.name.c_str());
 
       return false;
@@ -370,7 +375,7 @@ bool LBRHardwareInterface::verify_sensors_() {
 }
 
 bool LBRHardwareInterface::spawn_com_layer_() {
-  if (!hw_node_) {
+  if (!lbr_node_) {
     printf("No node provided.\n");
     return false;
   }
@@ -379,51 +384,51 @@ bool LBRHardwareInterface::spawn_com_layer_() {
     auto memory_strategy =
         rclcpp::strategies::message_pool_memory_strategy::MessagePoolMemoryStrategy<
             lbr_fri_msgs::msg::LBRState, 1>::make_shared();
-    lbr_state_sub_ = hw_node_->create_subscription<lbr_fri_msgs::msg::LBRState>(
-        "/_lbr_state",
+    lbr_state_sub_ = lbr_node_->create_subscription<lbr_fri_msgs::msg::LBRState>(
+        robot_name_ + "/state",
         rclcpp::QoS(1)
             .deadline(std::chrono::milliseconds(sample_time_))
             .reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE),
         std::bind(&LBRHardwareInterface::on_lbr_state_, this, std::placeholders::_1),
         rclcpp::SubscriptionOptions(), memory_strategy);
-    lbr_command_pub_ = hw_node_->create_publisher<lbr_fri_msgs::msg::LBRCommand>(
-        "/_lbr_command", rclcpp::QoS(1)
-                             .deadline(std::chrono::milliseconds(sample_time_))
-                             .reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE));
+    lbr_command_pub_ = lbr_node_->create_publisher<lbr_fri_msgs::msg::LBRCommand>(
+        robot_name_ + "/command", rclcpp::QoS(1)
+                                      .deadline(std::chrono::milliseconds(sample_time_))
+                                      .reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE));
   } catch (const std::exception &e) {
-    RCLCPP_ERROR(hw_node_->get_logger(), "Failed to spawn real time layer.\n%s.", e.what());
+    RCLCPP_ERROR(lbr_node_->get_logger(), "Failed to spawn real time layer.\n%s.", e.what());
     return false;
   }
   return true;
 }
 
 bool LBRHardwareInterface::spawn_clients_() {
-  if (!hw_node_) {
+  if (!lbr_node_) {
     printf("No node provided.\n");
     return false;
   }
 
-  std::string app_connect_service_name = "/lbr_app/connect";
-  app_connect_clt_ = hw_node_->create_client<lbr_fri_msgs::srv::AppConnect>(
+  std::string app_connect_service_name = robot_name_ + "/connect";
+  app_connect_clt_ = lbr_node_->create_client<lbr_fri_msgs::srv::AppConnect>(
       app_connect_service_name, rclcpp::ServicesQoS());
-  RCLCPP_INFO(hw_node_->get_logger(), "Waiting for service %s to spawn...",
+  RCLCPP_INFO(lbr_node_->get_logger(), "Waiting for service %s to spawn...",
               app_connect_service_name.c_str());
   if (!wait_for_service_<lbr_fri_msgs::srv::AppConnect>(app_connect_clt_)) {
-    RCLCPP_ERROR(hw_node_->get_logger(), "Failed.");
+    RCLCPP_ERROR(lbr_node_->get_logger(), "Failed.");
     return false;
   }
-  RCLCPP_INFO(hw_node_->get_logger(), "Done.");
+  RCLCPP_INFO(lbr_node_->get_logger(), "Done.");
 
-  std::string app_disconnect_service_name = "/lbr_app/disconnect";
-  app_disconnect_clt_ = hw_node_->create_client<lbr_fri_msgs::srv::AppDisconnect>(
+  std::string app_disconnect_service_name = robot_name_ + "/disconnect";
+  app_disconnect_clt_ = lbr_node_->create_client<lbr_fri_msgs::srv::AppDisconnect>(
       app_disconnect_service_name, rclcpp::ServicesQoS());
-  RCLCPP_INFO(hw_node_->get_logger(), "Waiting for service %s to spawn...",
+  RCLCPP_INFO(lbr_node_->get_logger(), "Waiting for service %s to spawn...",
               app_disconnect_service_name.c_str());
   if (!wait_for_service_<lbr_fri_msgs::srv::AppDisconnect>(app_disconnect_clt_)) {
-    RCLCPP_ERROR(hw_node_->get_logger(), "Failed.");
+    RCLCPP_ERROR(lbr_node_->get_logger(), "Failed.");
     return false;
   }
-  RCLCPP_INFO(hw_node_->get_logger(), "Done.");
+  RCLCPP_INFO(lbr_node_->get_logger(), "Done.");
   return true;
 }
 
@@ -444,13 +449,13 @@ bool LBRHardwareInterface::connect_() {
   auto future = app_connect_clt_->async_send_request(connect_request);
   auto status = future.wait_for(std::chrono::seconds(1));
   if (status != std::future_status::ready) {
-    RCLCPP_ERROR(hw_node_->get_logger(), "Failed to request connect service %s.",
+    RCLCPP_ERROR(lbr_node_->get_logger(), "Failed to request connect service %s.",
                  app_connect_clt_->get_service_name());
     return false;
   }
   auto response = future.get();
   if (!response->connected) {
-    RCLCPP_ERROR(hw_node_->get_logger(), "Failed to connect.\n%s", response->message.c_str());
+    RCLCPP_ERROR(lbr_node_->get_logger(), "Failed to connect.\n%s", response->message.c_str());
   }
   return response->connected;
 }
@@ -460,13 +465,13 @@ bool LBRHardwareInterface::disconnect_() {
   auto future = app_disconnect_clt_->async_send_request(disconnect_request);
   auto status = future.wait_for(std::chrono::seconds(1));
   if (status != std::future_status::ready) {
-    RCLCPP_ERROR(hw_node_->get_logger(), "Failed to request disconnect service %s.",
+    RCLCPP_ERROR(lbr_node_->get_logger(), "Failed to request disconnect service %s.",
                  app_disconnect_clt_->get_service_name());
     return false;
   }
   auto response = future.get();
   if (!response->disconnected) {
-    RCLCPP_ERROR(hw_node_->get_logger(), "Failed to disconnect.\n%s", response->message.c_str());
+    RCLCPP_ERROR(lbr_node_->get_logger(), "Failed to disconnect.\n%s", response->message.c_str());
   }
   return response->disconnected;
 }

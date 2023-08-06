@@ -25,7 +25,10 @@ void LBRClient::onStateChange(KUKA::FRI::ESessionState old_state,
   RCLCPP_INFO(node_->get_logger(), "LBR switched from %s to %s.",
               KUKA_FRI_STATE_MAP[old_state].c_str(), KUKA_FRI_STATE_MAP[new_state].c_str());
 }
-void LBRClient::monitor() { pub_lbr_state_(); }
+void LBRClient::monitor() {
+  pub_lbr_state_();
+  init_lbr_command_();
+}
 
 void LBRClient::waitForCommand() {
   KUKA::FRI::LBRClient::waitForCommand();
@@ -46,23 +49,20 @@ void LBRClient::command() {
 
   // validate command
   if (!lbr_command_guard_->is_valid_command(lbr_command_, robotState())) {
-    // not responding -> connection lost
+    RCLCPP_ERROR(node_->get_logger(), "Invalid command received. Triggering disconnect.");
     return;
   };
 
   // set command
+  robotCommand().setJointPosition(lbr_command_.joint_position.data());
   switch (robotState().getClientCommandMode()) {
   case KUKA::FRI::EClientCommandMode::NO_COMMAND_MODE:
-    return;
   case KUKA::FRI::EClientCommandMode::POSITION:
-    robotCommand().setJointPosition(lbr_command_.joint_position.data());
     return;
   case KUKA::FRI::EClientCommandMode::WRENCH:
-    robotCommand().setJointPosition(lbr_command_.joint_position.data());
     robotCommand().setWrench(lbr_command_.wrench.data());
     return;
   case KUKA::FRI::EClientCommandMode::TORQUE:
-    robotCommand().setJointPosition(lbr_command_.joint_position.data());
     robotCommand().setTorque(lbr_command_.torque.data());
     return;
   default:
@@ -72,9 +72,8 @@ void LBRClient::command() {
 }
 
 void LBRClient::init_lbr_command_() {
-  std::copy(robotState().getIpoJointPosition(),
-            robotState().getIpoJointPosition() + KUKA::FRI::LBRState::NUMBER_OF_JOINTS,
-            lbr_command_.joint_position.begin());
+  std::memcpy(lbr_command_.joint_position.data(), robotState().getMeasuredJointPosition(),
+              sizeof(double) * KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
   lbr_command_.torque.fill(0.);
   lbr_command_.wrench.fill(0.);
 }
@@ -87,10 +86,10 @@ void LBRClient::init_topics_() {
     };
 
     lbr_state_pub_ = node_->create_publisher<lbr_fri_msgs::msg::LBRState>(
-        lbr_state_topic_, rclcpp::QoS(1)
-                              .deadline(std::chrono::milliseconds(
-                                  static_cast<int64_t>(robotState().getSampleTime() * 1e3)))
-                              .reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE));
+        robot_name_ + "/state", rclcpp::QoS(1)
+                                    .deadline(std::chrono::milliseconds(
+                                        static_cast<int64_t>(robotState().getSampleTime() * 1e3)))
+                                    .reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE));
   }
 
   if (!lbr_command_sub_) {
@@ -104,7 +103,7 @@ void LBRClient::init_topics_() {
     };
 
     lbr_command_sub_ = node_->create_subscription<lbr_fri_msgs::msg::LBRCommand>(
-        lbr_command_topic_,
+        robot_name_ + "/command",
         rclcpp::QoS(1)
             .deadline(
                 std::chrono::milliseconds(static_cast<int64_t>(robotState().getSampleTime() * 1e3)))
@@ -115,51 +114,48 @@ void LBRClient::init_topics_() {
 }
 
 void LBRClient::declare_parameters_() {
-  if (!node_->has_parameter("lbr_command_topic")) {
-    node_->declare_parameter<std::string>("lbr_command_topic", "/lbr_command");
-  }
-  if (!node_->has_parameter("lbr_state_topic")) {
-    node_->declare_parameter<std::string>("lbr_state_topic", "/lbr_state");
+  if (!node_->has_parameter("robot_name")) {
+    node_->declare_parameter<std::string>("robot_name", "lbr");
   }
   if (!node_->has_parameter("smoothing")) {
     node_->declare_parameter<double>("smoothing", 0.99);
   }
+  if (!node_->has_parameter("open_loop")) {
+    node_->declare_parameter<bool>("open_loop", true);
+  }
 }
 
 void LBRClient::get_parameters_() {
+  robot_name_ = node_->get_parameter("robot_name").as_string();
   smoothing_ = node_->get_parameter("smoothing").as_double();
-  lbr_command_topic_ = node_->get_parameter("lbr_command_topic").as_string();
-  lbr_state_topic_ = node_->get_parameter("lbr_state_topic").as_string();
+  open_loop_ = node_->get_parameter("open_loop").as_bool();
 }
 
 void LBRClient::pub_lbr_state_() {
   lbr_state_.client_command_mode = robotState().getClientCommandMode();
-  auto commanded_joint_position = robotState().getCommandedJointPosition();
-  std::copy(commanded_joint_position,
-            commanded_joint_position + KUKA::FRI::LBRState::NUMBER_OF_JOINTS,
-            lbr_state_.commanded_joint_position.begin());
-  auto commanded_torque = robotState().getCommandedTorque();
-  std::copy(commanded_torque, commanded_torque + KUKA::FRI::LBRState::NUMBER_OF_JOINTS,
-            lbr_state_.commanded_torque.begin());
+  std::memcpy(lbr_state_.commanded_joint_position.data(), robotState().getCommandedJointPosition(),
+              sizeof(double) * KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
+  std::memcpy(lbr_state_.commanded_torque.data(), robotState().getCommandedTorque(),
+              sizeof(double) * KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
   lbr_state_.connection_quality = robotState().getConnectionQuality();
   lbr_state_.control_mode = robotState().getControlMode();
   lbr_state_.drive_state = robotState().getDriveState();
-  auto external_torque = robotState().getExternalTorque();
-  std::copy(external_torque, external_torque + KUKA::FRI::LBRState::NUMBER_OF_JOINTS,
-            lbr_state_.external_torque.begin());
+  std::memcpy(lbr_state_.external_torque.data(), robotState().getExternalTorque(),
+              sizeof(double) * KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
   if (robotState().getSessionState() == KUKA::FRI::ESessionState::COMMANDING_WAIT ||
       robotState().getSessionState() == KUKA::FRI::ESessionState::COMMANDING_ACTIVE) {
-    auto ipo_joint_position = robotState().getIpoJointPosition();
-    std::copy(ipo_joint_position, ipo_joint_position + KUKA::FRI::LBRState::NUMBER_OF_JOINTS,
-              lbr_state_.ipo_joint_position.begin());
+    std::memcpy(lbr_state_.ipo_joint_position.data(), robotState().getIpoJointPosition(),
+                sizeof(double) * KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
   }
-  auto measured_joint_position = robotState().getMeasuredJointPosition();
-  std::copy(measured_joint_position,
-            measured_joint_position + KUKA::FRI::LBRState::NUMBER_OF_JOINTS,
-            lbr_state_.measured_joint_position.begin());
-  auto measured_torque = robotState().getMeasuredTorque();
-  std::copy(measured_torque, measured_torque + KUKA::FRI::LBRState::NUMBER_OF_JOINTS,
-            lbr_state_.measured_torque.begin());
+  if (open_loop_) {
+    std::memcpy(lbr_state_.measured_joint_position.data(), lbr_command_.joint_position.data(),
+                sizeof(double) * KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
+  } else {
+    std::memcpy(lbr_state_.measured_joint_position.data(), robotState().getMeasuredJointPosition(),
+                sizeof(double) * KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
+  }
+  std::memcpy(lbr_state_.measured_torque.data(), robotState().getMeasuredTorque(),
+              sizeof(double) * KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
   lbr_state_.operation_mode = robotState().getOperationMode();
   lbr_state_.overlay_type = robotState().getOverlayType();
   lbr_state_.safety_state = robotState().getSafetyState();

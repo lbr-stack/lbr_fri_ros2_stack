@@ -1,44 +1,25 @@
-import os
+from launch import LaunchDescription
 
-import xacro
-from ament_index_python import get_package_share_directory
-from launch import LaunchContext, LaunchDescription
-from launch.actions import DeclareLaunchArgument, OpaqueFunction
-from launch.substitutions import LaunchConfiguration
-from launch_ros.actions import Node
+from lbr_description import LBRDescriptionMixin
+from lbr_fri_ros2 import LBRFRIROS2Mixin
 
 
-def launch_setup(context: LaunchContext):
-    model = LaunchConfiguration("model").perform(context)
-
-    robot_description = {
-        "robot_description": xacro.process(
-            os.path.join(
-                get_package_share_directory("lbr_description"),
-                "urdf",
-                model,
-                f"{model}.urdf.xacro",
-            ),
-            mappings={"sim": "false"},
+def generate_launch_description() -> LaunchDescription:
+    ld = LaunchDescription()
+    ld.add_action(LBRDescriptionMixin.arg_base_frame())
+    ld.add_action(LBRDescriptionMixin.arg_model())
+    ld.add_action(LBRDescriptionMixin.arg_robot_name())
+    robot_description = LBRDescriptionMixin.param_robot_description(sim=False)
+    ld.add_action(LBRFRIROS2Mixin.arg_open_loop())
+    ld.add_action(LBRFRIROS2Mixin.arg_rt_prio())
+    ld.add_action(
+        LBRFRIROS2Mixin.node_lbr_app(
+            parameters=[
+                robot_description,
+                LBRDescriptionMixin.param_robot_name(),
+                LBRFRIROS2Mixin.param_open_loop(),
+                LBRFRIROS2Mixin.param_rt_prio(),
+            ]
         )
-    }
-
-    lbr_app_node = Node(
-        package="lbr_fri_ros2",
-        executable="lbr_app",
-        emulate_tty=True,
-        output="screen",
-        parameters=[robot_description],
     )
-
-    return [lbr_app_node]
-
-
-def generate_launch_description():
-    model_arg = DeclareLaunchArgument(
-        name="model",
-        default_value="iiwa7",
-        description="The LBR model in use.",
-        choices=["iiwa7", "iiwa14", "med7", "med14"],
-    )
-    return LaunchDescription([model_arg, OpaqueFunction(function=launch_setup)])
+    return ld

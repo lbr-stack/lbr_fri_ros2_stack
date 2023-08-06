@@ -22,4 +22,4 @@ jobs:
         with:
           package-name: lbr_fri_ros2_stack
           target-ros2-distro: rolling
-          vcs-repo-file-url: https://raw.githubusercontent.com/KCL-BMEIS/lbr_fri_ros2_stack/rolling/lbr_fri_ros2_stack/repos.yml
+          vcs-repo-file-url: https://raw.githubusercontent.com/lbr-stack/lbr_fri_ros2_stack/rolling/lbr_fri_ros2_stack/repos.yml

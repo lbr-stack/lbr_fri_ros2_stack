@@ -8,23 +8,18 @@ LBRApp::LBRApp(const rclcpp::Node::SharedPtr node) : node_(node) {
   connected_ = false;
 
   app_connect_srv_ = node_->create_service<lbr_fri_msgs::srv::AppConnect>(
-      "~/connect",
+      robot_name_ + "/connect",
       std::bind(&LBRApp::on_app_connect_, this, std::placeholders::_1, std::placeholders::_2),
       rclcpp::ServicesQoS());
 
   app_disconnect_srv_ = node_->create_service<lbr_fri_msgs::srv::AppDisconnect>(
-      "~/disconnect",
+      robot_name_ + "/disconnect",
       std::bind(&LBRApp::on_app_disconnect_, this, std::placeholders::_1, std::placeholders::_2),
       rclcpp::ServicesQoS());
 
-  std::string robot_description;
-  node_->declare_parameter<std::string>("robot_description");
-  if (!node_->get_parameter("robot_description", robot_description)) {
-    throw std::runtime_error("Failed to receive robot_description parameter.");
-  }
-
   lbr_client_ = std::make_shared<LBRClient>(
-      node_, std::make_unique<LBREarlyStopCommandGuard>(robot_description));
+      node_, lbr_command_guard_factory(node_->get_node_logging_interface(), robot_description_,
+                                       command_guard_variant_));
   connection_ = std::make_unique<KUKA::FRI::UdpConnection>();
   app_ = std::make_unique<KUKA::FRI::ClientApplication>(*connection_, *lbr_client_);
 
@@ -35,8 +30,24 @@ LBRApp::LBRApp(const rclcpp::Node::SharedPtr node) : node_(node) {
 LBRApp::~LBRApp() { disconnect_(); }
 
 void LBRApp::declare_parameters_() {
-  node_->declare_parameter<int>("port_id", 30200);
-  node_->declare_parameter<std::string>("remote_host", "");
+  if (!node_->has_parameter("port_id")) {
+    node_->declare_parameter<int>("port_id", 30200);
+  }
+  if (!node_->has_parameter("remote_host")) {
+    node_->declare_parameter<std::string>("remote_host", "");
+  }
+  if (!node_->has_parameter("robot_description")) {
+    node_->declare_parameter<std::string>("robot_description", "");
+  }
+  if (!node_->has_parameter("robot_name")) {
+    node_->declare_parameter<std::string>("robot_name", "lbr");
+  }
+  if (!node_->has_parameter("command_guard_variant")) {
+    node_->declare_parameter<std::string>("command_guard_variant", "safe_stop");
+  }
+  if (!node_->has_parameter("rt_prio")) {
+    node_->declare_parameter<int>("rt_prio", 80);
+  }
 }
 
 void LBRApp::get_parameters_() {
@@ -48,6 +59,13 @@ void LBRApp::get_parameters_() {
   }
   port_id_ = port_id;
   remote_host_ = remote_host.empty() ? NULL : remote_host.c_str();
+
+  if (!node_->get_parameter("robot_description", robot_description_)) {
+    throw std::runtime_error("Failed to receive robot_description parameter.");
+  }
+  robot_name_ = node_->get_parameter("robot_name").as_string();
+  command_guard_variant_ = node_->get_parameter("command_guard_variant").as_string();
+  rt_prio_ = node_->get_parameter("rt_prio").as_int();
 }
 
 void LBRApp::on_app_connect_(const lbr_fri_msgs::srv::AppConnect::Request::SharedPtr request,
@@ -127,6 +145,14 @@ bool LBRApp::disconnect_() {
 }
 
 void LBRApp::run_() {
+  if (realtime_tools::has_realtime_kernel()) {
+    if (!realtime_tools::configure_sched_fifo(rt_prio_)) {
+      RCLCPP_WARN(node_->get_logger(), "Failed to set FIFO realtime scheduling policy.");
+    }
+  } else {
+    RCLCPP_WARN(node_->get_logger(), "Realtime kernel recommended.");
+  }
+
   bool success = true;
   while (success && connected_ && rclcpp::ok()) {
     success = app_->step();
