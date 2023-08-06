@@ -18,7 +18,8 @@ LBRApp::LBRApp(const rclcpp::Node::SharedPtr node) : node_(node) {
       rmw_qos_profile_services_default);
 
   lbr_client_ = std::make_shared<LBRClient>(
-      node_, lbr_command_guard_factory(node_, robot_description_, command_guard_variant_));
+      node_, lbr_command_guard_factory(node_->get_node_logging_interface(), robot_description_,
+                                       command_guard_variant_));
   connection_ = std::make_unique<KUKA::FRI::UdpConnection>();
   app_ = std::make_unique<KUKA::FRI::ClientApplication>(*connection_, *lbr_client_);
 

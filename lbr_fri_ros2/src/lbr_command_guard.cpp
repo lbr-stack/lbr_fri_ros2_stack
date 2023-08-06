@@ -1,19 +1,21 @@
 #include "lbr_fri_ros2/lbr_command_guard.hpp"
 
 namespace lbr_fri_ros2 {
-LBRCommandGuard::LBRCommandGuard(const rclcpp::Node::SharedPtr node, const JointArray &min_position,
-                                 const JointArray &max_position, const JointArray &max_velocity,
-                                 const JointArray &max_torque)
-    : node_(node), min_position_(min_position), max_position_(max_position),
+LBRCommandGuard::LBRCommandGuard(
+    const rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr logger_interface,
+    const JointArray &min_position, const JointArray &max_position, const JointArray &max_velocity,
+    const JointArray &max_torque)
+    : logger_interface_(logger_interface), min_position_(min_position), max_position_(max_position),
       max_velocity_(max_velocity), max_torque_(max_torque) {}
 
-LBRCommandGuard::LBRCommandGuard(const rclcpp::Node::SharedPtr node,
-                                 const std::string &robot_description)
-    : node_(node) {
+LBRCommandGuard::LBRCommandGuard(
+    const rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr logger_interface,
+    const std::string &robot_description)
+    : logger_interface_(logger_interface) {
   urdf::Model model;
   if (!model.initString(robot_description)) {
     std::string error_msg = "Failed to intialize urdf model from robot description.";
-    RCLCPP_ERROR(node_->get_logger(), error_msg.c_str());
+    RCLCPP_ERROR(logger_interface_->get_logger(), error_msg.c_str());
     throw std::runtime_error(error_msg);
   }
   std::size_t jnt_cnt = 0;
@@ -22,7 +24,7 @@ LBRCommandGuard::LBRCommandGuard(const rclcpp::Node::SharedPtr node,
     if (joint->type == urdf::Joint::REVOLUTE) {
       if (jnt_cnt > std::tuple_size<JointArray>()) {
         std::string error_msgs = "Found too many joints in robot description.";
-        RCLCPP_ERROR(node_->get_logger(), error_msgs.c_str());
+        RCLCPP_ERROR(logger_interface_->get_logger(), error_msgs.c_str());
         throw std::runtime_error(error_msgs);
       }
       min_position_[jnt_cnt] = joint->limits->lower;
@@ -34,7 +36,7 @@ LBRCommandGuard::LBRCommandGuard(const rclcpp::Node::SharedPtr node,
   }
   if (jnt_cnt != std::tuple_size<JointArray>()) {
     std::string error_msg = "Didn't find expected number of joints in robot description.";
-    RCLCPP_ERROR(node_->get_logger(), error_msg.c_str());
+    RCLCPP_ERROR(logger_interface_->get_logger(), error_msg.c_str());
     throw std::runtime_error(error_msg);
   };
 }
@@ -78,7 +80,7 @@ bool LBRCommandGuard::is_valid_command(const lbr_fri_msgs::msg::LBRCommand &lbr_
     }
     return true;
   default:
-    RCLCPP_ERROR(node_->get_logger(), "Invalid EClientCommandMode provided.");
+    RCLCPP_ERROR(logger_interface_->get_logger(), "Invalid EClientCommandMode provided.");
     return false;
   }
 
@@ -94,7 +96,8 @@ bool LBRCommandGuard::command_in_position_limits_(const lbr_fri_msgs::msg::LBRCo
   for (std::size_t i = 0; i < lbr_command.joint_position.size(); ++i) {
     if (lbr_command.joint_position[i] < min_position_[i] ||
         lbr_command.joint_position[i] > max_position_[i]) {
-      RCLCPP_ERROR(node_->get_logger(), "Position command not in limits for joint %ld.", i);
+      RCLCPP_ERROR(logger_interface_->get_logger(), "Position command not in limits for joint %ld.",
+                   i);
       return false;
     }
   }
@@ -107,7 +110,7 @@ bool LBRCommandGuard::command_in_velocity_limits_(const lbr_fri_msgs::msg::LBRCo
   for (std::size_t i = 0; i < lbr_command.joint_position[i]; ++i) {
     if (std::abs(lbr_command.joint_position[i] - lbr_state.getMeasuredJointPosition()[i]) / dt >
         max_velocity_[i]) {
-      RCLCPP_ERROR(node_->get_logger(), "Velocity not in limits for joint %ld.", i);
+      RCLCPP_ERROR(logger_interface_->get_logger(), "Velocity not in limits for joint %ld.", i);
       return false;
     }
   }
@@ -118,7 +121,8 @@ bool LBRCommandGuard::command_in_torque_limits_(const lbr_fri_msgs::msg::LBRComm
                                                 const KUKA::FRI::LBRState &lbr_state) const {
   for (std::size_t i = 0; i < lbr_command.torque.size(); ++i) {
     if (std::abs(lbr_command.torque[i] + lbr_state.getExternalTorque()[i]) > max_torque_[i]) {
-      RCLCPP_ERROR(node_->get_logger(), "Torque command not in limits for joint %ld.", i);
+      RCLCPP_ERROR(logger_interface_->get_logger(), "Torque command not in limits for joint %ld.",
+                   i);
       return false;
     }
   }
@@ -132,24 +136,25 @@ bool LBRSafeStopCommandGuard::command_in_position_limits_(
             min_position_[i] + max_velocity_[i] * lbr_state.getSampleTime() ||
         lbr_command.joint_position[i] >
             max_position_[i] - max_velocity_[i] * lbr_state.getSampleTime()) {
-      RCLCPP_ERROR(node_->get_logger(), "Position command not in limits for joint %ld.", i);
+      RCLCPP_ERROR(logger_interface_->get_logger(), "Position command not in limits for joint %ld.",
+                   i);
       return false;
     }
   }
   return true;
 }
 
-std::unique_ptr<LBRCommandGuard> lbr_command_guard_factory(const rclcpp::Node::SharedPtr node,
-                                                           const std::string &robot_description,
-                                                           const std::string &variant) {
+std::unique_ptr<LBRCommandGuard> lbr_command_guard_factory(
+    const rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr logger_interface,
+    const std::string &robot_description, const std::string &variant) {
   if (variant == "default") {
-    return std::make_unique<LBRCommandGuard>(node, robot_description);
+    return std::make_unique<LBRCommandGuard>(logger_interface, robot_description);
   }
   if (variant == "safe_stop") {
-    return std::make_unique<LBRSafeStopCommandGuard>(node, robot_description);
+    return std::make_unique<LBRSafeStopCommandGuard>(logger_interface, robot_description);
   }
   std::string error_msg = "Invalid LBRCommandGuard variant provided.";
-  RCLCPP_ERROR(node->get_logger(), error_msg.c_str());
+  RCLCPP_ERROR(logger_interface->get_logger(), error_msg.c_str());
   throw std::runtime_error(error_msg);
 }
 } // end of namespace lbr_fri_ros2
