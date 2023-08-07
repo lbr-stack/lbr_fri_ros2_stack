@@ -96,7 +96,7 @@ def generate_launch_description():
     launch_args.append(
         DeclareLaunchArgument(
             name="controller_configurations_package",
-            default_value="lbr_bringup",
+            default_value="lbr_hardware_interface",
             description="Package that contains controller configurations.",
         )
     )
