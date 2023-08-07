@@ -17,7 +17,6 @@
   <depend>lbr_fri_msgs</depend>
   <depend>rclcpp</depend>
   <depend>rclcpp_components</depend>
-  <depend>realtime_tools</depend>
   <depend>urdf</depend>
 
   <exec_depend>lbr_description</exec_depend>
