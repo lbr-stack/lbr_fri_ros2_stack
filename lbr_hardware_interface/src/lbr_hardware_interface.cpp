@@ -63,14 +63,6 @@ LBRHardwareInterface::on_init(const hardware_interface::HardwareInfo &system_inf
   }
 
   node_thread_ = std::make_unique<std::thread>([this]() {
-    // rt prio
-    struct sched_param param;
-    param.sched_priority = 99;
-    if (sched_setscheduler(0, SCHED_FIFO, &param) != 0) {
-      RCLCPP_ERROR(hw_node_->get_logger(), "Failed to set scheduler.");
-      return;
-    }
-
     auto executor = std::make_shared<rclcpp::executors::SingleThreadedExecutor>();
     executor->add_node(lbr_node_);
     executor->spin();
