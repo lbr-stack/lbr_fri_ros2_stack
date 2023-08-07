@@ -17,7 +17,7 @@
 #include "rclcpp/strategies/message_pool_memory_strategy.hpp"
 #include "rclcpp_lifecycle/state.hpp"
 
-#include "fri/friLBRState.h"
+#include "friLBRState.h"
 
 #include "lbr_fri_msgs/msg/lbr_command.hpp"
 #include "lbr_fri_msgs/msg/lbr_state.hpp"
@@ -79,8 +79,7 @@ protected:
   const uint8_t LBR_FRI_SENSOR_SIZE = 12;
 
   // node for handling communication
-  rclcpp::Node::SharedPtr hw_node_;
-  rclcpp::Node::SharedPtr lbr_app_node_;
+  rclcpp::Node::SharedPtr lbr_node_;
   std::unique_ptr<lbr_fri_ros2::LBRApp> lbr_app_;
 
   // exposed state interfaces
@@ -124,6 +123,7 @@ protected:
   int32_t port_id_;
   const char *remote_host_;
   uint8_t sample_time_;
+  std::string robot_name_;
 
   // publisher for sending commands / subscriber to receive goals
   lbr_fri_msgs::msg::LBRCommand lbr_command_;

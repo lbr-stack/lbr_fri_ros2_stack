@@ -7,11 +7,14 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
+find_package(ament_cmake_python REQUIRED)
 find_package(control_toolbox REQUIRED)
-find_package(fri REQUIRED)
+find_package(fri_vendor REQUIRED)
+find_package(FRIClient REQUIRED)
 find_package(lbr_fri_msgs REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_components REQUIRED)
+find_package(realtime_tools REQUIRED)
 find_package(urdf REQUIRED)
 
 # lbr_fri_ros2
@@ -30,18 +33,24 @@ target_include_directories(lbr_fri_ros2
 
 ament_target_dependencies(lbr_fri_ros2
   control_toolbox
-  fri
   lbr_fri_msgs
   rclcpp
+  realtime_tools
   urdf
+)
+
+target_link_libraries(lbr_fri_ros2
+  FRIClient::FRIClient
 )
 
 ament_export_targets(lbr_fri_ros2_export HAS_LIBRARY_TARGET)
 ament_export_dependencies(
   control_toolbox
-  fri
+  fri_vendor
+  FRIClient
   lbr_fri_msgs
   rclcpp
+  realtime_tools
   urdf
 )
 
@@ -71,13 +80,14 @@ target_include_directories(lbr_app_component
   PRIVATE src
 )
 
-target_link_libraries(lbr_app_component
-  lbr_fri_ros2
-)
-
 ament_target_dependencies(lbr_app_component
   rclcpp
+  urdf
   rclcpp_components
+)
+
+target_link_libraries(lbr_app_component
+  lbr_fri_ros2
 )
 
 rclcpp_components_register_node(lbr_app_component
@@ -100,5 +110,8 @@ install(
   PROGRAMS scripts/lbr_state_smoothing_node.py
   DESTINATION lib/${PROJECT_NAME}
 )
+
+# Launch mixins
+ament_python_install_package(${PROJECT_NAME})
 
 ament_package()

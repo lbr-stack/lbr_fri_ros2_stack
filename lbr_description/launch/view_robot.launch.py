@@ -13,7 +13,6 @@ from launch_ros.substitutions import FindPackageShare
 # for reference see
 # https://github.com/ros-controls/ros2_control_demos/tree/master/ros2_control_demo_description/rrbot_description
 def generate_launch_description():
-
     # Launch arguments
     launch_args = []
 
