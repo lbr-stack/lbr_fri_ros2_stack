@@ -21,7 +21,6 @@ LBRHardwareInterface::configure(const hardware_interface::HardwareInfo &info) {
   if (port_id_ < 30200 || port_id_ > 30209) {
     RCLCPP_ERROR(lbr_node_->get_logger(), "Expected port_id in [30200, 30209]. Found %d.",
                  port_id_);
-    return controller_interface::CallbackReturn::ERROR;
   }
 
   // setup node
