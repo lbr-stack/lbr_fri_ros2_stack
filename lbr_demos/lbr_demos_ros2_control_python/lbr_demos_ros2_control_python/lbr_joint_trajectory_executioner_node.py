@@ -39,7 +39,7 @@ class LBRJointTrajectoryExecutionerNode(Node):
 
         for i in range(7):
             joint_trajectory_goal.trajectory.joint_names.append(
-                f"{self.robot_name_}_joint_{i}"
+                f"{self.robot_name_}_A{i + 1}"
             )
 
         joint_trajectory_goal.trajectory.points.append(point)

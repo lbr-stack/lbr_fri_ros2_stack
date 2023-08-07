@@ -4,7 +4,7 @@
 #include <string>
 
 // include fri for session state
-#include "fri/friClientIf.h"
+#include "friClientIf.h"
 
 #include "rclcpp/rclcpp.hpp"
 

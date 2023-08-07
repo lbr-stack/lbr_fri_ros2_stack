@@ -97,7 +97,7 @@ Install Applications to the Robot
 
         .. code-block:: bash
 
-            git clone https://github.com/KCL-BMEIS/fri.git -b ros2-fri-1.15 $HOME\Downloads\fri
+            git clone https://github.com/lbr-stack/fri.git -b ros2-fri-1.15 $HOME\Downloads\fri
             
     #. .. dropdown:: Open a `Windows Terminal <https://apps.microsoft.com/store/detail/windows-terminal/9N0DX20HK701?hl=en-gb&gl=gb&rtc=1>`_ as ``Administrator`` and create a symbolic link to ``LBRServer.java``
 

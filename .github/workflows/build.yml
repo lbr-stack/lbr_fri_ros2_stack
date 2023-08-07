@@ -22,4 +22,4 @@ jobs:
         with:
           package-name: lbr_fri_ros2_stack
           target-ros2-distro: humble
-          vcs-repo-file-url: https://raw.githubusercontent.com/KCL-BMEIS/lbr_fri_ros2_stack/humble/lbr_fri_ros2_stack/repos.yml
+          vcs-repo-file-url: https://raw.githubusercontent.com/lbr-stack/lbr_fri_ros2_stack/humble/lbr_fri_ros2_stack/repos.yml
