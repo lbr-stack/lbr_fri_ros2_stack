@@ -14,8 +14,8 @@ public:
   AdmittanceControlNode(const std::string &node_name, const rclcpp::NodeOptions &options)
       : rclcpp::Node(node_name, options) {
     this->declare_parameter<std::string>("robot_description");
-    this->declare_parameter<std::string>("base_link", "lbr_link_0");
-    this->declare_parameter<std::string>("end_effector_link", "lbr_link_ee");
+    this->declare_parameter<std::string>("base_link", "link_0");
+    this->declare_parameter<std::string>("end_effector_link", "link_ee");
 
     admittance_controller_ = std::make_unique<AdmittanceController>(
         this->get_parameter("robot_description").as_string(),

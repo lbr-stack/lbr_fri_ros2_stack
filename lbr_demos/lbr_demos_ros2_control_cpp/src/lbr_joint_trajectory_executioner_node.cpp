@@ -12,9 +12,7 @@
 
 class LBRJointTrajectoryExecutionerNode : public rclcpp::Node {
 public:
-  LBRJointTrajectoryExecutionerNode(const std::string &node_name,
-                                    const std::string &robot_name = "lbr")
-      : Node(node_name), robot_name_(robot_name) {
+  LBRJointTrajectoryExecutionerNode(const std::string &node_name) : Node(node_name) {
 
     joint_trajectory_action_client_ =
         rclcpp_action::create_client<control_msgs::action::FollowJointTrajectory>(
@@ -43,8 +41,7 @@ public:
     point.time_from_start.sec = sec_from_start;
 
     for (std::size_t i = 0; i < KUKA::FRI::LBRState::NUMBER_OF_JOINTS; ++i) {
-      joint_trajectory_goal.trajectory.joint_names.push_back(robot_name_ + "_A" +
-                                                             std::to_string(i + 1));
+      joint_trajectory_goal.trajectory.joint_names.push_back("A" + std::to_string(i + 1));
     }
 
     joint_trajectory_goal.trajectory.points.push_back(point);
@@ -71,7 +68,6 @@ public:
   }
 
 protected:
-  std::string robot_name_;
   rclcpp_action::Client<control_msgs::action::FollowJointTrajectory>::SharedPtr
       joint_trajectory_action_client_;
 };

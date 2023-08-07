@@ -22,8 +22,8 @@ class AdmittanceController {
 
 public:
   AdmittanceController(const std::string &robot_description,
-                       const std::string &base_link = "lbr_link_0",
-                       const std::string &end_effector_link = "lbr_link_ee",
+                       const std::string &base_link = "link_0",
+                       const std::string &end_effector_link = "link_ee",
                        const CartesianVector &f_ext_th = {2., 2., 2., 0.5, 0.5, 0.5},
                        const JointVector &dq_gains = {2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0},
                        const CartesianVector &dx_gains = {1.5, 1.5, 1.5, 20., 40., 60.})
