@@ -60,7 +60,7 @@ class LBRHardwareInterfaceMixin:
     def node_joint_state_broadcaster(**kwargs) -> Node:
         return Node(
             package="controller_manager",
-            executable="spawner",
+            executable="spawner.py",
             output="screen",
             arguments=[
                 "joint_state_broadcaster",
@@ -74,7 +74,7 @@ class LBRHardwareInterfaceMixin:
     def node_controller(**kwargs) -> Node:
         return Node(
             package="controller_manager",
-            executable="spawner",
+            executable="spawner.py",
             output="screen",
             arguments=[
                 LaunchConfiguration("ctrl", default="position_trajectory_controller"),
