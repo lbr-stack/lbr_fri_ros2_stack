@@ -2,7 +2,7 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>lbr_fri_msgs</name>
-  <version>1.2.2</version>
+  <version>1.2.3</version>
   <description>ROS 2 message for the Fast Robot Interface (FRI) specific states.</description>
   <maintainer email="martin.huber@kcl.ac.uk">mhubii</maintainer>
   <license>MIT</license>
