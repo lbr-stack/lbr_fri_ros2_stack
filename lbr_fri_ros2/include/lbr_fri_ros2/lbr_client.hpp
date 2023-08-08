@@ -1,13 +1,14 @@
 #ifndef LBR_FRI_ROS2__LBR_CLIENT_HPP_
 #define LBR_FRI_ROS2__LBR_CLIENT_HPP_
 
+#include <array>
 #include <cstring>
 #include <map>
 #include <memory>
 #include <stdexcept>
 #include <string>
 
-#include "control_toolbox/filters.hpp"
+#include "control_toolbox/pid_ros.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp/strategies/message_pool_memory_strategy.hpp"
 
@@ -114,6 +115,17 @@ protected:
    */
   void on_lbr_command_(const lbr_fri_msgs::msg::LBRCommand::SharedPtr lbr_command);
 
+  /**
+   * @brief Calculate the command for the robot using the current state and the desired command.
+   *
+   * @param[in] lbr_command_target The desired command
+   * @param[in] lbr_state The current state
+   * @param[out] lbr_command The command to be written to the robot
+   */
+  void lbr_command_pid_(const lbr_fri_msgs::msg::LBRCommand &lbr_command_target,
+                        const lbr_fri_msgs::msg::LBRState &lbr_state,
+                        lbr_fri_msgs::msg::LBRCommand &lbr_command);
+
   rclcpp::Node::SharedPtr node_; /**< Shared pointer to node.*/
   std::unique_ptr<LBRCommandGuard>
       lbr_command_guard_; /**< Validating commands prior to writing them to #robotCommand.*/
@@ -123,12 +135,14 @@ protected:
   uint32_t missed_deadlines_sub_; /**< Counter for commands that were not received within specified
                                      deadline.*/
 
-  lbr_fri_msgs::msg::LBRCommand lbr_command_; /**< Command buffer.*/
-  lbr_fri_msgs::msg::LBRState lbr_state_;     /**< State buffer.*/
+  lbr_fri_msgs::msg::LBRCommand lbr_command_target_; /**< Desired command buffer.*/
+  lbr_fri_msgs::msg::LBRCommand lbr_command_;        /**< Command buffer.*/
+  lbr_fri_msgs::msg::LBRState lbr_state_;            /**< State buffer.*/
 
-  std::string robot_name_; /**< Name of the robot.*/
-  double smoothing_;       /**< Exponential smoothing factor for position commands.*/
-  bool open_loop_;         /**< Flag for open loop control. Best way to command the LBRs.*/
+  std::array<control_toolbox::PidROS, KUKA::FRI::LBRState::NUMBER_OF_JOINTS>
+      position_pid_controllers_; /**< Array of PidROS controllers for each joint.*/
+
+  bool open_loop_; /**< Open loop control if true. Best way to command the LBRs.*/
 
   rclcpp::Publisher<lbr_fri_msgs::msg::LBRState>::SharedPtr
       lbr_state_pub_; /**< Publisher of lbr_fri_msgs::msg::LBRState.*/
