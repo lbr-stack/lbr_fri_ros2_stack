@@ -1,6 +1,7 @@
 #ifndef LBR_HARDWARE_INTERFACE__LBR_HARDWARE_INTERFACE_HPP_
 #define LBR_HARDWARE_INTERFACE__LBR_HARDWARE_INTERFACE_HPP_
 
+#include <algorithm>
 #include <cstring>
 #include <future>
 #include <memory>
