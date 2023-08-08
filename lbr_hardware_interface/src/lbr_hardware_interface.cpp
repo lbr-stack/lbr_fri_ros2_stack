@@ -25,7 +25,7 @@ LBRHardwareInterface::on_init(const hardware_interface::HardwareInfo &system_inf
   }
 
   // setup node
-  lbr_node_ = std::make_shared<rclcpp::Node>(robot_name_ + "_node",
+  lbr_node_ = std::make_shared<rclcpp::Node>(robot_name_,
                                              rclcpp::NodeOptions().use_intra_process_comms(true));
 
   lbr_node_->declare_parameter<std::string>("robot_name", robot_name_);
@@ -385,16 +385,16 @@ bool LBRHardwareInterface::spawn_com_layer_() {
         rclcpp::strategies::message_pool_memory_strategy::MessagePoolMemoryStrategy<
             lbr_fri_msgs::msg::LBRState, 1>::make_shared();
     lbr_state_sub_ = lbr_node_->create_subscription<lbr_fri_msgs::msg::LBRState>(
-        robot_name_ + "/state",
+        "~/state",
         rclcpp::QoS(1)
             .deadline(std::chrono::milliseconds(sample_time_))
             .reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE),
         std::bind(&LBRHardwareInterface::on_lbr_state_, this, std::placeholders::_1),
         rclcpp::SubscriptionOptions(), memory_strategy);
     lbr_command_pub_ = lbr_node_->create_publisher<lbr_fri_msgs::msg::LBRCommand>(
-        robot_name_ + "/command", rclcpp::QoS(1)
-                                      .deadline(std::chrono::milliseconds(sample_time_))
-                                      .reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE));
+        "~/command", rclcpp::QoS(1)
+                         .deadline(std::chrono::milliseconds(sample_time_))
+                         .reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE));
   } catch (const std::exception &e) {
     RCLCPP_ERROR(lbr_node_->get_logger(), "Failed to spawn real time layer.\n%s.", e.what());
     return false;
@@ -408,7 +408,7 @@ bool LBRHardwareInterface::spawn_clients_() {
     return false;
   }
 
-  std::string app_connect_service_name = robot_name_ + "/connect";
+  std::string app_connect_service_name = "~/connect";
   app_connect_clt_ = lbr_node_->create_client<lbr_fri_msgs::srv::AppConnect>(
       app_connect_service_name, rmw_qos_profile_services_default);
   RCLCPP_INFO(lbr_node_->get_logger(), "Waiting for service %s to spawn...",
@@ -419,7 +419,7 @@ bool LBRHardwareInterface::spawn_clients_() {
   }
   RCLCPP_INFO(lbr_node_->get_logger(), "Done.");
 
-  std::string app_disconnect_service_name = robot_name_ + "/disconnect";
+  std::string app_disconnect_service_name = "~/disconnect";
   app_disconnect_clt_ = lbr_node_->create_client<lbr_fri_msgs::srv::AppDisconnect>(
       app_disconnect_service_name, rmw_qos_profile_services_default);
   RCLCPP_INFO(lbr_node_->get_logger(), "Waiting for service %s to spawn...",
@@ -508,11 +508,13 @@ void LBRHardwareInterface::compute_hw_velocity_() {
     return;
   }
 
-  for (uint8_t i = 0; i < KUKA::FRI::LBRState::NUMBER_OF_JOINTS; ++i) {
-    hw_velocity_[i] = (hw_position_[i] - last_hw_position_[i]) /
-                      (time_stamps_to_sec_(hw_time_stamp_sec_, hw_time_stamp_nano_sec_) -
-                       time_stamps_to_sec_(last_hw_time_stamp_sec_, last_hw_time_stamp_nano_sec_));
-  }
+  double dt = time_stamps_to_sec_(hw_time_stamp_sec_, hw_time_stamp_nano_sec_) -
+              time_stamps_to_sec_(last_hw_time_stamp_sec_, last_hw_time_stamp_nano_sec_);
+  std::size_t i = 0;
+  std::for_each(hw_velocity_.begin(), hw_velocity_.end(), [&](double &v) {
+    v = (hw_position_[i] - last_hw_position_[i]) / dt;
+    ++i;
+  });
 }
 
 } // end of namespace lbr_hardware_interface
