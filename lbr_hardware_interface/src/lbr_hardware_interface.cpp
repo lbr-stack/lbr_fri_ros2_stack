@@ -30,7 +30,6 @@ LBRHardwareInterface::on_init(const hardware_interface::HardwareInfo &system_inf
 
   lbr_node_->declare_parameter<std::string>("robot_name", robot_name_);
   lbr_node_->declare_parameter<std::string>("command_guard_variant", "default");
-  lbr_node_->declare_parameter<double>("smoothing", 0.8);
 
   lbr_app_ = std::make_unique<lbr_fri_ros2::LBRApp>(lbr_node_);
 
@@ -63,7 +62,7 @@ LBRHardwareInterface::on_init(const hardware_interface::HardwareInfo &system_inf
   }
 
   node_thread_ = std::make_unique<std::thread>([this]() {
-    auto executor = std::make_shared<rclcpp::executors::SingleThreadedExecutor>();
+    auto executor = std::make_shared<rclcpp::executors::StaticSingleThreadedExecutor>();
     executor->add_node(lbr_node_);
     executor->spin();
     disconnect_();
