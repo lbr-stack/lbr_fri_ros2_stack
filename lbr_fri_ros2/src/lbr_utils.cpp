@@ -41,13 +41,20 @@ bool ExponentialFilter::validate_smoothing_factor(const double &smoothing_factor
   return smoothing_factor <= 1. && smoothing_factor >= 0.;
 }
 
-LBRFilter::LBRFilter(const rclcpp::Node::SharedPtr node)
-    : LBRFilter(node->get_node_logging_interface(), node->get_node_parameters_interface()) {}
+LBRFilter::LBRFilter(const rclcpp::Node::SharedPtr node, const std::string &param_prefix)
+    : LBRFilter(node->get_node_logging_interface(), node->get_node_parameters_interface(),
+                param_prefix) {}
 
 LBRFilter::LBRFilter(
     const rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr logging_interface,
-    const rclcpp::node_interfaces::NodeParametersInterface::SharedPtr parameter_interface)
-    : logging_interface_(logging_interface), parameter_interface_(parameter_interface) {}
+    const rclcpp::node_interfaces::NodeParametersInterface::SharedPtr parameter_interface,
+    const std::string &param_prefix)
+    : logging_interface_(logging_interface), parameter_interface_(parameter_interface),
+      param_prefix_(param_prefix) {
+  if (!param_prefix_.empty()) {
+    param_prefix_ += ".";
+  }
+}
 
 void LBRFilter::compute(const double *const current, JointArrayType &previous) {
   int i = 0;
@@ -59,8 +66,8 @@ void LBRFilter::compute(const double *const current, JointArrayType &previous) {
 }
 
 void LBRFilter::init(const std::uint16_t &cutoff_frequency, const double &sample_time) {
-  if (!parameter_interface_->has_parameter("cutoff_frequency")) {
-    parameter_interface_->declare_parameter("cutoff_frequency",
+  if (!parameter_interface_->has_parameter(param_prefix_ + "cutoff_frequency")) {
+    parameter_interface_->declare_parameter(param_prefix_ + "cutoff_frequency",
                                             rclcpp::ParameterValue(cutoff_frequency));
   }
   exponential_filter_.set_cutoff_frequency(cutoff_frequency, sample_time);
@@ -71,7 +78,7 @@ void LBRFilter::init(const std::uint16_t &cutoff_frequency, const double &sample
         result.successful = true;
         for (const auto &parameter : parameters) {
           try {
-            if (parameter.get_name() == "cutoff_frequency") {
+            if (parameter.get_name() == param_prefix_ + "cutoff_frequency") {
               exponential_filter_.set_cutoff_frequency(parameter.as_int(),
                                                        exponential_filter_.get_sample_time());
               RCLCPP_INFO(logging_interface_->get_logger(),

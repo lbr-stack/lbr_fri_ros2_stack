@@ -80,9 +80,10 @@ class LBRFilter {
 
 public:
   LBRFilter() = delete;
-  LBRFilter(const rclcpp::Node::SharedPtr node);
+  LBRFilter(const rclcpp::Node::SharedPtr node, const std::string &param_prefix = "");
   LBRFilter(const rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr logging_interface,
-            const rclcpp::node_interfaces::NodeParametersInterface::SharedPtr parameter_interface);
+            const rclcpp::node_interfaces::NodeParametersInterface::SharedPtr parameter_interface,
+            const std::string &param_prefix = "");
 
   /**
    * @brief
@@ -104,6 +105,7 @@ protected:
   ExponentialFilter exponential_filter_;
   rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr logging_interface_;
   rclcpp::node_interfaces::NodeParametersInterface::SharedPtr parameter_interface_;
+  std::string param_prefix_;
   rclcpp::node_interfaces::OnSetParametersCallbackHandle::SharedPtr parameter_callback_handle_;
 };
 } // end of namespace lbr_fri_ros2
