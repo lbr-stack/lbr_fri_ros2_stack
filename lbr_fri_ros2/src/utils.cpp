@@ -1,4 +1,4 @@
-#include "lbr_fri_ros2/lbr_utils.hpp"
+#include "lbr_fri_ros2/utils.hpp"
 
 namespace lbr_fri_ros2 {
 
@@ -41,11 +41,12 @@ bool ExponentialFilter::validate_smoothing_factor(const double &smoothing_factor
   return smoothing_factor <= 1. && smoothing_factor >= 0.;
 }
 
-LBRFilter::LBRFilter(const rclcpp::Node::SharedPtr node, const std::string &param_prefix)
-    : LBRFilter(node->get_node_logging_interface(), node->get_node_parameters_interface(),
-                param_prefix) {}
+JointExponentialFilterArrayROS::JointExponentialFilterArrayROS(const rclcpp::Node::SharedPtr node,
+                                                               const std::string &param_prefix)
+    : JointExponentialFilterArrayROS(node->get_node_logging_interface(),
+                                     node->get_node_parameters_interface(), param_prefix) {}
 
-LBRFilter::LBRFilter(
+JointExponentialFilterArrayROS::JointExponentialFilterArrayROS(
     const rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr logging_interface,
     const rclcpp::node_interfaces::NodeParametersInterface::SharedPtr parameter_interface,
     const std::string &param_prefix)
@@ -56,7 +57,8 @@ LBRFilter::LBRFilter(
   }
 }
 
-void LBRFilter::compute(const double *const current, JointArrayType &previous) {
+void JointExponentialFilterArrayROS::compute(const double *const current,
+                                             ValueArrayType &previous) {
   int i = 0;
   std::for_each(current, current + KUKA::FRI::LBRState::NUMBER_OF_JOINTS,
                 [&](const auto &current_i) {
@@ -65,7 +67,8 @@ void LBRFilter::compute(const double *const current, JointArrayType &previous) {
                 });
 }
 
-void LBRFilter::init(const std::uint16_t &cutoff_frequency, const double &sample_time) {
+void JointExponentialFilterArrayROS::init(const std::uint16_t &cutoff_frequency,
+                                          const double &sample_time) {
   if (!parameter_interface_->has_parameter(param_prefix_ + "cutoff_frequency")) {
     parameter_interface_->declare_parameter(param_prefix_ + "cutoff_frequency",
                                             rclcpp::ParameterValue(cutoff_frequency));
@@ -94,6 +97,33 @@ void LBRFilter::init(const std::uint16_t &cutoff_frequency, const double &sample
         }
         return result;
       });
+}
+
+JointPIDArrayROS::JointPIDArrayROS(const rclcpp::Node::SharedPtr node, const NameArrayType &names,
+                                   const std::string &prefix)
+    : pid_controllers_(PIDArrayType{
+          control_toolbox::PidROS{node, prefix + names[0]},
+          control_toolbox::PidROS{node, prefix + names[1]},
+          control_toolbox::PidROS{node, prefix + names[2]},
+          control_toolbox::PidROS{node, prefix + names[3]},
+          control_toolbox::PidROS{node, prefix + names[4]},
+          control_toolbox::PidROS{node, prefix + names[5]},
+          control_toolbox::PidROS{node, prefix + names[6]},
+      }) {}
+
+void JointPIDArrayROS::compute(const ValueArrayType &command_target, const ValueArrayType &state,
+                               const rclcpp::Duration &dt, ValueArrayType &command) {
+  int i = 0;
+  std::for_each(command.begin(), command.end(), [&](double &command_i) {
+    command_i += pid_controllers_[i].computeCommand(command_target[i] - state[i], dt);
+    ++i;
+  });
+}
+
+void JointPIDArrayROS::init(const double &p, const double &i, const double &d, const double &i_max,
+                            const double &i_min, const bool &antiwindup) {
+  std::for_each(pid_controllers_.begin(), pid_controllers_.end(),
+                [&](auto &pid) { pid.initPid(p, i, d, i_max, i_min, antiwindup); });
 }
 
 } // end of namespace lbr_fri_ros2
