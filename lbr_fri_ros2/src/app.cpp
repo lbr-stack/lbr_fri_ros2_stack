@@ -39,9 +39,6 @@ void App::declare_parameters_() {
   if (!node_->has_parameter("robot_description")) {
     node_->declare_parameter<std::string>("robot_description", "");
   }
-  if (!node_->has_parameter("robot_name")) {
-    node_->declare_parameter<std::string>("robot_name", "lbr");
-  }
   if (!node_->has_parameter("command_guard_variant")) {
     node_->declare_parameter<std::string>("command_guard_variant", "safe_stop");
   }
