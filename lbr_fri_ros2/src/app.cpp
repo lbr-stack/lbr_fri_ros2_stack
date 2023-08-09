@@ -17,11 +17,11 @@ App::App(const rclcpp::Node::SharedPtr node) : node_(node) {
       std::bind(&App::on_app_disconnect_, this, std::placeholders::_1, std::placeholders::_2),
       rmw_qos_profile_services_default);
 
-  lbr_client_ = std::make_shared<Client>(
+  client_ = std::make_shared<Client>(
       node_, lbr_command_guard_factory(node_->get_node_logging_interface(), robot_description_,
                                        command_guard_variant_));
   connection_ = std::make_unique<KUKA::FRI::UdpConnection>();
-  app_ = std::make_unique<KUKA::FRI::ClientApplication>(*connection_, *lbr_client_);
+  app_ = std::make_unique<KUKA::FRI::ClientApplication>(*connection_, *client_);
 
   // attempt default connect
   connect_(port_id_, remote_host_);
@@ -151,7 +151,7 @@ void App::run_() {
   bool success = true;
   while (success && connected_ && rclcpp::ok()) {
     success = app_->step();
-    if (lbr_client_->robotState().getSessionState() == KUKA::FRI::IDLE) {
+    if (client_->robotState().getSessionState() == KUKA::FRI::IDLE) {
       break;
     }
   }
