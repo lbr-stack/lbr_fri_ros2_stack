@@ -78,12 +78,12 @@ void JointExponentialFilterArrayROS::init(const double &cutoff_frequency,
         for (const auto &parameter : parameters) {
           try {
             if (parameter.get_name() == param_prefix_ + "cutoff_frequency") {
-              exponential_filter_.set_cutoff_frequency(parameter.as_int(),
+              exponential_filter_.set_cutoff_frequency(parameter.as_double(),
                                                        exponential_filter_.get_sample_time());
               RCLCPP_INFO(logging_interface_->get_logger(),
-                          "Set %s to: %ld, new smoothing factor: %f. 0: no smoothing, 1: maximal "
+                          "Set %s to: %f, new smoothing factor: %f. 0: no smoothing, 1: maximal "
                           "smoothing.",
-                          parameter.get_name().c_str(), parameter.as_int(),
+                          parameter.get_name().c_str(), parameter.as_double(),
                           1. - exponential_filter_.get_alpha());
             }
           } catch (const rclcpp::exceptions::InvalidParameterTypeException &e) {
