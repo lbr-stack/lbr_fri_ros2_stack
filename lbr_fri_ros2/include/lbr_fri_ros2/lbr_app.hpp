@@ -17,8 +17,8 @@
 
 #include "lbr_fri_msgs/srv/app_connect.hpp"
 #include "lbr_fri_msgs/srv/app_disconnect.hpp"
+#include "lbr_fri_ros2/command_guard.hpp"
 #include "lbr_fri_ros2/lbr_client.hpp"
-#include "lbr_fri_ros2/lbr_command_guard.hpp"
 
 namespace lbr_fri_ros2 {
 /**

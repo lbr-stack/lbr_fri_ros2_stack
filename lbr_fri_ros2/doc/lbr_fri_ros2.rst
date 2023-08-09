@@ -76,7 +76,7 @@ The :lbr_fri_ros2:`LBRClient <lbr_fri_ros2::LBRClient>` has
  - A publisher to publish states in :lbr_fri_ros2:`pub_lbr_state_ <lbr_fri_ros2::LBRClient::pub_lbr_state_()>`.
  - A subscription to read commands in :lbr_fri_ros2:`on_lbr_command_ <lbr_fri_ros2::LBRClient::on_lbr_command_(const lbr_fri_msgs::msg::LBRCommand::SharedPtr lbr_command)>`.
 
-Commands in :lbr_fri_ros2:`on_lbr_command_ <lbr_fri_ros2::LBRClient::on_lbr_command_(const lbr_fri_msgs::msg::LBRCommand::SharedPtr lbr_command)>` are checked for validity via a :lbr_fri_ros2:`LBRCommandGuard <lbr_fri_ros2::LBRCommandGuard>`.
+Commands in :lbr_fri_ros2:`on_lbr_command_ <lbr_fri_ros2::LBRClient::on_lbr_command_(const lbr_fri_msgs::msg::LBRCommand::SharedPtr lbr_command)>` are checked for validity via a :lbr_fri_ros2:`CommandGuard <lbr_fri_ros2::CommandGuard>`.
 
 API
 ~~~

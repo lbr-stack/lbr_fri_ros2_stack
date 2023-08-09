@@ -2,7 +2,7 @@
 
 namespace lbr_fri_ros2 {
 LBRClient::LBRClient(const rclcpp::Node::SharedPtr node,
-                     std::unique_ptr<LBRCommandGuard> lbr_command_guard)
+                     std::unique_ptr<CommandGuard> lbr_command_guard)
     : node_(node), lbr_command_guard_(std::move(lbr_command_guard)),
       external_torque_filter_(node, "external_torque"),
       measured_torque_filter_(node, "measured_torque"),

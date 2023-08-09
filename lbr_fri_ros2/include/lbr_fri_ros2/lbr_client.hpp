@@ -16,7 +16,7 @@
 
 #include "lbr_fri_msgs/msg/lbr_command.hpp"
 #include "lbr_fri_msgs/msg/lbr_state.hpp"
-#include "lbr_fri_ros2/lbr_command_guard.hpp"
+#include "lbr_fri_ros2/command_guard.hpp"
 #include "lbr_fri_ros2/utils.hpp"
 
 namespace lbr_fri_ros2 {
@@ -36,7 +36,7 @@ public:
    * @param[in] lbr_command_guard Command guard for validating incoming commands.
    *
    */
-  LBRClient(const rclcpp::Node::SharedPtr node, std::unique_ptr<LBRCommandGuard> lbr_command_guard);
+  LBRClient(const rclcpp::Node::SharedPtr node, std::unique_ptr<CommandGuard> lbr_command_guard);
 
   /**
    * @brief Log the status of the robot to terminal.
@@ -125,7 +125,7 @@ protected:
   void on_lbr_command_(const lbr_fri_msgs::msg::LBRCommand::SharedPtr lbr_command);
 
   rclcpp::Node::SharedPtr node_; /**< Shared pointer to node.*/
-  std::unique_ptr<LBRCommandGuard>
+  std::unique_ptr<CommandGuard>
       lbr_command_guard_; /**< Validating commands prior to writing them to #robotCommand.*/
 
   JointExponentialFilterArrayROS

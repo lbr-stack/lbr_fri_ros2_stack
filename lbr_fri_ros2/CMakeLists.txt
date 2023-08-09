@@ -22,7 +22,7 @@ add_library(lbr_fri_ros2
   SHARED
     src/lbr_app.cpp
     src/lbr_client.cpp
-    src/lbr_command_guard.cpp
+    src/command_guard.cpp
     src/utils.cpp
 )
 
