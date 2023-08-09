@@ -50,15 +50,15 @@ class LBRFRIROS2Mixin:
         return {"rt_prio": LaunchConfiguration("rt_prio", default="80")}
 
     @staticmethod
-    def node_lbr_app(
+    def node_app(
         robot_name: Optional[Union[LaunchConfiguration, str]] = None, **kwargs
     ) -> DeclareLaunchArgument:
         if robot_name is None:
             robot_name = LaunchConfiguration("robot_name", default="lbr")
         return Node(
             package="lbr_fri_ros2",
-            executable="lbr_app",
-            name=robot_name,
+            executable="app",
+            namespace=robot_name,
             emulate_tty=True,
             output="screen",
             **kwargs,

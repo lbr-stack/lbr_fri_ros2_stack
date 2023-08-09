@@ -18,7 +18,7 @@ Admittance Controller
 
 .. code-block:: bash
 
-    ros2 launch lbr_fri_ros2 lbr_app.launch.py model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
+    ros2 launch lbr_fri_ros2 app.launch.py model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
 
 #. Run the `admittance_control_node <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_demos_fri_ros2_advanced_python/lbr_demos_fri_ros2_advanced_python/admittance_control_node.py>`_:
 

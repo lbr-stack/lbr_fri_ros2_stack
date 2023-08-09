@@ -2,14 +2,13 @@
 
 namespace lbr_fri_ros2 {
 AppComponent::AppComponent(const rclcpp::NodeOptions &options) {
-  lbr_node_ = std::make_shared<rclcpp::Node>(
-      "lbr", options); // default node name is "lbr", unless specified in the launch file
-  lbr_app_ = std::make_unique<lbr_fri_ros2::App>(lbr_node_);
+  app_node_ = std::make_shared<rclcpp::Node>("app", options);
+  app_ = std::make_unique<lbr_fri_ros2::App>(app_node_);
 }
 
 rclcpp::node_interfaces::NodeBaseInterface::SharedPtr
 AppComponent::get_node_base_interface() const {
-  return lbr_node_->get_node_base_interface();
+  return app_node_->get_node_base_interface();
 }
 } // end of namespace lbr_fri_ros2
 

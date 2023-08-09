@@ -114,7 +114,7 @@ protected:
   /**
    * @brief Exchanges commands / states between ROS and the FRI.
    *
-   * Calls step() on #lbr_app_, which callbacks #lbr_client_. #lbr_client_ reads commands / write
+   * Calls step() on #app_, which callbacks #lbr_client_. #lbr_client_ reads commands / write
    * states through realtime safe topics.
    *
    */
@@ -141,7 +141,7 @@ protected:
   std::unique_ptr<KUKA::FRI::UdpConnection>
       connection_; /**< UDP connection for reading states / writing commands.*/
   std::unique_ptr<KUKA::FRI::ClientApplication>
-      lbr_app_; /**< FRI client application that callbacks #lbr_client_ methods.*/
+      app_; /**< FRI client application that callbacks #lbr_client_ methods.*/
 };
 } // end of namespace lbr_fri_ros2
 #endif // LBR_FRI_ROS2__APP_HPP_

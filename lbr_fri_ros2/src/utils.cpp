@@ -28,7 +28,8 @@ inline const double &ExponentialFilter::get_sample_time() const { return sample_
 
 inline const double &ExponentialFilter::get_alpha() const { return alpha_; }
 
-double ExponentialFilter::compute_alpha_(const double &cutoff_frequency, const double &sample_time) {
+double ExponentialFilter::compute_alpha_(const double &cutoff_frequency,
+                                         const double &sample_time) {
   double omega_3db = 2.0 * M_PI * sample_time * cutoff_frequency;
   return std::cos(omega_3db) - 1 +
          std::sqrt(std::pow(std::cos(omega_3db), 2) - 4 * std::cos(omega_3db) + 3);
@@ -99,13 +100,13 @@ void JointExponentialFilterArrayROS::init(const double &cutoff_frequency,
 JointPIDArrayROS::JointPIDArrayROS(const rclcpp::Node::SharedPtr node, const NameArrayType &names,
                                    const std::string &prefix)
     : pid_controllers_(PIDArrayType{
-          control_toolbox::PidROS{node, std::string(node->get_name()) + "/" + prefix + names[0]},
-          control_toolbox::PidROS{node, std::string(node->get_name()) + "/" + prefix + names[1]},
-          control_toolbox::PidROS{node, std::string(node->get_name()) + "/" + prefix + names[2]},
-          control_toolbox::PidROS{node, std::string(node->get_name()) + "/" + prefix + names[3]},
-          control_toolbox::PidROS{node, std::string(node->get_name()) + "/" + prefix + names[4]},
-          control_toolbox::PidROS{node, std::string(node->get_name()) + "/" + prefix + names[5]},
-          control_toolbox::PidROS{node, std::string(node->get_name()) + "/" + prefix + names[6]},
+          control_toolbox::PidROS{node, prefix + names[0]},
+          control_toolbox::PidROS{node, prefix + names[1]},
+          control_toolbox::PidROS{node, prefix + names[2]},
+          control_toolbox::PidROS{node, prefix + names[3]},
+          control_toolbox::PidROS{node, prefix + names[4]},
+          control_toolbox::PidROS{node, prefix + names[5]},
+          control_toolbox::PidROS{node, prefix + names[6]},
       }) {}
 
 void JointPIDArrayROS::compute(const ValueArrayType &command_target, const ValueArrayType &state,

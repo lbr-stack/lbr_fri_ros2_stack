@@ -99,10 +99,10 @@ void Client::init_topics_() {
   };
 
   lbr_state_pub_ = node_->create_publisher<lbr_fri_msgs::msg::LBRState>(
-      "~/state", rclcpp::QoS(1)
-                     .deadline(std::chrono::milliseconds(
-                         static_cast<int64_t>(robotState().getSampleTime() * 1e3)))
-                     .reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE));
+      "state", rclcpp::QoS(1)
+                   .deadline(std::chrono::milliseconds(
+                       static_cast<int64_t>(robotState().getSampleTime() * 1e3)))
+                   .reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE));
 
   auto memory_strategy =
       rclcpp::strategies::message_pool_memory_strategy::MessagePoolMemoryStrategy<
@@ -114,7 +114,7 @@ void Client::init_topics_() {
   };
 
   lbr_command_sub_ = node_->create_subscription<lbr_fri_msgs::msg::LBRCommand>(
-      "~/command",
+      "command",
       rclcpp::QoS(1)
           .deadline(
               std::chrono::milliseconds(static_cast<int64_t>(robotState().getSampleTime() * 1e3)))

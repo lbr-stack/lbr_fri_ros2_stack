@@ -156,7 +156,7 @@ public:
 
   /**
    * @brief Construct a new JointPIDArrayROS object. Used to control the LBRs joints. The parameters
-   * / topics are prefixed as std::string(node->get_name()) + "/" + prefix + names[i].
+   * / topics are prefixed as prefix + names[i].
    *
    * @param[in] node Shared node.
    * @param[in] names Names of the joints.

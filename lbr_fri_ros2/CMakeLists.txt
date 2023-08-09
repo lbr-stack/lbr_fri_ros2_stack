@@ -93,7 +93,7 @@ target_link_libraries(app_component
 
 rclcpp_components_register_node(app_component
   PLUGIN lbr_fri_ros2::AppComponent
-  EXECUTABLE lbr_app
+  EXECUTABLE app
 )
 
 install(

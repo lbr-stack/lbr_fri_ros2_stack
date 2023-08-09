@@ -14,11 +14,11 @@ Quick Start
 
     .. thumbnail:: ../../lbr_demos/doc/img/applications_lbr_server.png
 
-#. Run the :lbr_fri_ros2:`App <lbr_fri_ros2::App>` node via `lbr_app.launch.py <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_fri_ros2/launch/app.launch.py>`_:
+#. Run the :lbr_fri_ros2:`App <lbr_fri_ros2::App>` node via `app.launch.py <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_fri_ros2/launch/app.launch.py>`_:
 
 .. code-block:: bash
 
-    ros2 launch lbr_fri_ros2 lbr_app.launch.py model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
+    ros2 launch lbr_fri_ros2 app.launch.py model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
 
 This launch file does 2 things:
 
@@ -33,7 +33,7 @@ The topic names change with the robot's name. When running
 
 .. code-block:: bash
 
-    ros2 launch lbr_fri_ros2 lbr_app.launch.py robot_name:=lbr_1 model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
+    ros2 launch lbr_fri_ros2 app.launch.py robot_name:=lbr_1 model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
 
 Commands / states will be published to ``/lbr_1/state`` / ``/lbr_1/command``.
 

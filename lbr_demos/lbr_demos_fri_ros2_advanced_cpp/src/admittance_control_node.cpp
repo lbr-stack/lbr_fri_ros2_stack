@@ -75,15 +75,15 @@ int main(int argc, char **argv) {
 
   auto executor = std::make_shared<rclcpp::executors::StaticSingleThreadedExecutor>();
 
-  auto lbr_node =
-      std::make_shared<rclcpp::Node>("lbr", rclcpp::NodeOptions().use_intra_process_comms(true));
+  auto app_node =
+      std::make_shared<rclcpp::Node>("app", rclcpp::NodeOptions().use_intra_process_comms(true));
 
-  auto lbr_app = lbr_fri_ros2::App(lbr_node);
+  auto app = lbr_fri_ros2::App(app_node);
 
   auto admittance_control_node = std::make_shared<AdmittanceControlNode>(
       "admittance_control_node", rclcpp::NodeOptions().use_intra_process_comms(true));
 
-  executor->add_node(lbr_node);
+  executor->add_node(app_node);
   executor->add_node(admittance_control_node);
   executor->spin();
 

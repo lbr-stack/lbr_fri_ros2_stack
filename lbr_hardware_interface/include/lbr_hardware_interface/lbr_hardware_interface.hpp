@@ -82,8 +82,8 @@ protected:
   const uint8_t LBR_FRI_SENSOR_SIZE = 12;
 
   // node for handling communication
-  rclcpp::Node::SharedPtr lbr_node_;
-  std::unique_ptr<lbr_fri_ros2::App> lbr_app_;
+  rclcpp::Node::SharedPtr app_node_;
+  std::unique_ptr<lbr_fri_ros2::App> app_;
 
   // exposed state interfaces
   double hw_sample_time_;

@@ -8,12 +8,12 @@ App::App(const rclcpp::Node::SharedPtr node) : node_(node) {
   connected_ = false;
 
   app_connect_srv_ = node_->create_service<lbr_fri_msgs::srv::AppConnect>(
-      "~/connect",
+      "connect",
       std::bind(&App::on_app_connect_, this, std::placeholders::_1, std::placeholders::_2),
       rmw_qos_profile_services_default);
 
   app_disconnect_srv_ = node_->create_service<lbr_fri_msgs::srv::AppDisconnect>(
-      "~/disconnect",
+      "disconnect",
       std::bind(&App::on_app_disconnect_, this, std::placeholders::_1, std::placeholders::_2),
       rmw_qos_profile_services_default);
 
@@ -21,7 +21,7 @@ App::App(const rclcpp::Node::SharedPtr node) : node_(node) {
       node_, lbr_command_guard_factory(node_->get_node_logging_interface(), robot_description_,
                                        command_guard_variant_));
   connection_ = std::make_unique<KUKA::FRI::UdpConnection>();
-  lbr_app_ = std::make_unique<KUKA::FRI::ClientApplication>(*connection_, *lbr_client_);
+  app_ = std::make_unique<KUKA::FRI::ClientApplication>(*connection_, *lbr_client_);
 
   // attempt default connect
   connect_(port_id_, remote_host_);
@@ -100,7 +100,7 @@ bool App::connect_(const int &port_id, const char *const remote_host) {
     if (!valid_port_(port_id)) {
       throw std::range_error("Invalid port_id provided.");
     }
-    connected_ = lbr_app_->connect(port_id, remote_host);
+    connected_ = app_->connect(port_id, remote_host);
     if (connected_) {
       port_id_ = port_id;
       remote_host_ = remote_host;
@@ -121,7 +121,7 @@ bool App::disconnect_() {
   RCLCPP_INFO(node_->get_logger(),
               "Attempting to close UDP socket with port_id %d for LBR server...", port_id_);
   if (connected_) {
-    lbr_app_->disconnect();
+    app_->disconnect();
     connected_ = false;
   } else {
     RCLCPP_INFO(node_->get_logger(), "Port already closed.");
@@ -150,7 +150,7 @@ void App::run_() {
 
   bool success = true;
   while (success && connected_ && rclcpp::ok()) {
-    success = lbr_app_->step();
+    success = app_->step();
     if (lbr_client_->robotState().getSessionState() == KUKA::FRI::IDLE) {
       break;
     }
