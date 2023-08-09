@@ -14,7 +14,6 @@ def generate_launch_description() -> LaunchDescription:
         LBRFRIROS2Mixin.node_lbr_app(
             parameters=[
                 robot_description,
-                LBRDescriptionMixin.param_robot_name(),
             ]
         )
     )
