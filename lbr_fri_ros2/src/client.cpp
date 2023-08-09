@@ -26,7 +26,7 @@ void Client::onStateChange(KUKA::FRI::ESessionState old_state,
                               KUKA::FRI::ESessionState new_state) {
   init_topics_();
   init_filters_();
-  RCLCPP_INFO(node_->get_logger(), "LBR switched from %s to %s.",
+  RCLCPP_INFO(node_->get_logger(), "Switched from %s to %s.",
               KUKA_FRI_STATE_MAP[old_state].c_str(), KUKA_FRI_STATE_MAP[new_state].c_str());
 }
 void Client::monitor() {
