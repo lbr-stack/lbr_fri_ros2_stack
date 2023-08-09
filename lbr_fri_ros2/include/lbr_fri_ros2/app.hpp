@@ -127,7 +127,6 @@ protected:
   const char *remote_host_;           /**< The remote host's IP address.*/
   int port_id_;                       /**< The UDP port id.*/
   std::string robot_description_;     /**< The robot description, read from node parameters.*/
-  std::string robot_name_;            /**< The robot name, read from node parameters.*/
   std::string command_guard_variant_; /**< The command guard, read from node parameters.*/
   int rt_prio_;                       /**< The realtime priority, read from node parameters.*/
 

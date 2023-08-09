@@ -8,12 +8,12 @@ App::App(const rclcpp::Node::SharedPtr node) : node_(node) {
   connected_ = false;
 
   app_connect_srv_ = node_->create_service<lbr_fri_msgs::srv::AppConnect>(
-      robot_name_ + "/connect",
+      "~/connect",
       std::bind(&App::on_app_connect_, this, std::placeholders::_1, std::placeholders::_2),
       rmw_qos_profile_services_default);
 
   app_disconnect_srv_ = node_->create_service<lbr_fri_msgs::srv::AppDisconnect>(
-      robot_name_ + "/disconnect",
+      "~/disconnect",
       std::bind(&App::on_app_disconnect_, this, std::placeholders::_1, std::placeholders::_2),
       rmw_qos_profile_services_default);
 
@@ -63,13 +63,12 @@ void App::get_parameters_() {
   if (!node_->get_parameter("robot_description", robot_description_)) {
     throw std::runtime_error("Failed to receive robot_description parameter.");
   }
-  robot_name_ = node_->get_parameter("robot_name").as_string();
   command_guard_variant_ = node_->get_parameter("command_guard_variant").as_string();
   rt_prio_ = node_->get_parameter("rt_prio").as_int();
 }
 
 void App::on_app_connect_(const lbr_fri_msgs::srv::AppConnect::Request::SharedPtr request,
-                             lbr_fri_msgs::srv::AppConnect::Response::SharedPtr response) {
+                          lbr_fri_msgs::srv::AppConnect::Response::SharedPtr response) {
   const char *remote_host = request->remote_host.empty() ? NULL : request->remote_host.c_str();
   try {
     response->connected = connect_(request->port_id, remote_host);
@@ -79,9 +78,8 @@ void App::on_app_connect_(const lbr_fri_msgs::srv::AppConnect::Request::SharedPt
   }
 }
 
-void App::on_app_disconnect_(
-    const lbr_fri_msgs::srv::AppDisconnect::Request::SharedPtr /*request*/,
-    lbr_fri_msgs::srv::AppDisconnect::Response::SharedPtr response) {
+void App::on_app_disconnect_(const lbr_fri_msgs::srv::AppDisconnect::Request::SharedPtr /*request*/,
+                             lbr_fri_msgs::srv::AppDisconnect::Response::SharedPtr response) {
   try {
     response->disconnected = disconnect_();
   } catch (const std::exception &e) {

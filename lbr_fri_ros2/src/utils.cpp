@@ -100,13 +100,13 @@ void JointExponentialFilterArrayROS::init(const double &cutoff_frequency,
 JointPIDArrayROS::JointPIDArrayROS(const rclcpp::Node::SharedPtr node, const NameArrayType &names,
                                    const std::string &prefix)
     : pid_controllers_(PIDArrayType{
-          control_toolbox::PidROS{node, prefix + names[0]},
-          control_toolbox::PidROS{node, prefix + names[1]},
-          control_toolbox::PidROS{node, prefix + names[2]},
-          control_toolbox::PidROS{node, prefix + names[3]},
-          control_toolbox::PidROS{node, prefix + names[4]},
-          control_toolbox::PidROS{node, prefix + names[5]},
-          control_toolbox::PidROS{node, prefix + names[6]},
+          control_toolbox::PidROS{node, std::string(node->get_name()) + "/" + prefix + names[0]},
+          control_toolbox::PidROS{node, std::string(node->get_name()) + "/" + prefix + names[1]},
+          control_toolbox::PidROS{node, std::string(node->get_name()) + "/" + prefix + names[2]},
+          control_toolbox::PidROS{node, std::string(node->get_name()) + "/" + prefix + names[3]},
+          control_toolbox::PidROS{node, std::string(node->get_name()) + "/" + prefix + names[4]},
+          control_toolbox::PidROS{node, std::string(node->get_name()) + "/" + prefix + names[5]},
+          control_toolbox::PidROS{node, std::string(node->get_name()) + "/" + prefix + names[6]},
       }) {}
 
 void JointPIDArrayROS::compute(const ValueArrayType &command_target, const ValueArrayType &state,
