@@ -1,5 +1,5 @@
-#ifndef LBR_FRI_ROS2__LBR_UTILS_HPP_
-#define LBR_FRI_ROS2__LBR_UTILS_HPP_
+#ifndef LBR_FRI_ROS2__UTILS_HPP_
+#define LBR_FRI_ROS2__UTILS_HPP_
 
 #include <algorithm>
 #include <array>
@@ -82,4 +82,4 @@ protected:
 };
 
 } // end of namespace lbr_fri_ros2
-#endif // LBR_FRI_ROS2__LBR_UTILS_HPP_
+#endif // LBR_FRI_ROS2__UTILS_HPP_
