@@ -15,8 +15,8 @@ inline double ExponentialFilter::compute(const double &current, const double &pr
 void ExponentialFilter::set_cutoff_frequency(const double &cutoff_frequency,
                                              const double &sample_time) {
   cutoff_frequency_ = cutoff_frequency;
-  if (cutoff_frequency_ > static_cast<uint16_t>(1. / sample_time)) {
-    cutoff_frequency_ = static_cast<uint16_t>(1. / sample_time);
+  if (cutoff_frequency_ > (1. / sample_time)) {
+    cutoff_frequency_ = (1. / sample_time);
   }
   sample_time_ = sample_time;
   alpha_ = compute_alpha(cutoff_frequency, sample_time);
