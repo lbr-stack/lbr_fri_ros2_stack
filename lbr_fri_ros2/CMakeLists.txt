@@ -71,33 +71,33 @@ install(
   DESTINATION share/lbr_fri_ros2
 )
 
-# lbr_app_component
-add_library(lbr_app_component
+# app_component
+add_library(app_component
   SHARED
-    src/lbr_app_component.cpp
+    src/app_component.cpp
 )
 
-target_include_directories(lbr_app_component
+target_include_directories(app_component
   PRIVATE src
 )
 
-ament_target_dependencies(lbr_app_component
+ament_target_dependencies(app_component
   rclcpp
   urdf
   rclcpp_components
 )
 
-target_link_libraries(lbr_app_component
+target_link_libraries(app_component
   lbr_fri_ros2
 )
 
-rclcpp_components_register_node(lbr_app_component
-  PLUGIN lbr_fri_ros2::LBRAppComponent
+rclcpp_components_register_node(app_component
+  PLUGIN lbr_fri_ros2::AppComponent
   EXECUTABLE lbr_app
 )
 
 install(
-  TARGETS lbr_app_component
+  TARGETS app_component
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION lib/lbr_fri_ros2
 )

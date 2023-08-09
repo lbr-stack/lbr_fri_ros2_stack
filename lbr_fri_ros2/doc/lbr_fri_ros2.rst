@@ -23,7 +23,7 @@ Quick Start
 This launch file does 2 things:
 
     - Loads the ``robot_description`` (to read joint limits)
-    - Runs the :lbr_fri_ros2:`LBRAppComponentLBRApp <lbr_fri_ros2::LBRAppComponent>`, which has an instance of :lbr_fri_ros2:`App <lbr_fri_ros2::App>` to
+    - Runs the :lbr_fri_ros2:`AppComponent <lbr_fri_ros2::AppComponent>`, which has an instance of :lbr_fri_ros2:`App <lbr_fri_ros2::App>` to
         
         - Create services to connect to / disconnect from the robot
         - Publish robot states to ``/lbr/state`` via :lbr_fri_ros2:`Client <lbr_fri_ros2::Client>`

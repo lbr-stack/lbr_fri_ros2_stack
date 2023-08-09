@@ -1,5 +1,5 @@
-#ifndef LBR_FRI_ROS2__LBR_APP_COMPONENT_HPP_
-#define LBR_FRI_ROS2__LBR_APP_COMPONENT_HPP_
+#ifndef LBR_FRI_ROS2__APP_COMPONENT_HPP_
+#define LBR_FRI_ROS2__APP_COMPONENT_HPP_
 #include <memory>
 
 #include "rclcpp/rclcpp.hpp"
@@ -11,14 +11,14 @@ namespace lbr_fri_ros2 {
  * @brief Component for instantiating #lbr_fri_ros2::App.
  *
  */
-class LBRAppComponent {
+class AppComponent {
 public:
   /**
-   * @brief Construct a new LBRAppComponent object.
+   * @brief Construct a new AppComponent object.
    *
    * @param options Node options
    */
-  LBRAppComponent(const rclcpp::NodeOptions &options);
+  AppComponent(const rclcpp::NodeOptions &options);
 
   /**
    * @brief Get the node base interface object. Implementing this is necessary for components via
