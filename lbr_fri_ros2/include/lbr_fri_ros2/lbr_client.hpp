@@ -17,6 +17,7 @@
 #include "lbr_fri_msgs/msg/lbr_command.hpp"
 #include "lbr_fri_msgs/msg/lbr_state.hpp"
 #include "lbr_fri_ros2/lbr_command_guard.hpp"
+#include "lbr_fri_ros2/utils.hpp"
 
 namespace lbr_fri_ros2 {
 /**
@@ -90,6 +91,14 @@ protected:
   void init_topics_();
 
   /**
+   * @brief Initialize filters, that is #external_torque_filter_, #measured_torque_filter_ and
+   * #joint_position_pid_. This method may only be called after #robotState is accessible since
+   * robots's sample time is required.
+   *
+   */
+  void init_filters_();
+
+  /**
    * @brief Declare parameters for #node_ that are utilized within LBRClient.
    *
    */
@@ -115,20 +124,21 @@ protected:
    */
   void on_lbr_command_(const lbr_fri_msgs::msg::LBRCommand::SharedPtr lbr_command);
 
-  /**
-   * @brief Calculate the command for the robot using the current state and the desired command.
-   *
-   * @param[in] lbr_command_target The desired command
-   * @param[in] lbr_state The current state
-   * @param[out] lbr_command The command to be written to the robot
-   */
-  void lbr_command_pid_(const lbr_fri_msgs::msg::LBRCommand &lbr_command_target,
-                        const lbr_fri_msgs::msg::LBRState &lbr_state,
-                        lbr_fri_msgs::msg::LBRCommand &lbr_command);
-
   rclcpp::Node::SharedPtr node_; /**< Shared pointer to node.*/
   std::unique_ptr<LBRCommandGuard>
       lbr_command_guard_; /**< Validating commands prior to writing them to #robotCommand.*/
+
+  JointExponentialFilterArrayROS
+      external_torque_filter_; /**< JointExponentialFilterArrayROS for smoothing external torques.*/
+  JointExponentialFilterArrayROS
+      measured_torque_filter_; /**< JointExponentialFilterArrayROS for smoothing measured torques.*/
+  JointPIDArrayROS
+      joint_position_pid_; /**< JointPIDArrayROS for smoothing joint positions commands.*/
+
+  bool topics_init_;  /**< Indicates whether topics were initialized. Necessary since #robotState
+                         sample time required.*/
+  bool filters_init_; /**< Indicates whether filters were initialized. Necessary since #robotState
+                         sample time required.*/
 
   uint32_t missed_deadlines_pub_; /**< Counter for states that were not published within specified
                                      deadline.*/
@@ -138,9 +148,6 @@ protected:
   lbr_fri_msgs::msg::LBRCommand lbr_command_target_; /**< Desired command buffer.*/
   lbr_fri_msgs::msg::LBRCommand lbr_command_;        /**< Command buffer.*/
   lbr_fri_msgs::msg::LBRState lbr_state_;            /**< State buffer.*/
-
-  std::array<control_toolbox::PidROS, KUKA::FRI::LBRState::NUMBER_OF_JOINTS>
-      position_pid_controllers_; /**< Array of PidROS controllers for each joint.*/
 
   bool open_loop_; /**< Open loop control if true. Best way to command the LBRs.*/
 
