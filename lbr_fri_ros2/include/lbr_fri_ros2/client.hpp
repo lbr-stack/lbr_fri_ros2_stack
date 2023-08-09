@@ -1,5 +1,5 @@
-#ifndef LBR_FRI_ROS2__LBR_CLIENT_HPP_
-#define LBR_FRI_ROS2__LBR_CLIENT_HPP_
+#ifndef LBR_FRI_ROS2__CLIENT_HPP_
+#define LBR_FRI_ROS2__CLIENT_HPP_
 
 #include <array>
 #include <cstring>
@@ -25,18 +25,18 @@ namespace lbr_fri_ros2 {
  * from / writing states to topics that follow the robot's QoS.
  *
  */
-class LBRClient : public KUKA::FRI::LBRClient {
+class Client : public KUKA::FRI::LBRClient {
 public:
-  LBRClient() = delete;
+  Client() = delete;
 
   /**
-   * @brief Construct a new LBRClient object.
+   * @brief Construct a new Client object.
    *
    * @param[in] node Shared node for reading commands from / writing states to topics.
    * @param[in] lbr_command_guard Command guard for validating incoming commands.
    *
    */
-  LBRClient(const rclcpp::Node::SharedPtr node, std::unique_ptr<CommandGuard> lbr_command_guard);
+  Client(const rclcpp::Node::SharedPtr node, std::unique_ptr<CommandGuard> lbr_command_guard);
 
   /**
    * @brief Log the status of the robot to terminal.
@@ -99,7 +99,7 @@ protected:
   void init_filters_();
 
   /**
-   * @brief Declare parameters for #node_ that are utilized within LBRClient.
+   * @brief Declare parameters for #node_ that are utilized within Client.
    *
    */
   void declare_parameters_();
@@ -166,4 +166,4 @@ private:
   }; /** Map for converting KUKA::FRI::ESessionState to readable strings.*/
 };
 } // end of namespace lbr_fri_ros2
-#endif // LBR_FRI_ROS2__LBR_CLIENT_HPP_
+#endif // LBR_FRI_ROS2__CLIENT_HPP_

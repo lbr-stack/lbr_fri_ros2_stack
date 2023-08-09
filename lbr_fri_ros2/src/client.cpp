@@ -1,7 +1,7 @@
-#include "lbr_fri_ros2/lbr_client.hpp"
+#include "lbr_fri_ros2/client.hpp"
 
 namespace lbr_fri_ros2 {
-LBRClient::LBRClient(const rclcpp::Node::SharedPtr node,
+Client::Client(const rclcpp::Node::SharedPtr node,
                      std::unique_ptr<CommandGuard> lbr_command_guard)
     : node_(node), lbr_command_guard_(std::move(lbr_command_guard)),
       external_torque_filter_(node, "external_torque"),
@@ -15,26 +15,26 @@ LBRClient::LBRClient(const rclcpp::Node::SharedPtr node,
   get_parameters_();
 }
 
-void LBRClient::log_status() {
-  RCLCPP_INFO(node_->get_logger(), "LBRClient - Publisher missed deadlines: %u",
+void Client::log_status() {
+  RCLCPP_INFO(node_->get_logger(), "Client - Publisher missed deadlines: %u",
               missed_deadlines_pub_);
-  RCLCPP_INFO(node_->get_logger(), "LBRClient - Subscription missed deadlines: %u",
+  RCLCPP_INFO(node_->get_logger(), "Client - Subscription missed deadlines: %u",
               missed_deadlines_sub_);
 }
 
-void LBRClient::onStateChange(KUKA::FRI::ESessionState old_state,
+void Client::onStateChange(KUKA::FRI::ESessionState old_state,
                               KUKA::FRI::ESessionState new_state) {
   init_topics_();
   init_filters_();
   RCLCPP_INFO(node_->get_logger(), "LBR switched from %s to %s.",
               KUKA_FRI_STATE_MAP[old_state].c_str(), KUKA_FRI_STATE_MAP[new_state].c_str());
 }
-void LBRClient::monitor() {
+void Client::monitor() {
   pub_lbr_state_();
   init_lbr_command_();
 }
 
-void LBRClient::waitForCommand() {
+void Client::waitForCommand() {
   KUKA::FRI::LBRClient::waitForCommand();
   pub_lbr_state_();
   init_lbr_command_();
@@ -48,7 +48,7 @@ void LBRClient::waitForCommand() {
   }
 }
 
-void LBRClient::command() {
+void Client::command() {
   pub_lbr_state_();
 
   // compute command
@@ -82,7 +82,7 @@ void LBRClient::command() {
   }
 }
 
-void LBRClient::init_lbr_command_() {
+void Client::init_lbr_command_() {
   std::memcpy(lbr_command_target_.joint_position.data(), robotState().getMeasuredJointPosition(),
               sizeof(double) * KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
   lbr_command_target_.torque.fill(0.);
@@ -90,7 +90,7 @@ void LBRClient::init_lbr_command_() {
   lbr_command_ = lbr_command_target_;
 }
 
-void LBRClient::init_topics_() {
+void Client::init_topics_() {
   if (topics_init_) {
     return;
   }
@@ -121,13 +121,13 @@ void LBRClient::init_topics_() {
           .deadline(
               std::chrono::milliseconds(static_cast<int64_t>(robotState().getSampleTime() * 1e3)))
           .reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE),
-      std::bind(&LBRClient::on_lbr_command_, this, std::placeholders::_1), sub_options,
+      std::bind(&Client::on_lbr_command_, this, std::placeholders::_1), sub_options,
       memory_strategy);
 
   topics_init_ = true;
 }
 
-void LBRClient::init_filters_() {
+void Client::init_filters_() {
   if (filters_init_) {
     return;
   }
@@ -141,15 +141,15 @@ void LBRClient::init_filters_() {
   filters_init_ = true;
 }
 
-void LBRClient::declare_parameters_() {
+void Client::declare_parameters_() {
   if (!node_->has_parameter("open_loop")) {
     node_->declare_parameter<bool>("open_loop", true);
   }
 }
 
-void LBRClient::get_parameters_() { open_loop_ = node_->get_parameter("open_loop").as_bool(); }
+void Client::get_parameters_() { open_loop_ = node_->get_parameter("open_loop").as_bool(); }
 
-void LBRClient::pub_lbr_state_() {
+void Client::pub_lbr_state_() {
   lbr_state_.client_command_mode = robotState().getClientCommandMode();
   std::memcpy(lbr_state_.commanded_joint_position.data(), robotState().getCommandedJointPosition(),
               sizeof(double) * KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
@@ -185,7 +185,7 @@ void LBRClient::pub_lbr_state_() {
   lbr_state_pub_->publish(lbr_state_);
 }
 
-void LBRClient::on_lbr_command_(const lbr_fri_msgs::msg::LBRCommand::SharedPtr lbr_command) {
+void Client::on_lbr_command_(const lbr_fri_msgs::msg::LBRCommand::SharedPtr lbr_command) {
   lbr_command_target_ = *lbr_command;
 }
 } // end of namespace lbr_fri_ros2

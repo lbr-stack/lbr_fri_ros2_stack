@@ -18,7 +18,7 @@
 #include "lbr_fri_msgs/srv/app_connect.hpp"
 #include "lbr_fri_msgs/srv/app_disconnect.hpp"
 #include "lbr_fri_ros2/command_guard.hpp"
-#include "lbr_fri_ros2/lbr_client.hpp"
+#include "lbr_fri_ros2/client.hpp"
 
 namespace lbr_fri_ros2 {
 /**
@@ -138,7 +138,7 @@ protected:
   rclcpp::Service<lbr_fri_msgs::srv::AppDisconnect>::SharedPtr
       app_disconnect_srv_; /**< Service to disconnect from robot via #on_app_disconnect_ callback.*/
 
-  std::shared_ptr<LBRClient> lbr_client_; /**< Writes commands to / reads states from robot.*/
+  std::shared_ptr<Client> lbr_client_; /**< Writes commands to / reads states from robot.*/
   std::unique_ptr<KUKA::FRI::UdpConnection>
       connection_; /**< UDP connection for reading states / writing commands.*/
   std::unique_ptr<KUKA::FRI::ClientApplication>

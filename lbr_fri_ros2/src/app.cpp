@@ -17,7 +17,7 @@ App::App(const rclcpp::Node::SharedPtr node) : node_(node) {
       std::bind(&App::on_app_disconnect_, this, std::placeholders::_1, std::placeholders::_2),
       rmw_qos_profile_services_default);
 
-  lbr_client_ = std::make_shared<LBRClient>(
+  lbr_client_ = std::make_shared<Client>(
       node_, lbr_command_guard_factory(node_->get_node_logging_interface(), robot_description_,
                                        command_guard_variant_));
   connection_ = std::make_unique<KUKA::FRI::UdpConnection>();
