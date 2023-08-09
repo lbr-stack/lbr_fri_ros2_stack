@@ -133,8 +133,8 @@ void Client::init_filters_() {
   joint_position_pid_.init(2. * robotState().getSampleTime(), 0., 0., 0., 0., false);
 
   // initialize torque filters
-  external_torque_filter_.init(50, robotState().getSampleTime());
-  measured_torque_filter_.init(50, robotState().getSampleTime());
+  external_torque_filter_.init(3., robotState().getSampleTime());
+  measured_torque_filter_.init(3., robotState().getSampleTime());
 
   filters_init_ = true;
 }
