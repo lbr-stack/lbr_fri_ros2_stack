@@ -75,8 +75,8 @@ int main(int argc, char **argv) {
 
   auto executor = std::make_shared<rclcpp::executors::StaticSingleThreadedExecutor>();
 
-  auto app_node =
-      std::make_shared<rclcpp::Node>("app", rclcpp::NodeOptions().use_intra_process_comms(true));
+  auto app_node = std::make_shared<rclcpp::Node>(
+      "app", "lbr", rclcpp::NodeOptions().use_intra_process_comms(true));
 
   auto app = lbr_fri_ros2::App(app_node);
 
