@@ -1,7 +1,6 @@
 #include "lbr_fri_ros2/utils.hpp"
 
 namespace lbr_fri_ros2 {
-
 ExponentialFilter::ExponentialFilter() : ExponentialFilter::ExponentialFilter(0, 0.0) {}
 
 ExponentialFilter::ExponentialFilter(const double &cutoff_frequency, const double &sample_time) {
@@ -19,8 +18,8 @@ void ExponentialFilter::set_cutoff_frequency(const double &cutoff_frequency,
     cutoff_frequency_ = (1. / sample_time);
   }
   sample_time_ = sample_time;
-  alpha_ = compute_alpha(cutoff_frequency, sample_time);
-  if (!validate_alpha(alpha_)) {
+  alpha_ = compute_alpha_(cutoff_frequency, sample_time);
+  if (!validate_alpha_(alpha_)) {
     throw std::runtime_error("Alpha is not within [0, 1].");
   }
 }
@@ -29,13 +28,13 @@ inline const double &ExponentialFilter::get_sample_time() const { return sample_
 
 inline const double &ExponentialFilter::get_alpha() const { return alpha_; }
 
-double ExponentialFilter::compute_alpha(const double &cutoff_frequency, const double &sample_time) {
+double ExponentialFilter::compute_alpha_(const double &cutoff_frequency, const double &sample_time) {
   double omega_3db = 2.0 * M_PI * sample_time * cutoff_frequency;
   return std::cos(omega_3db) - 1 +
          std::sqrt(std::pow(std::cos(omega_3db), 2) - 4 * std::cos(omega_3db) + 3);
 }
 
-bool ExponentialFilter::validate_alpha(const double &alpha) { return alpha <= 1. && alpha >= 0.; }
+bool ExponentialFilter::validate_alpha_(const double &alpha) { return alpha <= 1. && alpha >= 0.; }
 
 JointExponentialFilterArrayROS::JointExponentialFilterArrayROS(const rclcpp::Node::SharedPtr node,
                                                                const std::string &param_prefix)
@@ -123,5 +122,4 @@ void JointPIDArrayROS::init(const double &p, const double &i, const double &d, c
   std::for_each(pid_controllers_.begin(), pid_controllers_.end(),
                 [&](auto &pid) { pid.initPid(p, i, d, i_max, i_min, antiwindup); });
 }
-
 } // end of namespace lbr_fri_ros2
