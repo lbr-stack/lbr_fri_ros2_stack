@@ -4,7 +4,7 @@
 
 #include "lbr_fri_msgs/msg/lbr_command.hpp"
 #include "lbr_fri_msgs/msg/lbr_state.hpp"
-#include "lbr_fri_ros2/lbr_app.hpp"
+#include "lbr_fri_ros2/app.hpp"
 
 #include "admittance_controller.hpp"
 #include "damped_least_squares.hpp"
@@ -14,8 +14,8 @@ public:
   AdmittanceControlNode(const std::string &node_name, const rclcpp::NodeOptions &options)
       : rclcpp::Node(node_name, options) {
     this->declare_parameter<std::string>("robot_description");
-    this->declare_parameter<std::string>("base_link", "lbr_link_0");
-    this->declare_parameter<std::string>("end_effector_link", "lbr_link_ee");
+    this->declare_parameter<std::string>("base_link", "link_0");
+    this->declare_parameter<std::string>("end_effector_link", "link_ee");
 
     admittance_controller_ = std::make_unique<AdmittanceController>(
         this->get_parameter("robot_description").as_string(),
@@ -75,15 +75,15 @@ int main(int argc, char **argv) {
 
   auto executor = std::make_shared<rclcpp::executors::StaticSingleThreadedExecutor>();
 
-  auto lbr_node =
-      std::make_shared<rclcpp::Node>("lbr", rclcpp::NodeOptions().use_intra_process_comms(true));
+  auto app_node = std::make_shared<rclcpp::Node>(
+      "app", "lbr", rclcpp::NodeOptions().use_intra_process_comms(true));
 
-  auto lbr_app = lbr_fri_ros2::LBRApp(lbr_node);
+  auto app = lbr_fri_ros2::App(app_node);
 
   auto admittance_control_node = std::make_shared<AdmittanceControlNode>(
       "admittance_control_node", rclcpp::NodeOptions().use_intra_process_comms(true));
 
-  executor->add_node(lbr_node);
+  executor->add_node(app_node);
   executor->add_node(admittance_control_node);
   executor->spin();
 

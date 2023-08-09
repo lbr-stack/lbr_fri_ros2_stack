@@ -34,7 +34,7 @@ def launch_setup(context: LaunchContext) -> List[LaunchDescriptionEntity]:
 
     # robot state publisher on joint state broadcaster spawn exit
     robot_state_publisher = LBRHardwareInterfaceMixin.node_robot_state_publisher(
-        robot_description=robot_description
+        robot_description=robot_description, use_sim_time=False, frame_prefix=""
     )
     robot_state_publisher_event_handler = RegisterEventHandler(
         OnProcessExit(

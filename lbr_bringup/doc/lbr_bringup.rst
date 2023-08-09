@@ -65,14 +65,14 @@ Standalone launch is great for research. Only the the real robot is supported. I
 
 .. code:: bash
 
-    ros2 launch lbr_fri_ros2 lbr_app.launch.py \
+    ros2 launch lbr_fri_ros2 app.launch.py \
         model:=iiwa7 # [iiwa7, iiwa14, med7, med14] \
         robot_name:=lbr # any robot name
 
-This runs the :lbr_fri_ros2:`LBRAppComponentLBRApp <lbr_fri_ros2::LBRAppComponent>`, which creates 2 topics, ``/robot_name/command`` for commands and ``/robot_name/state``. See :ref:`LBR Demos FRI ROS 2` for more examples and :ref:`LBR FRI ROS 2` for more documentation.
+This runs the :lbr_fri_ros2:`AppComponent <lbr_fri_ros2::AppComponent>`, which creates 2 topics, ``/robot_name/command`` for commands and ``/robot_name/state``. See :ref:`LBR Demos FRI ROS 2` for more examples and :ref:`LBR FRI ROS 2` for more documentation.
 
 .. note::
-    For a list of available parameters, call ``ros2 launch lbr_fri_ros2 lbr_app.launch.py -s``.
+    For a list of available parameters, call ``ros2 launch lbr_fri_ros2 app.launch.py -s``.
 
 Troubleshooting
 ---------------

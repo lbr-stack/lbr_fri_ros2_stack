@@ -2,7 +2,7 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>lbr_hardware_interface</name>
-  <version>1.2.3</version>
+  <version>1.2.4</version>
   <description>ROS 2 hardware hardware_interface for KUKA LBR through Fast Robot Interface (FRI).</description>
   <maintainer email="martin.huber@kcl.ac.uk">mhubii</maintainer>
   <license>MIT</license>
