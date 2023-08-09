@@ -1,8 +1,7 @@
 #include "lbr_fri_ros2/client.hpp"
 
 namespace lbr_fri_ros2 {
-Client::Client(const rclcpp::Node::SharedPtr node,
-                     std::unique_ptr<CommandGuard> lbr_command_guard)
+Client::Client(const rclcpp::Node::SharedPtr node, std::unique_ptr<CommandGuard> lbr_command_guard)
     : node_(node), lbr_command_guard_(std::move(lbr_command_guard)),
       external_torque_filter_(node, "external_torque"),
       measured_torque_filter_(node, "measured_torque"),
@@ -22,12 +21,11 @@ void Client::log_status() {
               missed_deadlines_sub_);
 }
 
-void Client::onStateChange(KUKA::FRI::ESessionState old_state,
-                              KUKA::FRI::ESessionState new_state) {
+void Client::onStateChange(KUKA::FRI::ESessionState old_state, KUKA::FRI::ESessionState new_state) {
   init_topics_();
   init_filters_();
-  RCLCPP_INFO(node_->get_logger(), "Switched from %s to %s.",
-              KUKA_FRI_STATE_MAP[old_state].c_str(), KUKA_FRI_STATE_MAP[new_state].c_str());
+  RCLCPP_INFO(node_->get_logger(), "Switched from %s to %s.", KUKA_FRI_STATE_MAP[old_state].c_str(),
+              KUKA_FRI_STATE_MAP[new_state].c_str());
 }
 void Client::monitor() {
   pub_lbr_state_();

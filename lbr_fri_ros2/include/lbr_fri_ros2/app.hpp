@@ -17,8 +17,8 @@
 
 #include "lbr_fri_msgs/srv/app_connect.hpp"
 #include "lbr_fri_msgs/srv/app_disconnect.hpp"
-#include "lbr_fri_ros2/command_guard.hpp"
 #include "lbr_fri_ros2/client.hpp"
+#include "lbr_fri_ros2/command_guard.hpp"
 
 namespace lbr_fri_ros2 {
 /**
@@ -114,8 +114,8 @@ protected:
   /**
    * @brief Exchanges commands / states between ROS and the FRI.
    *
-   * Calls step() on #lbr_app_, which callbacks #lbr_client_. #lbr_client_ reads commands / write states
-   * through realtime safe topics.
+   * Calls step() on #lbr_app_, which callbacks #lbr_client_. #lbr_client_ reads commands / write
+   * states through realtime safe topics.
    *
    */
   void run_();

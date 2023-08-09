@@ -4,8 +4,7 @@ namespace lbr_fri_ros2 {
 
 ExponentialFilter::ExponentialFilter() : ExponentialFilter::ExponentialFilter(0, 0.0) {}
 
-ExponentialFilter::ExponentialFilter(const double &cutoff_frequency,
-                                     const double &sample_time) {
+ExponentialFilter::ExponentialFilter(const double &cutoff_frequency, const double &sample_time) {
   set_cutoff_frequency(cutoff_frequency, sample_time);
 }
 
@@ -30,16 +29,13 @@ inline const double &ExponentialFilter::get_sample_time() const { return sample_
 
 inline const double &ExponentialFilter::get_alpha() const { return alpha_; }
 
-double ExponentialFilter::compute_alpha(const double &cutoff_frequency,
-                                                   const double &sample_time) {
+double ExponentialFilter::compute_alpha(const double &cutoff_frequency, const double &sample_time) {
   double omega_3db = 2.0 * M_PI * sample_time * cutoff_frequency;
   return std::cos(omega_3db) - 1 +
          std::sqrt(std::pow(std::cos(omega_3db), 2) - 4 * std::cos(omega_3db) + 3);
 }
 
-bool ExponentialFilter::validate_alpha(const double &alpha) {
-  return alpha <= 1. && alpha >= 0.;
-}
+bool ExponentialFilter::validate_alpha(const double &alpha) { return alpha <= 1. && alpha >= 0.; }
 
 JointExponentialFilterArrayROS::JointExponentialFilterArrayROS(const rclcpp::Node::SharedPtr node,
                                                                const std::string &param_prefix)
@@ -85,8 +81,10 @@ void JointExponentialFilterArrayROS::init(const double &cutoff_frequency,
               exponential_filter_.set_cutoff_frequency(parameter.as_int(),
                                                        exponential_filter_.get_sample_time());
               RCLCPP_INFO(logging_interface_->get_logger(),
-                          "Set %s to: %ld, new smoothing factor: %f. 0: now smoothing, 1: maximal smoothing", parameter.get_name().c_str(),
-                          parameter.as_int(), 1. - exponential_filter_.get_alpha());
+                          "Set %s to: %ld, new smoothing factor: %f. 0: no smoothing, 1: maximal "
+                          "smoothing.",
+                          parameter.get_name().c_str(), parameter.as_int(),
+                          1. - exponential_filter_.get_alpha());
             }
           } catch (const rclcpp::exceptions::InvalidParameterTypeException &e) {
             std::string info_msg = "Invalid parameter type: " + std::string(e.what());
