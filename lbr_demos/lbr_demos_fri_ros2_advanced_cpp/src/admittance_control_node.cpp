@@ -4,7 +4,7 @@
 
 #include "lbr_fri_msgs/msg/lbr_command.hpp"
 #include "lbr_fri_msgs/msg/lbr_state.hpp"
-#include "lbr_fri_ros2/lbr_app.hpp"
+#include "lbr_fri_ros2/app.hpp"
 
 #include "admittance_controller.hpp"
 #include "damped_least_squares.hpp"
@@ -78,7 +78,7 @@ int main(int argc, char **argv) {
   auto lbr_node =
       std::make_shared<rclcpp::Node>("lbr", rclcpp::NodeOptions().use_intra_process_comms(true));
 
-  auto lbr_app = lbr_fri_ros2::LBRApp(lbr_node);
+  auto lbr_app = lbr_fri_ros2::App(lbr_node);
 
   auto admittance_control_node = std::make_shared<AdmittanceControlNode>(
       "admittance_control_node", rclcpp::NodeOptions().use_intra_process_comms(true));

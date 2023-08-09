@@ -23,7 +23,7 @@
 #include "lbr_fri_msgs/msg/lbr_state.hpp"
 #include "lbr_fri_msgs/srv/app_connect.hpp"
 #include "lbr_fri_msgs/srv/app_disconnect.hpp"
-#include "lbr_fri_ros2/lbr_app.hpp"
+#include "lbr_fri_ros2/app.hpp"
 #include "lbr_hardware_interface/lbr_hardware_interface_type_values.hpp"
 
 namespace lbr_hardware_interface {
@@ -83,7 +83,7 @@ protected:
 
   // node for handling communication
   rclcpp::Node::SharedPtr lbr_node_;
-  std::unique_ptr<lbr_fri_ros2::LBRApp> lbr_app_;
+  std::unique_ptr<lbr_fri_ros2::App> lbr_app_;
 
   // exposed state interfaces
   double hw_sample_time_;

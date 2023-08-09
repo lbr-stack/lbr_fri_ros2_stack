@@ -14,7 +14,7 @@ Quick Start
 
     .. thumbnail:: ../../lbr_demos/doc/img/applications_lbr_server.png
 
-#. Run the :lbr_fri_ros2:`LBRApp <lbr_fri_ros2::LBRApp>` node via `lbr_app.launch.py <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_fri_ros2/launch/lbr_app.launch.py>`_:
+#. Run the :lbr_fri_ros2:`App <lbr_fri_ros2::App>` node via `lbr_app.launch.py <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_fri_ros2/launch/app.launch.py>`_:
 
 .. code-block:: bash
 
@@ -23,7 +23,7 @@ Quick Start
 This launch file does 2 things:
 
     - Loads the ``robot_description`` (to read joint limits)
-    - Runs the :lbr_fri_ros2:`LBRAppComponentLBRApp <lbr_fri_ros2::LBRAppComponent>`, which has an instance of :lbr_fri_ros2:`LBRApp <lbr_fri_ros2::LBRApp>` to
+    - Runs the :lbr_fri_ros2:`LBRAppComponentLBRApp <lbr_fri_ros2::LBRAppComponent>`, which has an instance of :lbr_fri_ros2:`App <lbr_fri_ros2::App>` to
         
         - Create services to connect to / disconnect from the robot
         - Publish robot states to ``/lbr/state`` via :lbr_fri_ros2:`LBRClient <lbr_fri_ros2::LBRClient>`
@@ -52,7 +52,7 @@ Design Principles
 - Leave KUKA's FRI **untouched** (except for new ``ament_cmake`` build system) -> implemented through :ref:`FRI` package.
 - Bridge ``nanopb`` (used within FRI for message definition) with ROS 2 Interface Definition Language (``IDL``) -> implemented through ``lbr_fri_msgs`` package.
 - Support future versions of the FRI -> implemented through ``vcstool`` and by separating the :ref:`FRI` package.
-- Run stand-alone **and** within ``ros2_control`` -> implemented through :lbr_fri_ros2:`LBRApp <lbr_fri_ros2::LBRApp>`.
+- Run stand-alone **and** within ``ros2_control`` -> implemented through :lbr_fri_ros2:`App <lbr_fri_ros2::App>`.
 
 Implementation Details
 ~~~~~~~~~~~~~~~~~~~~~~

@@ -31,7 +31,7 @@ LBRHardwareInterface::on_init(const hardware_interface::HardwareInfo &system_inf
   lbr_node_->declare_parameter<std::string>("robot_name", robot_name_);
   lbr_node_->declare_parameter<std::string>("command_guard_variant", "default");
 
-  lbr_app_ = std::make_unique<lbr_fri_ros2::LBRApp>(lbr_node_);
+  lbr_app_ = std::make_unique<lbr_fri_ros2::App>(lbr_node_);
 
   init_command_interfaces_();
   init_state_interfaces_();

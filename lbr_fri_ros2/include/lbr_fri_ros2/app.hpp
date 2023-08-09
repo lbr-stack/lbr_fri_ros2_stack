@@ -1,5 +1,5 @@
-#ifndef LBR_FRI_ROS2__LBR_APP_HPP_
-#define LBR_FRI_ROS2__LBR_APP_HPP_
+#ifndef LBR_FRI_ROS2__APP_HPP_
+#define LBR_FRI_ROS2__APP_HPP_
 
 #include <atomic>
 #include <future>
@@ -22,7 +22,7 @@
 
 namespace lbr_fri_ros2 {
 /**
- * @brief The LBRApp has a node for exposing FRI methods to services. It shares this node with the
+ * @brief The App has a node for exposing FRI methods to services. It shares this node with the
  * #lbr_client_, which reads commands / write states via realtime safe topics.
  *
  * Services:
@@ -34,17 +34,17 @@ namespace lbr_fri_ros2 {
  * #run_.
  *
  */
-class LBRApp {
+class App {
 public:
   /**
-   * @brief Construct a new LBRApp object.
+   * @brief Construct a new App object.
    *
    * @param node Shared node
    *
    * @throws std::runtime error if no robot_description in node parameters
    */
-  LBRApp(const rclcpp::Node::SharedPtr node);
-  ~LBRApp();
+  App(const rclcpp::Node::SharedPtr node);
+  ~App();
 
 protected:
   /**
@@ -114,7 +114,7 @@ protected:
   /**
    * @brief Exchanges commands / states between ROS and the FRI.
    *
-   * Calls step() on #app_, which callbacks #lbr_client_. #lbr_client_ reads commands / write states
+   * Calls step() on #lbr_app_, which callbacks #lbr_client_. #lbr_client_ reads commands / write states
    * through realtime safe topics.
    *
    */
@@ -142,7 +142,7 @@ protected:
   std::unique_ptr<KUKA::FRI::UdpConnection>
       connection_; /**< UDP connection for reading states / writing commands.*/
   std::unique_ptr<KUKA::FRI::ClientApplication>
-      app_; /**< FRI client application that callbacks #lbr_client_ methods.*/
+      lbr_app_; /**< FRI client application that callbacks #lbr_client_ methods.*/
 };
 } // end of namespace lbr_fri_ros2
-#endif // LBR_FRI_ROS2__LBR_APP_HPP_
+#endif // LBR_FRI_ROS2__APP_HPP_

@@ -3,7 +3,7 @@
 namespace lbr_fri_ros2 {
 LBRAppComponent::LBRAppComponent(const rclcpp::NodeOptions &options) {
   lbr_node_ = std::make_shared<rclcpp::Node>("lbr", options);
-  lbr_app_ = std::make_unique<lbr_fri_ros2::LBRApp>(lbr_node_);
+  lbr_app_ = std::make_unique<lbr_fri_ros2::App>(lbr_node_);
 }
 
 rclcpp::node_interfaces::NodeBaseInterface::SharedPtr

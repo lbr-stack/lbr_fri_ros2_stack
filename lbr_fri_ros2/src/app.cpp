@@ -1,7 +1,7 @@
-#include "lbr_fri_ros2/lbr_app.hpp"
+#include "lbr_fri_ros2/app.hpp"
 
 namespace lbr_fri_ros2 {
-LBRApp::LBRApp(const rclcpp::Node::SharedPtr node) : node_(node) {
+App::App(const rclcpp::Node::SharedPtr node) : node_(node) {
   declare_parameters_();
   get_parameters_();
 
@@ -9,27 +9,27 @@ LBRApp::LBRApp(const rclcpp::Node::SharedPtr node) : node_(node) {
 
   app_connect_srv_ = node_->create_service<lbr_fri_msgs::srv::AppConnect>(
       robot_name_ + "/connect",
-      std::bind(&LBRApp::on_app_connect_, this, std::placeholders::_1, std::placeholders::_2),
+      std::bind(&App::on_app_connect_, this, std::placeholders::_1, std::placeholders::_2),
       rmw_qos_profile_services_default);
 
   app_disconnect_srv_ = node_->create_service<lbr_fri_msgs::srv::AppDisconnect>(
       robot_name_ + "/disconnect",
-      std::bind(&LBRApp::on_app_disconnect_, this, std::placeholders::_1, std::placeholders::_2),
+      std::bind(&App::on_app_disconnect_, this, std::placeholders::_1, std::placeholders::_2),
       rmw_qos_profile_services_default);
 
   lbr_client_ = std::make_shared<LBRClient>(
       node_, lbr_command_guard_factory(node_->get_node_logging_interface(), robot_description_,
                                        command_guard_variant_));
   connection_ = std::make_unique<KUKA::FRI::UdpConnection>();
-  app_ = std::make_unique<KUKA::FRI::ClientApplication>(*connection_, *lbr_client_);
+  lbr_app_ = std::make_unique<KUKA::FRI::ClientApplication>(*connection_, *lbr_client_);
 
   // attempt default connect
   connect_(port_id_, remote_host_);
 }
 
-LBRApp::~LBRApp() { disconnect_(); }
+App::~App() { disconnect_(); }
 
-void LBRApp::declare_parameters_() {
+void App::declare_parameters_() {
   if (!node_->has_parameter("port_id")) {
     node_->declare_parameter<int>("port_id", 30200);
   }
@@ -50,7 +50,7 @@ void LBRApp::declare_parameters_() {
   }
 }
 
-void LBRApp::get_parameters_() {
+void App::get_parameters_() {
   int port_id = node_->get_parameter("port_id").as_int();
   std::string remote_host = node_->get_parameter("remote_host").as_string();
 
@@ -68,7 +68,7 @@ void LBRApp::get_parameters_() {
   rt_prio_ = node_->get_parameter("rt_prio").as_int();
 }
 
-void LBRApp::on_app_connect_(const lbr_fri_msgs::srv::AppConnect::Request::SharedPtr request,
+void App::on_app_connect_(const lbr_fri_msgs::srv::AppConnect::Request::SharedPtr request,
                              lbr_fri_msgs::srv::AppConnect::Response::SharedPtr response) {
   const char *remote_host = request->remote_host.empty() ? NULL : request->remote_host.c_str();
   try {
@@ -79,7 +79,7 @@ void LBRApp::on_app_connect_(const lbr_fri_msgs::srv::AppConnect::Request::Share
   }
 }
 
-void LBRApp::on_app_disconnect_(
+void App::on_app_disconnect_(
     const lbr_fri_msgs::srv::AppDisconnect::Request::SharedPtr /*request*/,
     lbr_fri_msgs::srv::AppDisconnect::Response::SharedPtr response) {
   try {
@@ -90,7 +90,7 @@ void LBRApp::on_app_disconnect_(
   }
 }
 
-bool LBRApp::valid_port_(const int &port_id) {
+bool App::valid_port_(const int &port_id) {
   if (port_id < 30200 || port_id > 30209) {
     RCLCPP_ERROR(node_->get_logger(), "Expected port_id in [30200, 30209], got %d.", port_id);
     return false;
@@ -98,18 +98,18 @@ bool LBRApp::valid_port_(const int &port_id) {
   return true;
 }
 
-bool LBRApp::connect_(const int &port_id, const char *const remote_host) {
+bool App::connect_(const int &port_id, const char *const remote_host) {
   RCLCPP_INFO(node_->get_logger(),
               "Attempting to open UDP socket with port_id %d for LBR server...", port_id);
   if (!connected_) {
     if (!valid_port_(port_id)) {
       throw std::range_error("Invalid port_id provided.");
     }
-    connected_ = app_->connect(port_id, remote_host);
+    connected_ = lbr_app_->connect(port_id, remote_host);
     if (connected_) {
       port_id_ = port_id;
       remote_host_ = remote_host;
-      run_thread_ = std::make_unique<std::thread>(std::bind(&LBRApp::run_, this));
+      run_thread_ = std::make_unique<std::thread>(std::bind(&App::run_, this));
     }
   } else {
     RCLCPP_INFO(node_->get_logger(), "Port already open.");
@@ -122,11 +122,11 @@ bool LBRApp::connect_(const int &port_id, const char *const remote_host) {
   return connected_;
 }
 
-bool LBRApp::disconnect_() {
+bool App::disconnect_() {
   RCLCPP_INFO(node_->get_logger(),
               "Attempting to close UDP socket with port_id %d for LBR server...", port_id_);
   if (connected_) {
-    app_->disconnect();
+    lbr_app_->disconnect();
     connected_ = false;
   } else {
     RCLCPP_INFO(node_->get_logger(), "Port already closed.");
@@ -144,7 +144,7 @@ bool LBRApp::disconnect_() {
   return !connected_;
 }
 
-void LBRApp::run_() {
+void App::run_() {
   if (realtime_tools::has_realtime_kernel()) {
     if (!realtime_tools::configure_sched_fifo(rt_prio_)) {
       RCLCPP_WARN(node_->get_logger(), "Failed to set FIFO realtime scheduling policy.");
@@ -155,7 +155,7 @@ void LBRApp::run_() {
 
   bool success = true;
   while (success && connected_ && rclcpp::ok()) {
-    success = app_->step();
+    success = lbr_app_->step();
     if (lbr_client_->robotState().getSessionState() == KUKA::FRI::IDLE) {
       break;
     }

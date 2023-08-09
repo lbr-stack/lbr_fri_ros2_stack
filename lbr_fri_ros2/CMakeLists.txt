@@ -20,7 +20,7 @@ find_package(urdf REQUIRED)
 # lbr_fri_ros2
 add_library(lbr_fri_ros2
   SHARED
-    src/lbr_app.cpp
+    src/app.cpp
     src/lbr_client.cpp
     src/command_guard.cpp
     src/utils.cpp

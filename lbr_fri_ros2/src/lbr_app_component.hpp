@@ -4,11 +4,11 @@
 
 #include "rclcpp/rclcpp.hpp"
 
-#include "lbr_fri_ros2/lbr_app.hpp"
+#include "lbr_fri_ros2/app.hpp"
 
 namespace lbr_fri_ros2 {
 /**
- * @brief Component for instantiating #lbr_fri_ros2::LBRApp.
+ * @brief Component for instantiating #lbr_fri_ros2::App.
  *
  */
 class LBRAppComponent {
@@ -29,8 +29,8 @@ public:
   rclcpp::node_interfaces::NodeBaseInterface::SharedPtr get_node_base_interface() const;
 
 protected:
-  std::unique_ptr<lbr_fri_ros2::LBRApp>
-      lbr_app_;                      /** #lbr_fri_ros2::LBRApp for communicating with the hardware.<*/
+  std::unique_ptr<lbr_fri_ros2::App>
+      lbr_app_;                      /** #lbr_fri_ros2::App for communicating with the hardware.<*/
   rclcpp::Node::SharedPtr lbr_node_; /** Node for communicating with ROS.<*/
 };
 } // end of namespace lbr_fri_ros2
