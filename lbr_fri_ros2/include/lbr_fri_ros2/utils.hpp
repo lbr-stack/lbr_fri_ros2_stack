@@ -21,21 +21,21 @@ namespace lbr_fri_ros2 {
 class ExponentialFilter {
 public:
   ExponentialFilter();
-  ExponentialFilter(const std::uint16_t &cutoff_frequency, const double &sample_time);
+  ExponentialFilter(const double &cutoff_frequency, const double &sample_time);
 
   inline double compute(const double &current, const double &previous);
-  void set_cutoff_frequency(const std::uint16_t &cutoff_frequency, const double &sample_time);
+  void set_cutoff_frequency(const double &cutoff_frequency, const double &sample_time);
   inline const double &get_sample_time() const;
-  inline const double &get_smoothing_factor() const;
+  inline const double &get_alpha() const;
 
 protected:
   // https://dsp.stackexchange.com/questions/40462/exponential-moving-average-cut-off-frequency
-  double compute_smoothing_factor(const std::uint16_t &cutoff_frequency, const double &sample_time);
-  bool validate_smoothing_factor(const double &smoothing_factor);
+  double compute_alpha(const double &cutoff_frequency, const double &sample_time);
+  bool validate_alpha(const double &alpha);
 
-  std::uint16_t cutoff_frequency_;
+  double cutoff_frequency_;
   double sample_time_;
-  double smoothing_factor_;
+  double alpha_;
 };
 
 class JointExponentialFilterArrayROS {
@@ -51,7 +51,7 @@ public:
       const std::string &param_prefix = "");
 
   void compute(const double *const current, ValueArrayType &previous);
-  void init(const std::uint16_t &cutoff_frequency, const double &sample_time);
+  void init(const double &cutoff_frequency, const double &sample_time);
 
 protected:
   ExponentialFilter exponential_filter_;
