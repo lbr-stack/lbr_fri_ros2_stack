@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
-    <xacro:macro name="iiwa_gazebo" params="robot_name:=^|lbr">
+    <xacro:macro name="lbr_gazebo" params="robot_name:=^|lbr">
 
         <!-- ros_control-plugin -->
         <gazebo>
@@ -16,10 +16,22 @@
             <mu2>0.2</mu2>
         </gazebo>
 
+        <!-- A1 -->
+        <gazebo reference="A1">
+            <implicitSpringDamper>true</implicitSpringDamper>
+            <provideFeedback>true</provideFeedback>
+        </gazebo>
+
         <!-- link 1 -->
         <gazebo reference="link_1">
             <mu1>0.2</mu1>
             <mu2>0.2</mu2>
+        </gazebo>
+
+        <!-- A2 -->
+        <gazebo reference="A2">
+            <implicitSpringDamper>true</implicitSpringDamper>
+            <provideFeedback>true</provideFeedback>
         </gazebo>
 
         <!-- link 2 -->
@@ -28,10 +40,22 @@
             <mu2>0.2</mu2>
         </gazebo>
 
+        <!-- A3 -->
+        <gazebo reference="A3">
+            <implicitSpringDamper>true</implicitSpringDamper>
+            <provideFeedback>true</provideFeedback>
+        </gazebo>
+
         <!-- link 3 -->
         <gazebo reference="link_3">
             <mu1>0.2</mu1>
             <mu2>0.2</mu2>
+        </gazebo>
+
+        <!-- A4 -->
+        <gazebo reference="A4">
+            <implicitSpringDamper>true</implicitSpringDamper>
+            <provideFeedback>true</provideFeedback>
         </gazebo>
 
         <!-- link 4 -->
@@ -40,16 +64,34 @@
             <mu2>0.2</mu2>
         </gazebo>
 
+        <!-- A5 -->
+        <gazebo reference="A5">
+            <implicitSpringDamper>true</implicitSpringDamper>
+            <provideFeedback>true</provideFeedback>
+        </gazebo>
+
         <!-- link 5 -->
         <gazebo reference="link_5">
             <mu1>0.2</mu1>
             <mu2>0.2</mu2>
         </gazebo>
 
+        <!-- A6 -->
+        <gazebo reference="A6">
+            <implicitSpringDamper>true</implicitSpringDamper>
+            <provideFeedback>true</provideFeedback>
+        </gazebo>
+
         <!-- link 6 -->
         <gazebo reference="link_6">
             <mu1>0.2</mu1>
             <mu2>0.2</mu2>
+        </gazebo>
+
+        <!-- A7 -->
+        <gazebo reference="A7">
+            <implicitSpringDamper>true</implicitSpringDamper>
+            <provideFeedback>true</provideFeedback>
         </gazebo>
 
         <!-- link 7 -->

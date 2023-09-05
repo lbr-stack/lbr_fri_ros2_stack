@@ -307,7 +307,7 @@
         <link name="link_ee">
         </link>
 
-        <xacro:med_gazebo robot_name="${robot_name}" />
+        <xacro:lbr_gazebo robot_name="${robot_name}" />
         <!-- TODO: move modes to args, decouple urdf/gazebo/controls -->
         <xacro:lbr_hardware_interface
             joint_0_position_limit="${joint_0_position_limit * PI / 180}"
