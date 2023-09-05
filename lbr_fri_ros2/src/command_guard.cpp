@@ -96,8 +96,8 @@ bool CommandGuard::command_in_position_limits_(const lbr_fri_msgs::msg::LBRComma
   for (std::size_t i = 0; i < lbr_command.joint_position.size(); ++i) {
     if (lbr_command.joint_position[i] < min_position_[i] ||
         lbr_command.joint_position[i] > max_position_[i]) {
-      RCLCPP_ERROR(logger_interface_->get_logger(), "Position command not in limits for joint %ld.",
-                   i);
+      RCLCPP_ERROR(logger_interface_->get_logger(),
+                   "Position command not in limits for joint A%ld.", i + 1);
       return false;
     }
   }
@@ -110,7 +110,8 @@ bool CommandGuard::command_in_velocity_limits_(const lbr_fri_msgs::msg::LBRComma
   for (std::size_t i = 0; i < lbr_command.joint_position[i]; ++i) {
     if (std::abs(lbr_command.joint_position[i] - lbr_state.getMeasuredJointPosition()[i]) / dt >
         max_velocity_[i]) {
-      RCLCPP_ERROR(logger_interface_->get_logger(), "Velocity not in limits for joint %ld.", i);
+      RCLCPP_ERROR(logger_interface_->get_logger(), "Velocity not in limits for joint A%ld.",
+                   i + 1);
       return false;
     }
   }
@@ -121,8 +122,8 @@ bool CommandGuard::command_in_torque_limits_(const lbr_fri_msgs::msg::LBRCommand
                                              const KUKA::FRI::LBRState &lbr_state) const {
   for (std::size_t i = 0; i < lbr_command.torque.size(); ++i) {
     if (std::abs(lbr_command.torque[i] + lbr_state.getExternalTorque()[i]) > max_torque_[i]) {
-      RCLCPP_ERROR(logger_interface_->get_logger(), "Torque command not in limits for joint %ld.",
-                   i);
+      RCLCPP_ERROR(logger_interface_->get_logger(), "Torque command not in limits for joint A%ld.",
+                   i + 1);
       return false;
     }
   }
@@ -136,8 +137,8 @@ bool SafeStopCommandGuard::command_in_position_limits_(
             min_position_[i] + max_velocity_[i] * lbr_state.getSampleTime() ||
         lbr_command.joint_position[i] >
             max_position_[i] - max_velocity_[i] * lbr_state.getSampleTime()) {
-      RCLCPP_ERROR(logger_interface_->get_logger(), "Position command not in limits for joint %ld.",
-                   i);
+      RCLCPP_ERROR(logger_interface_->get_logger(),
+                   "Position command not in limits for joint A%ld.", i + 1);
       return false;
     }
   }
