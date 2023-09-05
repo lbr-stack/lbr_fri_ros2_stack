@@ -48,7 +48,7 @@
             <visual>
                 <origin rpy="0 0 0" xyz="0 0 0" />
                 <geometry>
-                    <mesh filename="package://lbr_description/meshes/iiwa7/visual/link_0.stl" />
+                    <mesh filename="package://lbr_description/meshes/iiwa7/visual/link_0.obj" />
                 </geometry>
                 <material name="silver" />
             </visual>
@@ -82,7 +82,7 @@
             <visual>
                 <origin rpy="0 0 0" xyz="-0.0 0.0 -0.1475" />
                 <geometry>
-                    <mesh filename="package://lbr_description/meshes/iiwa7/visual/link_1.stl" />
+                    <mesh filename="package://lbr_description/meshes/iiwa7/visual/link_1.obj" />
                 </geometry>
                 <material name="orange" />
             </visual>
@@ -116,7 +116,7 @@
             <visual>
                 <origin rpy="0 0 0" xyz="0.0 0.0105 -0.3405" />
                 <geometry>
-                    <mesh filename="package://lbr_description/meshes/iiwa7/visual/link_2.stl" />
+                    <mesh filename="package://lbr_description/meshes/iiwa7/visual/link_2.obj" />
                 </geometry>
                 <material name="orange" />
             </visual>
@@ -150,7 +150,7 @@
             <visual>
                 <origin rpy="0 0 0" xyz="0.0 0.0 -0.515" />
                 <geometry>
-                    <mesh filename="package://lbr_description/meshes/iiwa7/visual/link_3.stl" />
+                    <mesh filename="package://lbr_description/meshes/iiwa7/visual/link_3.obj" />
                 </geometry>
                 <material name="orange" />
             </visual>
@@ -184,7 +184,7 @@
             <visual>
                 <origin rpy="0 0 0" xyz="0.0 -0.0105 -0.7405" />
                 <geometry>
-                    <mesh filename="package://lbr_description/meshes/iiwa7/visual/link_4.stl" />
+                    <mesh filename="package://lbr_description/meshes/iiwa7/visual/link_4.obj" />
                 </geometry>
                 <material name="orange" />
             </visual>
@@ -218,7 +218,7 @@
             <visual>
                 <origin rpy="0 0 0" xyz="0.0 0.0 -0.915" />
                 <geometry>
-                    <mesh filename="package://lbr_description/meshes/iiwa7/visual/link_5.stl" />
+                    <mesh filename="package://lbr_description/meshes/iiwa7/visual/link_5.obj" />
                 </geometry>
                 <material name="orange" />
             </visual>
@@ -252,7 +252,7 @@
             <visual>
                 <origin rpy="0 0 0" xyz="0.0 0.0707 -1.1405" />
                 <geometry>
-                    <mesh filename="package://lbr_description/meshes/iiwa7/visual/link_6.stl" />
+                    <mesh filename="package://lbr_description/meshes/iiwa7/visual/link_6.obj" />
                 </geometry>
                 <material name="orange" />
             </visual>
@@ -287,7 +287,7 @@
             <visual>
                 <origin rpy="0 0 0" xyz="0.0 0.0002 -1.2314" />
                 <geometry>
-                    <mesh filename="package://lbr_description/meshes/iiwa7/visual/link_7.stl" />
+                    <mesh filename="package://lbr_description/meshes/iiwa7/visual/link_7.obj" />
                 </geometry>
                 <material name="silver" />
             </visual>
