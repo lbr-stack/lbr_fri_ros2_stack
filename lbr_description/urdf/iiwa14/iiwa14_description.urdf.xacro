@@ -24,7 +24,7 @@
 
     <!-- includes -->
     <xacro:include filename="$(find lbr_description)/urdf/materials.urdf.xacro" />
-    <xacro:include filename="$(find lbr_description)/gazebo/iiwa.gazebo.xacro" />
+    <xacro:include filename="$(find lbr_description)/gazebo/lbr.gazebo.xacro" />
     <xacro:include filename="$(find lbr_description)/ros2_control/lbr.ros2_control.xacro" />
 
     <!-- robot as extracted via https://github.com/syuntoku14/fusion2urdf -->
