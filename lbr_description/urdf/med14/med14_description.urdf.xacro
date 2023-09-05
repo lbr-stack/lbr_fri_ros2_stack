@@ -48,7 +48,7 @@
             <visual>
                 <origin rpy="0 0 0" xyz="0 0 0" />
                 <geometry>
-                    <mesh filename="package://lbr_description/meshes/med14/visual/link_0.dae" />
+                    <mesh filename="package://lbr_description/meshes/med14/visual/link_0.obj" />
                 </geometry>
                 <material name="white" />
             </visual>
@@ -82,7 +82,7 @@
             <visual>
                 <origin rpy="0 0 0" xyz="-0.0 -0.0 -0.147" />
                 <geometry>
-                    <mesh filename="package://lbr_description/meshes/med14/visual/link_1.dae" />
+                    <mesh filename="package://lbr_description/meshes/med14/visual/link_1.obj" />
                 </geometry>
                 <material name="white" />
             </visual>
@@ -116,7 +116,7 @@
             <visual>
                 <origin rpy="0 0 0" xyz="-0.0 0.01 -0.3595" />
                 <geometry>
-                    <mesh filename="package://lbr_description/meshes/med14/visual/link_2.dae" />
+                    <mesh filename="package://lbr_description/meshes/med14/visual/link_2.obj" />
                 </geometry>
                 <material name="white" />
             </visual>
@@ -150,7 +150,7 @@
             <visual>
                 <origin rpy="0 0 0" xyz="0.0 -0.0 -0.5875" />
                 <geometry>
-                    <mesh filename="package://lbr_description/meshes/med14/visual/link_3.dae" />
+                    <mesh filename="package://lbr_description/meshes/med14/visual/link_3.obj" />
                 </geometry>
                 <material name="white" />
             </visual>
@@ -184,7 +184,7 @@
             <visual>
                 <origin rpy="0 0 0" xyz="0.0 -0.0105 -0.7795" />
                 <geometry>
-                    <mesh filename="package://lbr_description/meshes/med14/visual/link_4.dae" />
+                    <mesh filename="package://lbr_description/meshes/med14/visual/link_4.obj" />
                 </geometry>
                 <material name="white" />
             </visual>
@@ -218,7 +218,7 @@
             <visual>
                 <origin rpy="0 0 0" xyz="-0.0 0.0 -0.987" />
                 <geometry>
-                    <mesh filename="package://lbr_description/meshes/med14/visual/link_5.dae" />
+                    <mesh filename="package://lbr_description/meshes/med14/visual/link_5.obj" />
                 </geometry>
                 <material name="white" />
             </visual>
@@ -252,7 +252,7 @@
             <visual>
                 <origin rpy="0 0 0" xyz="-0.0 0.0707 -1.1795" />
                 <geometry>
-                    <mesh filename="package://lbr_description/meshes/med14/visual/link_6.dae" />
+                    <mesh filename="package://lbr_description/meshes/med14/visual/link_6.obj" />
                 </geometry>
                 <material name="white" />
             </visual>
@@ -286,7 +286,7 @@
             <visual>
                 <origin rpy="0 0 0" xyz="-0.0 -0.0 -1.2705" />
                 <geometry>
-                    <mesh filename="package://lbr_description/meshes/med14/visual/link_7.dae" />
+                    <mesh filename="package://lbr_description/meshes/med14/visual/link_7.obj" />
                 </geometry>
                 <material name="silver" />
             </visual>
