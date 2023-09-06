@@ -34,7 +34,7 @@ Visualization Manager:
     - Alpha: 0.5
       Cell Size: 1
       Class: rviz_default_plugins/Grid
-      Color: 160; 160; 164
+      Color: 34; 141; 255
       Enabled: true
       Line Style:
         Line Width: 0.029999999329447746
@@ -125,7 +125,7 @@ Visualization Manager:
       Visual Enabled: true
   Enabled: true
   Global Options:
-    Background Color: 48; 48; 48
+    Background Color: 21; 21; 26
     Fixed Frame: world
     Frame Rate: 30
   Name: root
