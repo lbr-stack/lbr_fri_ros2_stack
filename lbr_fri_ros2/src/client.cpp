@@ -55,6 +55,8 @@ void Client::command() {
                               rclcpp::Duration(std::chrono::milliseconds(
                                   static_cast<int64_t>(robotState().getSampleTime() * 1e3))),
                               lbr_command_.joint_position);
+  lbr_command_.wrench = lbr_command_target_.wrench;
+  lbr_command_.torque = lbr_command_target_.torque;
 
   // validate command
   if (!lbr_command_guard_->is_valid_command(lbr_command_, robotState())) {
