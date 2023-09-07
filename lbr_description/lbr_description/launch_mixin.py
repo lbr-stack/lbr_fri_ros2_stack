@@ -24,8 +24,9 @@ class GazeboMixin:
                         "launch",
                         "gz_sim.launch.py",
                     ]
-                )
+                ),
             ),
+            launch_arguments={"gz_args": "-r"}.items(),
             **kwargs
         )
 
