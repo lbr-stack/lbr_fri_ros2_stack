@@ -12,6 +12,42 @@ from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 
 
+class GazeboClassicMixin:
+    @staticmethod
+    def include_gazebo(**kwargs) -> IncludeLaunchDescription:
+        return IncludeLaunchDescription(
+            PythonLaunchDescriptionSource(
+                PathJoinSubstitution(
+                    [
+                        FindPackageShare("gazebo_ros"),
+                        "launch",
+                        "gazebo.launch.py",
+                    ]
+                )
+            ),
+            **kwargs
+        )
+
+    @staticmethod
+    def node_spawn_entity(
+        robot_name: Optional[Union[LaunchConfiguration, str]] = None, **kwargs
+    ) -> Node:
+        if robot_name is None:
+            robot_name = LaunchConfiguration("robot_name")
+        return Node(
+            package="gazebo_ros",
+            executable="spawn_entity.py",
+            arguments=[
+                "-topic",
+                "robot_description",
+                "-entity",
+                LaunchConfiguration("robot_name"),
+            ],
+            output="screen",
+            **kwargs
+        )
+
+
 class GazeboMixin:
     # https://answers.gazebosim.org//question/28813/how-to-spawn-a-urdf-robot-into-a-ignition-gazebo-world-from-ros2/
     @staticmethod
