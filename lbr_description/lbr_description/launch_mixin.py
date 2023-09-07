@@ -42,7 +42,7 @@ class GazeboMixin:
             arguments=[
                 "-topic",
                 "robot_description",
-                "-entity",
+                "-name",
                 LaunchConfiguration("robot_name"),
             ],
             output="screen",
