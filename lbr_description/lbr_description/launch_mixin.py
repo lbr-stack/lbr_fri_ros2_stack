@@ -26,7 +26,7 @@ class GazeboMixin:
                     ]
                 ),
             ),
-            launch_arguments={"gz_args": "-r"}.items(),
+            launch_arguments={"gz_args": "-r empty.sdf"}.items(),
             **kwargs
         )
 
