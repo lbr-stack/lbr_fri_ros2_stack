@@ -1,1 +1,6 @@
-from .launch_mixin import GazeboMixin, LBRDescriptionMixin, RVizMixin
+from .launch_mixin import (
+    GazeboClassicMixin,
+    GazeboMixin,
+    LBRDescriptionMixin,
+    RVizMixin,
+)
