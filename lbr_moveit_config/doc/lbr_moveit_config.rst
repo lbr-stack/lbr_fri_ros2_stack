@@ -90,7 +90,7 @@ This procedure applies to all LBRs: ``iiwa7``, ``iiwa14``, ``med7``, and ``med14
     
     #. In the `move_group.launch.py <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_moveit_config/iiwa7_moveit_config/launch/move_group.launch.py>`_ use the robot descriotion from ``lbr_description``
     
-    #. In `moveit_controllers.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_moveit_config/iiwa7_moveit_config/config/moveit_controllers.yaml>`_ change the ``arm_controller`` to ``position_trajectory_controller``, as in `lbr_controllers.yml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_hardware_interface/config/lbr_controllers.yml>`_ 
+    #. In `moveit_controllers.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_moveit_config/iiwa7_moveit_config/config/moveit_controllers.yaml>`_ change the ``arm_controller`` to ``joint_trajectory_controller``, as in `lbr_controllers.yml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_hardware_interface/config/lbr_controllers.yml>`_ 
 
 Update MoveIt Configuration 
 ---------------------------
