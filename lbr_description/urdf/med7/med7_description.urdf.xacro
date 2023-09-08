@@ -23,7 +23,6 @@
     <xacro:property name="effort_limit" value="200" />
 
     <!-- includes -->
-    <xacro:include filename="$(find lbr_description)/urdf/materials.urdf.xacro" />
     <xacro:include filename="$(find lbr_description)/gazebo/lbr.gazebo.xacro" />
     <xacro:include filename="$(find lbr_description)/ros2_control/lbr.ros2_control.xacro" />
 
@@ -50,7 +49,6 @@
                 <geometry>
                     <mesh filename="package://lbr_description/meshes/med7/visual/link_0.dae" />
                 </geometry>
-                <material name="white" />
             </visual>
             <collision>
                 <origin rpy="0 0 0" xyz="0 0 0" />
@@ -84,7 +82,6 @@
                 <geometry>
                     <mesh filename="package://lbr_description/meshes/med7/visual/link_1.dae" />
                 </geometry>
-                <material name="white" />
             </visual>
             <collision>
                 <origin rpy="0 0 0" xyz="-0.0 0.0 -0.1475" />
@@ -118,7 +115,6 @@
                 <geometry>
                     <mesh filename="package://lbr_description/meshes/med7/visual/link_2.dae" />
                 </geometry>
-                <material name="white" />
             </visual>
             <collision>
                 <origin rpy="0 0 0" xyz="0.0 0.0105 -0.34" />
@@ -152,7 +148,6 @@
                 <geometry>
                     <mesh filename="package://lbr_description/meshes/med7/visual/link_3.dae" />
                 </geometry>
-                <material name="white" />
             </visual>
             <collision>
                 <origin rpy="0 0 0" xyz="0.0 -0.0 -0.5475" />
@@ -186,7 +181,6 @@
                 <geometry>
                     <mesh filename="package://lbr_description/meshes/med7/visual/link_4.dae" />
                 </geometry>
-                <material name="white" />
             </visual>
             <collision>
                 <origin rpy="0 0 0" xyz="-0.0 -0.0105 -0.74" />
@@ -220,7 +214,6 @@
                 <geometry>
                     <mesh filename="package://lbr_description/meshes/med7/visual/link_5.dae" />
                 </geometry>
-                <material name="white" />
             </visual>
             <collision>
                 <origin rpy="0 0 0" xyz="0.0 0.0 -0.9475" />
@@ -254,7 +247,6 @@
                 <geometry>
                     <mesh filename="package://lbr_description/meshes/med7/visual/link_6.dae" />
                 </geometry>
-                <material name="white" />
             </visual>
             <collision>
                 <origin rpy="0 0 0" xyz="0.0 0.0707 -1.14" />
@@ -288,7 +280,6 @@
                 <geometry>
                     <mesh filename="package://lbr_description/meshes/med7/visual/link_7.dae" />
                 </geometry>
-                <material name="silver" />
             </visual>
             <collision>
                 <origin rpy="0 0 0" xyz="-0.0 -0.0 -1.231" />
