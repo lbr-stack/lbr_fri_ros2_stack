@@ -76,20 +76,20 @@
                 </joint>
             </xacro:macro>
 
-            <xacro:joint_interface name="A1" min_pos="-${A1_position_limit}"
-                max_pos="${A1_position_limit}" eff_lim="${effort_limit}" sim="${sim}" />
-            <xacro:joint_interface name="A2" min_pos="-${A2_position_limit}"
-                max_pos="${A2_position_limit}" eff_lim="${effort_limit}" sim="${sim}" />
-            <xacro:joint_interface name="A3" min_pos="-${A3_position_limit}"
-                max_pos="${A3_position_limit}" eff_lim="${effort_limit}" sim="${sim}" />
-            <xacro:joint_interface name="A4" min_pos="-${A4_position_limit}"
-                max_pos="${A4_position_limit}" eff_lim="${effort_limit}" sim="${sim}" />
-            <xacro:joint_interface name="A5" min_pos="-${A5_position_limit}"
-                max_pos="${A5_position_limit}" eff_lim="${effort_limit}" sim="${sim}" />
-            <xacro:joint_interface name="A6" min_pos="-${A6_position_limit}"
-                max_pos="${A6_position_limit}" eff_lim="${effort_limit}" sim="${sim}" />
-            <xacro:joint_interface name="A7" min_pos="-${A7_position_limit}"
-                max_pos="${A7_position_limit}" eff_lim="${effort_limit}" sim="${sim}" />
+            <xacro:joint_interface name="A1" min_position="-${A1_position_limit}"
+                max_position="${A1_position_limit}" effort_limit="${effort_limit}" sim="${sim}" />
+            <xacro:joint_interface name="A2" min_position="-${A2_position_limit}"
+                max_position="${A2_position_limit}" effort_limit="${effort_limit}" sim="${sim}" />
+            <xacro:joint_interface name="A3" min_position="-${A3_position_limit}"
+                max_position="${A3_position_limit}" effort_limit="${effort_limit}" sim="${sim}" />
+            <xacro:joint_interface name="A4" min_position="-${A4_position_limit}"
+                max_position="${A4_position_limit}" effort_limit="${effort_limit}" sim="${sim}" />
+            <xacro:joint_interface name="A5" min_position="-${A5_position_limit}"
+                max_position="${A5_position_limit}" effort_limit="${effort_limit}" sim="${sim}" />
+            <xacro:joint_interface name="A6" min_position="-${A6_position_limit}"
+                max_position="${A6_position_limit}" effort_limit="${effort_limit}" sim="${sim}" />
+            <xacro:joint_interface name="A7" min_position="-${A7_position_limit}"
+                max_position="${A7_position_limit}" effort_limit="${effort_limit}" sim="${sim}" />
         </ros2_control>
     </xacro:macro>
 </robot>
