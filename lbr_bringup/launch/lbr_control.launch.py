@@ -118,7 +118,7 @@ def generate_launch_description():
     launch_args.append(
         DeclareLaunchArgument(
             name="controller",
-            default_value="position_trajectory_controller",
+            default_value="joint_trajectory_controller",
             description="Robot controller.",
         )
     )

@@ -123,7 +123,7 @@ def launch_setup(context, *args, **kwargs):
 
     # RViz
     rviz_config = PathJoinSubstitution(
-        [FindPackageShare("lbr_description"), "config/config.rviz"]
+        [FindPackageShare("lbr_moveit"), "config/config.rviz"]
     )
 
     rviz = Node(

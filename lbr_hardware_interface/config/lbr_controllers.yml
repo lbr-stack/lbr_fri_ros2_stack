@@ -1,26 +1,26 @@
 controller_manager:
   ros__parameters:
-    update_rate: 200
+    update_rate: 100
 
     joint_state_broadcaster:
       type: joint_state_broadcaster/JointStateBroadcaster
 
-    position_trajectory_controller:
+    joint_trajectory_controller:
       type: joint_trajectory_controller/JointTrajectoryController
 
     forward_position_controller:
       type: position_controllers/JointGroupPositionController
 
-position_trajectory_controller:
+joint_trajectory_controller:
   ros__parameters:
     joints:
-      - lbr_A1
-      - lbr_A2
-      - lbr_A3
-      - lbr_A4
-      - lbr_A5
-      - lbr_A6
-      - lbr_A7
+      - A1
+      - A2
+      - A3
+      - A4
+      - A5
+      - A6
+      - A7
     command_interfaces:
       - position
     state_interfaces:
@@ -32,11 +32,11 @@ position_trajectory_controller:
 forward_position_controller:
   ros__parameters:
     joints:
-      - lbr_A1
-      - lbr_A2
-      - lbr_A3
-      - lbr_A4
-      - lbr_A5
-      - lbr_A6
-      - lbr_A7
+      - A1
+      - A2
+      - A3
+      - A4
+      - A5
+      - A6
+      - A7
     interface_name: position

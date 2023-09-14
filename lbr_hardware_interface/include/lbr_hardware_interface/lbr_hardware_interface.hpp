@@ -1,6 +1,7 @@
 #ifndef LBR_HARDWARE_INTERFACE__LBR_HARDWARE_INTERFACE_HPP_
 #define LBR_HARDWARE_INTERFACE__LBR_HARDWARE_INTERFACE_HPP_
 
+#include <algorithm>
 #include <cstring>
 #include <future>
 #include <memory>
@@ -23,7 +24,7 @@
 #include "lbr_fri_msgs/msg/lbr_state.hpp"
 #include "lbr_fri_msgs/srv/app_connect.hpp"
 #include "lbr_fri_msgs/srv/app_disconnect.hpp"
-#include "lbr_fri_ros2/lbr_app.hpp"
+#include "lbr_fri_ros2/app.hpp"
 #include "lbr_hardware_interface/lbr_hardware_interface_type_values.hpp"
 
 namespace lbr_hardware_interface {
@@ -79,8 +80,8 @@ protected:
   const uint8_t LBR_FRI_SENSOR_SIZE = 12;
 
   // node for handling communication
-  rclcpp::Node::SharedPtr lbr_node_;
-  std::unique_ptr<lbr_fri_ros2::LBRApp> lbr_app_;
+  rclcpp::Node::SharedPtr app_node_;
+  std::unique_ptr<lbr_fri_ros2::App> app_;
 
   // exposed state interfaces
   double hw_sample_time_;

@@ -15,8 +15,8 @@ class AdmittanceControlNode(Node):
 
         # parameters
         self.declare_parameter("robot_description", "")
-        self.declare_parameter("base_link", "lbr_link_0")
-        self.declare_parameter("end_effector_link", "lbr_link_ee")
+        self.declare_parameter("base_link", "link_0")
+        self.declare_parameter("end_effector_link", "link_ee")
 
         self.init_ = False
         self.lbr_state_ = LBRState()
