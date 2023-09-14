@@ -135,7 +135,7 @@ bool App::disconnect_() {
   return !connected_;
 }
 
-void LBRApp::run_() {
+void App::run_() {
   bool success = true;
   while (success && connected_ && rclcpp::ok()) {
     success = app_->step();
