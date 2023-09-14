@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, Optional, Union
 
 from launch.actions import DeclareLaunchArgument
 from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
@@ -31,6 +31,26 @@ class LBRHardwareInterfaceMixin:
             description="Desired default controller. One of specified in ctrl_cfg.",
             choices=["position_trajectory_controller", "forward_position_controller"],
         )
+
+    @staticmethod
+    def arg_frame_prefix() -> DeclareLaunchArgument:
+        return DeclareLaunchArgument(
+            name="frame_prefix",
+            default_value="",
+            description="Prefix for the tf frame names. Useful for multi-robot setups. E.g. 'robot1/'",
+        )
+
+    @staticmethod
+    def arg_use_sim_time() -> DeclareLaunchArgument:
+        return DeclareLaunchArgument(
+            name="use_sim_time",
+            default_value="false",
+            description="Use simulation (Gazebo) clock if true.",
+        )
+
+    @staticmethod
+    def param_frame_prefix() -> Dict[str, LaunchConfiguration]:
+        return {"frame_prefix": LaunchConfiguration("frame_prefix", default="")}
 
     @staticmethod
     def node_ros2_control(robot_description: Dict[str, str], **kwargs) -> Node:
@@ -85,14 +105,24 @@ class LBRHardwareInterfaceMixin:
         )
 
     @staticmethod
-    def node_robot_state_publisher(robot_description: Dict[str, str], **kwargs) -> Node:
+    def node_robot_state_publisher(
+        robot_description: Dict[str, str],
+        use_sim_time: Optional[Union[LaunchConfiguration, bool]] = None,
+        frame_prefix: Optional[Union[LaunchConfiguration, str]] = None,
+        **kwargs
+    ) -> Node:
+        if use_sim_time is None:
+            use_sim_time = LaunchConfiguration("use_sim_time", default="false")
+        if frame_prefix is None:
+            frame_prefix = LaunchConfiguration("frame_prefix", default="")
         return Node(
             package="robot_state_publisher",
             executable="robot_state_publisher",
             output="screen",
             parameters=[
                 robot_description,
-                {"use_sim_time": False},
+                {"use_sim_time": use_sim_time},
+                {"frame_prefix": frame_prefix},
             ],
             **kwargs
         )

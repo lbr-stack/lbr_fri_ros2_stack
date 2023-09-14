@@ -33,7 +33,7 @@
             <!-- define lbr specific state interfaces as sensor, see
             https://github.com/ros-controls/roadmap/blob/master/design_drafts/components_architecture_and_urdf_examples.md -->
             <xacro:unless value="${sim}">
-                <sensor name="${robot_name}_fri_sensor">
+                <sensor name="fri_sensor">
                     <!-- see KUKA::FRI::LBRState -->
                     <state_interface name="sample_time" />
                     <state_interface name="session_state" />
@@ -53,7 +53,7 @@
             </xacro:unless>
 
             <!-- define joints and command/state interfaces for each joint -->
-            <joint name="${robot_name}_A1">
+            <joint name="A1">
                 <command_interface name="position">
                     <!-- better to use radians as min max first -->
                     <param name="min">-${joint_0_position_limit}</param>
@@ -73,7 +73,7 @@
                     <state_interface name="ipo_joint_position" />
                 </xacro:unless>
             </joint>
-            <joint name="${robot_name}_A2">
+            <joint name="A2">
                 <command_interface name="position">
                     <param name="min">-${joint_1_position_limit}</param>
                     <param name="max"> ${joint_1_position_limit}</param>
@@ -92,7 +92,7 @@
                     <state_interface name="ipo_joint_position" />
                 </xacro:unless>
             </joint>
-            <joint name="${robot_name}_A3">
+            <joint name="A3">
                 <command_interface name="position">
                     <param name="min">-${joint_2_position_limit}</param>
                     <param name="max"> ${joint_2_position_limit}</param>
@@ -111,7 +111,7 @@
                     <state_interface name="ipo_joint_position" />
                 </xacro:unless>
             </joint>
-            <joint name="${robot_name}_A4">
+            <joint name="A4">
                 <command_interface name="position">
                     <param name="min">-${joint_3_position_limit}</param>
                     <param name="max"> ${joint_3_position_limit}</param>
@@ -130,7 +130,7 @@
                     <state_interface name="ipo_joint_position" />
                 </xacro:unless>
             </joint>
-            <joint name="${robot_name}_A5">
+            <joint name="A5">
                 <command_interface name="position">
                     <param name="min">-${joint_4_position_limit}</param>
                     <param name="max"> ${joint_4_position_limit}</param>
@@ -149,7 +149,7 @@
                     <state_interface name="ipo_joint_position" />
                 </xacro:unless>
             </joint>
-            <joint name="${robot_name}_A6">
+            <joint name="A6">
                 <command_interface name="position">
                     <param name="min">-${joint_5_position_limit}</param>
                     <param name="max"> ${joint_5_position_limit}</param>
@@ -168,7 +168,7 @@
                     <state_interface name="ipo_joint_position" />
                 </xacro:unless>
             </joint>
-            <joint name="${robot_name}_A7">
+            <joint name="A7">
                 <command_interface name="position">
                     <param name="min">-${joint_6_position_limit}</param>
                     <param name="max"> ${joint_6_position_limit}</param>

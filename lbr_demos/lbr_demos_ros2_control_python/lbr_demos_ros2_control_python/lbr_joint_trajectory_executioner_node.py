@@ -9,10 +9,8 @@ class LBRJointTrajectoryExecutionerNode(Node):
     def __init__(
         self,
         node_name: str,
-        robot_name: str = "lbr",
     ) -> None:
         super().__init__(node_name=node_name)
-        self.robot_name_ = robot_name
         self.joint_trajectory_action_client_ = ActionClient(
             node=self,
             action_type=FollowJointTrajectory,
@@ -38,9 +36,7 @@ class LBRJointTrajectoryExecutionerNode(Node):
         point.time_from_start.sec = sec_from_start
 
         for i in range(7):
-            joint_trajectory_goal.trajectory.joint_names.append(
-                f"{self.robot_name_}_A{i + 1}"
-            )
+            joint_trajectory_goal.trajectory.joint_names.append(f"A{i + 1}")
 
         joint_trajectory_goal.trajectory.points.append(point)
 

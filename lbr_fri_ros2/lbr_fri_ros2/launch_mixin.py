@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, Optional, Union
 
 from launch.actions import DeclareLaunchArgument
 from launch.substitutions import LaunchConfiguration
@@ -36,10 +36,15 @@ class LBRFRIROS2Mixin:
         return {"open_loop": LaunchConfiguration("open_loop", default="true")}
 
     @staticmethod
-    def node_lbr_app(**kwargs) -> DeclareLaunchArgument:
+    def node_app(
+        robot_name: Optional[Union[LaunchConfiguration, str]] = None, **kwargs
+    ) -> DeclareLaunchArgument:
+        if robot_name is None:
+            robot_name = LaunchConfiguration("robot_name", default="lbr")
         return Node(
             package="lbr_fri_ros2",
-            executable="lbr_app",
+            executable="app",
+            namespace=robot_name,
             emulate_tty=True,
             output="screen",
             **kwargs,
