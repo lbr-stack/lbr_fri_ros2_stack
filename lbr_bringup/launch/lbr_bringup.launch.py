@@ -16,6 +16,7 @@ from launch_ros.substitutions import FindPackageShare
 def launch_setup(context, *args, **kwargs):
     # Evaluate frequently used variables
     model = LaunchConfiguration("model").perform(context)
+    sim = LaunchConfiguration("sim").perform(context)
 
     # Load robot description
     robot_description = {
@@ -26,7 +27,7 @@ def launch_setup(context, *args, **kwargs):
                 model,
                 f"{model}.urdf.xacro",
             ),
-            mappings={"sim": "false"},
+            mappings={"sim": sim},
         )
     }
 
@@ -48,7 +49,7 @@ def launch_setup(context, *args, **kwargs):
                 LaunchConfiguration("controller_configurations"),
             ),
             ("controller", LaunchConfiguration("controller")),
-            ("sim", LaunchConfiguration("sim")),
+            ("sim", sim),
         ],
     )
 
@@ -60,7 +61,7 @@ def launch_setup(context, *args, **kwargs):
             )
         ),
         launch_arguments=[("robot_name", LaunchConfiguration("robot_name"))],
-        condition=IfCondition(LaunchConfiguration("sim")),
+        condition=IfCondition(sim),
     )
 
     # Move group
@@ -81,7 +82,7 @@ def launch_setup(context, *args, **kwargs):
                 LaunchConfiguration("moveit_controller_configurations"),
             ),
             ("model", LaunchConfiguration("model")),
-            ("sim", LaunchConfiguration("sim")),
+            ("sim", sim),
         ],
     )
 
@@ -145,7 +146,7 @@ def generate_launch_description():
     launch_args.append(
         DeclareLaunchArgument(
             name="controller",
-            default_value="position_trajectory_controller",
+            default_value="joint_trajectory_controller",
             description="Robot controller.",
         )
     )
