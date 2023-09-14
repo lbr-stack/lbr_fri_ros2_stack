@@ -10,36 +10,36 @@ default_acceleration_scaling_factor: 0.1
 joint_limits:
   A1:
     has_velocity_limits: true
-    max_velocity: 10
+    max_velocity: 1.7104226669544429
     has_acceleration_limits: false
     max_acceleration: 0
   A2:
     has_velocity_limits: true
-    max_velocity: 10
+    max_velocity: 1.7104226669544429
     has_acceleration_limits: false
     max_acceleration: 0
   A3:
     has_velocity_limits: true
-    max_velocity: 10
+    max_velocity: 1.7453292519943295
     has_acceleration_limits: false
     max_acceleration: 0
   A4:
     has_velocity_limits: true
-    max_velocity: 10
+    max_velocity: 2.2689280275926285
     has_acceleration_limits: false
     max_acceleration: 0
   A5:
     has_velocity_limits: true
-    max_velocity: 10
+    max_velocity: 2.4434609527920612
     has_acceleration_limits: false
     max_acceleration: 0
   A6:
     has_velocity_limits: true
-    max_velocity: 10
+    max_velocity: 3.1415926535897931
     has_acceleration_limits: false
     max_acceleration: 0
   A7:
     has_velocity_limits: true
-    max_velocity: 10
+    max_velocity: 3.1415926535897931
     has_acceleration_limits: false
     max_acceleration: 0
