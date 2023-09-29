@@ -3,7 +3,7 @@ from launch.actions import RegisterEventHandler
 from launch.event_handlers import OnProcessStart
 
 from lbr_description import LBRDescriptionMixin
-from lbr_hardware_interface import LBRHardwareInterfaceMixin
+from lbr_ros2_control import LBRHardwareInterfaceMixin
 
 
 class LBRHardwareInterface(LBRDescriptionMixin, LBRHardwareInterfaceMixin):

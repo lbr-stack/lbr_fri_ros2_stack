@@ -1,9 +1,9 @@
-#ifndef LBR_HARDWARE_INTERFACE__LBR_HARDWARE_INTERFACE_TYPE_VALUES_HPP_
-#define LBR_HARDWARE_INTERFACE__LBR_HARDWARE_INTERFACE_TYPE_VALUES_HPP_
+#ifndef LBR_ROS2_CONTROL__LBR_HARDWARE_INTERFACE_TYPE_VALUES_HPP_
+#define LBR_ROS2_CONTROL__LBR_HARDWARE_INTERFACE_TYPE_VALUES_HPP_
 
 // see
 // https://github.com/ros-controls/ros2_control/blob/master/hardware_interface/include/hardware_interface/types/hardware_interface_type_values.hpp
-namespace lbr_hardware_interface {
+namespace lbr_ros2_control {
 // additional LBR state interfaces, reference KUKA::FRI::LBRState
 constexpr char HW_IF_SAMPLE_TIME[] = "sample_time";
 constexpr char HW_IF_SESSION_STATE[] = "session_state";
@@ -28,5 +28,5 @@ constexpr char HW_IF_TRACKING_PERFORMANCE[] = "tracking_performance";
 
 // additional LBR command interfaces, reference KUKA::FRI::LBRCommand
 constexpr char HW_IF_WRENCH[] = "wrench";
-} // end of namespace lbr_hardware_interface
-#endif // LBR_HARDWARE_INTERFACE__LBR_HARDWARE_INTERFACE_TYPE_VALUES_HPP_
+} // end of namespace lbr_ros2_control
+#endif // LBR_ROS2_CONTROL__LBR_HARDWARE_INTERFACE_TYPE_VALUES_HPP_

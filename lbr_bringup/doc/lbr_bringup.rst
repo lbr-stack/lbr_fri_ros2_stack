@@ -55,7 +55,7 @@ and select:
 - ``FRI control mode``: ``POSITION_CONTROL`` or ``JOINT_IMPEDANCE_CONTROL`` (will put the robot into a compliant mode)
 - ``FRI client command mode``: ``POSITION``
 
-Make sure that the ``update_rate`` in `lbr_controllers.yml <https://github.com/lbr-stack/lbr_fri_ros2_stack/tree/humble/lbr_hardware_interface/config/lbr_controllers.yml>`_ is greater or equal ``100`` (``FRI send period``).
+Make sure that the ``update_rate`` in `lbr_controllers.yml <https://github.com/lbr-stack/lbr_fri_ros2_stack/tree/humble/lbr_ros2_control/config/lbr_controllers.yml>`_ is greater or equal ``100`` (``FRI send period``).
 
 For using other ``FRI send period``, also change the ``sample_time`` in the `lbr.ros2_control.xacro <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_description/ros2_control/lbr.ros2_control.xacro>`_ (automated in the future).
 
@@ -80,6 +80,6 @@ Noisy Execution
 ~~~~~~~~~~~~~~~
 Three main causes:
 
-- Frequency: Make sure the ``ros2_control_node`` runs at the same or a higher rate of the ``FRI send period``, change ``update_rate`` in `lbr_controllers.yml <https://github.com/lbr-stack/lbr_fri_ros2_stack/tree/humble/lbr_hardware_interface/config/lbr_controllers.yml>`_. 
+- Frequency: Make sure the ``ros2_control_node`` runs at the same or a higher rate of the ``FRI send period``, change ``update_rate`` in `lbr_controllers.yml <https://github.com/lbr-stack/lbr_fri_ros2_stack/tree/humble/lbr_ros2_control/config/lbr_controllers.yml>`_. 
 - Standalone noise: Smoothing might be required, see :ref:`LBR Demos FRI ROS 2`.
 - Realtime priority: Set real time priority in ``code /etc/security/limits.conf``, add the line: ``user - rtprio 99``, where user is your username.

@@ -7,7 +7,7 @@ Collection of packages for controlling the KUKA LBR iiwa / med through ROS 2.
 - ``lbr_description``: Description files.
 - ``lbr_fri_msgs``: ``IDL``-equivalent of KUKA's ``nanopb`` message definitions.
 - ``lbr_fri_ros2``: Exposes ``fri`` to ROS 2 topics / services.
-- ``lbr_hardware_interface``: ``ros2_control`` hardware interface for the LBR.
+- ``lbr_ros2_control``: ``ros2_control`` integration for the LBR.
 - ``lbr_moveit_config```: ``MoveIt 2`` configurations for thr LBR.
 - ``fri``: Integration of KUKA's Fast Robot Interface (FRI) into ROS 2 ``ament_cmake`` build system.
 

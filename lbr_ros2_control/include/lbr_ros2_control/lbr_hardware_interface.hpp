@@ -1,5 +1,5 @@
-#ifndef LBR_HARDWARE_INTERFACE__LBR_HARDWARE_INTERFACE_HPP_
-#define LBR_HARDWARE_INTERFACE__LBR_HARDWARE_INTERFACE_HPP_
+#ifndef LBR_ROS2_CONTROL__LBR_HARDWARE_INTERFACE_HPP_
+#define LBR_ROS2_CONTROL__LBR_HARDWARE_INTERFACE_HPP_
 
 #include <algorithm>
 #include <cstring>
@@ -24,9 +24,9 @@
 #include "lbr_fri_msgs/srv/app_connect.hpp"
 #include "lbr_fri_msgs/srv/app_disconnect.hpp"
 #include "lbr_fri_ros2/app.hpp"
-#include "lbr_hardware_interface/lbr_hardware_interface_type_values.hpp"
+#include "lbr_ros2_control/lbr_hardware_interface_type_values.hpp"
 
-namespace lbr_hardware_interface {
+namespace lbr_ros2_control {
 class LBRHardwareInterface : public hardware_interface::SystemInterface {
 public:
   LBRHardwareInterface() = default;
@@ -140,5 +140,5 @@ protected:
 
   std::unique_ptr<std::thread> node_thread_;
 };
-} // end of namespace lbr_hardware_interface
-#endif // LBR_HARDWARE_INTERFACE__LBR_HARDWARE_INTERFACE_HPP_
+} // end of namespace lbr_ros2_control
+#endif // LBR_ROS2_CONTROL__LBR_HARDWARE_INTERFACE_HPP_

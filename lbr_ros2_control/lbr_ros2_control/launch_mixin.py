@@ -11,7 +11,7 @@ class LBRHardwareInterfaceMixin:
     def arg_ctrl_cfg_pkg() -> DeclareLaunchArgument:
         return DeclareLaunchArgument(
             name="ctrl_cfg_pkg",
-            default_value="lbr_hardware_interface",
+            default_value="lbr_ros2_control",
             description="Controller configuration package. The package containing the ctrl_cfg.",
         )
 
@@ -63,7 +63,7 @@ class LBRHardwareInterfaceMixin:
                     [
                         FindPackageShare(
                             LaunchConfiguration(
-                                "ctrl_cfg_pkg", default="lbr_hardware_interface"
+                                "ctrl_cfg_pkg", default="lbr_ros2_control"
                             )
                         ),
                         LaunchConfiguration(

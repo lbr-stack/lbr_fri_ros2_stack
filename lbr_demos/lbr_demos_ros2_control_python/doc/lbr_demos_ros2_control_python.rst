@@ -1,6 +1,6 @@
 LBR Demos ROS 2 Control Python
 ==============================
-Collection of basic usage examples for the ``lbr_hardware_interface`` through Python.
+Collection of basic usage examples for ``lbr_ros2_control`` through Python.
 
 .. note::
     These examples can be run in simulation **and** on the real robot.

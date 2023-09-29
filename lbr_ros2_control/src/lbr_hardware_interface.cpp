@@ -1,6 +1,6 @@
-#include "lbr_hardware_interface/lbr_hardware_interface.hpp"
+#include "lbr_ros2_control/lbr_hardware_interface.hpp"
 
-namespace lbr_hardware_interface {
+namespace lbr_ros2_control {
 controller_interface::CallbackReturn
 LBRHardwareInterface::on_init(const hardware_interface::HardwareInfo &system_info) {
   auto ret = hardware_interface::SystemInterface::on_init(system_info);
@@ -28,6 +28,8 @@ LBRHardwareInterface::on_init(const hardware_interface::HardwareInfo &system_inf
   app_node_ = std::make_shared<rclcpp::Node>("app", robot_name_,
                                              rclcpp::NodeOptions().use_intra_process_comms(true));
 
+  app_node_->declare_parameter<int>("port_id", port_id_);
+  app_node_->declare_parameter<std::string>("remote_host", remote_host_ ? remote_host_ : "");
   app_node_->declare_parameter<std::string>("command_guard_variant", "default");
 
   app_ = std::make_unique<lbr_fri_ros2::App>(app_node_);
@@ -515,9 +517,8 @@ void LBRHardwareInterface::compute_hw_velocity_() {
   });
 }
 
-} // end of namespace lbr_hardware_interface
+} // end of namespace lbr_ros2_control
 
 #include <pluginlib/class_list_macros.hpp>
 
-PLUGINLIB_EXPORT_CLASS(lbr_hardware_interface::LBRHardwareInterface,
-                       hardware_interface::SystemInterface)
+PLUGINLIB_EXPORT_CLASS(lbr_ros2_control::LBRHardwareInterface, hardware_interface::SystemInterface)

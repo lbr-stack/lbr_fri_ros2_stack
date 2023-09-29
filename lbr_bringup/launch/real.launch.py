@@ -8,7 +8,7 @@ from launch.substitutions import AndSubstitution, LaunchConfiguration, NotSubsti
 
 from lbr_bringup import LBRMoveGroupMixin
 from lbr_description import LBRDescriptionMixin, RVizMixin
-from lbr_hardware_interface import LBRHardwareInterfaceMixin
+from lbr_ros2_control import LBRHardwareInterfaceMixin
 
 
 def launch_setup(context: LaunchContext) -> List[LaunchDescriptionEntity]:

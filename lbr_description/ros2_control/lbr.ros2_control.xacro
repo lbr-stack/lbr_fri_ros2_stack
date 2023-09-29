@@ -22,7 +22,7 @@
             </xacro:if>
             <xacro:unless value="${sim}">
                 <hardware>
-                    <plugin>lbr_hardware_interface::LBRHardwareInterface</plugin>
+                    <plugin>lbr_ros2_control::LBRHardwareInterface</plugin>
                     <param name="remote_host">${remote_host}</param>
                     <param name="port_id">${port_id}</param>
                     <param name="sample_time">${sample_time}</param>
