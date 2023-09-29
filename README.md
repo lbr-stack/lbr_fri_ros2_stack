@@ -32,7 +32,7 @@ mkdir -p lbr_fri_ros2_stack_ws/src && cd lbr_fri_ros2_stack_ws
 wget https://raw.githubusercontent.com/lbr-stack/lbr_fri_ros2_stack/humble/lbr_fri_ros2_stack/repos.yml -P src
 vcs import src < src/repos.yml
 rosdep install --from-paths src --ignore-src -r -y
-colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release --symlink-install
+colcon build --symlink-install
 ```
 Next, launch the simulation via
 ```shell
