@@ -1,7 +1,7 @@
 import kinpy
 import numpy as np
 
-from lbr_fri_msgs.msg import LBRCommand, LBRState
+from lbr_fri_msgs.msg import LBRPositionCommand, LBRState
 
 
 class AdmittanceController(object):
@@ -14,7 +14,7 @@ class AdmittanceController(object):
         dq_gain: np.ndarray = np.array([1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5]),
         dx_gain: np.ndarray = np.array([1.0, 1.0, 1.0, 20.0, 40.0, 60.0]),
     ) -> None:
-        self.lbr_command_ = LBRCommand()
+        self.lbr_position_command_ = LBRPositionCommand()
 
         self.chain_ = kinpy.build_serial_chain_from_urdf(
             data=robot_description,
@@ -34,7 +34,7 @@ class AdmittanceController(object):
         self.f_ext_th_ = f_ext_th
         self.alpha_ = 0.99
 
-    def __call__(self, lbr_state: LBRState) -> LBRCommand:
+    def __call__(self, lbr_state: LBRState) -> LBRPositionCommand:
         self.q_ = np.array(lbr_state.measured_joint_position.tolist())
         self.tau_ext_ = np.array(lbr_state.external_torque.tolist())
 
@@ -55,9 +55,9 @@ class AdmittanceController(object):
             + (1 - self.alpha_) * self.dq_gain_ @ self.jacobian_inv_ @ self.f_ext_
         )
 
-        self.lbr_command_.joint_position = (
+        self.lbr_position_command_.joint_position = (
             np.array(lbr_state.measured_joint_position.tolist())
             + lbr_state.sample_time * self.dq_
         ).data
 
-        return self.lbr_command_
+        return self.lbr_position_command_

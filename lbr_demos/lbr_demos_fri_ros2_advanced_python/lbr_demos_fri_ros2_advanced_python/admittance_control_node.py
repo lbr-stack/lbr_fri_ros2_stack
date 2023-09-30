@@ -1,10 +1,8 @@
 import numpy as np
 import rclpy
-from rclpy.duration import Duration
 from rclpy.node import Node
-from rclpy.qos import QoSProfile, ReliabilityPolicy
 
-from lbr_fri_msgs.msg import LBRCommand, LBRState
+from lbr_fri_msgs.msg import LBRPositionCommand, LBRState
 
 from .admittance_controller import AdmittanceController
 
@@ -29,30 +27,17 @@ class AdmittanceControlNode(Node):
 
         # publishers and subscribers
         self.lbr_state_sub_ = self.create_subscription(
-            LBRState,
-            "/lbr/state",
-            self.on_lbr_state_,
-            QoSProfile(
-                depth=1,
-                reliability=ReliabilityPolicy.RELIABLE,
-                deadline=Duration(nanoseconds=10 * 1e6),  # 10 milliseconds
-            ),
+            LBRState, "/lbr/state", self.on_lbr_state_, 1
         )
-        self.lbr_command_pub_ = self.create_publisher(
-            LBRCommand,
-            "/lbr/command",
-            QoSProfile(
-                depth=1,
-                reliability=ReliabilityPolicy.RELIABLE,
-                deadline=Duration(nanoseconds=10 * 1e6),  # 10 milliseconds
-            ),
+        self.lbr_position_command_pub_ = self.create_publisher(
+            LBRPositionCommand, "/lbr/command", 1
         )
 
     def on_lbr_state_(self, lbr_state: LBRState) -> None:
         self.smooth_lbr_state_(lbr_state, 0.95)
 
         lbr_command = self.controller_(self.lbr_state_)
-        self.lbr_command_pub_.publish(lbr_command)
+        self.lbr_position_command_pub_.publish(lbr_command)
 
     def smooth_lbr_state_(self, lbr_state: LBRState, alpha: float):
         if not self.init_:

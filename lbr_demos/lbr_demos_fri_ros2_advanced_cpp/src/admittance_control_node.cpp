@@ -2,7 +2,7 @@
 
 #include "rclcpp/rclcpp.hpp"
 
-#include "lbr_fri_msgs/msg/lbr_command.hpp"
+#include "lbr_fri_msgs/msg/lbr_position_command.hpp"
 #include "lbr_fri_msgs/msg/lbr_state.hpp"
 #include "lbr_fri_ros2/app.hpp"
 
@@ -22,15 +22,10 @@ public:
         this->get_parameter("base_link").as_string(),
         this->get_parameter("end_effector_link").as_string());
 
-    lbr_command_pub_ = create_publisher<lbr_fri_msgs::msg::LBRCommand>(
-        "/lbr/command", rclcpp::QoS(1)
-                            .reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE)
-                            .deadline(std::chrono::milliseconds(10)));
+    lbr_position_command_pub_ =
+        create_publisher<lbr_fri_msgs::msg::LBRPositionCommand>("/lbr/command", 1);
     lbr_state_sub_ = create_subscription<lbr_fri_msgs::msg::LBRState>(
-        "/lbr/state",
-        rclcpp::QoS(1)
-            .reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE)
-            .deadline(std::chrono::milliseconds(10)),
+        "/lbr/state", 1,
         std::bind(&AdmittanceControlNode::on_lbr_state, this, std::placeholders::_1));
   }
 
@@ -43,7 +38,7 @@ protected:
     smooth_lbr_state_(lbr_state, 0.95);
 
     auto lbr_command = admittance_controller_->update(lbr_state_);
-    lbr_command_pub_->publish(lbr_command);
+    lbr_position_command_pub_->publish(lbr_command);
   };
 
   void smooth_lbr_state_(const lbr_fri_msgs::msg::LBRState::SharedPtr lbr_state, double alpha) {
@@ -64,7 +59,7 @@ protected:
   bool init_{false};
   lbr_fri_msgs::msg::LBRState lbr_state_;
 
-  rclcpp::Publisher<lbr_fri_msgs::msg::LBRCommand>::SharedPtr lbr_command_pub_;
+  rclcpp::Publisher<lbr_fri_msgs::msg::LBRPositionCommand>::SharedPtr lbr_position_command_pub_;
   rclcpp::Subscription<lbr_fri_msgs::msg::LBRState>::SharedPtr lbr_state_sub_;
 
   std::unique_ptr<AdmittanceController> admittance_controller_;

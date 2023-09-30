@@ -11,7 +11,7 @@
 
 #include "friLBRState.h"
 
-#include "lbr_fri_msgs/msg/lbr_command.hpp"
+#include "lbr_fri_msgs/msg/lbr_position_command.hpp"
 #include "lbr_fri_msgs/msg/lbr_state.hpp"
 
 #include "damped_least_squares.hpp"
@@ -40,7 +40,8 @@ public:
     q_.resize(chain_.getNrOfJoints());
   };
 
-  const lbr_fri_msgs::msg::LBRCommand &update(const lbr_fri_msgs::msg::LBRState &lbr_state) {
+  const lbr_fri_msgs::msg::LBRPositionCommand &
+  update(const lbr_fri_msgs::msg::LBRState &lbr_state) {
     std::memcpy(q_.data.data(), lbr_state.measured_joint_position.data(),
                 sizeof(double) * KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
     std::memcpy(tau_ext_.data(), lbr_state.external_torque.data(),
@@ -62,15 +63,15 @@ public:
     dq_ = dq_gains_.asDiagonal() * jacobian_inv_ * f_ext_;
 
     for (int i = 0; i < 7; i++) {
-      lbr_command_.joint_position[i] =
+      lbr_position_command_.joint_position[i] =
           lbr_state.measured_joint_position[i] + dq_[i] * lbr_state.sample_time;
     }
 
-    return lbr_command_;
+    return lbr_position_command_;
   };
 
 protected:
-  lbr_fri_msgs::msg::LBRCommand lbr_command_;
+  lbr_fri_msgs::msg::LBRPositionCommand lbr_position_command_;
   KDL::Tree tree_;
   KDL::Chain chain_;
   std::unique_ptr<KDL::ChainJntToJacSolver> jacobian_solver_;

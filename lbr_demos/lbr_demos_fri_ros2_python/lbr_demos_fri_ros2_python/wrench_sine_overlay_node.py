@@ -1,9 +1,7 @@
 import math
 
 import rclpy
-from rclpy.duration import Duration
 from rclpy.node import Node
-from rclpy.qos import QoSProfile, ReliabilityPolicy
 
 # import lbr_fri_msgs
 from lbr_fri_msgs.msg import LBRCommand, LBRState
@@ -19,27 +17,10 @@ class WrenchSineOverlayNode(Node):
         self.lbr_command_ = LBRCommand()
 
         # create publisher to /lbr/command
-        self.lbr_command_pub_ = self.create_publisher(
-            LBRCommand,
-            "/lbr/command",
-            QoSProfile(
-                depth=1,
-                reliability=ReliabilityPolicy.RELIABLE,
-                deadline=Duration(nanoseconds=10 * 1e6),  # 10 milliseconds
-            ),
-        )
+        self.lbr_command_pub_ = self.create_publisher(LBRCommand, "/lbr/command", 1)
 
         # create subscription to /lbr_state
-        self.lbr_state_sub_ = self.create_subscription(
-            LBRState,
-            "/lbr/state",
-            self.on_lbr_state_,
-            QoSProfile(
-                depth=1,
-                reliability=ReliabilityPolicy.RELIABLE,
-                deadline=Duration(nanoseconds=10 * 1e6),  # 10 milliseconds
-            ),
-        )
+        self.lbr_state_sub_ = self.create_subscription(LBRState, "/lbr/state", 1)
 
     def on_lbr_state_(self, lbr_state: LBRState) -> None:
         self.lbr_command_.joint_position = lbr_state.ipo_joint_position
