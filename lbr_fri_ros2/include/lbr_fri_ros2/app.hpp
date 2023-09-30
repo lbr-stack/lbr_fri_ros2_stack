@@ -15,10 +15,7 @@
 #include "friLBRClient.h"
 #include "friUdpConnection.h"
 
-#include "lbr_fri_msgs/srv/app_connect.hpp"
-#include "lbr_fri_msgs/srv/app_disconnect.hpp"
-#include "lbr_fri_ros2/client.hpp"
-#include "lbr_fri_ros2/command_guard.hpp"
+#include "lbr_fri_ros2/factories.hpp"
 
 namespace lbr_fri_ros2 {
 /**
@@ -44,48 +41,11 @@ public:
    * @throws std::runtime error if no robot_description in node parameters
    */
   App(const rclcpp::Node::SharedPtr node);
+
+  App(const rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr logging_interface_ptr,
+      const rclcpp::node_interfaces::NodeParametersInterface::SharedPtr parameters_interface_ptr);
+
   ~App();
-
-protected:
-  /**
-   * @brief Declares parameters for node.
-   *
-   */
-  void declare_parameters_();
-
-  /**
-   * @brief Gets parameters for node and writes them into members. Checks validity.
-   *
-   * @throws std::range_error for invalid port_id in node parameters
-   */
-  void get_parameters_();
-
-  /**
-   * @brief Callback to <b>connect</b> service. Calls #connect_.
-   *
-   * @param[in] request Request containing port_id and remote_host
-   * @param[out] response Response containing connected and message
-   */
-  void on_app_connect_(const lbr_fri_msgs::srv::AppConnect::Request::SharedPtr request,
-                       lbr_fri_msgs::srv::AppConnect::Response::SharedPtr response);
-
-  /**
-   * @brief Callback to <b>disconnect</b> service. Calls #disconnect_.
-   *
-   * @param[in] request Empty request
-   * @param[out] response Response containing disconnected and message
-   */
-  void on_app_disconnect_(const lbr_fri_msgs::srv::AppDisconnect::Request::SharedPtr /*request*/,
-                          lbr_fri_msgs::srv::AppDisconnect::Response::SharedPtr response);
-
-  /**
-   * @brief Checks for valid port id.
-   *
-   * @param[in] port_id The port id
-   * @return true if port id in [30200, 30209]
-   * @return false else
-   */
-  bool valid_port_(const int &port_id);
 
   /**
    * @brief Opens a UDP port and spawns the #run_thread_.
@@ -98,7 +58,7 @@ protected:
    * @throws std::range_error if invalid port_id
    *
    */
-  bool connect_(const int &port_id = 30200, const char *const remote_host = NULL);
+  bool connect(const int &port_id = 30200, const char *const remote_host = NULL);
 
   /**
    * @brief Closes the UDP port and joins the #run_thread_.
@@ -109,7 +69,7 @@ protected:
    * @throws std::runtime_error if #run_thread_ fails to join
    *
    */
-  bool disconnect_();
+  bool disconnect();
 
   /**
    * @brief Exchanges commands / states between ROS and the FRI.
@@ -118,26 +78,27 @@ protected:
    * states through realtime safe topics.
    *
    */
-  void run_();
+  void run(int rt_prio);
 
-  rclcpp::Node::SharedPtr node_; /**< Node handle.*/
+protected:
+  /**
+   * @brief Checks for valid port id.
+   *
+   * @param[in] port_id The port id
+   * @return true if port id in [30200, 30209]
+   * @return false else
+   */
+  bool valid_port_(const int &port_id);
+
+  rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr logging_interface_ptr_;
+  rclcpp::node_interfaces::NodeParametersInterface::SharedPtr parameters_interface_ptr_;
 
   std::unique_ptr<std::thread> run_thread_; /**< Thread running the #run_ method.*/
 
-  const char *remote_host_;           /**< The remote host's IP address.*/
-  int port_id_;                       /**< The UDP port id.*/
-  std::string robot_description_;     /**< The robot description, read from node parameters.*/
-  std::string command_guard_variant_; /**< The command guard, read from node parameters.*/
-  int rt_prio_;                       /**< The realtime priority, read from node parameters.*/
-
   std::atomic<bool> connected_; /**< True if UDP port open and communication running.*/
 
-  rclcpp::Service<lbr_fri_msgs::srv::AppConnect>::SharedPtr
-      app_connect_srv_; /**< Service to connect to robot via #on_app_connect_ callback.*/
-  rclcpp::Service<lbr_fri_msgs::srv::AppDisconnect>::SharedPtr
-      app_disconnect_srv_; /**< Service to disconnect from robot via #on_app_disconnect_ callback.*/
-
-  std::shared_ptr<Client> client_; /**< Writes commands to / reads states from robot.*/
+  std::shared_ptr<KUKA::FRI::LBRClient>
+      client_; /**< Writes commands to / reads states from robot.*/
   std::unique_ptr<KUKA::FRI::UdpConnection>
       connection_; /**< UDP connection for reading states / writing commands.*/
   std::unique_ptr<KUKA::FRI::ClientApplication>

@@ -1,5 +1,5 @@
-#ifndef LBR_FRI_ROS2__LBR_COMMAND_GUARD_HPP_
-#define LBR_FRI_ROS2__LBR_COMMAND_GUARD_HPP_
+#ifndef LBR_FRI_ROS2__COMMAND_GUARDS_HPP_
+#define LBR_FRI_ROS2__COMMAND_GUARDS_HPP_
 
 #include <algorithm>
 #include <array>
@@ -19,9 +19,10 @@ namespace lbr_fri_ros2 {
  * @brief CommandGuard checks desired commands for limits.
  *
  */
-class CommandGuard {
+template <typename command_type> class CommandGuard {
 protected:
-  using JointArray = lbr_fri_msgs::msg::LBRCommand::_joint_position_type;
+  using const_command_type_ref = const command_type &;
+  using JointArray = command_type::_joint_position_type;
 
 public:
   CommandGuard() = delete;
@@ -56,7 +57,7 @@ public:
    * @return true if lbr_command is valid
    * @return false if lbr_command is invalid
    */
-  virtual bool is_valid_command(const lbr_fri_msgs::msg::LBRCommand &lbr_command,
+  virtual bool is_valid_command(const_command_type_ref lbr_command,
                                 const KUKA::FRI::LBRState &lbr_state) const;
 
 protected:
@@ -78,7 +79,7 @@ protected:
    * @return true if lbr_command in position limits
    * @return false if lbr_command outside position limits
    */
-  virtual bool command_in_position_limits_(const lbr_fri_msgs::msg::LBRCommand &lbr_command,
+  virtual bool command_in_position_limits_(const_command_type_ref lbr_command,
                                            const KUKA::FRI::LBRState & /*lbr_state*/) const;
 
   /**
@@ -89,7 +90,7 @@ protected:
    * @return true if lbr_command in velocity limits
    * @return false if lbr_command outside velocity limits
    */
-  virtual bool command_in_velocity_limits_(const lbr_fri_msgs::msg::LBRCommand &lbr_command,
+  virtual bool command_in_velocity_limits_(const_command_type_ref lbr_command,
                                            const KUKA::FRI::LBRState &lbr_state) const;
 
   /**
@@ -100,7 +101,7 @@ protected:
    * @return true if lbr_command in torque limits
    * @return false if lbr_command outside torque limits
    */
-  virtual bool command_in_torque_limits_(const lbr_fri_msgs::msg::LBRCommand &lbr_command,
+  virtual bool command_in_torque_limits_(const_command_type_ref lbr_command,
                                          const KUKA::FRI::LBRState &lbr_state) const;
 
   rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr
@@ -141,7 +142,7 @@ protected:
    * @return true if lbr_command in position limits
    * @return false if lbr_command outside position limits
    */
-  virtual bool command_in_position_limits_(const lbr_fri_msgs::msg::LBRCommand &lbr_command,
+  virtual bool command_in_position_limits_(const_command_type_ref lbr_command,
                                            const KUKA::FRI::LBRState &lbr_state) const override;
 };
 
@@ -153,8 +154,8 @@ protected:
  * @param[in] variant Which variant of CommandGuard to create
  * @return std::unique_ptr<CommandGuard> Pointer to CommandGuard object
  */
-std::unique_ptr<CommandGuard> lbr_command_guard_factory(
+std::unique_ptr<CommandGuard> command_guard_factory(
     const rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr logger_interface,
     const std::string &robot_description, const std::string &variant);
 } // end of namespace lbr_fri_ros2
-#endif // LBR_FRI_ROS2__LBR_COMMAND_GUARD_HPP_
+#endif // LBR_FRI_ROS2__COMMAND_GUARDS_HPP_

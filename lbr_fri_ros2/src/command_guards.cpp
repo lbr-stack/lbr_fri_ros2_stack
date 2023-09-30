@@ -1,4 +1,4 @@
-#include "lbr_fri_ros2/command_guard.hpp"
+#include "lbr_fri_ros2/command_guards.hpp"
 
 namespace lbr_fri_ros2 {
 CommandGuard::CommandGuard(
@@ -14,18 +14,18 @@ CommandGuard::CommandGuard(
     : logger_interface_(logger_interface) {
   urdf::Model model;
   if (!model.initString(robot_description)) {
-    std::string error_msg = "Failed to intialize urdf model from robot description.";
-    RCLCPP_ERROR(logger_interface_->get_logger(), error_msg.c_str());
-    throw std::runtime_error(error_msg);
+    std::string err = "Failed to intialize urdf model from robot description.";
+    RCLCPP_ERROR(logger_interface_->get_logger(), err.c_str());
+    throw std::runtime_error(err);
   }
   std::size_t jnt_cnt = 0;
   for (const auto &name_joint_pair : model.joints_) {
     const auto joint = name_joint_pair.second;
     if (joint->type == urdf::Joint::REVOLUTE) {
       if (jnt_cnt > std::tuple_size<JointArray>()) {
-        std::string error_msgs = "Found too many joints in robot description.";
-        RCLCPP_ERROR(logger_interface_->get_logger(), error_msgs.c_str());
-        throw std::runtime_error(error_msgs);
+        std::string errs = "Found too many joints in robot description.";
+        RCLCPP_ERROR(logger_interface_->get_logger(), errs.c_str());
+        throw std::runtime_error(errs);
       }
       min_position_[jnt_cnt] = joint->limits->lower;
       max_position_[jnt_cnt] = joint->limits->upper;
@@ -35,9 +35,9 @@ CommandGuard::CommandGuard(
     }
   }
   if (jnt_cnt != std::tuple_size<JointArray>()) {
-    std::string error_msg = "Didn't find expected number of joints in robot description.";
-    RCLCPP_ERROR(logger_interface_->get_logger(), error_msg.c_str());
-    throw std::runtime_error(error_msg);
+    std::string err = "Didn't find expected number of joints in robot description.";
+    RCLCPP_ERROR(logger_interface_->get_logger(), err.c_str());
+    throw std::runtime_error(err);
   };
 }
 
@@ -145,7 +145,7 @@ bool SafeStopCommandGuard::command_in_position_limits_(
   return true;
 }
 
-std::unique_ptr<CommandGuard> lbr_command_guard_factory(
+std::unique_ptr<CommandGuard> command_guard_factory(
     const rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr logger_interface,
     const std::string &robot_description, const std::string &variant) {
   if (variant == "default") {
@@ -154,8 +154,8 @@ std::unique_ptr<CommandGuard> lbr_command_guard_factory(
   if (variant == "safe_stop") {
     return std::make_unique<SafeStopCommandGuard>(logger_interface, robot_description);
   }
-  std::string error_msg = "Invalid CommandGuard variant provided.";
-  RCLCPP_ERROR(logger_interface->get_logger(), error_msg.c_str());
-  throw std::runtime_error(error_msg);
+  std::string err = "Invalid CommandGuard variant provided.";
+  RCLCPP_ERROR(logger_interface->get_logger(), err.c_str());
+  throw std::runtime_error(err);
 }
 } // end of namespace lbr_fri_ros2
