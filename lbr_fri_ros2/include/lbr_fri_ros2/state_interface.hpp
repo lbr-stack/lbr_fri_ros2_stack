@@ -13,8 +13,9 @@ namespace lbr_fri_ros2 {
 class StateInterface {
 protected:
   // ROS types
-  using lbr_fri_msgs::msg::LBRState = lbr_fri_msgs::msg::LBRState;
-  using ros_joint_pos_type = lbr_fri_msgs::msg::LBRState::_measured_joint_position_type;
+  using ros_state_type = lbr_fri_msgs::msg::LBRState;
+  using const_ros_state_type_ref = const ros_state_type &;
+  using ros_joint_pos_type = ros_state_type::_measured_joint_position_type;
   using const_ros_joint_pos_type_ref = const ros_joint_pos_type &;
 
   // FRI types
@@ -28,7 +29,7 @@ public:
       const rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr logging_interface_ptr,
       const rclcpp::node_interfaces::NodeParametersInterface::SharedPtr parameters_interface_ptr);
 
-  inline const lbr_fri_msgs::msg::LBRState &get_state() const { return state_; };
+  inline const_ros_state_type_ref &get_state() const { return state_; };
 
   void set_state(const_fri_state_type_ref state);
   void set_state_open_loop(const_fri_state_type_ref state,
@@ -40,7 +41,7 @@ protected:
   rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr logging_interface_ptr_;
   rclcpp::node_interfaces::NodeParametersInterface::SharedPtr parameters_interface_ptr_;
 
-  lbr_fri_msgs::msg::LBRState state_;
+  ros_state_type state_;
   JointExponentialFilterArrayROS external_torque_filter_;
   JointExponentialFilterArrayROS measured_torque_filter_;
   bool filters_init_;
