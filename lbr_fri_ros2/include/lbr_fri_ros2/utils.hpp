@@ -106,16 +106,6 @@ public:
   /**
    * @brief Construct a new JointExponentialFilterArrayROS object.
    *
-   * @param[in] node Shared node for logging and parameter handling.
-   * @param[in] param_prefix Parameter prefix is e.g. used as: param_prefix + "." +
-   * "cut_off_frequency".
-   */
-  JointExponentialFilterArrayROS(const rclcpp::Node::SharedPtr node,
-                                 const std::string &param_prefix = "");
-
-  /**
-   * @brief Construct a new JointExponentialFilterArrayROS object.
-   *
    * @param[in] logging_interface Logging interface.
    * @param[in] parameter_interface Parameter interface.
    * @param[in] param_prefix Parameter prefix is e.g. used as: param_prefix + "." +
@@ -134,8 +124,10 @@ public:
    */
   void compute(const double *const current, ValueArrayType &previous);
   void init(const double &cutoff_frequency, const double &sample_time);
+  inline const std::string &param_prefix() const { return param_prefix_; }
 
 protected:
+  const std::string cutoff_frequency_param_name_ = "cutoff_frequency"; /**< Parameter name.*/
   ExponentialFilter exponential_filter_; /**< Exponential filter applied to all joints.*/
   rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr
       logging_interface_; /**< Logging interface.*/
