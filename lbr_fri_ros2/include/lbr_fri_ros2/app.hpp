@@ -13,8 +13,6 @@
 #include "friLBRClient.h"
 #include "friUdpConnection.h"
 
-#include "lbr_fri_ros2/factories.hpp"
-
 namespace lbr_fri_ros2 {
 /**
  * @brief The App has a node for exposing FRI methods to services. It shares this node with the
@@ -34,10 +32,9 @@ public:
   App(const rclcpp::Node::SharedPtr node);
   App(const rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr logging_interface_ptr,
       const rclcpp::node_interfaces::NodeParametersInterface::SharedPtr parameters_interface_ptr);
-
   ~App();
 
-  bool initialize(const KUKA::FRI::EClientCommandMode &command_mode);
+  bool initialize(const std::shared_ptr<KUKA::FRI::LBRClient> &client);
 
   /**
    * @brief Opens a UDP port and spawns the #run_thread_.

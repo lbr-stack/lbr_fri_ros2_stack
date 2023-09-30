@@ -21,6 +21,7 @@ find_package(rosidl_default_generators REQUIRED)
 find_package(std_msgs REQUIRED)
 
 rosidl_generate_interfaces(lbr_fri_msgs
+  msg/LBRCommand.msg
   msg/LBRPositionCommand.msg
   msg/LBRState.msg
   msg/LBRTorqueCommand.msg
