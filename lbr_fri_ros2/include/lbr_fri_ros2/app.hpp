@@ -2,9 +2,7 @@
 #define LBR_FRI_ROS2__APP_HPP_
 
 #include <atomic>
-#include <future>
 #include <memory>
-#include <stdexcept>
 #include <string>
 #include <thread>
 
@@ -23,29 +21,23 @@ namespace lbr_fri_ros2 {
  * #client_, which reads commands / write states via realtime safe topics.
  *
  * Services:
- * - <b>connect</b> (lbr_fri_msgs::srv::AppConnect)
+ * - <b>open_udp_socket</b> (lbr_fri_msgs::srv::AppConnect)
  * Opens UDP port to FRI. Creates #run_thread_ thread via #on_app_connect_ that calls #run_ to
  * communicate with the robot.
- * - <b>disconnect</b> (lbr_fri_msgs::srv::AppDisconnect)
+ * - <b>close_udp_socket</b> (lbr_fri_msgs::srv::AppDisconnect)
  * Closes UDP port to FRI. Finishes #run_thread_ thread via #on_app_disconnect_ through ending
  * #run_.
  *
  */
 class App {
 public:
-  /**
-   * @brief Construct a new App object.
-   *
-   * @param node Shared node
-   *
-   * @throws std::runtime error if no robot_description in node parameters
-   */
   App(const rclcpp::Node::SharedPtr node);
-
   App(const rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr logging_interface_ptr,
       const rclcpp::node_interfaces::NodeParametersInterface::SharedPtr parameters_interface_ptr);
 
   ~App();
+
+  bool initialize(const KUKA::FRI::EClientCommandMode &command_mode);
 
   /**
    * @brief Opens a UDP port and spawns the #run_thread_.
@@ -58,7 +50,7 @@ public:
    * @throws std::range_error if invalid port_id
    *
    */
-  bool connect(const int &port_id = 30200, const char *const remote_host = NULL);
+  bool open_udp_socket(const int &port_id = 30200, const char *const remote_host = NULL);
 
   /**
    * @brief Closes the UDP port and joins the #run_thread_.
@@ -69,7 +61,7 @@ public:
    * @throws std::runtime_error if #run_thread_ fails to join
    *
    */
-  bool disconnect();
+  bool close_udp_socket();
 
   /**
    * @brief Exchanges commands / states between ROS and the FRI.
@@ -78,7 +70,9 @@ public:
    * states through realtime safe topics.
    *
    */
-  void run(int rt_prio);
+  void run(int rt_prio = 80);
+
+  void stop_run();
 
 protected:
   /**
@@ -93,9 +87,8 @@ protected:
   rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr logging_interface_ptr_;
   rclcpp::node_interfaces::NodeParametersInterface::SharedPtr parameters_interface_ptr_;
 
+  std::atomic_bool running_;
   std::unique_ptr<std::thread> run_thread_; /**< Thread running the #run_ method.*/
-
-  std::atomic<bool> connected_; /**< True if UDP port open and communication running.*/
 
   std::shared_ptr<KUKA::FRI::LBRClient>
       client_; /**< Writes commands to / reads states from robot.*/

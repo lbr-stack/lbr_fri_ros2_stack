@@ -60,7 +60,7 @@ public:
    */
   void onStateChange(KUKA::FRI::ESessionState old_state,
                      KUKA::FRI::ESessionState new_state) override {
-    RCLCPP_INFO(logging_interface_ptr_->get_logger(), "Switched from %s to %s.",
+    RCLCPP_INFO(logging_interface_ptr_->get_logger(), "LBR switched from %s to %s.",
                 KUKA_FRI_STATE_MAP[old_state].c_str(), KUKA_FRI_STATE_MAP[new_state].c_str());
   }
 
