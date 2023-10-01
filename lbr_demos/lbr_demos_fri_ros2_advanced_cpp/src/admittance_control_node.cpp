@@ -23,7 +23,7 @@ public:
         this->get_parameter("end_effector_link").as_string());
 
     lbr_position_command_pub_ =
-        create_publisher<lbr_fri_msgs::msg::LBRPositionCommand>("/lbr/command", 1);
+        create_publisher<lbr_fri_msgs::msg::LBRPositionCommand>("/lbr/command/position", 1);
     lbr_state_sub_ = create_subscription<lbr_fri_msgs::msg::LBRState>(
         "/lbr/state", 1,
         std::bind(&AdmittanceControlNode::on_lbr_state, this, std::placeholders::_1));
