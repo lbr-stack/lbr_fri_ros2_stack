@@ -153,18 +153,20 @@ void AppComponent::on_app_connect_(const lbr_fri_msgs::srv::AppConnect::Request:
               request->remote_host.c_str());
   response->connected = app_ptr_->open_udp_socket(
       request->port_id, request->remote_host.empty() ? NULL : request->remote_host.c_str());
-  app_ptr_->run(app_node_->get_parameter("rt_prio").as_int());
-  response->message = "Robot connected.";
+  if (response->connected) {
+    app_ptr_->run(app_node_->get_parameter("rt_prio").as_int());
+  }
+  response->message = response->connected ? "Robot connected." : "Failed.";
   RCLCPP_INFO(app_node_->get_logger(), response->message.c_str());
 }
 
 void AppComponent::on_app_disconnect_(
-    const lbr_fri_msgs::srv::AppDisconnect::Request::SharedPtr request,
+    const lbr_fri_msgs::srv::AppDisconnect::Request::SharedPtr /*request*/,
     lbr_fri_msgs::srv::AppDisconnect::Response::SharedPtr response) {
   RCLCPP_INFO(app_node_->get_logger(), "Disconnecting from robot via service.");
   app_ptr_->stop_run();
   response->disconnected = app_ptr_->close_udp_socket();
-  response->message = "Robot disconnected.";
+  response->message = response->disconnected ? "Robot disconnected." : "Failed.";
   RCLCPP_INFO(app_node_->get_logger(), response->message.c_str());
 }
 } // end of namespace lbr_fri_ros2
