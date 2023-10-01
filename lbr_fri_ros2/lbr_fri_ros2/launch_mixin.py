@@ -38,7 +38,7 @@ class LBRFRIROS2Mixin:
         return DeclareLaunchArgument(
             name="port_id",
             default_value="30200",
-            description="Port ID of the FRI communication.",
+            description="Port ID of the FRI communication. Usefull in multi-robot setups.",
         )
 
     @staticmethod
