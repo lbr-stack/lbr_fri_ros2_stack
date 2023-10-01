@@ -3,7 +3,7 @@
 namespace lbr_fri_ros2 {
 App::App(const rclcpp::Node::SharedPtr node_ptr, const std::shared_ptr<Client> client_ptr)
     : logging_interface_ptr_(node_ptr->get_node_logging_interface()),
-      parameters_interface_ptr_(node_ptr->get_node_parameters_interface()), running_(false),
+      parameters_interface_ptr_(node_ptr->get_node_parameters_interface()), should_stop_(true),
       run_thread_ptr_(nullptr), client_ptr_(nullptr), connection_ptr_(nullptr), app_ptr_(nullptr) {
   client_ptr_ = client_ptr;
   connection_ptr_ = std::make_unique<KUKA::FRI::UdpConnection>();
@@ -68,7 +68,7 @@ void App::run(int rt_prio) {
     RCLCPP_ERROR(logging_interface_ptr_->get_logger(), "App not configured.");
     return;
   }
-  if (run_thread_ptr_ != nullptr || running_) {
+  if (run_thread_ptr_ != nullptr) {
     RCLCPP_WARN(logging_interface_ptr_->get_logger(), "App already running.");
     return;
   }
@@ -84,9 +84,9 @@ void App::run(int rt_prio) {
     }
 
     RCLCPP_INFO(logging_interface_ptr_->get_logger(), "Starting run thread.");
-    running_ = true;
+    should_stop_ = false;
     bool success = true;
-    while (rclcpp::ok() && success && running_) {
+    while (rclcpp::ok() && success && !should_stop_) {
       success = app_ptr_->step();
       if (client_ptr_->robotState().getSessionState() == KUKA::FRI::ESessionState::IDLE) {
         RCLCPP_INFO(logging_interface_ptr_->get_logger(), "LBR in session state idle, exiting.");
@@ -100,7 +100,7 @@ void App::run(int rt_prio) {
 void App::stop_run() {
   if (run_thread_ptr_ != nullptr) {
     RCLCPP_INFO(logging_interface_ptr_->get_logger(), "Requesting run thread stop.");
-    running_ = false;
+    should_stop_ = true;
     run_thread_ptr_->join();
     run_thread_ptr_ = nullptr;
     RCLCPP_INFO(logging_interface_ptr_->get_logger(), "Joined run thread.");

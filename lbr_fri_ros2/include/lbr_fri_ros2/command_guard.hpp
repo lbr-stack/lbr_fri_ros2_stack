@@ -4,7 +4,6 @@
 #include <algorithm>
 #include <array>
 #include <cmath>
-#include <cstdio>
 #include <string>
 
 #include "rclcpp/rclcpp.hpp"
@@ -32,36 +31,28 @@ protected:
   using const_fri_state_t_ref = const fri_state_t &;
 
 public:
+  /**
+   * @brief Command guard default constructor. Limits zero by default.
+   *
+   */
+  CommandGuard() = default;
+
+  /**
+   * @brief Construct a new CommandGuard object.
+   *
+   * @param[in] logging_interface_ptr Shared node logger interface
+   * @param[in] parameters_interface_ptr Shared node parameter interface
+   */
   CommandGuard(
-      const rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr logging_interface_ptr);
-
-  /**
-   * @brief Construct a new CommandGuard object.
-   *
-   * @param[in] logging_interface_ptr Shared node logger interface
-   * @param[in] min_position Minimum joint position [rad]
-   * @param[in] max_position Maximum joint position [rad]
-   * @param[in] max_velocity Maximum joint velocity [rad/s]
-   * @param[in] max_torque Maximal torque [Nm]
-   */
-  CommandGuard(const rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr logging_interface_ptr,
-               const_joint_array_t_ref min_position, const_joint_array_t_ref max_position,
-               const_joint_array_t_ref max_velocity, const_joint_array_t_ref max_torque);
-
-  /**
-   * @brief Construct a new CommandGuard object.
-   *
-   * @param[in] logging_interface_ptr Shared node logger interface
-   * @param robot_description String containing URDF robot rescription
-   */
-  CommandGuard(const rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr logging_interface_ptr,
-               const std::string &robot_description);
+      const rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr logging_interface_ptr,
+      const rclcpp::node_interfaces::NodeParametersInterface::SharedPtr parameters_interface_ptr);
 
   /**
    * @brief Checks for command validity given the current state.
    *
    * @param[in] lbr_command The desired command
    * @param[in] lbr_state The current state
+   *
    * @return true if lbr_command is valid
    * @return false if lbr_command is invalid
    */
@@ -74,6 +65,7 @@ protected:
    *
    * @param[in] begin Pointer to begin
    * @param[in] end Pointer to end
+   *
    * @return true if any nans between begin to end
    * @return false if no nans between begin to end
    */
@@ -84,6 +76,7 @@ protected:
    *
    * @param[in] lbr_command The desired command
    * @param[in] lbr_state The current state
+   *
    * @return true if lbr_command in position limits
    * @return false if lbr_command outside position limits
    */
@@ -95,6 +88,7 @@ protected:
    *
    * @param[in] lbr_command The desired command
    * @param[in] lbr_state The current state
+   *
    * @return true if lbr_command in velocity limits
    * @return false if lbr_command outside velocity limits
    */
@@ -106,6 +100,7 @@ protected:
    *
    * @param[in] lbr_command The desired command
    * @param[in] lbr_state The current state
+   *
    * @return true if lbr_command in torque limits
    * @return false if lbr_command outside torque limits
    */
@@ -114,6 +109,8 @@ protected:
 
   rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr
       logging_interface_ptr_; /**< Shared node logger interface.*/
+  rclcpp::node_interfaces::NodeParametersInterface::SharedPtr
+      parameters_interface_ptr_; /**< Shared node parameter interface.*/
 
   joint_array_t min_position_; /**< Minimum joint position [rad].*/
   joint_array_t max_position_; /**< Maximum joint position [rad].*/
@@ -127,18 +124,16 @@ protected:
  */
 class SafeStopCommandGuard : public CommandGuard {
 public:
-  SafeStopCommandGuard() = delete;
-
   /**
    * @brief Construct a new SafeStopCommandGuard object.
    *
    * @param[in] logging_interface_ptr Shared node logger interface
-   * @param robot_description String containing URDF robot rescription
+   * @param[in] parameters_interface_ptr Shared node parameter interface
    */
   SafeStopCommandGuard(
       const rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr logging_interface_ptr,
-      const std::string &robot_description)
-      : CommandGuard(logging_interface_ptr, robot_description){};
+      const rclcpp::node_interfaces::NodeParametersInterface::SharedPtr parameters_interface_ptr)
+      : CommandGuard(logging_interface_ptr, parameters_interface_ptr){};
 
 protected:
   /**
@@ -147,6 +142,7 @@ protected:
    *
    * @param[in] lbr_command The desired command
    * @param[in] lbr_state The current state
+   *
    * @return true if lbr_command in position limits
    * @return false if lbr_command outside position limits
    */
@@ -158,12 +154,14 @@ protected:
  * @brief Creates an CommandGuard object.
  *
  * @param[in] logging_interface_ptr Shared node logger interface
- * @param[in] robot_description String containing URDF robot rescription
+ * @param[in] parameters_interface_ptr Shared node parameter interface
  * @param[in] variant Which variant of CommandGuard to create
+ *
  * @return std::unique_ptr<CommandGuard> Pointer to CommandGuard object
  */
 std::unique_ptr<CommandGuard> command_guard_factory(
     const rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr logging_interface_ptr,
-    const std::string &robot_description, const std::string &variant);
+    const rclcpp::node_interfaces::NodeParametersInterface::SharedPtr parameters_interface_ptr,
+    const std::string &variant);
 } // end of namespace lbr_fri_ros2
 #endif // LBR_FRI_ROS2__COMMAND_GUARDS_HPP_

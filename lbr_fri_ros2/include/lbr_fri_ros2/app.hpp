@@ -31,14 +31,12 @@ protected:
   rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr logging_interface_ptr_;
   rclcpp::node_interfaces::NodeParametersInterface::SharedPtr parameters_interface_ptr_;
 
-  std::atomic_bool running_;
+  std::atomic_bool should_stop_;
   std::unique_ptr<std::thread> run_thread_ptr_;
 
   std::shared_ptr<Client> client_ptr_;
-  std::unique_ptr<KUKA::FRI::UdpConnection>
-      connection_ptr_;
-  std::unique_ptr<KUKA::FRI::ClientApplication>
-      app_ptr_;
+  std::unique_ptr<KUKA::FRI::UdpConnection> connection_ptr_;
+  std::unique_ptr<KUKA::FRI::ClientApplication> app_ptr_;
 };
 } // end of namespace lbr_fri_ros2
 #endif // LBR_FRI_ROS2__APP_HPP_

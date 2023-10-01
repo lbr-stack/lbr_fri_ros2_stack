@@ -11,7 +11,7 @@ class AdmittanceController(object):
         base_link: str = "link_0",
         end_effector_link: str = "link_ee",
         f_ext_th: np.ndarray = np.array([2.0, 2.0, 2.0, 0.5, 0.5, 0.5]),
-        dq_gain: np.ndarray = np.array([1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5]),
+        dq_gain: np.ndarray = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]),
         dx_gain: np.ndarray = np.array([1.0, 1.0, 1.0, 20.0, 40.0, 60.0]),
     ) -> None:
         self.lbr_position_command_ = LBRPositionCommand()

@@ -1,5 +1,6 @@
 #ifndef LBR_FRI_ROS2__STATE_INTERFACE_HPP_
 #define LBR_FRI_ROS2__STATE_INTERFACE_HPP_
+#include <atomic>
 #include <string>
 
 #include "rclcpp/rclcpp.hpp"
@@ -34,12 +35,15 @@ public:
   void set_state(const_fri_state_t_ref state);
   void set_state_open_loop(const_fri_state_t_ref state, const_idl_joint_pos_t_ref joint_position);
 
+  inline bool is_initialized() const { return state_initialized_; };
+
 protected:
   void init_filters_();
 
   rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr logging_interface_ptr_;
   rclcpp::node_interfaces::NodeParametersInterface::SharedPtr parameters_interface_ptr_;
 
+  std::atomic_bool state_initialized_;
   idl_state_t state_;
   JointExponentialFilterArrayROS external_torque_filter_;
   JointExponentialFilterArrayROS measured_torque_filter_;

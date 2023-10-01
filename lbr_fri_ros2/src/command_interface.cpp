@@ -6,8 +6,18 @@ CommandInterface::CommandInterface(const rclcpp::Node::SharedPtr node_ptr)
     : logging_interface_ptr_(node_ptr->get_node_logging_interface()),
       parameters_interface_ptr_(node_ptr->get_node_parameters_interface()),
       joint_position_pid_(node_ptr, {"A1", "A2", "A3", "A4", "A5", "A6", "A7"}) {
-  command_guard_ = std::make_unique<CommandGuard>(node_ptr->get_node_logging_interface());
-  joint_position_pid_.init(0.2, 0.0, 0.0, 0.0, 0.0, false);
+  rclcpp::Parameter command_guard_variant_param;
+  if (!parameters_interface_ptr_->has_parameter("command_guard_variant")) {
+    parameters_interface_ptr_->declare_parameter("command_guard_variant",
+                                                 rclcpp::ParameterValue("safe_stop"));
+  }
+  parameters_interface_ptr_->get_parameter("command_guard_variant", command_guard_variant_param);
+  RCLCPP_INFO(logging_interface_ptr_->get_logger(),
+              "Configuring command interface with command guard '%s'.",
+              command_guard_variant_param.as_string().c_str());
+  command_guard_ = command_guard_factory(logging_interface_ptr_, parameters_interface_ptr_,
+                                         command_guard_variant_param.as_string());
+  joint_position_pid_.init(0.01, 0.0, 0.0, 0.0, 0.0, false);
 };
 
 void CommandInterface::get_joint_position_command(fri_command_t_ref command,
@@ -36,7 +46,7 @@ void CommandInterface::get_joint_position_command(fri_command_t_ref command,
     throw std::runtime_error(err);
   }
 
-  // write to output
+  // write joint position to output
   command.setJointPosition(command_.joint_position.data());
 }
 
@@ -57,15 +67,16 @@ void CommandInterface::get_torque_command(fri_command_t_ref command, const_fri_s
                               rclcpp::Duration(std::chrono::milliseconds(
                                   static_cast<int64_t>(state.getSampleTime() * 1e3))),
                               command_.joint_position);
+  command_.torque = command_target_.torque;
 
   // validate
   if (!command_guard_->is_valid_command(command_, state)) {
     throw std::runtime_error("Invalid command.");
   }
 
-  // write to output
+  // write joint position and torque to output
   command.setJointPosition(command_.joint_position.data());
-  command.setTorque(command_target_.torque.data());
+  command.setTorque(command_.torque.data());
 }
 
 void CommandInterface::get_wrench_command(fri_command_t_ref command, const_fri_state_t_ref state) {
@@ -85,6 +96,7 @@ void CommandInterface::get_wrench_command(fri_command_t_ref command, const_fri_s
                               rclcpp::Duration(std::chrono::milliseconds(
                                   static_cast<int64_t>(state.getSampleTime() * 1e3))),
                               command_.joint_position);
+  command_.wrench = command_target_.wrench;
 
   // validate
   if (!command_guard_->is_valid_command(command_, state)) {
@@ -93,9 +105,9 @@ void CommandInterface::get_wrench_command(fri_command_t_ref command, const_fri_s
     throw std::runtime_error(err);
   }
 
-  // write to output
-  command.setJointPosition(state.getMeasuredJointPosition());
-  command.setWrench(command_target_.wrench.data());
+  // write joint position and wrench to output
+  command.setJointPosition(command_.joint_position.data());
+  command.setWrench(command_.wrench.data());
 }
 
 void CommandInterface::init_command(const_fri_state_t_ref state) {

@@ -2,23 +2,22 @@
 
 namespace lbr_fri_ros2 {
 CommandGuard::CommandGuard(
-    const rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr logging_interface_ptr)
-    : logging_interface_ptr_(logging_interface_ptr){};
-
-CommandGuard::CommandGuard(
     const rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr logging_interface_ptr,
-    const_joint_array_t_ref min_position, const_joint_array_t_ref max_position,
-    const_joint_array_t_ref max_velocity, const_joint_array_t_ref max_torque)
-    : logging_interface_ptr_(logging_interface_ptr), min_position_(min_position),
-      max_position_(max_position), max_velocity_(max_velocity), max_torque_(max_torque) {}
-
-CommandGuard::CommandGuard(
-    const rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr logging_interface_ptr,
-    const std::string &robot_description)
-    : logging_interface_ptr_(logging_interface_ptr) {
+    const rclcpp::node_interfaces::NodeParametersInterface::SharedPtr parameters_interface_ptr)
+    : logging_interface_ptr_(logging_interface_ptr),
+      parameters_interface_ptr_(parameters_interface_ptr) {
+  RCLCPP_INFO(logging_interface_ptr_->get_logger(), "Configuring command guard.");
+  rclcpp::Parameter robot_description_param;
+  if (!parameters_interface_ptr_->has_parameter("robot_description")) {
+    parameters_interface_ptr_->declare_parameter("robot_description", rclcpp::ParameterValue(""));
+  }
+  parameters_interface_ptr_->get_parameter("robot_description", robot_description_param);
+  RCLCPP_INFO(logging_interface_ptr_->get_logger(), "Reading joint limits from '%s' parameter.",
+              robot_description_param.get_name().c_str());
   urdf::Model model;
-  if (!model.initString(robot_description)) {
-    std::string err = "Failed to intialize urdf model from robot description.";
+  if (!model.initString(robot_description_param.as_string())) {
+    std::string err = "Failed to intialize urdf model from '" + robot_description_param.get_name() +
+                      "' parameter.";
     RCLCPP_ERROR(logging_interface_ptr_->get_logger(), err.c_str());
     throw std::runtime_error(err);
   }
@@ -27,7 +26,8 @@ CommandGuard::CommandGuard(
     const auto joint = name_joint_pair.second;
     if (joint->type == urdf::Joint::REVOLUTE) {
       if (jnt_cnt > std::tuple_size<joint_array_t>()) {
-        std::string errs = "Found too many joints in robot description.";
+        std::string errs =
+            "Found too many joints in '" + robot_description_param.get_name() + "' parameter.";
         RCLCPP_ERROR(logging_interface_ptr_->get_logger(), errs.c_str());
         throw std::runtime_error(errs);
       }
@@ -35,15 +35,21 @@ CommandGuard::CommandGuard(
       max_position_[jnt_cnt] = joint->limits->upper;
       max_velocity_[jnt_cnt] = joint->limits->velocity;
       max_torque_[jnt_cnt] = joint->limits->effort;
+      RCLCPP_INFO(logging_interface_ptr_->get_logger(),
+                  "Joint %s limits: Position [%f, %f] rad, velocity %f rad/s, torque %f Nm.",
+                  name_joint_pair.first.c_str(), min_position_[jnt_cnt], max_position_[jnt_cnt],
+                  max_velocity_[jnt_cnt], max_torque_[jnt_cnt]);
       ++jnt_cnt;
     }
   }
   if (jnt_cnt != std::tuple_size<joint_array_t>()) {
-    std::string err = "Didn't find expected number of joints in robot description.";
+    std::string err = "Didn't find expected number of joints in '" +
+                      robot_description_param.get_name() + "' parameter.";
     RCLCPP_ERROR(logging_interface_ptr_->get_logger(), err.c_str());
     throw std::runtime_error(err);
   };
-}
+  RCLCPP_INFO(logging_interface_ptr_->get_logger(), "Configured command guard.");
+};
 
 bool CommandGuard::is_valid_command(const_idl_command_t_ref lbr_command,
                                     const_fri_state_t_ref lbr_state) const {
@@ -151,12 +157,13 @@ bool SafeStopCommandGuard::command_in_position_limits_(const_idl_command_t_ref l
 
 std::unique_ptr<CommandGuard> command_guard_factory(
     const rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr logging_interface_ptr,
-    const std::string &robot_description, const std::string &variant) {
+    const rclcpp::node_interfaces::NodeParametersInterface::SharedPtr parameters_interface_ptr,
+    const std::string &variant) {
   if (variant == "default") {
-    return std::make_unique<CommandGuard>(logging_interface_ptr, robot_description);
+    return std::make_unique<CommandGuard>(logging_interface_ptr, parameters_interface_ptr);
   }
   if (variant == "safe_stop") {
-    return std::make_unique<SafeStopCommandGuard>(logging_interface_ptr, robot_description);
+    return std::make_unique<SafeStopCommandGuard>(logging_interface_ptr, parameters_interface_ptr);
   }
   std::string err = "Invalid CommandGuard variant provided.";
   RCLCPP_ERROR(logging_interface_ptr->get_logger(), err.c_str());
