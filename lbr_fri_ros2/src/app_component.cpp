@@ -14,28 +14,39 @@ AppComponent::AppComponent(const rclcpp::NodeOptions &options) {
                             app_node_->get_parameter("remote_host").as_string().empty()
                                 ? NULL
                                 : app_node_->get_parameter("remote_host").as_string().c_str());
-  app_ptr_->run();
+  app_ptr_->run(app_node_->get_parameter("rt_prio").as_int());
   while (!client_ptr_->get_state_interface().is_initialized()) {
     RCLCPP_INFO(app_node_->get_logger(), "Waiting for robot heartbeat.");
     std::this_thread::sleep_for(std::chrono::seconds(1));
   }
   RCLCPP_INFO(app_node_->get_logger(), "Robot connected.");
 
+  // publisher
   state_pub_ = app_node_->create_publisher<lbr_fri_msgs::msg::LBRState>("/lbr/state", 1);
   state_pub_timer_ = app_node_->create_wall_timer(
       std::chrono::milliseconds(
           static_cast<int64_t>(client_ptr_->get_state_interface().get_state().sample_time * 1.e3)),
       std::bind(&AppComponent::on_state_pub_timer_, this));
 
-  position_command_sub_ = app_node_->create_subscription<lbr_fri_msgs::msg::LBRPositionCommand>(
-      "/lbr/command/position", 1,
-      std::bind(&AppComponent::on_position_command_, this, std::placeholders::_1));
+  // subscriptions
+  position_command_sub_ =
+      app_node_->create_subscription<lbr_fri_msgs::msg::LBRPositionCommand>( // TODO: fix namespaces
+          "/lbr/command/position", 1,
+          std::bind(&AppComponent::on_position_command_, this, std::placeholders::_1));
   torque_command_sub_ = app_node_->create_subscription<lbr_fri_msgs::msg::LBRTorqueCommand>(
       "/lbr/command/torque", 1,
       std::bind(&AppComponent::on_torque_command_, this, std::placeholders::_1));
   wrench_command_sub_ = app_node_->create_subscription<lbr_fri_msgs::msg::LBRWrenchCommand>(
       "/lbr/command/wrench", 1,
       std::bind(&AppComponent::on_wrench_command_, this, std::placeholders::_1));
+
+  // services
+  app_connect_srv_ = app_node_->create_service<lbr_fri_msgs::srv::AppConnect>(
+      "/lbr/app/connect", std::bind(&AppComponent::on_app_connect_, this, std::placeholders::_1,
+                                    std::placeholders::_2));
+  app_disconnect_srv_ = app_node_->create_service<lbr_fri_msgs::srv::AppDisconnect>(
+      "/lbr/app/disconnect", std::bind(&AppComponent::on_app_disconnect_, this,
+                                       std::placeholders::_1, std::placeholders::_2));
 }
 
 rclcpp::node_interfaces::NodeBaseInterface::SharedPtr
@@ -133,6 +144,28 @@ void AppComponent::on_wrench_command_(
 
 void AppComponent::on_state_pub_timer_() {
   state_pub_->publish(client_ptr_->get_state_interface().get_state());
+}
+
+void AppComponent::on_app_connect_(const lbr_fri_msgs::srv::AppConnect::Request::SharedPtr request,
+                                   lbr_fri_msgs::srv::AppConnect::Response::SharedPtr response) {
+  RCLCPP_INFO(app_node_->get_logger(),
+              "Connecting to robot via service. Port ID: %d, remote host: '%s'.", request->port_id,
+              request->remote_host.c_str());
+  response->connected = app_ptr_->open_udp_socket(
+      request->port_id, request->remote_host.empty() ? NULL : request->remote_host.c_str());
+  app_ptr_->run(app_node_->get_parameter("rt_prio").as_int());
+  response->message = "Robot connected.";
+  RCLCPP_INFO(app_node_->get_logger(), response->message.c_str());
+}
+
+void AppComponent::on_app_disconnect_(
+    const lbr_fri_msgs::srv::AppDisconnect::Request::SharedPtr request,
+    lbr_fri_msgs::srv::AppDisconnect::Response::SharedPtr response) {
+  RCLCPP_INFO(app_node_->get_logger(), "Disconnecting from robot via service.");
+  app_ptr_->stop_run();
+  response->disconnected = app_ptr_->close_udp_socket();
+  response->message = "Robot disconnected.";
+  RCLCPP_INFO(app_node_->get_logger(), response->message.c_str());
 }
 } // end of namespace lbr_fri_ros2
 
