@@ -1,46 +1,22 @@
 #include "lbr_fri_ros2/app.hpp"
 
 namespace lbr_fri_ros2 {
-App::App(const rclcpp::Node::SharedPtr node)
-    : App(node->get_node_logging_interface(), node->get_node_parameters_interface()) {}
-
-App::App(const rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr logging_interface_ptr,
-         const rclcpp::node_interfaces::NodeParametersInterface::SharedPtr parameters_interface_ptr)
-    : logging_interface_ptr_(logging_interface_ptr),
-      parameters_interface_ptr_(parameters_interface_ptr), running_(false), run_thread_(nullptr),
-      client_(nullptr), connection_(nullptr), app_(nullptr){};
+App::App(const rclcpp::Node::SharedPtr node_ptr, const std::shared_ptr<Client> client_ptr)
+    : logging_interface_ptr_(node_ptr->get_node_logging_interface()),
+      parameters_interface_ptr_(node_ptr->get_node_parameters_interface()), running_(false),
+      run_thread_ptr_(nullptr), client_ptr_(nullptr), connection_ptr_(nullptr), app_ptr_(nullptr) {
+  client_ptr_ = client_ptr;
+  connection_ptr_ = std::make_unique<KUKA::FRI::UdpConnection>();
+  app_ptr_ = std::make_unique<KUKA::FRI::ClientApplication>(*connection_ptr_, *client_ptr_);
+}
 
 App::~App() {
   stop_run();
   close_udp_socket();
 }
 
-bool App::initialize(const std::shared_ptr<KUKA::FRI::LBRClient> &client) {
-  if (!client) {
-    RCLCPP_ERROR(logging_interface_ptr_->get_logger(), "No client provided.");
-    return false;
-  }
-  if (client_ != nullptr) {
-    RCLCPP_WARN(logging_interface_ptr_->get_logger(), "Client already configured.");
-    return false;
-  }
-  if (connection_ != nullptr) {
-    RCLCPP_WARN(logging_interface_ptr_->get_logger(), "Connection already configured.");
-    return false;
-  }
-  if (app_ != nullptr) {
-    RCLCPP_WARN(logging_interface_ptr_->get_logger(), "App already configured.");
-    return false;
-  }
-  RCLCPP_INFO(logging_interface_ptr_->get_logger(), "Initializing LBR FRI ROS 2 App.");
-  client_ = client;
-  connection_ = std::make_unique<KUKA::FRI::UdpConnection>();
-  app_ = std::make_unique<KUKA::FRI::ClientApplication>(*connection_, *client_);
-  return true;
-}
-
 bool App::open_udp_socket(const int &port_id, const char *const remote_host) {
-  if (!connection_) {
+  if (!connection_ptr_) {
     RCLCPP_ERROR(logging_interface_ptr_->get_logger(), "Connection not configured.");
     return false;
   }
@@ -48,11 +24,11 @@ bool App::open_udp_socket(const int &port_id, const char *const remote_host) {
   if (!valid_port_(port_id)) {
     return false;
   }
-  if (connection_->isOpen()) {
+  if (connection_ptr_->isOpen()) {
     RCLCPP_INFO(logging_interface_ptr_->get_logger(), "Socket already open.");
     return true;
   }
-  if (!connection_->open(port_id, remote_host)) {
+  if (!connection_ptr_->open(port_id, remote_host)) {
     RCLCPP_ERROR(logging_interface_ptr_->get_logger(), "Failed to open socket.");
     return false;
   }
@@ -61,42 +37,42 @@ bool App::open_udp_socket(const int &port_id, const char *const remote_host) {
 }
 
 bool App::close_udp_socket() {
-  if (!connection_) {
+  if (!connection_ptr_) {
     RCLCPP_ERROR(logging_interface_ptr_->get_logger(), "Connection not configured.");
     return false;
   }
   RCLCPP_INFO(logging_interface_ptr_->get_logger(), "Closing UDP socket.");
-  if (!connection_->isOpen()) {
+  if (!connection_ptr_->isOpen()) {
     RCLCPP_INFO(logging_interface_ptr_->get_logger(), "Socket already closed.");
     return true;
   }
-  connection_->close();
+  connection_ptr_->close();
   RCLCPP_INFO(logging_interface_ptr_->get_logger(), "Socket closed successfully.");
   return true;
 }
 
 void App::run(int rt_prio) {
-  if (!client_) {
+  if (!client_ptr_) {
     RCLCPP_ERROR(logging_interface_ptr_->get_logger(), "Client not configured.");
     return;
   }
-  if (!connection_) {
+  if (!connection_ptr_) {
     RCLCPP_ERROR(logging_interface_ptr_->get_logger(), "Connection not configured.");
     return;
   }
-  if (!connection_->isOpen()) {
+  if (!connection_ptr_->isOpen()) {
     RCLCPP_ERROR(logging_interface_ptr_->get_logger(), "Connection not open.");
     return;
   }
-  if (!app_) {
+  if (!app_ptr_) {
     RCLCPP_ERROR(logging_interface_ptr_->get_logger(), "App not configured.");
     return;
   }
-  if (run_thread_ != nullptr || running_) {
+  if (run_thread_ptr_ != nullptr || running_) {
     RCLCPP_WARN(logging_interface_ptr_->get_logger(), "App already running.");
     return;
   }
-  run_thread_ = std::make_unique<std::thread>([&]() {
+  run_thread_ptr_ = std::make_unique<std::thread>([&]() {
     if (realtime_tools::has_realtime_kernel()) {
       if (!realtime_tools::configure_sched_fifo(rt_prio)) {
         RCLCPP_WARN(logging_interface_ptr_->get_logger(),
@@ -111,8 +87,8 @@ void App::run(int rt_prio) {
     running_ = true;
     bool success = true;
     while (rclcpp::ok() && success && running_) {
-      success = app_->step();
-      if (client_->robotState().getSessionState() == KUKA::FRI::ESessionState::IDLE) {
+      success = app_ptr_->step();
+      if (client_ptr_->robotState().getSessionState() == KUKA::FRI::ESessionState::IDLE) {
         RCLCPP_INFO(logging_interface_ptr_->get_logger(), "LBR in session state idle, exiting.");
         break;
       }
@@ -122,11 +98,11 @@ void App::run(int rt_prio) {
 }
 
 void App::stop_run() {
-  if (run_thread_ != nullptr) {
+  if (run_thread_ptr_ != nullptr) {
     RCLCPP_INFO(logging_interface_ptr_->get_logger(), "Requesting run thread stop.");
     running_ = false;
-    run_thread_->join();
-    run_thread_ = nullptr;
+    run_thread_ptr_->join();
+    run_thread_ptr_ = nullptr;
     RCLCPP_INFO(logging_interface_ptr_->get_logger(), "Joined run thread.");
   }
 }

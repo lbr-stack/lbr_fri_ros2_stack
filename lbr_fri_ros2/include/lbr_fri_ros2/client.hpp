@@ -22,12 +22,7 @@ namespace lbr_fri_ros2 {
 class Client : public KUKA::FRI::LBRClient {
 public:
   Client() = delete;
-  Client(const rclcpp::Node::SharedPtr node_ptr)
-      : logging_interface_ptr_(node_ptr->get_node_logging_interface()),
-        parameters_interface_ptr_(node_ptr->get_node_parameters_interface()),
-        command_interface_(node_ptr),
-        state_interface_(logging_interface_ptr_, parameters_interface_ptr_), open_loop_(true){};
-
+  Client(const rclcpp::Node::SharedPtr node_ptr);
   inline CommandInterface &get_command_interface() { return command_interface_; }
   inline StateInterface &get_state_interface() { return state_interface_; }
 
@@ -38,18 +33,14 @@ public:
    * @param[in] new_state The robot's new state
    */
   void onStateChange(KUKA::FRI::ESessionState old_state,
-                     KUKA::FRI::ESessionState new_state) override {
-    RCLCPP_INFO(logging_interface_ptr_->get_logger(), "LBR switched from %s to %s.",
-                KUKA_FRI_STATE_MAP[old_state].c_str(), KUKA_FRI_STATE_MAP[new_state].c_str());
-    command_interface_.init_command(robotState());
-  }
+                     KUKA::FRI::ESessionState new_state) override;
 
   /**
    * @brief Called when robot in KUKA::FRI::MONITORING_WAIT or KUKA::FRI::MONITORING_READY state.
    * Publishes state from #robotState via #lbr_state_pub_.
    *
    */
-  void monitor() override { state_interface_.set_state(robotState()); };
+  void monitor() override;
 
   /**
    * @brief Called when robot in KUKA::FRI::COMMANDING_WAIT state. Publishes state from #robotState
@@ -57,44 +48,9 @@ public:
    * KUKA::FRI::TORQUE.
    *
    */
-  void waitForCommand() override {
-    KUKA::FRI::LBRClient::waitForCommand();
-    state_interface_.set_state(robotState());
+  void waitForCommand() override;
 
-    if (robotState().getClientCommandMode() == KUKA::FRI::EClientCommandMode::TORQUE) {
-      command_interface_.get_torque_command(robotCommand(), robotState());
-    }
-
-    if (robotState().getClientCommandMode() == KUKA::FRI::EClientCommandMode::WRENCH) {
-      command_interface_.get_wrench_command(robotCommand(), robotState());
-    }
-  };
-
-  void command() override {
-    if (open_loop_) {
-      state_interface_.set_state_open_loop(robotState(),
-                                           command_interface_.get_command().joint_position);
-    } else {
-      state_interface_.set_state(robotState());
-    }
-
-    switch (robotState().getClientCommandMode()) {
-    case KUKA::FRI::EClientCommandMode::POSITION:
-      command_interface_.get_joint_position_command(robotCommand(), robotState());
-      return;
-    case KUKA::FRI::EClientCommandMode::TORQUE:
-      command_interface_.get_torque_command(robotCommand(), robotState());
-      return;
-    case KUKA::FRI::EClientCommandMode::WRENCH:
-      command_interface_.get_wrench_command(robotCommand(), robotState());
-      return;
-    default:
-      std::string err =
-          "Unsupported command mode: " + std::to_string(robotState().getClientCommandMode()) + ".";
-      RCLCPP_ERROR(logging_interface_ptr_->get_logger(), err.c_str());
-      throw std::runtime_error(err);
-    }
-  };
+  void command() override;
 
 protected:
   rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr logging_interface_ptr_;

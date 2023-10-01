@@ -10,34 +10,31 @@
 #include "realtime_tools/thread_priority.hpp"
 
 #include "friClientApplication.h"
-#include "friLBRClient.h"
 #include "friUdpConnection.h"
+
+#include "lbr_fri_ros2/client.hpp"
 
 namespace lbr_fri_ros2 {
 /**
- * @brief The App has a node for exposing FRI methods to services. It shares this node with the
- * #client_, which reads commands / write states via realtime safe topics.
+ * @brief The App has a node_ptr for exposing FRI methods to services. It shares this node_ptr with
+ * the #client_ptr_, which reads commands / write states via realtime safe topics.
  *
  * Services:
  * - <b>open_udp_socket</b> (lbr_fri_msgs::srv::AppConnect)
- * Opens UDP port to FRI. Creates #run_thread_ thread via #on_app_connect_ that calls #run_ to
+ * Opens UDP port to FRI. Creates #run_thread_ptr_ thread via #on_app_connect_ that calls #run_ to
  * communicate with the robot.
  * - <b>close_udp_socket</b> (lbr_fri_msgs::srv::AppDisconnect)
- * Closes UDP port to FRI. Finishes #run_thread_ thread via #on_app_disconnect_ through ending
+ * Closes UDP port to FRI. Finishes #run_thread_ptr_ thread via #on_app_disconnect_ through ending
  * #run_.
  *
  */
 class App {
 public:
-  App(const rclcpp::Node::SharedPtr node);
-  App(const rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr logging_interface_ptr,
-      const rclcpp::node_interfaces::NodeParametersInterface::SharedPtr parameters_interface_ptr);
+  App(const rclcpp::Node::SharedPtr node_ptr, const std::shared_ptr<Client> client_ptr);
   ~App();
 
-  bool initialize(const std::shared_ptr<KUKA::FRI::LBRClient> &client);
-
   /**
-   * @brief Opens a UDP port and spawns the #run_thread_.
+   * @brief Opens a UDP port and spawns the #run_thread_ptr_.
    *
    * @param[in] port_id The port id, allowed values [30200, 30209]
    * @param[in] remote_host The address of the remote host
@@ -50,12 +47,12 @@ public:
   bool open_udp_socket(const int &port_id = 30200, const char *const remote_host = NULL);
 
   /**
-   * @brief Closes the UDP port and joins the #run_thread_.
+   * @brief Closes the UDP port and joins the #run_thread_ptr_.
    *
    * @return true if closed successfully / already closed
    * @return false if failed to close
    *
-   * @throws std::runtime_error if #run_thread_ fails to join
+   * @throws std::runtime_error if #run_thread_ptr_ fails to join
    *
    */
   bool close_udp_socket();
@@ -63,7 +60,7 @@ public:
   /**
    * @brief Exchanges commands / states between ROS and the FRI.
    *
-   * Calls step() on #app_, which callbacks #client_. #client_ reads commands / write
+   * Calls step() on #app_ptr_, which callbacks #client_ptr_. #client_ptr_ reads commands / write
    * states through realtime safe topics.
    *
    */
@@ -85,14 +82,13 @@ protected:
   rclcpp::node_interfaces::NodeParametersInterface::SharedPtr parameters_interface_ptr_;
 
   std::atomic_bool running_;
-  std::unique_ptr<std::thread> run_thread_; /**< Thread running the #run_ method.*/
+  std::unique_ptr<std::thread> run_thread_ptr_; /**< Thread running the #run_ method.*/
 
-  std::shared_ptr<KUKA::FRI::LBRClient>
-      client_; /**< Writes commands to / reads states from robot.*/
+  std::shared_ptr<Client> client_ptr_; /**< Writes commands to / reads states from robot.*/
   std::unique_ptr<KUKA::FRI::UdpConnection>
-      connection_; /**< UDP connection for reading states / writing commands.*/
+      connection_ptr_; /**< UDP connection for reading states / writing commands.*/
   std::unique_ptr<KUKA::FRI::ClientApplication>
-      app_; /**< FRI client application that callbacks #client_ methods.*/
+      app_ptr_; /**< FRI client application that callbacks #client_ptr_ methods.*/
 };
 } // end of namespace lbr_fri_ros2
 #endif // LBR_FRI_ROS2__APP_HPP_
