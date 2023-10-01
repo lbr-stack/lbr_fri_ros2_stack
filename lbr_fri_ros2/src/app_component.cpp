@@ -29,10 +29,9 @@ AppComponent::AppComponent(const rclcpp::NodeOptions &options) {
       std::bind(&AppComponent::on_state_pub_timer_, this));
 
   // subscriptions
-  position_command_sub_ =
-      app_node_->create_subscription<lbr_fri_msgs::msg::LBRPositionCommand>( // TODO: fix namespaces
-          "~/command/position", 1,
-          std::bind(&AppComponent::on_position_command_, this, std::placeholders::_1));
+  position_command_sub_ = app_node_->create_subscription<lbr_fri_msgs::msg::LBRPositionCommand>(
+      "~/command/position", 1,
+      std::bind(&AppComponent::on_position_command_, this, std::placeholders::_1));
   torque_command_sub_ = app_node_->create_subscription<lbr_fri_msgs::msg::LBRTorqueCommand>(
       "~/command/torque", 1,
       std::bind(&AppComponent::on_torque_command_, this, std::placeholders::_1));
