@@ -109,7 +109,7 @@ install(
 )
 
 install(
-  DIRECTORY launch
+  DIRECTORY config launch
   DESTINATION share/lbr_fri_ros2
 )
 
