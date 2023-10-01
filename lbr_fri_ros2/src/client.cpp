@@ -5,7 +5,15 @@ Client::Client(const rclcpp::Node::SharedPtr node_ptr)
     : logging_interface_ptr_(node_ptr->get_node_logging_interface()),
       parameters_interface_ptr_(node_ptr->get_node_parameters_interface()),
       command_interface_(node_ptr),
-      state_interface_(logging_interface_ptr_, parameters_interface_ptr_), open_loop_(true) {}
+      state_interface_(logging_interface_ptr_, parameters_interface_ptr_), open_loop_(true) {
+  RCLCPP_INFO(logging_interface_ptr_->get_logger(), "Configuring client.");
+  if (!node_ptr->has_parameter("open_loop")) {
+    node_ptr->declare_parameter("open_loop", true);
+  }
+  node_ptr->get_parameter("open_loop", open_loop_);
+  RCLCPP_INFO(logging_interface_ptr_->get_logger(), "Configured client with open_loop '%s'.",
+              open_loop_ ? "true" : "false");
+}
 
 void Client::onStateChange(KUKA::FRI::ESessionState old_state, KUKA::FRI::ESessionState new_state) {
   RCLCPP_INFO(logging_interface_ptr_->get_logger(), "LBR switched from %s to %s.",

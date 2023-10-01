@@ -34,6 +34,14 @@ class LBRFRIROS2Mixin:
         )
 
     @staticmethod
+    def arg_port_id() -> DeclareLaunchArgument:
+        return DeclareLaunchArgument(
+            name="port_id",
+            default_value="30200",
+            description="Port ID of the FRI communication.",
+        )
+
+    @staticmethod
     def param_command_guard_variant() -> Dict[str, LaunchConfiguration]:
         return {
             "command_guard_variant": LaunchConfiguration(
@@ -48,6 +56,10 @@ class LBRFRIROS2Mixin:
     @staticmethod
     def param_rt_prio() -> Dict[str, LaunchConfiguration]:
         return {"rt_prio": LaunchConfiguration("rt_prio", default="80")}
+
+    @staticmethod
+    def param_port_id() -> Dict[str, LaunchConfiguration]:
+        return {"port_id": LaunchConfiguration("port_id", default="30200")}
 
     @staticmethod
     def node_app(

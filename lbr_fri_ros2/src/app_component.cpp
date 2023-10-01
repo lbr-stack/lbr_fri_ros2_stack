@@ -15,7 +15,7 @@ AppComponent::AppComponent(const rclcpp::NodeOptions &options) {
                                 ? NULL
                                 : app_node_->get_parameter("remote_host").as_string().c_str());
   app_ptr_->run(app_node_->get_parameter("rt_prio").as_int());
-  while (!client_ptr_->get_state_interface().is_initialized()) {
+  while (!client_ptr_->get_state_interface().is_initialized() && rclcpp::ok()) {
     RCLCPP_INFO(app_node_->get_logger(), "Waiting for robot heartbeat.");
     std::this_thread::sleep_for(std::chrono::seconds(1));
   }
