@@ -48,8 +48,7 @@ JointExponentialFilterArrayROS::JointExponentialFilterArrayROS(
   }
 }
 
-void JointExponentialFilterArrayROS::compute(const double *const current,
-                                             ValueArrayType &previous) {
+void JointExponentialFilterArrayROS::compute(const double *const current, value_array_t &previous) {
   int i = 0;
   std::for_each(current, current + KUKA::FRI::LBRState::NUMBER_OF_JOINTS,
                 [&](const auto &current_i) {
@@ -92,9 +91,9 @@ void JointExponentialFilterArrayROS::init(const double &cutoff_frequency,
       });
 }
 
-JointPIDArrayROS::JointPIDArrayROS(const rclcpp::Node::SharedPtr node, const NameArrayType &names,
+JointPIDArrayROS::JointPIDArrayROS(const rclcpp::Node::SharedPtr node, const name_array_t &names,
                                    const std::string &prefix)
-    : pid_controllers_(PIDArrayType{
+    : pid_controllers_(pid_array_t{
           control_toolbox::PidROS{node, prefix + names[0]},
           control_toolbox::PidROS{node, prefix + names[1]},
           control_toolbox::PidROS{node, prefix + names[2]},
@@ -104,8 +103,17 @@ JointPIDArrayROS::JointPIDArrayROS(const rclcpp::Node::SharedPtr node, const Nam
           control_toolbox::PidROS{node, prefix + names[6]},
       }) {}
 
-void JointPIDArrayROS::compute(const ValueArrayType &command_target, const ValueArrayType &state,
-                               const rclcpp::Duration &dt, ValueArrayType &command) {
+void JointPIDArrayROS::compute(const value_array_t &command_target, const value_array_t &state,
+                               const rclcpp::Duration &dt, value_array_t &command) {
+  int i = 0;
+  std::for_each(command.begin(), command.end(), [&](double &command_i) {
+    command_i += pid_controllers_[i].computeCommand(command_target[i] - state[i], dt);
+    ++i;
+  });
+}
+
+void JointPIDArrayROS::compute(const value_array_t &command_target, const double *state,
+                               const rclcpp::Duration &dt, value_array_t &command) {
   int i = 0;
   std::for_each(command.begin(), command.end(), [&](double &command_i) {
     command_i += pid_controllers_[i].computeCommand(command_target[i] - state[i], dt);

@@ -25,7 +25,7 @@ find_package(urdf REQUIRED)
 add_library(lbr_fri_ros2
   SHARED
     src/app.cpp
-    # src/command_guard.cpp
+    src/command_guard.cpp
     src/command_interface.cpp
     src/state_interface.cpp
     src/utils.cpp
