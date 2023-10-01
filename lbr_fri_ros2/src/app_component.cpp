@@ -22,7 +22,7 @@ AppComponent::AppComponent(const rclcpp::NodeOptions &options) {
   RCLCPP_INFO(app_node_->get_logger(), "Robot connected.");
 
   // publisher
-  state_pub_ = app_node_->create_publisher<lbr_fri_msgs::msg::LBRState>("/lbr/state", 1);
+  state_pub_ = app_node_->create_publisher<lbr_fri_msgs::msg::LBRState>("~/state", 1);
   state_pub_timer_ = app_node_->create_wall_timer(
       std::chrono::milliseconds(
           static_cast<int64_t>(client_ptr_->get_state_interface().get_state().sample_time * 1.e3)),
@@ -31,22 +31,22 @@ AppComponent::AppComponent(const rclcpp::NodeOptions &options) {
   // subscriptions
   position_command_sub_ =
       app_node_->create_subscription<lbr_fri_msgs::msg::LBRPositionCommand>( // TODO: fix namespaces
-          "/lbr/command/position", 1,
+          "~/command/position", 1,
           std::bind(&AppComponent::on_position_command_, this, std::placeholders::_1));
   torque_command_sub_ = app_node_->create_subscription<lbr_fri_msgs::msg::LBRTorqueCommand>(
-      "/lbr/command/torque", 1,
+      "~/command/torque", 1,
       std::bind(&AppComponent::on_torque_command_, this, std::placeholders::_1));
   wrench_command_sub_ = app_node_->create_subscription<lbr_fri_msgs::msg::LBRWrenchCommand>(
-      "/lbr/command/wrench", 1,
+      "~/command/wrench", 1,
       std::bind(&AppComponent::on_wrench_command_, this, std::placeholders::_1));
 
   // services
   app_connect_srv_ = app_node_->create_service<lbr_fri_msgs::srv::AppConnect>(
-      "/lbr/app/connect", std::bind(&AppComponent::on_app_connect_, this, std::placeholders::_1,
-                                    std::placeholders::_2));
+      "~/app/connect", std::bind(&AppComponent::on_app_connect_, this, std::placeholders::_1,
+                                 std::placeholders::_2));
   app_disconnect_srv_ = app_node_->create_service<lbr_fri_msgs::srv::AppDisconnect>(
-      "/lbr/app/disconnect", std::bind(&AppComponent::on_app_disconnect_, this,
-                                       std::placeholders::_1, std::placeholders::_2));
+      "~/app/disconnect", std::bind(&AppComponent::on_app_disconnect_, this, std::placeholders::_1,
+                                    std::placeholders::_2));
 }
 
 rclcpp::node_interfaces::NodeBaseInterface::SharedPtr
