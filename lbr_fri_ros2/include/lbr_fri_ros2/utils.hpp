@@ -168,6 +168,14 @@ public:
   void compute(const value_array_t &command_target, const value_array_t &state,
                const rclcpp::Duration &dt, value_array_t &command);
 
+  /**
+   * @brief Compute the PID update.
+   *
+   * @param[in] command_target The target joint command.
+   * @param[in] state The current joint state.
+   * @param[in] dt The time step.
+   * @param[out] command The returned joint command.
+   */
   void compute(const value_array_t &command_target, const double *state, const rclcpp::Duration &dt,
                value_array_t &command);
 

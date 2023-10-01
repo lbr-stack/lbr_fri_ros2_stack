@@ -14,42 +14,18 @@
 #include "lbr_fri_ros2/state_interface.hpp"
 
 namespace lbr_fri_ros2 {
-/**
- * @brief Simple implementation of KUKA::FRI::LBRClient. Has a shared node for reading commands
- * from / writing states to topics that follow the robot's QoS.
- *
- */
 class Client : public KUKA::FRI::LBRClient {
 public:
   Client() = delete;
   Client(const rclcpp::Node::SharedPtr node_ptr);
+
   inline CommandInterface &get_command_interface() { return command_interface_; }
   inline StateInterface &get_state_interface() { return state_interface_; }
 
-  /**
-   * @brief Prints state change to terminal.
-   *
-   * @param[in] old_state The robot's old state
-   * @param[in] new_state The robot's new state
-   */
   void onStateChange(KUKA::FRI::ESessionState old_state,
                      KUKA::FRI::ESessionState new_state) override;
-
-  /**
-   * @brief Called when robot in KUKA::FRI::MONITORING_WAIT or KUKA::FRI::MONITORING_READY state.
-   * Publishes state from #robotState via #lbr_state_pub_.
-   *
-   */
   void monitor() override;
-
-  /**
-   * @brief Called when robot in KUKA::FRI::COMMANDING_WAIT state. Publishes state from #robotState
-   * via #lbr_state_pub_ and sets #robotCommand if in command mode KUKA::FRI::WRENCH or
-   * KUKA::FRI::TORQUE.
-   *
-   */
   void waitForCommand() override;
-
   void command() override;
 
 protected:
@@ -68,7 +44,7 @@ private:
       {KUKA::FRI::ESessionState::MONITORING_READY, "MONITORING_READY"},
       {KUKA::FRI::ESessionState::COMMANDING_WAIT, "COMMANDING_WAIT"},
       {KUKA::FRI::ESessionState::COMMANDING_ACTIVE, "COMMANDING_ACTIVE"},
-  }; /** Map for converting KUKA::FRI::ESessionState to readable strings.*/
+  };
 };
 } // end of namespace lbr_fri_ros2
 #endif // LBR_FRI_ROS2__CLIENT_HPP_
