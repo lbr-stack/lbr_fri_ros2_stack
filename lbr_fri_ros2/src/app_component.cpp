@@ -51,6 +51,7 @@ void AppComponent::connect_(const int &port_id, const char *const remote_host,
                 max_attempts);
     std::this_thread::sleep_for(std::chrono::seconds(1));
     if (++attempt >= max_attempts) {
+      app_ptr_->close_udp_socket();
       RCLCPP_ERROR(app_node_->get_logger(), "Failed to connect to robot on max attempts.");
       return;
     }
