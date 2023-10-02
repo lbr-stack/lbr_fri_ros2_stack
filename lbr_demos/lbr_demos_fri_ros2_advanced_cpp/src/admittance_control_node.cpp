@@ -19,8 +19,8 @@ public:
     this->declare_parameter<std::string>("base_link", "link_0");
     this->declare_parameter<std::string>("end_effector_link", "link_ee");
     this->declare_parameter<std::vector<double>>("f_ext_th", {2., 2., 2., 0.5, 0.5, 0.5});
-    this->declare_parameter<std::vector<double>>("dq_gains", {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0});
-    this->declare_parameter<std::vector<double>>("dx_gains", {2.0, 2.0, 2.0, 10., 10., 10.});
+    this->declare_parameter<std::vector<double>>("dq_gains", {0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8});
+    this->declare_parameter<std::vector<double>>("dx_gains", {4.0, 4.0, 4.0, 40., 40., 40.});
 
     admittance_controller_ =
         std::make_unique<AdmittanceController>(this->get_parameter("robot_description").as_string(),

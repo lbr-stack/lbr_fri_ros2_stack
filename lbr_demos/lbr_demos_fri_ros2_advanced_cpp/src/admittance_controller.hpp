@@ -27,8 +27,8 @@ public:
                        const std::string &base_link = "link_0",
                        const std::string &end_effector_link = "link_ee",
                        const std::vector<double> &f_ext_th = {2., 2., 2., 0.5, 0.5, 0.5},
-                       const std::vector<double> &dq_gains = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0},
-                       const std::vector<double> &dx_gains = {2.0, 2.0, 2.0, 10., 10., 10.})
+                       const std::vector<double> &dq_gains = {0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8},
+                       const std::vector<double> &dx_gains = {4.0, 4.0, 4.0, 40., 40., 40.})
       : dq_gains_(dq_gains.data()), dx_gains_(dx_gains.data()), f_ext_th_(f_ext_th.data()) {
     if (!kdl_parser::treeFromString(robot_description, tree_)) {
       throw std::runtime_error("Failed to construct kdl tree from robot description.");
