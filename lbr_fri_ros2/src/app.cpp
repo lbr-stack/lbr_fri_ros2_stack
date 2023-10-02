@@ -4,7 +4,7 @@ namespace lbr_fri_ros2 {
 App::App(const rclcpp::Node::SharedPtr node_ptr, const std::shared_ptr<Client> client_ptr)
     : logging_interface_ptr_(node_ptr->get_node_logging_interface()),
       parameters_interface_ptr_(node_ptr->get_node_parameters_interface()), should_stop_(true),
-      run_thread_ptr_(nullptr), client_ptr_(nullptr), connection_ptr_(nullptr), app_ptr_(nullptr) {
+      running_(false), client_ptr_(nullptr), connection_ptr_(nullptr), app_ptr_(nullptr) {
   client_ptr_ = client_ptr;
   connection_ptr_ = std::make_unique<KUKA::FRI::UdpConnection>();
   app_ptr_ = std::make_unique<KUKA::FRI::ClientApplication>(*connection_ptr_, *client_ptr_);
@@ -68,11 +68,11 @@ void App::run(int rt_prio) {
     RCLCPP_ERROR(logging_interface_ptr_->get_logger(), "App not configured.");
     return;
   }
-  if (run_thread_ptr_ != nullptr) {
+  if (running_) {
     RCLCPP_WARN(logging_interface_ptr_->get_logger(), "App already running.");
     return;
   }
-  run_thread_ptr_ = std::make_unique<std::thread>([&]() {
+  run_thread_ = std::thread([&]() {
     if (realtime_tools::has_realtime_kernel()) {
       if (!realtime_tools::configure_sched_fifo(rt_prio)) {
         RCLCPP_WARN(logging_interface_ptr_->get_logger(),
@@ -85,6 +85,7 @@ void App::run(int rt_prio) {
 
     RCLCPP_INFO(logging_interface_ptr_->get_logger(), "Starting run thread.");
     should_stop_ = false;
+    running_ = true;
     bool success = true;
     while (rclcpp::ok() && success && !should_stop_) {
       success = app_ptr_->step(); // TODO: blocks until robot heartbeat, stuck if port id mismatches
@@ -94,18 +95,15 @@ void App::run(int rt_prio) {
       }
     }
     client_ptr_->get_state_interface().uninitialize();
+    running_ = false;
     RCLCPP_INFO(logging_interface_ptr_->get_logger(), "Exiting run thread.");
   });
+  run_thread_.detach();
 }
 
 void App::stop_run() {
-  if (run_thread_ptr_ != nullptr) {
-    RCLCPP_INFO(logging_interface_ptr_->get_logger(), "Requesting run thread stop.");
-    should_stop_ = true;
-    run_thread_ptr_->join();
-    run_thread_ptr_ = nullptr;
-    RCLCPP_INFO(logging_interface_ptr_->get_logger(), "Joined run thread.");
-  }
+  RCLCPP_INFO(logging_interface_ptr_->get_logger(), "Requesting run thread stop.");
+  should_stop_ = true;
 }
 
 bool App::valid_port_(const int &port_id) {

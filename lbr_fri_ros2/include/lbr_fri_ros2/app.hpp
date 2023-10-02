@@ -31,8 +31,8 @@ protected:
   rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr logging_interface_ptr_;
   rclcpp::node_interfaces::NodeParametersInterface::SharedPtr parameters_interface_ptr_;
 
-  std::atomic_bool should_stop_;
-  std::unique_ptr<std::thread> run_thread_ptr_;
+  std::atomic_bool should_stop_, running_;
+  std::thread run_thread_;
 
   std::shared_ptr<Client> client_ptr_;
   std::unique_ptr<KUKA::FRI::UdpConnection> connection_ptr_;

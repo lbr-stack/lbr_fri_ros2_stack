@@ -41,7 +41,7 @@ public:
 
 protected:
   void connect_(const int &port_id = 30200, const char *const remote_host = NULL,
-                const uint8_t &rt_prio = 80, const uint8_t &max_attempts = 5);
+                const uint8_t &rt_prio = 80, const uint8_t &max_attempts = 10);
 
   // command buffer
   lbr_fri_msgs::msg::LBRCommand lbr_command_; /**< The command to be sent to the robot.*/
