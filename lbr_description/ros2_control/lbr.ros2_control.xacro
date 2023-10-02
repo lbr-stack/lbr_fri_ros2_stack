@@ -10,7 +10,7 @@
         joint_5_position_limit
         joint_6_position_limit
         effort_limit
-        sim:=^|true remote_host:=^|INADDR_ANY port_id:=^|30200 sample_time:=^|10 robot_name:=^|lbr">
+        sim:=^|true remote_host:=^|INADDR_ANY port_id:=^|30200 robot_name:=^|lbr">
         <!-- arg for control mode -->
 
         <ros2_control name="lbr_hardware_interface" type="system">
@@ -25,7 +25,6 @@
                     <plugin>lbr_ros2_control::LBRHardwareInterface</plugin>
                     <param name="remote_host">${remote_host}</param>
                     <param name="port_id">${port_id}</param>
-                    <param name="sample_time">${sample_time}</param>
                     <param name="robot_name">${robot_name}</param>
                 </hardware>
             </xacro:unless>
