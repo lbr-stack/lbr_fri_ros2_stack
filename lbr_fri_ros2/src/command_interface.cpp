@@ -34,7 +34,7 @@ void CommandInterface::get_joint_position_command(fri_command_t_ref command,
 
   // PID
   if (!pid_init_) {
-    joint_position_pid_.init(state.getSampleTime() * 2.0, 0.0, 0.0, 0.0, 0.0, false);
+    joint_position_pid_.init(state.getSampleTime() * 1.0, 0.0, 0.0, 0.0, 0.0, false);
     pid_init_ = true;
   }
   joint_position_pid_.compute(command_target_.joint_position, state.getMeasuredJointPosition(),
@@ -67,7 +67,7 @@ void CommandInterface::get_torque_command(fri_command_t_ref command, const_fri_s
 
   // PID
   if (!pid_init_) {
-    joint_position_pid_.init(state.getSampleTime() * 2.0, 0.0, 0.0, 0.0, 0.0, false);
+    joint_position_pid_.init(state.getSampleTime() * 1.0, 0.0, 0.0, 0.0, 0.0, false);
     pid_init_ = true;
   }
   joint_position_pid_.compute(command_target_.joint_position, state.getMeasuredJointPosition(),
@@ -100,7 +100,7 @@ void CommandInterface::get_wrench_command(fri_command_t_ref command, const_fri_s
 
   // PID
   if (!pid_init_) {
-    joint_position_pid_.init(state.getSampleTime() * 2.0, 0.0, 0.0, 0.0, 0.0, false);
+    joint_position_pid_.init(state.getSampleTime() * 1.0, 0.0, 0.0, 0.0, 0.0, false);
     pid_init_ = true;
   }
   joint_position_pid_.compute(command_target_.joint_position, state.getMeasuredJointPosition(),
