@@ -5,34 +5,32 @@ controller_interface::CallbackReturn
 LBRHardwareInterface::on_init(const hardware_interface::HardwareInfo &system_info) {
   auto ret = hardware_interface::SystemInterface::on_init(system_info);
   if (ret != controller_interface::CallbackReturn::SUCCESS) {
-    RCLCPP_ERROR(app_node_->get_logger(), "Failed to initialize SystemInterface.");
+    RCLCPP_ERROR(app_node_ptr_->get_logger(), "Failed to initialize SystemInterface.");
     return ret;
   }
 
-  // read port_id and remote_host from lbr.ros2_control.xacro
+  // parameters from lbr.ros2_control.xacro
   port_id_ = std::stoul(info_.hardware_parameters["port_id"]);
   info_.hardware_parameters["remote_host"] == "INADDR_ANY"
       ? remote_host_ = NULL
       : remote_host_ = info_.hardware_parameters["remote_host"].c_str();
-  sample_time_ = std::stoi(info_.hardware_parameters["sample_time"]);
-  robot_name_ =
-      "_" + info_.hardware_parameters["robot_name"]; // prefix with underscore to hide node
+  rt_prio_ = std::stoul(info_.hardware_parameters["rt_prio"]);
 
   if (port_id_ < 30200 || port_id_ > 30209) {
-    RCLCPP_ERROR(app_node_->get_logger(), "Expected port_id in [30200, 30209]. Found %d.",
+    RCLCPP_ERROR(app_node_ptr_->get_logger(), "Expected port_id in [30200, 30209]. Found %d.",
                  port_id_);
     return controller_interface::CallbackReturn::ERROR;
   }
 
   // setup node
-  app_node_ = std::make_shared<rclcpp::Node>("app", robot_name_,
-                                             rclcpp::NodeOptions().use_intra_process_comms(true));
+  app_node_ptr_ = std::make_shared<rclcpp::Node>("app");
 
-  app_node_->declare_parameter<int>("port_id", port_id_);
-  app_node_->declare_parameter<std::string>("remote_host", remote_host_ ? remote_host_ : "");
-  app_node_->declare_parameter<std::string>("command_guard_variant", "default");
+  app_node_ptr_->declare_parameter<int>("port_id", port_id_);
+  app_node_ptr_->declare_parameter<std::string>("remote_host", remote_host_ ? remote_host_ : "");
+  app_node_ptr_->declare_parameter<std::string>("command_guard_variant", "default");
 
-  app_ = std::make_unique<lbr_fri_ros2::App>(app_node_);
+  client_ptr_ = std::make_shared<lbr_fri_ros2::Client>(app_node_ptr_);
+  app_ptr_ = std::make_unique<lbr_fri_ros2::App>(app_node_ptr_, client_ptr_);
 
   init_command_interfaces_();
   init_state_interfaces_();
@@ -53,21 +51,6 @@ LBRHardwareInterface::on_init(const hardware_interface::HardwareInfo &system_inf
   if (!verify_sensors_()) {
     return controller_interface::CallbackReturn::ERROR;
   }
-
-  if (!spawn_com_layer_()) {
-    return controller_interface::CallbackReturn::ERROR;
-  }
-
-  if (!spawn_clients_()) {
-    return controller_interface::CallbackReturn::ERROR;
-  }
-
-  node_thread_ = std::make_unique<std::thread>([this]() {
-    auto executor = std::make_shared<rclcpp::executors::StaticSingleThreadedExecutor>();
-    executor->add_node(app_node_);
-    executor->spin();
-    disconnect_();
-  });
 
   return controller_interface::CallbackReturn::SUCCESS;
 }
@@ -144,19 +127,14 @@ hardware_interface::return_type LBRHardwareInterface::prepare_command_mode_switc
 
 controller_interface::CallbackReturn
 LBRHardwareInterface::on_activate(const rclcpp_lifecycle::State &) {
-  if (!connect_()) {
-    RCLCPP_ERROR(app_node_->get_logger(), "Failed to connect to robot.");
-    return controller_interface::CallbackReturn::ERROR;
-  }
+  app_ptr_->open_udp_socket(port_id_, remote_host_);
+  app_ptr_->run(80);
   return controller_interface::CallbackReturn::SUCCESS;
 }
 
 controller_interface::CallbackReturn
 LBRHardwareInterface::on_deactivate(const rclcpp_lifecycle::State &) {
-  if (!disconnect_()) {
-    RCLCPP_ERROR(app_node_->get_logger(), "Failed to disconnect from robot.");
-    return controller_interface::CallbackReturn::ERROR;
-  }
+
   return controller_interface::CallbackReturn::SUCCESS;
 }
 
@@ -164,9 +142,12 @@ hardware_interface::return_type LBRHardwareInterface::read(const rclcpp::Time & 
                                                            const rclcpp::Duration & /*period*/) {
   if (exit_commanding_active_(static_cast<KUKA::FRI::ESessionState>(hw_session_state_),
                               static_cast<KUKA::FRI::ESessionState>(lbr_state_.session_state))) {
-    RCLCPP_ERROR(app_node_->get_logger(), "LBR left COMMANDING_ACTIVE. Please re-run lbr_bringup.");
+    RCLCPP_ERROR(app_node_ptr_->get_logger(),
+                 "LBR left COMMANDING_ACTIVE. Please re-run lbr_bringup.");
     return hardware_interface::return_type::ERROR;
   }
+
+  lbr_state_ = client_ptr_->get_state_interface().get_state();
 
   hw_sample_time_ = lbr_state_.sample_time;
   hw_session_state_ = static_cast<double>(lbr_state_.session_state);
@@ -207,42 +188,7 @@ hardware_interface::return_type LBRHardwareInterface::write(const rclcpp::Time &
     return hardware_interface::return_type::OK;
   }
 
-  if (hw_client_command_mode_ == KUKA::FRI::EClientCommandMode::POSITION) {
-    if (std::any_of(hw_position_command_.cbegin(), hw_position_command_.cend(),
-                    [](const double &v) { return std::isnan(v); })) {
-      return hardware_interface::return_type::OK;
-    }
-    std::memcpy(lbr_command_.joint_position.data(), hw_position_command_.data(),
-                sizeof(double) * KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
-  }
-
-  if (hw_client_command_mode_ == KUKA::FRI::EClientCommandMode::TORQUE) {
-    if (std::any_of(hw_effort_command_.cbegin(), hw_effort_command_.cend(),
-                    [](const double &v) { return std::isnan(v); })) {
-      return hardware_interface::return_type::OK;
-    }
-    std::memcpy(lbr_command_.joint_position.data(), hw_position_command_.data(),
-                sizeof(double) * KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
-    std::memcpy(lbr_command_.torque.data(), hw_effort_command_.data(),
-                sizeof(double) * KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
-  }
-
-  lbr_command_pub_->publish(lbr_command_);
   return hardware_interface::return_type::OK;
-}
-
-template <typename ServiceT>
-bool LBRHardwareInterface::wait_for_service_(
-    const typename rclcpp::Client<ServiceT>::SharedPtr client, const uint8_t &attempts,
-    const std::chrono::seconds &timeout) {
-  bool spawned = false;
-  uint8_t attempt = 0;
-  while (attempt < attempts && !spawned && rclcpp::ok()) {
-    RCLCPP_INFO(app_node_->get_logger(), "Waiting for service %s...", client->get_service_name());
-    spawned = client->wait_for_service(timeout);
-    ++attempt;
-  }
-  return spawned;
 }
 
 void LBRHardwareInterface::init_command_interfaces_() {
@@ -277,7 +223,7 @@ void LBRHardwareInterface::init_state_interfaces_() {
 
 bool LBRHardwareInterface::verify_number_of_joints_() {
   if (info_.joints.size() != KUKA::FRI::LBRState::NUMBER_OF_JOINTS) {
-    RCLCPP_ERROR(app_node_->get_logger(), "Expected %d joints in URDF. Found %ld.",
+    RCLCPP_ERROR(app_node_ptr_->get_logger(), "Expected %d joints in URDF. Found %ld.",
                  KUKA::FRI::LBRState::NUMBER_OF_JOINTS, info_.joints.size());
     return false;
   }
@@ -289,7 +235,7 @@ bool LBRHardwareInterface::verify_joint_command_interfaces_() {
   for (auto &joint : info_.joints) {
     if (joint.command_interfaces.size() != LBR_FRI_COMMAND_INTERFACE_SIZE) {
       RCLCPP_ERROR(
-          app_node_->get_logger(),
+          app_node_ptr_->get_logger(),
           "Joint %s received invalid number of command interfaces. Received %ld, expected %d.",
           joint.name.c_str(), joint.command_interfaces.size(), LBR_FRI_COMMAND_INTERFACE_SIZE);
       return false;
@@ -297,7 +243,7 @@ bool LBRHardwareInterface::verify_joint_command_interfaces_() {
     for (auto &ci : joint.command_interfaces) {
       if (ci.name != hardware_interface::HW_IF_POSITION &&
           ci.name != hardware_interface::HW_IF_EFFORT) {
-        RCLCPP_ERROR(app_node_->get_logger(),
+        RCLCPP_ERROR(app_node_ptr_->get_logger(),
                      "Joint %s received invalid command interface: %s. Expected %s or %s.",
                      joint.name.c_str(), ci.name.c_str(), hardware_interface::HW_IF_POSITION,
                      hardware_interface::HW_IF_EFFORT);
@@ -313,7 +259,7 @@ bool LBRHardwareInterface::verify_joint_state_interfaces_() {
   for (auto &joint : info_.joints) {
     if (joint.state_interfaces.size() != LBR_FRI_STATE_INTERFACE_SIZE) {
       RCLCPP_ERROR(
-          app_node_->get_logger(),
+          app_node_ptr_->get_logger(),
           "Joint %s received invalid number of state interfaces. Received %ld, expected %d.",
           joint.name.c_str(), joint.state_interfaces.size(), LBR_FRI_STATE_INTERFACE_SIZE);
       return false;
@@ -325,7 +271,7 @@ bool LBRHardwareInterface::verify_joint_state_interfaces_() {
           si.name != HW_IF_EXTERNAL_TORQUE && si.name != HW_IF_IPO_JOINT_POSITION &&
           si.name != hardware_interface::HW_IF_VELOCITY) {
         RCLCPP_ERROR(
-            app_node_->get_logger(),
+            app_node_ptr_->get_logger(),
             "Joint %s received invalid state interface: %s. Expected %s, %s, %s, %s, %s, %s or %s.",
             joint.name.c_str(), si.name.c_str(), hardware_interface::HW_IF_POSITION,
             HW_IF_COMMANDED_JOINT_POSITION, hardware_interface::HW_IF_EFFORT,
@@ -341,14 +287,14 @@ bool LBRHardwareInterface::verify_joint_state_interfaces_() {
 bool LBRHardwareInterface::verify_sensors_() {
   // check lbr specific state interfaces
   if (info_.sensors.size() > 1) {
-    RCLCPP_ERROR(app_node_->get_logger(), "Expected 1 sensor, got %ld", info_.sensors.size());
+    RCLCPP_ERROR(app_node_ptr_->get_logger(), "Expected 1 sensor, got %ld", info_.sensors.size());
     return false;
   }
 
   // check all interfaces are defined in lbr.ros2_control.xacro
   const auto &lbr_fri_sensor = info_.sensors[0];
   if (lbr_fri_sensor.state_interfaces.size() != LBR_FRI_SENSOR_SIZE) {
-    RCLCPP_ERROR(app_node_->get_logger(),
+    RCLCPP_ERROR(app_node_ptr_->get_logger(),
                  "Sensor %s received invalid state interface. Received %ld, expected %d. ",
                  lbr_fri_sensor.name.c_str(), lbr_fri_sensor.state_interfaces.size(),
                  LBR_FRI_SENSOR_SIZE);
@@ -365,70 +311,12 @@ bool LBRHardwareInterface::verify_sensors_() {
         si.name != HW_IF_TIME_STAMP_NANO_SEC && si.name != HW_IF_COMMANDED_JOINT_POSITION &&
         si.name != HW_IF_COMMANDED_TORQUE && si.name != HW_IF_EXTERNAL_TORQUE &&
         si.name != HW_IF_IPO_JOINT_POSITION && si.name != HW_IF_TRACKING_PERFORMANCE) {
-      RCLCPP_ERROR(app_node_->get_logger(), "Sensor %s received invalid state interface %s.",
+      RCLCPP_ERROR(app_node_ptr_->get_logger(), "Sensor %s received invalid state interface %s.",
                    lbr_fri_sensor.name.c_str(), si.name.c_str());
 
       return false;
     }
   }
-  return true;
-}
-
-bool LBRHardwareInterface::spawn_com_layer_() {
-  if (!app_node_) {
-    printf("No node provided.\n");
-    return false;
-  }
-
-  try {
-    auto memory_strategy =
-        rclcpp::strategies::message_pool_memory_strategy::MessagePoolMemoryStrategy<
-            lbr_fri_msgs::msg::LBRState, 1>::make_shared();
-    lbr_state_sub_ = app_node_->create_subscription<lbr_fri_msgs::msg::LBRState>(
-        "state",
-        rclcpp::QoS(1)
-            .deadline(std::chrono::milliseconds(sample_time_))
-            .reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE),
-        std::bind(&LBRHardwareInterface::on_lbr_state_, this, std::placeholders::_1),
-        rclcpp::SubscriptionOptions(), memory_strategy);
-    lbr_command_pub_ = app_node_->create_publisher<lbr_fri_msgs::msg::LBRCommand>(
-        "command", rclcpp::QoS(1)
-                       .deadline(std::chrono::milliseconds(sample_time_))
-                       .reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE));
-  } catch (const std::exception &e) {
-    RCLCPP_ERROR(app_node_->get_logger(), "Failed to spawn real time layer.\n%s.", e.what());
-    return false;
-  }
-  return true;
-}
-
-bool LBRHardwareInterface::spawn_clients_() {
-  if (!app_node_) {
-    printf("No node provided.\n");
-    return false;
-  }
-
-  std::string app_connect_service_name = "connect";
-  app_connect_clt_ = app_node_->create_client<lbr_fri_msgs::srv::AppConnect>(
-      app_connect_service_name, rmw_qos_profile_services_default);
-  RCLCPP_INFO(app_node_->get_logger(), "Waiting for service %s to spawn...",
-              app_connect_service_name.c_str());
-  if (!wait_for_service_<lbr_fri_msgs::srv::AppConnect>(app_connect_clt_)) {
-    RCLCPP_ERROR(app_node_->get_logger(), "Failed.");
-    return false;
-  }
-  RCLCPP_INFO(app_node_->get_logger(), "Done.");
-
-  std::string app_disconnect_service_name = "disconnect";
-  app_disconnect_clt_ = app_node_->create_client<lbr_fri_msgs::srv::AppDisconnect>(
-      app_disconnect_service_name, rmw_qos_profile_services_default);
-  RCLCPP_INFO(app_node_->get_logger(), "Waiting for service %s to spawn...",
-              app_disconnect_service_name.c_str());
-  if (!wait_for_service_<lbr_fri_msgs::srv::AppDisconnect>(app_disconnect_clt_)) {
-    RCLCPP_ERROR(app_node_->get_logger(), "Failed.");
-    return false;
-  }
-  RCLCPP_INFO(app_node_->get_logger(), "Done.");
   return true;
 }
 
@@ -440,44 +328,6 @@ bool LBRHardwareInterface::exit_commanding_active_(
     return true;
   }
   return false;
-}
-
-bool LBRHardwareInterface::connect_() {
-  auto connect_request = std::make_shared<lbr_fri_msgs::srv::AppConnect::Request>();
-  connect_request->port_id = port_id_;
-  connect_request->remote_host = remote_host_ ? remote_host_ : "";
-  auto future = app_connect_clt_->async_send_request(connect_request);
-  auto status = future.wait_for(std::chrono::seconds(1));
-  if (status != std::future_status::ready) {
-    RCLCPP_ERROR(app_node_->get_logger(), "Failed to request connect service %s.",
-                 app_connect_clt_->get_service_name());
-    return false;
-  }
-  auto response = future.get();
-  if (!response->connected) {
-    RCLCPP_ERROR(app_node_->get_logger(), "Failed to connect.\n%s", response->message.c_str());
-  }
-  return response->connected;
-}
-
-bool LBRHardwareInterface::disconnect_() {
-  auto disconnect_request = std::make_shared<lbr_fri_msgs::srv::AppDisconnect::Request>();
-  auto future = app_disconnect_clt_->async_send_request(disconnect_request);
-  auto status = future.wait_for(std::chrono::seconds(1));
-  if (status != std::future_status::ready) {
-    RCLCPP_ERROR(app_node_->get_logger(), "Failed to request disconnect service %s.",
-                 app_disconnect_clt_->get_service_name());
-    return false;
-  }
-  auto response = future.get();
-  if (!response->disconnected) {
-    RCLCPP_ERROR(app_node_->get_logger(), "Failed to disconnect.\n%s", response->message.c_str());
-  }
-  return response->disconnected;
-}
-
-void LBRHardwareInterface::on_lbr_state_(const lbr_fri_msgs::msg::LBRState::SharedPtr lbr_state) {
-  lbr_state_ = *lbr_state;
 }
 
 double LBRHardwareInterface::time_stamps_to_sec_(const double &sec, const double &nano_sec) const {
