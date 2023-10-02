@@ -15,6 +15,7 @@
 #include "lbr_fri_msgs/srv/app_disconnect.hpp"
 #include "lbr_fri_ros2/app.hpp"
 #include "lbr_fri_ros2/client.hpp"
+#include "lbr_fri_ros2/enum_maps.hpp"
 
 namespace lbr_fri_ros2 {
 /**
@@ -39,6 +40,9 @@ public:
   rclcpp::node_interfaces::NodeBaseInterface::SharedPtr get_node_base_interface() const;
 
 protected:
+  void connect_(const int &port_id = 30200, const char *const remote_host = NULL,
+                const uint8_t &rt_prio = 80, const uint8_t &max_attempts = 5);
+
   // command buffer
   lbr_fri_msgs::msg::LBRCommand lbr_command_; /**< The command to be sent to the robot.*/
 
@@ -54,6 +58,7 @@ protected:
   on_position_command_(const lbr_fri_msgs::msg::LBRPositionCommand::SharedPtr lbr_position_command);
   void on_torque_command_(const lbr_fri_msgs::msg::LBRTorqueCommand::SharedPtr lbr_torque_command);
   void on_wrench_command_(const lbr_fri_msgs::msg::LBRWrenchCommand::SharedPtr lbr_wrench_command);
+  bool on_command_checks_(const int &expected_command_mode);
 
   // state publisher
   rclcpp::Publisher<lbr_fri_msgs::msg::LBRState>::SharedPtr

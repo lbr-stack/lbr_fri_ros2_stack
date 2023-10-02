@@ -87,12 +87,13 @@ void App::run(int rt_prio) {
     should_stop_ = false;
     bool success = true;
     while (rclcpp::ok() && success && !should_stop_) {
-      success = app_ptr_->step();
+      success = app_ptr_->step(); // TODO: blocks until robot heartbeat, stuck if port id mismatches
       if (client_ptr_->robotState().getSessionState() == KUKA::FRI::ESessionState::IDLE) {
         RCLCPP_INFO(logging_interface_ptr_->get_logger(), "LBR in session state idle, exiting.");
         break;
       }
     }
+    client_ptr_->get_state_interface().uninitialize();
     RCLCPP_INFO(logging_interface_ptr_->get_logger(), "Exiting run thread.");
   });
 }
