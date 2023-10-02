@@ -199,11 +199,11 @@ void AppComponent::on_app_disconnect_(
   RCLCPP_INFO(app_node_->get_logger(), "Disconnecting from robot via service.");
   app_ptr_->stop_run();
   response->disconnected = app_ptr_->close_udp_socket();
-  state_pub_timer_.reset(nullptr);
-  state_pub_.reset(nullptr);
-  position_command_sub_.reset(nullptr);
-  torque_command_sub_.reset(nullptr);
-  wrench_command_sub_.reset(nullptr);
+  state_pub_timer_.reset();
+  state_pub_.reset();
+  position_command_sub_.reset();
+  torque_command_sub_.reset();
+  wrench_command_sub_.reset();
   response->message = response->disconnected ? "Robot disconnected." : "Failed.";
   RCLCPP_INFO(app_node_->get_logger(), response->message.c_str());
 }
