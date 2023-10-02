@@ -17,7 +17,8 @@ Client::Client(const rclcpp::Node::SharedPtr node_ptr)
 
 void Client::onStateChange(KUKA::FRI::ESessionState old_state, KUKA::FRI::ESessionState new_state) {
   RCLCPP_INFO(logging_interface_ptr_->get_logger(), "LBR switched from %s to %s.",
-              KUKA_FRI_STATE_MAP[old_state].c_str(), KUKA_FRI_STATE_MAP[new_state].c_str());
+              EnumMaps::session_state_map(old_state).c_str(),
+              EnumMaps::session_state_map(new_state).c_str());
   command_interface_.init_command(robotState());
 }
 

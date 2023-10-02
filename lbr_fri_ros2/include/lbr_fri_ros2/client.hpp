@@ -2,7 +2,6 @@
 #define LBR_FRI_ROS2__CLIENT_HPP_
 
 #include <cstring>
-#include <map>
 #include <memory>
 #include <string>
 
@@ -11,6 +10,7 @@
 #include "friLBRClient.h"
 
 #include "lbr_fri_ros2/command_interface.hpp"
+#include "lbr_fri_ros2/enum_maps.hpp"
 #include "lbr_fri_ros2/state_interface.hpp"
 
 namespace lbr_fri_ros2 {
@@ -36,15 +36,6 @@ protected:
   StateInterface state_interface_;
 
   bool open_loop_;
-
-private:
-  std::map<int, std::string> KUKA_FRI_STATE_MAP{
-      {KUKA::FRI::ESessionState::IDLE, "IDLE"},
-      {KUKA::FRI::ESessionState::MONITORING_WAIT, "MONITORING_WAIT"},
-      {KUKA::FRI::ESessionState::MONITORING_READY, "MONITORING_READY"},
-      {KUKA::FRI::ESessionState::COMMANDING_WAIT, "COMMANDING_WAIT"},
-      {KUKA::FRI::ESessionState::COMMANDING_ACTIVE, "COMMANDING_ACTIVE"},
-  };
 };
 } // end of namespace lbr_fri_ros2
 #endif // LBR_FRI_ROS2__CLIENT_HPP_
