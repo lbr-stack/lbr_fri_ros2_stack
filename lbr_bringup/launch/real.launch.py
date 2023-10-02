@@ -8,21 +8,21 @@ from launch.substitutions import AndSubstitution, LaunchConfiguration, NotSubsti
 
 from lbr_bringup import LBRMoveGroupMixin
 from lbr_description import LBRDescriptionMixin, RVizMixin
-from lbr_ros2_control import LBRHardwareInterfaceMixin
+from lbr_ros2_control import LBRSystemInterfaceMixin
 
 
 def launch_setup(context: LaunchContext) -> List[LaunchDescriptionEntity]:
     ld = LaunchDescription()
 
     robot_description = LBRDescriptionMixin.param_robot_description(sim=False)
-    ros2_control_node = LBRHardwareInterfaceMixin.node_ros2_control(
+    ros2_control_node = LBRSystemInterfaceMixin.node_ros2_control(
         robot_description=robot_description
     )
     ld.add_action(ros2_control_node)
 
     # joint state broad caster and controller on ros2 control node start
-    joint_state_broadcaster = LBRHardwareInterfaceMixin.node_joint_state_broadcaster()
-    controller = LBRHardwareInterfaceMixin.node_controller()
+    joint_state_broadcaster = LBRSystemInterfaceMixin.node_joint_state_broadcaster()
+    controller = LBRSystemInterfaceMixin.node_controller()
 
     controller_event_handler = RegisterEventHandler(
         OnProcessStart(
@@ -33,7 +33,7 @@ def launch_setup(context: LaunchContext) -> List[LaunchDescriptionEntity]:
     ld.add_action(controller_event_handler)
 
     # robot state publisher on joint state broadcaster spawn exit
-    robot_state_publisher = LBRHardwareInterfaceMixin.node_robot_state_publisher(
+    robot_state_publisher = LBRSystemInterfaceMixin.node_robot_state_publisher(
         robot_description=robot_description, use_sim_time=False, frame_prefix=""
     )
     robot_state_publisher_event_handler = RegisterEventHandler(
@@ -119,8 +119,8 @@ def generate_launch_description() -> LaunchDescription:
             name="rviz", default_value="true", description="Whether to launch RViz."
         )
     )
-    ld.add_action(LBRHardwareInterfaceMixin.arg_ctrl_cfg_pkg())
-    ld.add_action(LBRHardwareInterfaceMixin.arg_ctrl_cfg())
-    ld.add_action(LBRHardwareInterfaceMixin.arg_ctrl())
+    ld.add_action(LBRSystemInterfaceMixin.arg_ctrl_cfg_pkg())
+    ld.add_action(LBRSystemInterfaceMixin.arg_ctrl_cfg())
+    ld.add_action(LBRSystemInterfaceMixin.arg_ctrl())
     ld.add_action(OpaqueFunction(function=launch_setup))
     return ld

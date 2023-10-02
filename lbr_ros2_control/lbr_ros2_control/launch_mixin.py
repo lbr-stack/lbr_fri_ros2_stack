@@ -6,7 +6,7 @@ from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 
 
-class LBRHardwareInterfaceMixin:
+class LBRSystemInterfaceMixin:
     @staticmethod
     def arg_ctrl_cfg_pkg() -> DeclareLaunchArgument:
         return DeclareLaunchArgument(
