@@ -21,6 +21,10 @@ LBRSystemInterface::on_init(const hardware_interface::HardwareInfo &system_info)
                  port_id_);
     return controller_interface::CallbackReturn::ERROR;
   }
+  std::transform(info_.hardware_parameters["open_loop"].begin(),
+                 info_.hardware_parameters["open_loop"].end(),
+                 info_.hardware_parameters["open_loop"].begin(), ::tolower);
+  open_loop_ = info_.hardware_parameters["open_loop"] == "true";
 
   // setup node
   app_node_ptr_ = std::make_shared<rclcpp::Node>("app");
@@ -28,6 +32,7 @@ LBRSystemInterface::on_init(const hardware_interface::HardwareInfo &system_info)
   app_node_ptr_->declare_parameter<int>("port_id", port_id_);
   app_node_ptr_->declare_parameter<std::string>("remote_host", remote_host_ ? remote_host_ : "");
   app_node_ptr_->declare_parameter<std::string>("command_guard_variant", "default");
+  app_node_ptr_->declare_parameter<bool>("open_loop", open_loop_);
 
   client_ptr_ = std::make_shared<lbr_fri_ros2::Client>(app_node_ptr_);
   app_ptr_ = std::make_unique<lbr_fri_ros2::App>(app_node_ptr_, client_ptr_);

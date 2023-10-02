@@ -116,6 +116,7 @@ protected:
   int32_t port_id_;
   const char *remote_host_;
   int32_t rt_prio_;
+  bool open_loop_;
 };
 } // end of namespace lbr_ros2_control
 #endif // LBR_ROS2_CONTROL__LBR_HARDWARE_INTERFACE_HPP_
