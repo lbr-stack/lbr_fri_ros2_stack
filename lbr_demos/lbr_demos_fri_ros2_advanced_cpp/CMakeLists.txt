@@ -20,34 +20,42 @@ find_package(lbr_fri_ros2 REQUIRED)
 find_package(lbr_fri_msgs REQUIRED)
 find_package(orocos_kdl REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(rclcpp_components REQUIRED)
 
-add_executable(admittance_control_node src/admittance_control_node.cpp)
+# admittance control node
+add_library(admittance_control_component
+  SHARED
+    src/admittance_control_node.cpp
+)
+
+target_include_directories(admittance_control_component
+  PRIVATE src
+)
+
 ament_target_dependencies(
-  admittance_control_node
+  admittance_control_component
   Eigen3
   kdl_parser
   lbr_fri_ros2
   lbr_fri_msgs
   orocos_kdl
   rclcpp
+  rclcpp_components
 )
 
-target_link_libraries(admittance_control_node
+target_link_libraries(admittance_control_component
   FRIClient::FRIClient
 )
 
-target_include_directories(admittance_control_node
-  PRIVATE src
+rclcpp_components_register_node(admittance_control_component
+  PLUGIN lbr_fri_ros2::AdmittanceControlNode
+  EXECUTABLE admittance_control_node
 )
 
 install(
-  TARGETS admittance_control_node
-  DESTINATION lib/${PROJECT_NAME}
-)
-
-install(
-  DIRECTORY launch
-  DESTINATION share/${PROJECT_NAME}
+  TARGETS admittance_control_component
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION lib/lbr_demos_fri_ros2_advanced_cpp
 )
 
 ament_package()

@@ -9,10 +9,11 @@
 #include "admittance_controller.hpp"
 #include "damped_least_squares.hpp"
 
+namespace lbr_fri_ros2 {
 class AdmittanceControlNode : public rclcpp::Node {
 public:
-  AdmittanceControlNode(const std::string &node_name, const rclcpp::NodeOptions &options)
-      : rclcpp::Node(node_name, options) {
+  AdmittanceControlNode(const rclcpp::NodeOptions &options)
+      : rclcpp::Node("admittance_control_node", options) {
     this->declare_parameter<std::string>("robot_description");
     this->declare_parameter<std::string>("base_link", "link_0");
     this->declare_parameter<std::string>("end_effector_link", "link_ee");
@@ -64,23 +65,8 @@ protected:
 
   std::unique_ptr<AdmittanceController> admittance_controller_;
 };
+} // end of namespace lbr_fri_ros2
 
-int main(int argc, char **argv) {
-  rclcpp::init(argc, argv);
+#include "rclcpp_components/register_node_macro.hpp"
 
-  auto executor = std::make_shared<rclcpp::executors::StaticSingleThreadedExecutor>();
-
-  auto app_node = std::make_shared<rclcpp::Node>(
-      "app", "lbr", rclcpp::NodeOptions().use_intra_process_comms(true));
-
-  auto app = lbr_fri_ros2::App(app_node);
-
-  auto admittance_control_node = std::make_shared<AdmittanceControlNode>(
-      "admittance_control_node", rclcpp::NodeOptions().use_intra_process_comms(true));
-
-  executor->add_node(app_node);
-  executor->add_node(admittance_control_node);
-  executor->spin();
-
-  return 0;
-}
+RCLCPP_COMPONENTS_REGISTER_NODE(lbr_fri_ros2::AdmittanceControlNode)

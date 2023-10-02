@@ -16,6 +16,7 @@
 
 #include "damped_least_squares.hpp"
 
+namespace lbr_fri_ros2 {
 class AdmittanceController {
   using JointVector = Eigen::Vector<double, KUKA::FRI::LBRState::NUMBER_OF_JOINTS>;
   using CartesianVector = Eigen::Vector<double, 6>;
@@ -24,9 +25,9 @@ public:
   AdmittanceController(const std::string &robot_description,
                        const std::string &base_link = "link_0",
                        const std::string &end_effector_link = "link_ee",
-                       const CartesianVector &f_ext_th = {4., 4., 4., 0.5, 0.5, 0.5},
+                       const CartesianVector &f_ext_th = {2., 2., 2., 0.5, 0.5, 0.5},
                        const JointVector &dq_gains = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0},
-                       const CartesianVector &dx_gains = {1.5, 1.5, 1.5, 20., 40., 60.})
+                       const CartesianVector &dx_gains = {1.0, 1.0, 1.0, 20., 40., 80.})
       : dq_gains_(dq_gains), dx_gains_(dx_gains), f_ext_th_(f_ext_th) {
     if (!kdl_parser::treeFromString(robot_description, tree_)) {
       throw std::runtime_error("Failed to construct kdl tree from robot description.");
@@ -85,4 +86,5 @@ protected:
   CartesianVector f_ext_;
   CartesianVector f_ext_th_;
 };
+} // end of namespace lbr_fri_ros2
 #endif // LBR_DEMOS_FRI_ROS2_ADVANCED_CPP__ADMITTANCE_CONTROLLER_HPP_
