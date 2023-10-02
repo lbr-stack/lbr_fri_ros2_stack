@@ -32,9 +32,9 @@ LBRSystemInterface::on_init(const hardware_interface::HardwareInfo &system_info)
   client_ptr_ = std::make_shared<lbr_fri_ros2::Client>(app_node_ptr_);
   app_ptr_ = std::make_unique<lbr_fri_ros2::App>(app_node_ptr_, client_ptr_);
 
-  init_command_interfaces_();
-  init_state_interfaces_();
-  init_last_hw_states_();
+  nan_command_interfaces_();
+  nan_state_interfaces_();
+  nan_last_hw_states_();
 
   if (!verify_number_of_joints_()) {
     return controller_interface::CallbackReturn::ERROR;
@@ -118,34 +118,60 @@ std::vector<hardware_interface::CommandInterface> LBRSystemInterface::export_com
   return command_interfaces;
 }
 
-hardware_interface::return_type
-LBRSystemInterface::prepare_command_mode_switch(const std::vector<std::string> & /*start_interfaces*/,
-                                             const std::vector<std::string> & /*stop_interfaces*/) {
+hardware_interface::return_type LBRSystemInterface::prepare_command_mode_switch(
+    const std::vector<std::string> & /*start_interfaces*/,
+    const std::vector<std::string> & /*stop_interfaces*/) {
   return hardware_interface::return_type::OK;
 }
 
-controller_interface::CallbackReturn LBRSystemInterface::on_activate(const rclcpp_lifecycle::State &) {
-  app_ptr_->open_udp_socket(port_id_, remote_host_);
-  app_ptr_->run(80);
+controller_interface::CallbackReturn
+LBRSystemInterface::on_activate(const rclcpp_lifecycle::State &) {
+  if (!client_ptr_) {
+    RCLCPP_ERROR(app_node_ptr_->get_logger(), "Client not configured.");
+    return controller_interface::CallbackReturn::ERROR;
+  }
+  if (!app_ptr_->open_udp_socket(port_id_, remote_host_)) {
+    return controller_interface::CallbackReturn::ERROR;
+  }
+  app_ptr_->run(rt_prio_);
+  uint8_t attempt = 0;
+  uint8_t max_attempts = 10;
+  while (!client_ptr_->get_state_interface().is_initialized() && rclcpp::ok()) {
+    RCLCPP_INFO(app_node_ptr_->get_logger(), "Waiting for robot heartbeat %d/%d.", attempt + 1,
+                max_attempts);
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+    if (++attempt >= max_attempts) {
+      app_ptr_->close_udp_socket(); // hard close as run gets stuck
+      RCLCPP_ERROR(app_node_ptr_->get_logger(), "Failed to connect to robot on max attempts.");
+      return controller_interface::CallbackReturn::ERROR;
+    }
+  }
+  RCLCPP_INFO(app_node_ptr_->get_logger(), "Robot connected.");
+  RCLCPP_INFO(app_node_ptr_->get_logger(), "Control mode: %s.",
+              lbr_fri_ros2::EnumMaps::control_mode_map(
+                  client_ptr_->get_state_interface().get_state().control_mode)
+                  .c_str());
+  RCLCPP_INFO(app_node_ptr_->get_logger(), "Sample time: %.3f s.",
+              client_ptr_->get_state_interface().get_state().sample_time);
   return controller_interface::CallbackReturn::SUCCESS;
 }
 
 controller_interface::CallbackReturn
 LBRSystemInterface::on_deactivate(const rclcpp_lifecycle::State &) {
-
+  app_ptr_->stop_run();
+  app_ptr_->close_udp_socket();
   return controller_interface::CallbackReturn::SUCCESS;
 }
 
 hardware_interface::return_type LBRSystemInterface::read(const rclcpp::Time & /*time*/,
-                                                      const rclcpp::Duration & /*period*/) {
+                                                         const rclcpp::Duration & /*period*/) {
+  lbr_state_ = client_ptr_->get_state_interface().get_state();
   if (exit_commanding_active_(static_cast<KUKA::FRI::ESessionState>(hw_session_state_),
                               static_cast<KUKA::FRI::ESessionState>(lbr_state_.session_state))) {
     RCLCPP_ERROR(app_node_ptr_->get_logger(),
                  "LBR left COMMANDING_ACTIVE. Please re-run lbr_bringup.");
     return hardware_interface::return_type::ERROR;
   }
-
-  lbr_state_ = client_ptr_->get_state_interface().get_state();
 
   hw_sample_time_ = lbr_state_.sample_time;
   hw_session_state_ = static_cast<double>(lbr_state_.session_state);
@@ -180,21 +206,29 @@ hardware_interface::return_type LBRSystemInterface::read(const rclcpp::Time & /*
 }
 
 hardware_interface::return_type LBRSystemInterface::write(const rclcpp::Time & /*time*/,
-                                                       const rclcpp::Duration & /*period*/) {
-
+                                                          const rclcpp::Duration & /*period*/) {
   if (hw_session_state_ != KUKA::FRI::COMMANDING_ACTIVE) {
     return hardware_interface::return_type::OK;
   }
-
-  return hardware_interface::return_type::OK;
+  if (hw_client_command_mode_ == KUKA::FRI::EClientCommandMode::POSITION) {
+    if (std::any_of(hw_position_command_.cbegin(), hw_position_command_.cend(),
+                    [](const double &v) { return std::isnan(v); })) {
+      return hardware_interface::return_type::OK;
+    }
+    std::memcpy(lbr_command_.joint_position.data(), hw_position_command_.data(),
+                sizeof(double) * KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
+    client_ptr_->get_command_interface().set_command_target(lbr_command_);
+    return hardware_interface::return_type::OK;
+  }
+  return hardware_interface::return_type::ERROR;
 }
 
-void LBRSystemInterface::init_command_interfaces_() {
+void LBRSystemInterface::nan_command_interfaces_() {
   hw_position_command_.fill(std::numeric_limits<double>::quiet_NaN());
   hw_effort_command_.fill(std::numeric_limits<double>::quiet_NaN());
 }
 
-void LBRSystemInterface::init_state_interfaces_() {
+void LBRSystemInterface::nan_state_interfaces_() {
   hw_sample_time_ = std::numeric_limits<double>::quiet_NaN();
   hw_session_state_ = std::numeric_limits<double>::quiet_NaN();
   hw_connection_quality_ = std::numeric_limits<double>::quiet_NaN();
@@ -332,7 +366,7 @@ double LBRSystemInterface::time_stamps_to_sec_(const double &sec, const double &
   return sec + nano_sec / 1.e9;
 }
 
-void LBRSystemInterface::init_last_hw_states_() {
+void LBRSystemInterface::nan_last_hw_states_() {
   last_hw_position_.fill(std::numeric_limits<double>::quiet_NaN());
   last_hw_time_stamp_sec_ = std::numeric_limits<double>::quiet_NaN();
   last_hw_time_stamp_nano_sec_ = std::numeric_limits<double>::quiet_NaN();

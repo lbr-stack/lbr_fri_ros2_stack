@@ -22,6 +22,7 @@
 #include "lbr_fri_msgs/msg/lbr_state.hpp"
 #include "lbr_fri_ros2/app.hpp"
 #include "lbr_fri_ros2/client.hpp"
+#include "lbr_fri_ros2/enum_maps.hpp"
 #include "lbr_ros2_control/lbr_system_interface_type_values.hpp"
 
 namespace lbr_ros2_control {
@@ -51,8 +52,8 @@ public:
 
 protected:
   // setup
-  void init_command_interfaces_();
-  void init_state_interfaces_();
+  void nan_command_interfaces_();
+  void nan_state_interfaces_();
   bool verify_number_of_joints_();
   bool verify_joint_command_interfaces_();
   bool verify_joint_state_interfaces_();
@@ -98,7 +99,7 @@ protected:
 
   // comput velocity for state interface
   double time_stamps_to_sec_(const double &sec, const double &nano_sec) const;
-  void init_last_hw_states_();
+  void nan_last_hw_states_();
   void update_last_hw_states_();
   void compute_hw_velocity_();
 

@@ -17,7 +17,7 @@ CommandInterface::CommandInterface(const rclcpp::Node::SharedPtr node_ptr)
               command_guard_variant_param.as_string().c_str());
   command_guard_ = command_guard_factory(logging_interface_ptr_, parameters_interface_ptr_,
                                          command_guard_variant_param.as_string());
-  joint_position_pid_.init(0.01, 0.0, 0.0, 0.0, 0.0, false);
+  joint_position_pid_.init(0.02, 0.0, 0.0, 0.0, 0.0, false);
 };
 
 void CommandInterface::get_joint_position_command(fri_command_t_ref command,
