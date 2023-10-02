@@ -55,7 +55,7 @@ void AppComponent::connect_(const int &port_id, const char *const remote_host,
       app_node_ptr_->get_logger(), "Control mode: %s.",
       EnumMaps::control_mode_map(client_ptr_->get_state_interface().get_state().control_mode)
           .c_str());
-  RCLCPP_INFO(app_node_ptr_->get_logger(), "Sample time: %f s.",
+  RCLCPP_INFO(app_node_ptr_->get_logger(), "Sample time: %.3f s.",
               client_ptr_->get_state_interface().get_state().sample_time);
 
   // publisher

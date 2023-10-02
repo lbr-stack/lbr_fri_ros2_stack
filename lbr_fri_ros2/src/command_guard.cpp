@@ -35,10 +35,12 @@ CommandGuard::CommandGuard(
       max_position_[jnt_cnt] = joint->limits->upper;
       max_velocity_[jnt_cnt] = joint->limits->velocity;
       max_torque_[jnt_cnt] = joint->limits->effort;
-      RCLCPP_INFO(logging_interface_ptr_->get_logger(),
-                  "Joint %s limits: Position [%f, %f] rad, velocity %f rad/s, torque %f Nm.",
-                  name_joint_pair.first.c_str(), min_position_[jnt_cnt], max_position_[jnt_cnt],
-                  max_velocity_[jnt_cnt], max_torque_[jnt_cnt]);
+      RCLCPP_INFO(
+          logging_interface_ptr_->get_logger(),
+          "Joint %s limits: Position [%.1f, %.1f] deg, velocity %.1f deg/s, torque %.1f Nm.",
+          name_joint_pair.first.c_str(), min_position_[jnt_cnt] * (180. / M_PI),
+          max_position_[jnt_cnt] * (180. / M_PI), max_velocity_[jnt_cnt] * (180. / M_PI),
+          max_torque_[jnt_cnt]);
       ++jnt_cnt;
     }
   }
