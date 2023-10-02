@@ -20,7 +20,7 @@ class LBRFRIROS2Mixin:
         return DeclareLaunchArgument(
             name="open_loop",
             default_value="true",
-            description="Open loop control. Works best for LBRs. Should only be set to false by experiences users.",
+            description="Open loop control. Works best for LBRs. Should only be set to false by experienced users.",
         )
 
     @staticmethod
