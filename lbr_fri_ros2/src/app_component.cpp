@@ -40,8 +40,8 @@ void AppComponent::connect_(const int &port_id, const char *const remote_host,
   app_ptr_->run(rt_prio);
   uint8_t attempt = 0;
   while (!client_ptr_->get_state_interface().is_initialized() && rclcpp::ok()) {
-    RCLCPP_INFO(app_node_ptr_->get_logger(), "Waiting for robot heartbeat %d/%d.", attempt + 1,
-                max_attempts);
+    RCLCPP_INFO(app_node_ptr_->get_logger(), "Waiting for robot heartbeat [%d/%d]. Port ID: %d.",
+                attempt + 1, max_attempts, port_id);
     std::this_thread::sleep_for(std::chrono::seconds(1));
     if (++attempt >= max_attempts) {
       app_ptr_->close_udp_socket();

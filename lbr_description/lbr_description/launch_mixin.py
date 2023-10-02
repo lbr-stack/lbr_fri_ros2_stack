@@ -52,20 +52,23 @@ class LBRDescriptionMixin:
     @staticmethod
     def param_robot_description(
         model: Optional[Union[LaunchConfiguration, str]] = None,
-        robot_name: Optional[Union[LaunchConfiguration, str]] = None,
-        sim: Optional[Union[LaunchConfiguration, bool]] = None,
         base_frame: Optional[Union[LaunchConfiguration, str]] = None,
+        robot_name: Optional[Union[LaunchConfiguration, str]] = None,
+        port_id: Optional[Union[LaunchConfiguration, str]] = None,
+        sim: Optional[Union[LaunchConfiguration, bool]] = None,
     ) -> Dict[str, str]:
         if model is None:
             model = LaunchConfiguration("model", default="iiwa7")
+        if base_frame is None:
+            base_frame = LaunchConfiguration("base_frame", default="world")
         if robot_name is None:
             robot_name = LaunchConfiguration("robot_name", default="lbr")
+        if port_id is None:
+            port_id = LaunchConfiguration("port_id", default="30200")
         if sim is None:
             sim = LaunchConfiguration("sim", default="true")
         if type(sim) is bool:
             sim = "true" if sim else "false"
-        if base_frame is None:
-            base_frame = LaunchConfiguration("base_frame", default="world")
         robot_description = {
             "robot_description": Command(
                 [
@@ -80,12 +83,14 @@ class LBRDescriptionMixin:
                         ]
                     ),
                     ".urdf.xacro",
-                    " robot_name:=",
-                    robot_name,
-                    " sim:=",
-                    sim,
                     " base_frame:=",
                     base_frame,
+                    " robot_name:=",
+                    robot_name,
+                    " port_id:=",
+                    port_id,
+                    " sim:=",
+                    sim,
                 ]
             )
         }
@@ -117,6 +122,15 @@ class LBRDescriptionMixin:
         )
 
     @staticmethod
+    def arg_port_id() -> DeclareLaunchArgument:
+        return DeclareLaunchArgument(
+            name="port_id",
+            default_value="30200",
+            description="Port ID of the FRI communication. Valid in range [30200, 30209].\n"
+            "\tUsefull in multi-robot setups.",
+        )
+
+    @staticmethod
     def arg_sim() -> DeclareLaunchArgument:
         return DeclareLaunchArgument(
             name="sim",
@@ -131,6 +145,10 @@ class LBRDescriptionMixin:
     @staticmethod
     def param_robot_name() -> Dict[str, LaunchConfiguration]:
         return {"robot_name": LaunchConfiguration("robot_name", default="lbr")}
+
+    @staticmethod
+    def param_port_id() -> Dict[str, LaunchConfiguration]:
+        return {"port_id": LaunchConfiguration("port_id", default="30200")}
 
     @staticmethod
     def param_sim() -> Dict[str, LaunchConfiguration]:
