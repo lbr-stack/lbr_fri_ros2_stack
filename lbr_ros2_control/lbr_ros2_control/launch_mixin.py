@@ -37,7 +37,8 @@ class LBRSystemInterfaceMixin:
         return DeclareLaunchArgument(
             name="frame_prefix",
             default_value="",
-            description="Prefix for the tf frame names. Useful for multi-robot setups. E.g. 'robot1/'",
+            description="Prefix for the tf frame names. Useful for multi-robot setups.\n"
+            "\tE.g. 'robot1/'. The trailing slash is important!",
         )
 
     @staticmethod
@@ -122,7 +123,7 @@ class LBRSystemInterfaceMixin:
             parameters=[
                 robot_description,
                 {"use_sim_time": use_sim_time},
-                {"frame_prefix": frame_prefix},
+                frame_prefix,
             ],
             **kwargs
         )
