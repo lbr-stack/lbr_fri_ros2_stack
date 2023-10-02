@@ -58,4 +58,9 @@ install(
   RUNTIME DESTINATION lib/lbr_demos_fri_ros2_advanced_cpp
 )
 
+install(
+  DIRECTORY config launch
+  DESTINATION share/lbr_demos_fri_ros2_advanced_cpp
+)
+
 ament_package()

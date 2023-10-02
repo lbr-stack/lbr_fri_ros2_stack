@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <vector>
 
 #include "rclcpp/rclcpp.hpp"
 
@@ -17,11 +18,17 @@ public:
     this->declare_parameter<std::string>("robot_description");
     this->declare_parameter<std::string>("base_link", "link_0");
     this->declare_parameter<std::string>("end_effector_link", "link_ee");
+    this->declare_parameter<std::vector<double>>("f_ext_th", {2., 2., 2., 0.5, 0.5, 0.5});
+    this->declare_parameter<std::vector<double>>("dq_gains", {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0});
+    this->declare_parameter<std::vector<double>>("dx_gains", {2.0, 2.0, 2.0, 10., 10., 10.});
 
-    admittance_controller_ = std::make_unique<AdmittanceController>(
-        this->get_parameter("robot_description").as_string(),
-        this->get_parameter("base_link").as_string(),
-        this->get_parameter("end_effector_link").as_string());
+    admittance_controller_ =
+        std::make_unique<AdmittanceController>(this->get_parameter("robot_description").as_string(),
+                                               this->get_parameter("base_link").as_string(),
+                                               this->get_parameter("end_effector_link").as_string(),
+                                               this->get_parameter("f_ext_th").as_double_array(),
+                                               this->get_parameter("dq_gains").as_double_array(),
+                                               this->get_parameter("dx_gains").as_double_array());
 
     lbr_position_command_pub_ =
         create_publisher<lbr_fri_msgs::msg::LBRPositionCommand>("/lbr/command/position", 1);
