@@ -301,7 +301,7 @@
 
         <xacro:lbr_gazebo robot_name="${robot_name}" />
         <!-- TODO: move modes to args, decouple urdf/gazebo/controls -->
-        <xacro:lbr_hardware_interface
+        <xacro:lbr_system_interface
             joint_0_position_limit="${joint_0_position_limit * PI / 180}"
             joint_1_position_limit="${joint_1_position_limit * PI / 180}"
             joint_2_position_limit="${joint_2_position_limit * PI / 180}"

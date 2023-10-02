@@ -29,7 +29,7 @@ find_package(FRIClient REQUIRED)
 add_library(
   ${PROJECT_NAME}
   SHARED
-  src/lbr_hardware_interface.cpp
+  src/lbr_system_interface.cpp
 )
 
 # Add include directories for target
@@ -58,7 +58,7 @@ target_link_libraries(${PROJECT_NAME}
   FRIClient::FRIClient
 )
 
-pluginlib_export_plugin_description_file(hardware_interface lbr_hardware_interface.xml)
+pluginlib_export_plugin_description_file(hardware_interface lbr_system_interface.xml)
 
 # Export for downstream usage, see https://docs.ros.org/en/foxy/Guides/Ament-CMake-Documentation.html
 ament_export_targets(

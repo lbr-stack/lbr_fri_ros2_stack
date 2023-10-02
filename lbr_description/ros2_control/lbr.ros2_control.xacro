@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
-    <xacro:macro name="lbr_hardware_interface"
+    <xacro:macro name="lbr_system_interface"
         params="
         joint_0_position_limit
         joint_1_position_limit
@@ -13,7 +13,7 @@
         sim:=^|true port_id:=^|30200 remote_host:=^|INADDR_ANY rt_prio:=^|80">
         <!-- arg for control mode -->
 
-        <ros2_control name="lbr_hardware_interface" type="system">
+        <ros2_control name="lbr_system_interface" type="system">
             <!-- define hardware including parameters, also gazebo -->
             <xacro:if value="${sim}">
                 <hardware>
@@ -22,7 +22,7 @@
             </xacro:if>
             <xacro:unless value="${sim}">
                 <hardware>
-                    <plugin>lbr_ros2_control::SystemInterface</plugin>
+                    <plugin>lbr_ros2_control::LBRSystemInterface</plugin>
                     <param name="port_id">${port_id}</param>
                     <param name="remote_host">${remote_host}</param>
                     <param name="rt_prio">${rt_prio}</param>

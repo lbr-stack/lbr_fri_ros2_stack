@@ -22,12 +22,12 @@
 #include "lbr_fri_msgs/msg/lbr_state.hpp"
 #include "lbr_fri_ros2/app.hpp"
 #include "lbr_fri_ros2/client.hpp"
-#include "lbr_ros2_control/lbr_hardware_interface_type_values.hpp"
+#include "lbr_ros2_control/lbr_system_interface_type_values.hpp"
 
 namespace lbr_ros2_control {
-class SystemInterface : public hardware_interface::SystemInterface {
+class LBRSystemInterface : public hardware_interface::SystemInterface {
 public:
-  SystemInterface() = default;
+  LBRSystemInterface() = default;
 
   // hardware interface
   controller_interface::CallbackReturn
