@@ -66,13 +66,13 @@ class LBRJointTrajectoryExecutionerNode(Node):
 
 def main(args: list = None) -> None:
     rclpy.init(args=args)
-    lbr_joint_trajectory_executioner_node = LBRJointTrajectoryExecutionerNode(
-        "lbr_joint_trajectory_executioner_node"
+    joint_trajectory_executioner_node = LBRJointTrajectoryExecutionerNode(
+        "joint_trajectory_executioner_node"
     )
 
     # rotate odd joints
-    lbr_joint_trajectory_executioner_node.get_logger().info("Rotating odd joints.")
-    lbr_joint_trajectory_executioner_node.execute(
+    joint_trajectory_executioner_node.get_logger().info("Rotating odd joints.")
+    joint_trajectory_executioner_node.execute(
         [
             1.0,
             0.0,
@@ -85,8 +85,8 @@ def main(args: list = None) -> None:
     )
 
     # move to zero position
-    lbr_joint_trajectory_executioner_node.get_logger().info("Moving to zero position.")
-    lbr_joint_trajectory_executioner_node.execute(
+    joint_trajectory_executioner_node.get_logger().info("Moving to zero position.")
+    joint_trajectory_executioner_node.execute(
         [
             0.0,
             0.0,

@@ -73,12 +73,12 @@ protected:
 
 int main(int argc, char **argv) {
   rclcpp::init(argc, argv);
-  auto lbr_joint_trajectory_executioner_node =
-      std::make_shared<LBRJointTrajectoryExecutionerNode>("lbr_joint_trajectory_executioner_node");
+  auto joint_trajectory_executioner_node =
+      std::make_shared<LBRJointTrajectoryExecutionerNode>("joint_trajectory_executioner_node");
 
   // rotate odd joints
-  RCLCPP_INFO(lbr_joint_trajectory_executioner_node->get_logger(), "Rotating odd joints.");
-  lbr_joint_trajectory_executioner_node->execute({
+  RCLCPP_INFO(joint_trajectory_executioner_node->get_logger(), "Rotating odd joints.");
+  joint_trajectory_executioner_node->execute({
       1.0,
       0.0,
       1.0,
@@ -89,8 +89,8 @@ int main(int argc, char **argv) {
   });
 
   // move to zero position
-  RCLCPP_INFO(lbr_joint_trajectory_executioner_node->get_logger(), "Moving to zero position.");
-  lbr_joint_trajectory_executioner_node->execute({
+  RCLCPP_INFO(joint_trajectory_executioner_node->get_logger(), "Moving to zero position.");
+  joint_trajectory_executioner_node->execute({
       0.0,
       0.0,
       0.0,
