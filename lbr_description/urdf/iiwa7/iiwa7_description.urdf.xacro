@@ -310,8 +310,7 @@
             joint_5_position_limit="${joint_5_position_limit * PI / 180}"
             joint_6_position_limit="${joint_6_position_limit * PI / 180}"
             effort_limit="${effort_limit}"
-            sim="${sim}" remote_host="INADDR_ANY" port_id="30200"
-            robot_name="${robot_name}" />
+            sim="${sim}" remote_host="INADDR_ANY" port_id="30200" />
 
     </xacro:macro>
 </robot>
