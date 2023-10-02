@@ -6,13 +6,15 @@
     <!-- include the lbr med macro -->
     <xacro:include filename="$(find lbr_description)/urdf/med14/med14_description.urdf.xacro" />
 
-    <xacro:arg name="robot_name" default="lbr" />
-    <xacro:arg name="sim" default="true" />
     <xacro:arg name="base_frame" default="world" />
+    <xacro:arg name="robot_name" default="lbr" />
+    <xacro:arg name="port_id" default="30200" />
+    <xacro:arg name="sim" default="true" />
 
     <!-- fix to base_frame -->
     <link name="$(arg base_frame)" />
 
     <!-- med -->
-    <xacro:med14 base_frame="$(arg base_frame)" robot_name="$(arg robot_name)" sim="$(arg sim)" />
+    <xacro:med14 base_frame="$(arg base_frame)" robot_name="$(arg robot_name)"
+        port_id="$(arg port_id)" sim="$(arg sim)" />
 </robot>
