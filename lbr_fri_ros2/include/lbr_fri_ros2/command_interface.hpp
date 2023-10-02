@@ -46,6 +46,7 @@ protected:
   std::unique_ptr<CommandGuard> command_guard_;
   JointPIDArrayROS joint_position_pid_;
   idl_command_t command_, command_target_;
+  bool pid_init_;
 };
 } // namespace lbr_fri_ros2
 #endif // LBR_FRI_ROS2__COMMAND_INTERFACE_HPP_

@@ -5,7 +5,7 @@ namespace lbr_fri_ros2 {
 CommandInterface::CommandInterface(const rclcpp::Node::SharedPtr node_ptr)
     : logging_interface_ptr_(node_ptr->get_node_logging_interface()),
       parameters_interface_ptr_(node_ptr->get_node_parameters_interface()),
-      joint_position_pid_(node_ptr, {"A1", "A2", "A3", "A4", "A5", "A6", "A7"}) {
+      joint_position_pid_(node_ptr, {"A1", "A2", "A3", "A4", "A5", "A6", "A7"}), pid_init_(false) {
   rclcpp::Parameter command_guard_variant_param;
   if (!parameters_interface_ptr_->has_parameter("command_guard_variant")) {
     parameters_interface_ptr_->declare_parameter("command_guard_variant",
@@ -17,7 +17,6 @@ CommandInterface::CommandInterface(const rclcpp::Node::SharedPtr node_ptr)
               command_guard_variant_param.as_string().c_str());
   command_guard_ = command_guard_factory(logging_interface_ptr_, parameters_interface_ptr_,
                                          command_guard_variant_param.as_string());
-  joint_position_pid_.init(0.02, 0.0, 0.0, 0.0, 0.0, false);
 };
 
 void CommandInterface::get_joint_position_command(fri_command_t_ref command,
@@ -34,6 +33,10 @@ void CommandInterface::get_joint_position_command(fri_command_t_ref command,
   }
 
   // PID
+  if (!pid_init_) {
+    joint_position_pid_.init(state.getSampleTime() * 2.0, 0.0, 0.0, 0.0, 0.0, false);
+    pid_init_ = true;
+  }
   joint_position_pid_.compute(command_target_.joint_position, state.getMeasuredJointPosition(),
                               rclcpp::Duration(std::chrono::milliseconds(
                                   static_cast<int64_t>(state.getSampleTime() * 1e3))),
@@ -63,6 +66,10 @@ void CommandInterface::get_torque_command(fri_command_t_ref command, const_fri_s
   }
 
   // PID
+  if (!pid_init_) {
+    joint_position_pid_.init(state.getSampleTime() * 2.0, 0.0, 0.0, 0.0, 0.0, false);
+    pid_init_ = true;
+  }
   joint_position_pid_.compute(command_target_.joint_position, state.getMeasuredJointPosition(),
                               rclcpp::Duration(std::chrono::milliseconds(
                                   static_cast<int64_t>(state.getSampleTime() * 1e3))),
@@ -92,6 +99,10 @@ void CommandInterface::get_wrench_command(fri_command_t_ref command, const_fri_s
   }
 
   // PID
+  if (!pid_init_) {
+    joint_position_pid_.init(state.getSampleTime() * 2.0, 0.0, 0.0, 0.0, 0.0, false);
+    pid_init_ = true;
+  }
   joint_position_pid_.compute(command_target_.joint_position, state.getMeasuredJointPosition(),
                               rclcpp::Duration(std::chrono::milliseconds(
                                   static_cast<int64_t>(state.getSampleTime() * 1e3))),
