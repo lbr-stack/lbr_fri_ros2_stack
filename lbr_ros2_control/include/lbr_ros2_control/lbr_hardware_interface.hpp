@@ -25,9 +25,9 @@
 #include "lbr_ros2_control/lbr_hardware_interface_type_values.hpp"
 
 namespace lbr_ros2_control {
-class LBRHardwareInterface : public hardware_interface::SystemInterface {
+class SystemInterface : public hardware_interface::SystemInterface {
 public:
-  LBRHardwareInterface() = default;
+  SystemInterface() = default;
 
   // hardware interface
   controller_interface::CallbackReturn

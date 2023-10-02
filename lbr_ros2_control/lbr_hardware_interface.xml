@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <library path="lbr_ros2_control">
-    <class type="lbr_ros2_control::LBRHardwareInterface"
-           base_class_type="hardware_interface::SystemInterface"/>
+    <class type="lbr_ros2_control::SystemInterface"
+        base_class_type="hardware_interface::SystemInterface" />
     <description>
         ROS 2 control hardware interface for KUKA LBRs using the Fast Robot Interface (FRI).
     </description>
