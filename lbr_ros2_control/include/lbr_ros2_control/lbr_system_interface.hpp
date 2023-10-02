@@ -1,5 +1,5 @@
-#ifndef LBR_ROS2_CONTROL__LBR_HARDWARE_INTERFACE_HPP_
-#define LBR_ROS2_CONTROL__LBR_HARDWARE_INTERFACE_HPP_
+#ifndef LBR_ROS2_CONTROL__LBR_SYSTEM_INTERFACE_HPP_
+#define LBR_ROS2_CONTROL__LBR_SYSTEM_INTERFACE_HPP_
 
 #include <algorithm>
 #include <cstring>
@@ -119,4 +119,4 @@ protected:
   bool open_loop_;
 };
 } // end of namespace lbr_ros2_control
-#endif // LBR_ROS2_CONTROL__LBR_HARDWARE_INTERFACE_HPP_
+#endif // LBR_ROS2_CONTROL__LBR_SYSTEM_INTERFACE_HPP_
