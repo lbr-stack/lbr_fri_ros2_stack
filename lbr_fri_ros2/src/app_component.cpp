@@ -2,34 +2,34 @@
 
 namespace lbr_fri_ros2 {
 AppComponent::AppComponent(const rclcpp::NodeOptions &options) {
-  app_node_ = std::make_shared<rclcpp::Node>("app", options);
+  app_node_ptr_ = std::make_shared<rclcpp::Node>("app", options);
 
-  app_node_->declare_parameter("rt_prio", 80);
-  app_node_->declare_parameter("port_id", 30200);
-  app_node_->declare_parameter("remote_host", std::string(""));
+  app_node_ptr_->declare_parameter("port_id", 30200);
+  app_node_ptr_->declare_parameter("remote_host", std::string(""));
+  app_node_ptr_->declare_parameter("rt_prio", 80);
 
-  client_ptr_ = std::make_shared<Client>(app_node_);
-  app_ptr_ = std::make_unique<App>(app_node_, client_ptr_);
+  client_ptr_ = std::make_shared<Client>(app_node_ptr_);
+  app_ptr_ = std::make_unique<App>(app_node_ptr_, client_ptr_);
 
   // default connect
-  connect_(app_node_->get_parameter("port_id").as_int(),
-           app_node_->get_parameter("remote_host").as_string().empty()
+  connect_(app_node_ptr_->get_parameter("port_id").as_int(),
+           app_node_ptr_->get_parameter("remote_host").as_string().empty()
                ? NULL
-               : app_node_->get_parameter("remote_host").as_string().c_str(),
-           app_node_->get_parameter("rt_prio").as_int());
+               : app_node_ptr_->get_parameter("remote_host").as_string().c_str(),
+           app_node_ptr_->get_parameter("rt_prio").as_int());
 
   // services
-  app_connect_srv_ = app_node_->create_service<lbr_fri_msgs::srv::AppConnect>(
+  app_connect_srv_ = app_node_ptr_->create_service<lbr_fri_msgs::srv::AppConnect>(
       "app/connect", std::bind(&AppComponent::on_app_connect_, this, std::placeholders::_1,
                                std::placeholders::_2));
-  app_disconnect_srv_ = app_node_->create_service<lbr_fri_msgs::srv::AppDisconnect>(
+  app_disconnect_srv_ = app_node_ptr_->create_service<lbr_fri_msgs::srv::AppDisconnect>(
       "app/disconnect", std::bind(&AppComponent::on_app_disconnect_, this, std::placeholders::_1,
                                   std::placeholders::_2));
 }
 
 rclcpp::node_interfaces::NodeBaseInterface::SharedPtr
 AppComponent::get_node_base_interface() const {
-  return app_node_->get_node_base_interface();
+  return app_node_ptr_->get_node_base_interface();
 }
 
 void AppComponent::connect_(const int &port_id, const char *const remote_host,
@@ -40,27 +40,27 @@ void AppComponent::connect_(const int &port_id, const char *const remote_host,
   app_ptr_->run(rt_prio);
   uint8_t attempt = 0;
   while (!client_ptr_->get_state_interface().is_initialized() && rclcpp::ok()) {
-    RCLCPP_INFO(app_node_->get_logger(), "Waiting for robot heartbeat %d/%d.", attempt + 1,
+    RCLCPP_INFO(app_node_ptr_->get_logger(), "Waiting for robot heartbeat %d/%d.", attempt + 1,
                 max_attempts);
     std::this_thread::sleep_for(std::chrono::seconds(1));
     if (++attempt >= max_attempts) {
       app_ptr_->close_udp_socket();
-      RCLCPP_ERROR(app_node_->get_logger(), "Failed to connect to robot on max attempts.");
+      RCLCPP_ERROR(app_node_ptr_->get_logger(), "Failed to connect to robot on max attempts.");
       return;
     }
   }
-  RCLCPP_INFO(app_node_->get_logger(), "Robot connected.");
+  RCLCPP_INFO(app_node_ptr_->get_logger(), "Robot connected.");
 
   RCLCPP_INFO(
-      app_node_->get_logger(), "Control mode: %s.",
+      app_node_ptr_->get_logger(), "Control mode: %s.",
       EnumMaps::control_mode_map(client_ptr_->get_state_interface().get_state().control_mode)
           .c_str());
-  RCLCPP_INFO(app_node_->get_logger(), "Sample time: %f s.",
+  RCLCPP_INFO(app_node_ptr_->get_logger(), "Sample time: %f s.",
               client_ptr_->get_state_interface().get_state().sample_time);
 
   // publisher
-  state_pub_ = app_node_->create_publisher<lbr_fri_msgs::msg::LBRState>("state", 1);
-  state_pub_timer_ = app_node_->create_wall_timer(
+  state_pub_ = app_node_ptr_->create_publisher<lbr_fri_msgs::msg::LBRState>("state", 1);
+  state_pub_timer_ = app_node_ptr_->create_wall_timer(
       std::chrono::milliseconds(
           static_cast<int64_t>(client_ptr_->get_state_interface().get_state().sample_time * 1.e3)),
       std::bind(&AppComponent::on_state_pub_timer_, this));
@@ -70,12 +70,12 @@ void AppComponent::connect_(const int &port_id, const char *const remote_host,
     while (client_ptr_->get_state_interface().get_state().session_state !=
                KUKA::FRI::ESessionState::COMMANDING_ACTIVE &&
            rclcpp::ok()) {
-      RCLCPP_INFO(app_node_->get_logger(), "Waiting for robot to enter %s state.",
+      RCLCPP_INFO(app_node_ptr_->get_logger(), "Waiting for robot to enter %s state.",
                   EnumMaps::session_state_map(KUKA::FRI::ESessionState::COMMANDING_ACTIVE).c_str());
       std::this_thread::sleep_for(std::chrono::seconds(2));
     }
 
-    RCLCPP_INFO(app_node_->get_logger(), "Client command mode: %s.",
+    RCLCPP_INFO(app_node_ptr_->get_logger(), "Client command mode: %s.",
                 EnumMaps::client_command_mode_map(
                     client_ptr_->get_state_interface().get_state().client_command_mode)
                     .c_str());
@@ -83,17 +83,18 @@ void AppComponent::connect_(const int &port_id, const char *const remote_host,
     // subscriptions
     switch (client_ptr_->get_state_interface().get_state().client_command_mode) {
     case KUKA::FRI::EClientCommandMode::POSITION:
-      position_command_sub_ = app_node_->create_subscription<lbr_fri_msgs::msg::LBRPositionCommand>(
-          "command/position", 1,
-          std::bind(&AppComponent::on_position_command_, this, std::placeholders::_1));
+      position_command_sub_ =
+          app_node_ptr_->create_subscription<lbr_fri_msgs::msg::LBRPositionCommand>(
+              "command/position", 1,
+              std::bind(&AppComponent::on_position_command_, this, std::placeholders::_1));
       break;
     case KUKA::FRI::EClientCommandMode::TORQUE:
-      torque_command_sub_ = app_node_->create_subscription<lbr_fri_msgs::msg::LBRTorqueCommand>(
+      torque_command_sub_ = app_node_ptr_->create_subscription<lbr_fri_msgs::msg::LBRTorqueCommand>(
           "command/torque", 1,
           std::bind(&AppComponent::on_torque_command_, this, std::placeholders::_1));
       break;
     case KUKA::FRI::EClientCommandMode::WRENCH:
-      wrench_command_sub_ = app_node_->create_subscription<lbr_fri_msgs::msg::LBRWrenchCommand>(
+      wrench_command_sub_ = app_node_ptr_->create_subscription<lbr_fri_msgs::msg::LBRWrenchCommand>(
           "command/wrench", 1,
           std::bind(&AppComponent::on_wrench_command_, this, std::placeholders::_1));
       break;
@@ -164,7 +165,7 @@ void AppComponent::on_wrench_command_(
 
 bool AppComponent::on_command_checks_(const int &expected_command_mode) {
   if (!client_ptr_) {
-    RCLCPP_ERROR(app_node_->get_logger(), "Client not configured.");
+    RCLCPP_ERROR(app_node_ptr_->get_logger(), "Client not configured.");
     return false;
   }
   if (client_ptr_->get_state_interface().get_state().client_command_mode ==
@@ -172,7 +173,8 @@ bool AppComponent::on_command_checks_(const int &expected_command_mode) {
     return false;
   }
   if (client_ptr_->get_state_interface().get_state().client_command_mode != expected_command_mode) {
-    RCLCPP_ERROR(app_node_->get_logger(), "Wrench command only allowed in wrench command mode.");
+    RCLCPP_ERROR(app_node_ptr_->get_logger(),
+                 "Wrench command only allowed in wrench command mode.");
     return false;
   }
   return true;
@@ -184,7 +186,7 @@ void AppComponent::on_state_pub_timer_() {
 
 void AppComponent::on_app_connect_(const lbr_fri_msgs::srv::AppConnect::Request::SharedPtr request,
                                    lbr_fri_msgs::srv::AppConnect::Response::SharedPtr response) {
-  RCLCPP_INFO(app_node_->get_logger(),
+  RCLCPP_INFO(app_node_ptr_->get_logger(),
               "Connecting to robot via service. Port ID: %d, remote host: '%s'.", request->port_id,
               request->remote_host.c_str());
   connect_(request->port_id, request->remote_host.empty() ? NULL : request->remote_host.c_str(),
@@ -196,7 +198,7 @@ void AppComponent::on_app_connect_(const lbr_fri_msgs::srv::AppConnect::Request:
 void AppComponent::on_app_disconnect_(
     const lbr_fri_msgs::srv::AppDisconnect::Request::SharedPtr /*request*/,
     lbr_fri_msgs::srv::AppDisconnect::Response::SharedPtr response) {
-  RCLCPP_INFO(app_node_->get_logger(), "Disconnecting from robot via service.");
+  RCLCPP_INFO(app_node_ptr_->get_logger(), "Disconnecting from robot via service.");
   app_ptr_->stop_run();
   response->disconnected = app_ptr_->close_udp_socket();
   state_pub_timer_.reset();
@@ -205,7 +207,7 @@ void AppComponent::on_app_disconnect_(
   torque_command_sub_.reset();
   wrench_command_sub_.reset();
   response->message = response->disconnected ? "Robot disconnected." : "Failed.";
-  RCLCPP_INFO(app_node_->get_logger(), response->message.c_str());
+  RCLCPP_INFO(app_node_ptr_->get_logger(), response->message.c_str());
 }
 } // end of namespace lbr_fri_ros2
 

@@ -80,7 +80,7 @@ protected:
                           lbr_fri_msgs::srv::AppDisconnect::Response::SharedPtr response);
 
   // app
-  rclcpp::Node::SharedPtr app_node_; /** Node for communicating with ROS.<*/
+  rclcpp::Node::SharedPtr app_node_ptr_; /** Node for communicating with ROS.<*/
   std::shared_ptr<Client> client_ptr_;
   std::unique_ptr<App> app_ptr_; /** #lbr_fri_ros2::App for communicating with the hardware.<*/
 };
