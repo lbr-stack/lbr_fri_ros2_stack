@@ -18,13 +18,6 @@ AppComponent::AppComponent(const rclcpp::NodeOptions &options) {
                : app_node_->get_parameter("remote_host").as_string().c_str(),
            app_node_->get_parameter("rt_prio").as_int());
 
-  // publisher
-  state_pub_ = app_node_->create_publisher<lbr_fri_msgs::msg::LBRState>("state", 1);
-  state_pub_timer_ = app_node_->create_wall_timer(
-      std::chrono::milliseconds(
-          static_cast<int64_t>(client_ptr_->get_state_interface().get_state().sample_time * 1.e3)),
-      std::bind(&AppComponent::on_state_pub_timer_, this));
-
   // services
   app_connect_srv_ = app_node_->create_service<lbr_fri_msgs::srv::AppConnect>(
       "app/connect", std::bind(&AppComponent::on_app_connect_, this, std::placeholders::_1,
@@ -64,6 +57,13 @@ void AppComponent::connect_(const int &port_id, const char *const remote_host,
           .c_str());
   RCLCPP_INFO(app_node_->get_logger(), "Sample time: %f s.",
               client_ptr_->get_state_interface().get_state().sample_time);
+
+  // publisher
+  state_pub_ = app_node_->create_publisher<lbr_fri_msgs::msg::LBRState>("state", 1);
+  state_pub_timer_ = app_node_->create_wall_timer(
+      std::chrono::milliseconds(
+          static_cast<int64_t>(client_ptr_->get_state_interface().get_state().sample_time * 1.e3)),
+      std::bind(&AppComponent::on_state_pub_timer_, this));
 
   // await commanding active thread
   std::thread await_commanding_active_thread([this]() {
@@ -199,9 +199,11 @@ void AppComponent::on_app_disconnect_(
   RCLCPP_INFO(app_node_->get_logger(), "Disconnecting from robot via service.");
   app_ptr_->stop_run();
   response->disconnected = app_ptr_->close_udp_socket();
-  position_command_sub_.reset();
-  torque_command_sub_.reset();
-  wrench_command_sub_.reset();
+  state_pub_timer_.reset(nullptr);
+  state_pub_.reset(nullptr);
+  position_command_sub_.reset(nullptr);
+  torque_command_sub_.reset(nullptr);
+  wrench_command_sub_.reset(nullptr);
   response->message = response->disconnected ? "Robot disconnected." : "Failed.";
   RCLCPP_INFO(app_node_->get_logger(), response->message.c_str());
 }
