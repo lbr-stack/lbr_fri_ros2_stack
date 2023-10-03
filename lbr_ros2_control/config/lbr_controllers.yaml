@@ -1,6 +1,8 @@
-controller_manager:
+# Use of /** so that the configurations hold for controller
+# managers regardless of their namespace. Usefull in multi-robot setups.
+/**/controller_manager:
   ros__parameters:
-    update_rate: 100
+    update_rate: 200
 
     joint_state_broadcaster:
       type: joint_state_broadcaster/JointStateBroadcaster
@@ -11,7 +13,7 @@ controller_manager:
     forward_position_controller:
       type: position_controllers/JointGroupPositionController
 
-position_trajectory_controller:
+/**/position_trajectory_controller:
   ros__parameters:
     joints:
       - A1
@@ -29,7 +31,7 @@ position_trajectory_controller:
     state_publish_rate: 50.0
     action_monitor_rate: 20.0
 
-forward_position_controller:
+/**/forward_position_controller:
   ros__parameters:
     joints:
       - A1

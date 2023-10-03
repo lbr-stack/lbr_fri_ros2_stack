@@ -4,25 +4,30 @@ from launch import LaunchContext, LaunchDescription, LaunchDescriptionEntity
 from launch.actions import DeclareLaunchArgument, OpaqueFunction, RegisterEventHandler
 from launch.conditions import IfCondition
 from launch.event_handlers import OnProcessExit, OnProcessStart
-from launch.substitutions import AndSubstitution, LaunchConfiguration, NotSubstitution
+from launch.substitutions import (
+    AndSubstitution,
+    LaunchConfiguration,
+    NotSubstitution,
+    PathJoinSubstitution,
+)
 
 from lbr_bringup import LBRMoveGroupMixin
 from lbr_description import LBRDescriptionMixin, RVizMixin
-from lbr_hardware_interface import LBRHardwareInterfaceMixin
+from lbr_ros2_control import LBRSystemInterfaceMixin
 
 
 def launch_setup(context: LaunchContext) -> List[LaunchDescriptionEntity]:
     ld = LaunchDescription()
 
     robot_description = LBRDescriptionMixin.param_robot_description(sim=False)
-    ros2_control_node = LBRHardwareInterfaceMixin.node_ros2_control(
+    ros2_control_node = LBRSystemInterfaceMixin.node_ros2_control(
         robot_description=robot_description
     )
     ld.add_action(ros2_control_node)
 
     # joint state broad caster and controller on ros2 control node start
-    joint_state_broadcaster = LBRHardwareInterfaceMixin.node_joint_state_broadcaster()
-    controller = LBRHardwareInterfaceMixin.node_controller()
+    joint_state_broadcaster = LBRSystemInterfaceMixin.node_joint_state_broadcaster()
+    controller = LBRSystemInterfaceMixin.node_controller()
 
     controller_event_handler = RegisterEventHandler(
         OnProcessStart(
@@ -33,8 +38,8 @@ def launch_setup(context: LaunchContext) -> List[LaunchDescriptionEntity]:
     ld.add_action(controller_event_handler)
 
     # robot state publisher on joint state broadcaster spawn exit
-    robot_state_publisher = LBRHardwareInterfaceMixin.node_robot_state_publisher(
-        robot_description=robot_description, use_sim_time=False, frame_prefix=""
+    robot_state_publisher = LBRSystemInterfaceMixin.node_robot_state_publisher(
+        robot_description=robot_description, use_sim_time=False
     )
     robot_state_publisher_event_handler = RegisterEventHandler(
         OnProcessExit(
@@ -50,9 +55,39 @@ def launch_setup(context: LaunchContext) -> List[LaunchDescriptionEntity]:
     ld.add_action(LBRMoveGroupMixin.arg_monitor_dynamics())
     ld.add_action(LBRMoveGroupMixin.args_publish_monitored_planning_scene())
 
+    robot_name = LaunchConfiguration("robot_name").perform(context)
+
+    # MoveGroup:
+    # - requires world frame
+    # - maps link robot_name/base_frame -> base_frame
+    # These two transform need publishing
+    robot_name = LaunchConfiguration("robot_name").perform(context)
+    ld.add_action(
+        LBRDescriptionMixin.node_static_tf(
+            tf=[0, 0, 0, 0, 0, 0],
+            parent="world",
+            child=LaunchConfiguration("base_frame"),
+            condition=IfCondition(LaunchConfiguration("moveit")),
+        ),
+    )
+    ld.add_action(
+        LBRDescriptionMixin.node_static_tf(
+            tf=[0, 0, 0, 0, 0, 0],  # keep zero
+            parent=LaunchConfiguration("base_frame"),
+            child=PathJoinSubstitution(
+                [
+                    LaunchConfiguration("robot_name"),
+                    LaunchConfiguration("base_frame"),
+                ]  # results in robot_name/base_frame
+            ),
+            condition=IfCondition(LaunchConfiguration("moveit")),
+        )
+    )
+
     model = LaunchConfiguration("model").perform(context)
     moveit_configs_builder = LBRMoveGroupMixin.moveit_configs_builder(
-        model,
+        robot_name=model,
+        base_frame=LaunchConfiguration("base_frame"),
         package_name=f"{model}_moveit_config",
     )
     movegroup_params = LBRMoveGroupMixin.params_move_group()
@@ -65,6 +100,7 @@ def launch_setup(context: LaunchContext) -> List[LaunchDescriptionEntity]:
                 {"use_sim_time": False},
             ],
             condition=IfCondition(LaunchConfiguration("moveit")),
+            namespace=robot_name,
         )
     )
 
@@ -78,18 +114,24 @@ def launch_setup(context: LaunchContext) -> List[LaunchDescriptionEntity]:
         condition=IfCondition(
             AndSubstitution(LaunchConfiguration("moveit"), LaunchConfiguration("rviz"))
         ),
+        remappings=[
+            ("robot_description", robot_name + "/robot_description"),
+            ("robot_description_semantic", robot_name + "/robot_description_semantic"),
+            ("display_planned_path", robot_name + "/display_planned_path"),
+            ("monitored_planning_scene", robot_name + "/monitored_planning_scene"),
+        ],
     )
 
     # RViz no MoveIt
-    ld.add_action(RVizMixin.arg_rviz_config_pkg())
-    ld.add_action(RVizMixin.arg_rviz_config())
     rviz = RVizMixin.node_rviz(
+        rviz_config_pkg="lbr_bringup",
+        rviz_config="config/config.rviz",
         condition=IfCondition(
             AndSubstitution(
                 LaunchConfiguration("rviz"),
                 NotSubstitution(LaunchConfiguration("moveit")),
             )
-        )
+        ),
     )
 
     # RViz event handler
@@ -107,6 +149,8 @@ def generate_launch_description() -> LaunchDescription:
     ld = LaunchDescription()
     ld.add_action(LBRDescriptionMixin.arg_model())
     ld.add_action(LBRDescriptionMixin.arg_robot_name())
+    ld.add_action(LBRDescriptionMixin.arg_base_frame())
+    ld.add_action(LBRDescriptionMixin.arg_port_id())
     ld.add_action(
         DeclareLaunchArgument(
             name="moveit",
@@ -119,8 +163,8 @@ def generate_launch_description() -> LaunchDescription:
             name="rviz", default_value="true", description="Whether to launch RViz."
         )
     )
-    ld.add_action(LBRHardwareInterfaceMixin.arg_ctrl_cfg_pkg())
-    ld.add_action(LBRHardwareInterfaceMixin.arg_ctrl_cfg())
-    ld.add_action(LBRHardwareInterfaceMixin.arg_ctrl())
+    ld.add_action(LBRSystemInterfaceMixin.arg_ctrl_cfg_pkg())
+    ld.add_action(LBRSystemInterfaceMixin.arg_ctrl_cfg())
+    ld.add_action(LBRSystemInterfaceMixin.arg_ctrl())
     ld.add_action(OpaqueFunction(function=launch_setup))
     return ld

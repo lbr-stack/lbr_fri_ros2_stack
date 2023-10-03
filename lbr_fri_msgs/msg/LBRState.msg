@@ -1,7 +1,6 @@
 # Message that holds states that are exposed through the
 # Fast Robot Interface (FRI).
-#
-# Following states are exposed (refer to KUKA::FRI::LBRState in friLBRState.h for documentation)
+# Following states are exposed (refer to KUKA::FRI::LBRState in friLBRState.h for documentation):
 #
 #  * sample_time [s]
 #  * session_state [#]

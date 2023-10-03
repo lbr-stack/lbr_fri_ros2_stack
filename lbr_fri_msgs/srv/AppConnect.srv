@@ -9,6 +9,8 @@
 
 int32 port_id
 string remote_host
+uint8 rt_prio
+uint8 max_attempts
 ---
 bool connected
 string message

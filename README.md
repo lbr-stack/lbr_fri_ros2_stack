@@ -28,11 +28,11 @@ Full documentation available [here](https://lbr-fri-ros2-stack-doc.readthedocs.i
 Install [colcon](https://docs.ros.org/en/humble/Tutorials/Colcon-Tutorial.html#install-colcon), [rosdep](https://docs.ros.org/en/crystal/Installation/Linux-Install-Binary.html#installing-and-initializing-rosdep) and [vcstool](https://github.com/dirk-thomas/vcstool#how-to-install-vcstool). Build this repository
 
 ```shell
-mkdir -p lbr_fri_ros2_stack_ws/src && cd lbr_fri_ros2_stack_ws
-wget https://raw.githubusercontent.com/lbr-stack/lbr_fri_ros2_stack/humble/lbr_fri_ros2_stack/repos.yml -P src
-vcs import src < src/repos.yml
+mkdir -p lbr-stack/src && cd lbr-stack
+wget https://raw.githubusercontent.com/lbr-stack/lbr_fri_ros2_stack/humble/lbr_fri_ros2_stack/repos.yaml -P src
+vcs import src < src/repos.yaml
 rosdep install --from-paths src --ignore-src -r -y
-colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release --symlink-install
+colcon build --symlink-install
 ```
 Next, launch the simulation via
 ```shell

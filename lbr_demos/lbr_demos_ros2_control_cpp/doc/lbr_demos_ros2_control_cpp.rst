@@ -1,6 +1,6 @@
 LBR Demos ROS 2 Control C++
 ===========================
-Collection of basic usage examples for the ``lbr_hardware_interface`` through C++.
+Collection of basic usage examples for ``lbr_ros2_control`` through C++.
 
 .. note::
     These examples can be run in simulation **and** on the real robot.
@@ -18,11 +18,11 @@ Simulation
 
     ros2 launch lbr_bringup bringup.launch.py sim:=true model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
 
-#. Run the `lbr_joint_trajectory_executioner_node <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_demos_ros2_control_cpp/src/lbr_joint_trajectory_executioner_node.cpp>`_:
+#. Run the `joint_trajectory_executioner_node <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_demos_ros2_control_cpp/src/joint_trajectory_executioner_node.cpp>`_:
 
 .. code-block:: bash
 
-    ros2 run lbr_demos_ros2_control_cpp lbr_joint_trajectory_executioner_node
+    ros2 run lbr_demos_ros2_control_cpp joint_trajectory_executioner_node
 
 The robot will twist, then move to the zero configuration.
 

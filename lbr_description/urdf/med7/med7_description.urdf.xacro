@@ -27,14 +27,8 @@
     <xacro:include filename="$(find lbr_description)/ros2_control/lbr.ros2_control.xacro" />
 
     <!-- robot as extracted via https://github.com/syuntoku14/fusion2urdf -->
-    <xacro:macro name="med7" params="base_frame:=^|world robot_name:=^|lbr sim:=^|true">
-
-        <!--joint
-        between {base_frame} and link_0-->
-        <joint name="${base_frame}_joint" type="fixed">
-            <parent link="${base_frame}" />
-            <child link="link_0" />
-        </joint>
+    <xacro:macro name="med7"
+        params="robot_name:=^|lbr port_id:=^|30200 sim:=^|true">
 
         <link name="link_0">
             <inertial>
@@ -300,7 +294,7 @@
 
         <xacro:lbr_gazebo robot_name="${robot_name}" />
         <!-- TODO: move modes to args, decouple urdf/gazebo/controls -->
-        <xacro:lbr_hardware_interface
+        <xacro:lbr_system_interface
             joint_0_position_limit="${joint_0_position_limit * PI / 180}"
             joint_1_position_limit="${joint_1_position_limit * PI / 180}"
             joint_2_position_limit="${joint_2_position_limit * PI / 180}"
@@ -309,8 +303,7 @@
             joint_5_position_limit="${joint_5_position_limit * PI / 180}"
             joint_6_position_limit="${joint_6_position_limit * PI / 180}"
             effort_limit="${effort_limit}"
-            sim="${sim}" remote_host="INADDR_ANY" port_id="30200"
-            robot_name="${robot_name}" />
+            sim="${sim}" remote_host="INADDR_ANY" port_id="${port_id}" />
 
     </xacro:macro>
 </robot>

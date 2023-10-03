@@ -1,8 +1,12 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.22)
 project(lbr_fri_ros2)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
+endif()
+
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
 endif()
 
 # find dependencies
@@ -23,6 +27,8 @@ add_library(lbr_fri_ros2
     src/app.cpp
     src/client.cpp
     src/command_guard.cpp
+    src/command_interface.cpp
+    src/state_interface.cpp
     src/utils.cpp
 )
 
@@ -103,7 +109,7 @@ install(
 )
 
 install(
-  DIRECTORY launch
+  DIRECTORY config launch
   DESTINATION share/lbr_fri_ros2
 )
 

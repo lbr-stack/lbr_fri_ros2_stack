@@ -7,7 +7,7 @@ Collection of packages for controlling the KUKA LBR iiwa / med through ROS 2.
 - ``lbr_description``: Description files.
 - ``lbr_fri_msgs``: ``IDL``-equivalent of KUKA's ``nanopb`` message definitions.
 - ``lbr_fri_ros2``: Exposes ``fri`` to ROS 2 topics / services.
-- ``lbr_hardware_interface``: ``ros2_control`` hardware interface for the LBR.
+- ``lbr_ros2_control``: ``ros2_control`` integration for the LBR.
 - ``lbr_moveit_config```: ``MoveIt 2`` configurations for thr LBR.
 - ``fri``: Integration of KUKA's Fast Robot Interface (FRI) into ROS 2 ``ament_cmake`` build system.
 
@@ -18,11 +18,11 @@ Installation
 
 .. code-block:: bash
 
-    mkdir -p lbr_fri_ros2_stack_ws/src && cd lbr_fri_ros2_stack_ws
-    wget https://raw.githubusercontent.com/lbr-stack/lbr_fri_ros2_stack/humble/lbr_fri_ros2_stack/repos.yml -P src
-    vcs import src < src/repos.yml
+    mkdir -p lbr-stack/src && cd lbr-stack
+    wget https://raw.githubusercontent.com/lbr-stack/lbr_fri_ros2_stack/humble/lbr_fri_ros2_stack/repos.yaml -P src
+    vcs import src < src/repos.yaml
     rosdep install --from-paths src --ignore-src -r -y
-    colcon build
+    colcon build --symlink-install
 
 .. note::
     For the real robot, additional steps are required:

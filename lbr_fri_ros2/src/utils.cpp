@@ -37,11 +37,6 @@ double ExponentialFilter::compute_alpha_(const double &cutoff_frequency,
 
 bool ExponentialFilter::validate_alpha_(const double &alpha) { return alpha <= 1. && alpha >= 0.; }
 
-JointExponentialFilterArrayROS::JointExponentialFilterArrayROS(const rclcpp::Node::SharedPtr node,
-                                                               const std::string &param_prefix)
-    : JointExponentialFilterArrayROS(node->get_node_logging_interface(),
-                                     node->get_node_parameters_interface(), param_prefix) {}
-
 JointExponentialFilterArrayROS::JointExponentialFilterArrayROS(
     const rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr logging_interface,
     const rclcpp::node_interfaces::NodeParametersInterface::SharedPtr parameter_interface,
@@ -53,8 +48,7 @@ JointExponentialFilterArrayROS::JointExponentialFilterArrayROS(
   }
 }
 
-void JointExponentialFilterArrayROS::compute(const double *const current,
-                                             ValueArrayType &previous) {
+void JointExponentialFilterArrayROS::compute(const double *const current, value_array_t &previous) {
   int i = 0;
   std::for_each(current, current + KUKA::FRI::LBRState::NUMBER_OF_JOINTS,
                 [&](const auto &current_i) {
@@ -65,8 +59,8 @@ void JointExponentialFilterArrayROS::compute(const double *const current,
 
 void JointExponentialFilterArrayROS::init(const double &cutoff_frequency,
                                           const double &sample_time) {
-  if (!parameter_interface_->has_parameter(param_prefix_ + "cutoff_frequency")) {
-    parameter_interface_->declare_parameter(param_prefix_ + "cutoff_frequency",
+  if (!parameter_interface_->has_parameter(param_prefix_ + cutoff_frequency_param_name_)) {
+    parameter_interface_->declare_parameter(param_prefix_ + cutoff_frequency_param_name_,
                                             rclcpp::ParameterValue(cutoff_frequency));
   }
   exponential_filter_.set_cutoff_frequency(cutoff_frequency, sample_time);
@@ -77,7 +71,7 @@ void JointExponentialFilterArrayROS::init(const double &cutoff_frequency,
         result.successful = true;
         for (const auto &parameter : parameters) {
           try {
-            if (parameter.get_name() == param_prefix_ + "cutoff_frequency") {
+            if (parameter.get_name() == param_prefix_ + cutoff_frequency_param_name_) {
               exponential_filter_.set_cutoff_frequency(parameter.as_double(),
                                                        exponential_filter_.get_sample_time());
               RCLCPP_INFO(logging_interface_->get_logger(),
@@ -97,9 +91,9 @@ void JointExponentialFilterArrayROS::init(const double &cutoff_frequency,
       });
 }
 
-JointPIDArrayROS::JointPIDArrayROS(const rclcpp::Node::SharedPtr node, const NameArrayType &names,
+JointPIDArrayROS::JointPIDArrayROS(const rclcpp::Node::SharedPtr node, const name_array_t &names,
                                    const std::string &prefix)
-    : pid_controllers_(PIDArrayType{
+    : pid_controllers_(pid_array_t{
           control_toolbox::PidROS{node, prefix + names[0]},
           control_toolbox::PidROS{node, prefix + names[1]},
           control_toolbox::PidROS{node, prefix + names[2]},
@@ -109,8 +103,17 @@ JointPIDArrayROS::JointPIDArrayROS(const rclcpp::Node::SharedPtr node, const Nam
           control_toolbox::PidROS{node, prefix + names[6]},
       }) {}
 
-void JointPIDArrayROS::compute(const ValueArrayType &command_target, const ValueArrayType &state,
-                               const rclcpp::Duration &dt, ValueArrayType &command) {
+void JointPIDArrayROS::compute(const value_array_t &command_target, const value_array_t &state,
+                               const rclcpp::Duration &dt, value_array_t &command) {
+  int i = 0;
+  std::for_each(command.begin(), command.end(), [&](double &command_i) {
+    command_i += pid_controllers_[i].computeCommand(command_target[i] - state[i], dt);
+    ++i;
+  });
+}
+
+void JointPIDArrayROS::compute(const value_array_t &command_target, const double *state,
+                               const rclcpp::Duration &dt, value_array_t &command) {
   int i = 0;
   std::for_each(command.begin(), command.end(), [&](double &command_i) {
     command_i += pid_controllers_[i].computeCommand(command_target[i] - state[i], dt);

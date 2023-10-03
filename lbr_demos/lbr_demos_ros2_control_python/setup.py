@@ -4,7 +4,7 @@ package_name = "lbr_demos_ros2_control_python"
 
 setup(
     name=package_name,
-    version="1.2.5",
+    version="1.3.0",
     packages=[package_name],
     data_files=[
         ("share/ament_index/resource_index/packages", ["resource/" + package_name]),
@@ -19,7 +19,7 @@ setup(
     tests_require=["pytest"],
     entry_points={
         "console_scripts": [
-            "lbr_joint_trajectory_executioner_node = lbr_demos_ros2_control_python.lbr_joint_trajectory_executioner_node:main",
+            "joint_trajectory_executioner_node = lbr_demos_ros2_control_python.joint_trajectory_executioner_node:main",
         ],
     },
 )
