@@ -16,7 +16,7 @@ public:
 
     joint_trajectory_action_client_ =
         rclcpp_action::create_client<control_msgs::action::FollowJointTrajectory>(
-            this, "/position_trajectory_controller/follow_joint_trajectory");
+            this, "/lbr/position_trajectory_controller/follow_joint_trajectory");
 
     while (!joint_trajectory_action_client_->wait_for_action_server(std::chrono::seconds(1))) {
       RCLCPP_INFO(this->get_logger(), "Waiting for action server to become available...");
@@ -24,7 +24,7 @@ public:
     RCLCPP_INFO(this->get_logger(), "Action server available.");
   };
 
-  void execute(const std::vector<double> &positions, const int32_t &sec_from_start = 10) {
+  void execute(const std::vector<double> &positions, const int32_t &sec_from_start = 15) {
     if (positions.size() != KUKA::FRI::LBRState::NUMBER_OF_JOINTS) {
       RCLCPP_ERROR(this->get_logger(), "Invalid number of joint positions.");
       return;

@@ -14,13 +14,13 @@ class LBRJointTrajectoryExecutionerNode(Node):
         self.joint_trajectory_action_client_ = ActionClient(
             node=self,
             action_type=FollowJointTrajectory,
-            action_name="/position_trajectory_controller/follow_joint_trajectory",
+            action_name="/lbr/position_trajectory_controller/follow_joint_trajectory",
         )
         while not self.joint_trajectory_action_client_.wait_for_server(1):
             self.get_logger().info("Waiting for action server to become available...")
         self.get_logger().info("Action server available.")
 
-    def execute(self, positions: list, sec_from_start: int = 10):
+    def execute(self, positions: list, sec_from_start: int = 15):
         if len(positions) != 7:
             self.get_logger().error("Invalid number of joint positions.")
             return
