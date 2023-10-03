@@ -104,6 +104,6 @@ def generate_launch_description() -> LaunchDescription:
     )
     ld.add_action(
         LBRSystemInterfaceMixin.arg_ctrl()
-    )  # Gazebo loads controller configuration through lbr_description/gazebo/*.xacro from lbr_description/config/lbr_controllers.yml
+    )  # Gazebo loads controller configuration through lbr_description/gazebo/*.xacro from lbr_ros2_control/config/lbr_controllers.yaml
     ld.add_action(OpaqueFunction(function=launch_setup))
     return ld

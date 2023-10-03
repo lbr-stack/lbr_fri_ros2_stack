@@ -20,7 +20,7 @@ class LBRSystemInterfaceMixin:
     def arg_ctrl_cfg() -> DeclareLaunchArgument:
         return DeclareLaunchArgument(
             name="ctrl_cfg",
-            default_value="config/lbr_controllers.yml",
+            default_value="config/lbr_controllers.yaml",
             description="Relative path from ctrl_cfg_pkg to the controllers.",
         )
 
@@ -62,7 +62,7 @@ class LBRSystemInterfaceMixin:
                             )
                         ),
                         LaunchConfiguration(
-                            "ctrl_cfg", default="config/lbr_controllers.yml"
+                            "ctrl_cfg", default="config/lbr_controllers.yaml"
                         ),
                     ]
                 ),

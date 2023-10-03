@@ -19,8 +19,8 @@ Installation
 .. code-block:: bash
 
     mkdir -p lbr-stack/src && cd lbr-stack
-    wget https://raw.githubusercontent.com/lbr-stack/lbr_fri_ros2_stack/humble/lbr_fri_ros2_stack/repos.yml -P src
-    vcs import src < src/repos.yml
+    wget https://raw.githubusercontent.com/lbr-stack/lbr_fri_ros2_stack/humble/lbr_fri_ros2_stack/repos.yaml -P src
+    vcs import src < src/repos.yaml
     rosdep install --from-paths src --ignore-src -r -y
     colcon build --symlink-install
 
