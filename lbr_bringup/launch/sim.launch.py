@@ -21,7 +21,7 @@ def launch_setup(context: LaunchContext) -> List[LaunchDescriptionEntity]:
     joint_state_broadcaster = LBRSystemInterfaceMixin.node_joint_state_broadcaster()
     ld.add_action(joint_state_broadcaster)
     robot_state_publisher = LBRSystemInterfaceMixin.node_robot_state_publisher(
-        robot_description=robot_description, use_sim_time=True, frame_prefix=""
+        robot_description=robot_description, use_sim_time=True
     )
     ld.add_action(
         robot_state_publisher

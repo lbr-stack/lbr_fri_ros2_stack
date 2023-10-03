@@ -6,7 +6,7 @@
     <!-- include the lbr med macro -->
     <xacro:include filename="$(find lbr_description)/urdf/med7/med7_description.urdf.xacro" />
 
-    <xacro:arg name="base_frame" default="world" />
+    <xacro:arg name="base_frame" default="base_frame" />
     <xacro:arg name="robot_name" default="lbr" />
     <xacro:arg name="port_id" default="30200" />
     <xacro:arg name="sim" default="true" />

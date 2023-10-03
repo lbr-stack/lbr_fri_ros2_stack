@@ -1,4 +1,4 @@
-from typing import Dict, Optional, Union
+from typing import Dict, List, Optional, Union
 
 from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
@@ -25,7 +25,7 @@ class GazeboMixin:
                     ]
                 )
             ),
-            **kwargs
+            **kwargs,
         )
 
     @staticmethod
@@ -44,7 +44,7 @@ class GazeboMixin:
                 LaunchConfiguration("robot_name"),
             ],
             output="screen",
-            **kwargs
+            **kwargs,
         )
 
 
@@ -60,7 +60,7 @@ class LBRDescriptionMixin:
         if model is None:
             model = LaunchConfiguration("model", default="iiwa7")
         if base_frame is None:
-            base_frame = LaunchConfiguration("base_frame", default="world")
+            base_frame = LaunchConfiguration("base_frame", default="base_frame")
         if robot_name is None:
             robot_name = LaunchConfiguration("robot_name", default="lbr")
         if port_id is None:
@@ -106,7 +106,7 @@ class LBRDescriptionMixin:
         )
 
     @staticmethod
-    def arg_base_frame(default_value: str = "world") -> DeclareLaunchArgument:
+    def arg_base_frame(default_value: str = "base_frame") -> DeclareLaunchArgument:
         return DeclareLaunchArgument(
             name="base_frame",
             default_value=default_value,
@@ -140,7 +140,7 @@ class LBRDescriptionMixin:
 
     @staticmethod
     def param_base_frame() -> Dict[str, LaunchConfiguration]:
-        return {"base_frame": LaunchConfiguration("base_frame", default="world")}
+        return {"base_frame": LaunchConfiguration("base_frame", default="base_frame")}
 
     @staticmethod
     def param_robot_name() -> Dict[str, LaunchConfiguration]:
@@ -153,6 +153,29 @@ class LBRDescriptionMixin:
     @staticmethod
     def param_sim() -> Dict[str, LaunchConfiguration]:
         return {"sim": LaunchConfiguration("sim", default="true")}
+
+    @staticmethod
+    def node_static_tf(
+        tf: List[float] = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        parent: Optional[Union[LaunchConfiguration, str]] = None,
+        child: Optional[Union[LaunchConfiguration, str]] = None,
+        **kwargs,
+    ) -> Node:
+        label = ["--x", "--y", "--z", "--roll", "--pitch", "--yaw"]
+        tf = [str(x) for x in tf]
+        return Node(
+            package="tf2_ros",
+            executable="static_transform_publisher",
+            output="screen",
+            arguments=[item for pair in zip(label, tf) for item in pair]
+            + [
+                "--frame-id",
+                parent,
+                "--child-frame-id",
+                child,
+            ],
+            **kwargs,
+        )
 
 
 class RVizMixin:
@@ -180,7 +203,7 @@ class RVizMixin:
     def node_rviz(
         rviz_config_pkg: Optional[Union[LaunchConfiguration, str]] = None,
         rviz_config: Optional[Union[LaunchConfiguration, str]] = None,
-        **kwargs
+        **kwargs,
     ) -> Node:
         if rviz_config_pkg is None:
             rviz_config_pkg = LaunchConfiguration(
@@ -203,5 +226,5 @@ class RVizMixin:
                     ]
                 ),
             ],
-            **kwargs
+            **kwargs,
         )
