@@ -34,7 +34,7 @@ def launch_setup(context: LaunchContext) -> List[LaunchDescriptionEntity]:
 
     # robot state publisher on joint state broadcaster spawn exit
     robot_state_publisher = LBRSystemInterfaceMixin.node_robot_state_publisher(
-        robot_description=robot_description, use_sim_time=False, frame_prefix=""
+        robot_description=robot_description, use_sim_time=False
     )
     robot_state_publisher_event_handler = RegisterEventHandler(
         OnProcessExit(
@@ -81,15 +81,15 @@ def launch_setup(context: LaunchContext) -> List[LaunchDescriptionEntity]:
     )
 
     # RViz no MoveIt
-    ld.add_action(RVizMixin.arg_rviz_config_pkg())
-    ld.add_action(RVizMixin.arg_rviz_config())
     rviz = RVizMixin.node_rviz(
+        rviz_config_pkg="lbr_bringup",
+        rviz_config="config/config.rviz",
         condition=IfCondition(
             AndSubstitution(
                 LaunchConfiguration("rviz"),
                 NotSubstitution(LaunchConfiguration("moveit")),
             )
-        )
+        ),
     )
 
     # RViz event handler
