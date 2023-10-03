@@ -1,7 +1,6 @@
-from typing import Dict, List, Optional, Union
+from typing import Dict, Optional, Union
 
-from launch import LaunchContext, LaunchDescriptionEntity
-from launch.actions import DeclareLaunchArgument, OpaqueFunction
+from launch.actions import DeclareLaunchArgument
 from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
@@ -115,32 +114,27 @@ class LBRSystemInterfaceMixin:
     @staticmethod
     def node_robot_state_publisher(
         robot_description: Dict[str, str],
-        robot_name: Optional[Union[LaunchConfiguration, str]] = None,
+        robot_name: Optional[LaunchConfiguration] = None,
         use_sim_time: Optional[Union[LaunchConfiguration, bool]] = None,
         **kwargs,
-    ) -> OpaqueFunction:
+    ) -> Node:
         if robot_name is None:
             robot_name = LaunchConfiguration("robot_name", default="lbr")
         if use_sim_time is None:
             use_sim_time = LaunchConfiguration("use_sim_time", default="false")
 
-        # add opaque function to resolve frame_prefix namespacing issues
-        def opaque_function(context: LaunchContext) -> List[LaunchDescriptionEntity]:
-            robot_name_str = LaunchConfiguration("robot_name").perform(context)
-            return [
-                Node(
-                    package="robot_state_publisher",
-                    executable="robot_state_publisher",
-                    output="screen",
-                    parameters=[
-                        robot_description,
-                        {"use_sim_time": use_sim_time},
-                        # use robot name as frame prefix
-                        {"frame_prefix": robot_name_str + "/"},
-                    ],
-                    namespace=robot_name_str,
-                    **kwargs,
-                )
-            ]
-
-        return OpaqueFunction(function=opaque_function)
+        return Node(
+            package="robot_state_publisher",
+            executable="robot_state_publisher",
+            output="screen",
+            parameters=[
+                robot_description,
+                {"use_sim_time": use_sim_time},
+                # use robot name as frame prefix
+                {
+                    "frame_prefix": PathJoinSubstitution([robot_name, ""])
+                },  # neat hack to add trailing slash, which is required by frame_prefix
+            ],
+            namespace=robot_name,
+            **kwargs,
+        )
