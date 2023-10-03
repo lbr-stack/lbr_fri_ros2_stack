@@ -28,14 +28,7 @@
 
     <!-- robot as extracted via https://github.com/syuntoku14/fusion2urdf -->
     <xacro:macro name="iiwa7"
-        params="base_frame:=^|world robot_name:=^|lbr port_id:=^|30200 sim:=^|true">
-
-        <!--joint
-        between {base_frame} and link_0-->
-        <joint name="${base_frame}_joint" type="fixed">
-            <parent link="${base_frame}" />
-            <child link="link_0" />
-        </joint>
+        params="robot_name:=^|lbr port_id:=^|30200 sim:=^|true">
 
         <link name="link_0">
             <inertial>

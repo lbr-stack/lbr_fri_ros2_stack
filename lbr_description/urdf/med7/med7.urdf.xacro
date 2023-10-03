@@ -11,10 +11,16 @@
     <xacro:arg name="port_id" default="30200" />
     <xacro:arg name="sim" default="true" />
 
-    <!-- fix to base_frame -->
+    <!-- fixed to base_frame -->
     <link name="$(arg base_frame)" />
 
+    <!--joint
+        between {base_frame} and link_0-->
+    <joint name="$(arg base_frame)_joint" type="fixed">
+        <parent link="$(arg base_frame)" />
+        <child link="link_0" />
+    </joint>
+
     <!-- med -->
-    <xacro:med7 base_frame="$(arg base_frame)" robot_name="$(arg robot_name)"
-        port_id="$(arg port_id)" sim="$(arg sim)" />
+    <xacro:med7 robot_name="$(arg robot_name)" port_id="$(arg port_id)" sim="$(arg sim)" />
 </robot>
