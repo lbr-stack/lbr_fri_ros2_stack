@@ -175,6 +175,8 @@ hardware_interface::return_type LBRSystemInterface::read(const rclcpp::Time & /*
                               static_cast<KUKA::FRI::ESessionState>(lbr_state_.session_state))) {
     RCLCPP_ERROR(app_node_ptr_->get_logger(),
                  "LBR left COMMANDING_ACTIVE. Please re-run lbr_bringup.");
+    app_ptr_->stop_run();
+    app_ptr_->close_udp_socket();
     return hardware_interface::return_type::ERROR;
   }
 
