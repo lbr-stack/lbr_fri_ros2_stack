@@ -20,7 +20,6 @@ def generate_launch_description() -> LaunchDescription:
     ld.add_action(LBRSystemInterface.arg_ctrl_cfg_pkg())
     ld.add_action(LBRSystemInterface.arg_ctrl_cfg())
     ld.add_action(LBRSystemInterface.arg_ctrl())
-    ld.add_action(LBRSystemInterface.arg_frame_prefix())
     ros2_control_node = LBRSystemInterface.node_ros2_control(
         robot_description=robot_description
     )
@@ -37,7 +36,6 @@ def generate_launch_description() -> LaunchDescription:
     robot_state_publisher = LBRSystemInterface.node_robot_state_publisher(
         robot_description=robot_description,
         use_sim_time=False,
-        frame_prefix=LBRSystemInterface.param_frame_prefix(),
     )
     ld.add_action(robot_state_publisher)
     return ld

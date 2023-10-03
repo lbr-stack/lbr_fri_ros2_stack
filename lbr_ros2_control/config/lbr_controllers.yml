@@ -1,4 +1,7 @@
-controller_manager:
+# Use of /** so that the configurations hold for controller
+# managers regardless of their name / namespace. Usefull
+# in multi-robot setups.
+/**:
   ros__parameters:
     update_rate: 200
 

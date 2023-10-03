@@ -1,6 +1,7 @@
-from typing import Dict, Optional, Union
+from typing import Dict, List, Optional, Union
 
-from launch.actions import DeclareLaunchArgument
+from launch import LaunchContext, LaunchDescriptionEntity
+from launch.actions import DeclareLaunchArgument, OpaqueFunction
 from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
@@ -33,15 +34,6 @@ class LBRSystemInterfaceMixin:
         )
 
     @staticmethod
-    def arg_frame_prefix() -> DeclareLaunchArgument:
-        return DeclareLaunchArgument(
-            name="frame_prefix",
-            default_value="",
-            description="Prefix for the tf frame names. Useful for multi-robot setups.\n"
-            "\tE.g. 'robot1/'. The trailing slash is important!",
-        )
-
-    @staticmethod
     def arg_use_sim_time() -> DeclareLaunchArgument:
         return DeclareLaunchArgument(
             name="use_sim_time",
@@ -50,11 +42,13 @@ class LBRSystemInterfaceMixin:
         )
 
     @staticmethod
-    def param_frame_prefix() -> Dict[str, LaunchConfiguration]:
-        return {"frame_prefix": LaunchConfiguration("frame_prefix", default="")}
-
-    @staticmethod
-    def node_ros2_control(robot_description: Dict[str, str], **kwargs) -> Node:
+    def node_ros2_control(
+        robot_description: Dict[str, str],
+        robot_name: Optional[Union[LaunchConfiguration, str]] = None,
+        **kwargs,
+    ) -> Node:
+        if robot_name is None:
+            robot_name = LaunchConfiguration("robot_name", default="lbr")
         return Node(
             package="controller_manager",
             executable="ros2_control_node",
@@ -74,11 +68,17 @@ class LBRSystemInterfaceMixin:
                 ),
                 robot_description,
             ],
-            **kwargs
+            namespace=robot_name,
+            **kwargs,
         )
 
     @staticmethod
-    def node_joint_state_broadcaster(**kwargs) -> Node:
+    def node_joint_state_broadcaster(
+        robot_name: Optional[Union[LaunchConfiguration, str]] = None,
+        **kwargs,
+    ) -> Node:
+        if robot_name is None:
+            robot_name = LaunchConfiguration("robot_name", default="lbr")
         return Node(
             package="controller_manager",
             executable="spawner",
@@ -86,13 +86,19 @@ class LBRSystemInterfaceMixin:
             arguments=[
                 "joint_state_broadcaster",
                 "--controller-manager",
-                "/controller_manager",
+                "controller_manager",
             ],
-            **kwargs
+            namespace=robot_name,
+            **kwargs,
         )
 
     @staticmethod
-    def node_controller(**kwargs) -> Node:
+    def node_controller(
+        robot_name: Optional[Union[LaunchConfiguration, str]] = None,
+        **kwargs,
+    ) -> Node:
+        if robot_name is None:
+            robot_name = LaunchConfiguration("robot_name", default="lbr")
         return Node(
             package="controller_manager",
             executable="spawner",
@@ -100,30 +106,41 @@ class LBRSystemInterfaceMixin:
             arguments=[
                 LaunchConfiguration("ctrl", default="position_trajectory_controller"),
                 "--controller-manager",
-                "/controller_manager",
+                "controller_manager",
             ],
-            **kwargs
+            namespace=robot_name,
+            **kwargs,
         )
 
     @staticmethod
     def node_robot_state_publisher(
         robot_description: Dict[str, str],
+        robot_name: Optional[Union[LaunchConfiguration, str]] = None,
         use_sim_time: Optional[Union[LaunchConfiguration, bool]] = None,
-        frame_prefix: Optional[Union[LaunchConfiguration, str]] = None,
-        **kwargs
-    ) -> Node:
+        **kwargs,
+    ) -> OpaqueFunction:
+        if robot_name is None:
+            robot_name = LaunchConfiguration("robot_name", default="lbr")
         if use_sim_time is None:
             use_sim_time = LaunchConfiguration("use_sim_time", default="false")
-        if frame_prefix is None:
-            frame_prefix = LaunchConfiguration("frame_prefix", default="")
-        return Node(
-            package="robot_state_publisher",
-            executable="robot_state_publisher",
-            output="screen",
-            parameters=[
-                robot_description,
-                {"use_sim_time": use_sim_time},
-                frame_prefix,
-            ],
-            **kwargs
-        )
+
+        # add opaque function to resolve frame_prefix namespacing issues
+        def opaque_function(context: LaunchContext) -> List[LaunchDescriptionEntity]:
+            robot_name_str = LaunchConfiguration("robot_name").perform(context)
+            return [
+                Node(
+                    package="robot_state_publisher",
+                    executable="robot_state_publisher",
+                    output="screen",
+                    parameters=[
+                        robot_description,
+                        {"use_sim_time": use_sim_time},
+                        # use robot name as frame prefix
+                        {"frame_prefix": robot_name_str + "/"},
+                    ],
+                    namespace=robot_name_str,
+                    **kwargs,
+                )
+            ]
+
+        return OpaqueFunction(function=opaque_function)
