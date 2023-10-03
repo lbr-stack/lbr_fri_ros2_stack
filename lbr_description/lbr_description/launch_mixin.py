@@ -97,44 +97,44 @@ class LBRDescriptionMixin:
         return robot_description
 
     @staticmethod
-    def arg_model() -> DeclareLaunchArgument:
+    def arg_model(default_value: str = "iiwa7") -> DeclareLaunchArgument:
         return DeclareLaunchArgument(
             name="model",
-            default_value="iiwa7",
+            default_value=default_value,
             description="The LBR model in use.",
             choices=["iiwa7", "iiwa14", "med7", "med14"],
         )
 
     @staticmethod
-    def arg_base_frame() -> DeclareLaunchArgument:
+    def arg_base_frame(default_value: str = "world") -> DeclareLaunchArgument:
         return DeclareLaunchArgument(
             name="base_frame",
-            default_value="world",
+            default_value=default_value,
             description="The robot's base frame.",
         )
 
     @staticmethod
-    def arg_robot_name() -> DeclareLaunchArgument:
+    def arg_robot_name(default_value: str = "lbr") -> DeclareLaunchArgument:
         return DeclareLaunchArgument(
             name="robot_name",
-            default_value="lbr",
+            default_value=default_value,
             description="The robot's name.",
         )
 
     @staticmethod
-    def arg_port_id() -> DeclareLaunchArgument:
+    def arg_port_id(default_value: str = "30200") -> DeclareLaunchArgument:
         return DeclareLaunchArgument(
             name="port_id",
-            default_value="30200",
+            default_value=default_value,
             description="Port ID of the FRI communication. Valid in range [30200, 30209].\n"
             "\tUsefull in multi-robot setups.",
         )
 
     @staticmethod
-    def arg_sim() -> DeclareLaunchArgument:
+    def arg_sim(default_value: str = "true") -> DeclareLaunchArgument:
         return DeclareLaunchArgument(
             name="sim",
-            default_value="true",
+            default_value=default_value,
             description="Whether to use the simulation or not.",
         )
 
@@ -157,18 +157,22 @@ class LBRDescriptionMixin:
 
 class RVizMixin:
     @staticmethod
-    def arg_rviz_config_pkg() -> DeclareLaunchArgument:
+    def arg_rviz_config_pkg(
+        default_value: str = "lbr_description",
+    ) -> DeclareLaunchArgument:
         return DeclareLaunchArgument(
             name="rviz_config_pkg",
-            default_value="lbr_description",
+            default_value=default_value,
             description="The RViz configuration file.",
         )
 
     @staticmethod
-    def arg_rviz_config() -> DeclareLaunchArgument:
+    def arg_rviz_config(
+        default_value: str = "config/config.rviz",
+    ) -> DeclareLaunchArgument:
         return DeclareLaunchArgument(
             name="rviz_config",
-            default_value="config/config.rviz",
+            default_value=default_value,
             description="The RViz configuration file.",
         )
 
