@@ -55,8 +55,6 @@ def launch_setup(context: LaunchContext) -> List[LaunchDescriptionEntity]:
     ld.add_action(LBRMoveGroupMixin.arg_monitor_dynamics())
     ld.add_action(LBRMoveGroupMixin.args_publish_monitored_planning_scene())
 
-    robot_name = LaunchConfiguration("robot_name").perform(context)
-
     # MoveGroup:
     # - requires world frame
     # - maps link robot_name/base_frame -> base_frame

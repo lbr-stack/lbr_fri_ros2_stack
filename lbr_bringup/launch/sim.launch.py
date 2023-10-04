@@ -4,7 +4,7 @@ from launch import LaunchContext, LaunchDescription, LaunchDescriptionEntity
 from launch.actions import DeclareLaunchArgument, OpaqueFunction, RegisterEventHandler
 from launch.conditions import IfCondition
 from launch.event_handlers import OnProcessExit
-from launch.substitutions import AndSubstitution, LaunchConfiguration, NotSubstitution
+from launch.substitutions import AndSubstitution, LaunchConfiguration, NotSubstitution, PathJoinSubstitution
 
 from lbr_bringup import LBRMoveGroupMixin
 from lbr_description import GazeboMixin, LBRDescriptionMixin, RVizMixin
@@ -35,9 +35,37 @@ def launch_setup(context: LaunchContext) -> List[LaunchDescriptionEntity]:
     ld.add_action(LBRMoveGroupMixin.arg_monitor_dynamics())
     ld.add_action(LBRMoveGroupMixin.args_publish_monitored_planning_scene())
 
+    # MoveGroup:
+    # - requires world frame
+    # - maps link robot_name/base_frame -> base_frame
+    # These two transform need publishing
+    robot_name = LaunchConfiguration("robot_name").perform(context)
+    ld.add_action(
+        LBRDescriptionMixin.node_static_tf(
+            tf=[0, 0, 0, 0, 0, 0],
+            parent="world",
+            child=LaunchConfiguration("base_frame"),
+            condition=IfCondition(LaunchConfiguration("moveit")),
+        ),
+    )
+    ld.add_action(
+        LBRDescriptionMixin.node_static_tf(
+            tf=[0, 0, 0, 0, 0, 0],  # keep zero
+            parent=LaunchConfiguration("base_frame"),
+            child=PathJoinSubstitution(
+                [
+                    LaunchConfiguration("robot_name"),
+                    LaunchConfiguration("base_frame"),
+                ]  # results in robot_name/base_frame
+            ),
+            condition=IfCondition(LaunchConfiguration("moveit")),
+        )
+    )
+
     model = LaunchConfiguration("model").perform(context)
     moveit_configs_builder = LBRMoveGroupMixin.moveit_configs_builder(
-        model,
+        robot_name=model,
+        base_frame=LaunchConfiguration("base_frame"),
         package_name=f"{model}_moveit_config",
     )
     movegroup_params = LBRMoveGroupMixin.params_move_group()
@@ -50,6 +78,7 @@ def launch_setup(context: LaunchContext) -> List[LaunchDescriptionEntity]:
                 {"use_sim_time": True},
             ],
             condition=IfCondition(LaunchConfiguration("moveit")),
+            namespace=robot_name,
         )
     )
 
@@ -63,6 +92,12 @@ def launch_setup(context: LaunchContext) -> List[LaunchDescriptionEntity]:
         condition=IfCondition(
             AndSubstitution(LaunchConfiguration("moveit"), LaunchConfiguration("rviz"))
         ),
+        remappings=[
+            ("robot_description", robot_name + "/robot_description"),
+            ("robot_description_semantic", robot_name + "/robot_description_semantic"),
+            ("display_planned_path", robot_name + "/display_planned_path"),
+            ("monitored_planning_scene", robot_name + "/monitored_planning_scene"),
+        ],
     )
 
     # RViz no MoveIt
@@ -90,6 +125,7 @@ def generate_launch_description() -> LaunchDescription:
     ld = LaunchDescription()
     ld.add_action(LBRDescriptionMixin.arg_model())
     ld.add_action(LBRDescriptionMixin.arg_robot_name())
+    ld.add_action(LBRDescriptionMixin.arg_base_frame())
     ld.add_action(
         DeclareLaunchArgument(
             name="moveit",
