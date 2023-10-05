@@ -42,7 +42,8 @@ class GazeboMixin:
                 "robot_description",
                 "-entity",
                 LaunchConfiguration("robot_name"),
-                "-robot_namespace", LaunchConfiguration("robot_name")
+                "-robot_namespace",
+                LaunchConfiguration("robot_name"),
             ],
             output="screen",
             namespace=LaunchConfiguration("robot_name"),

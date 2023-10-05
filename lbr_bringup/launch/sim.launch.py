@@ -4,7 +4,12 @@ from launch import LaunchContext, LaunchDescription, LaunchDescriptionEntity
 from launch.actions import DeclareLaunchArgument, OpaqueFunction, RegisterEventHandler
 from launch.conditions import IfCondition
 from launch.event_handlers import OnProcessExit
-from launch.substitutions import AndSubstitution, LaunchConfiguration, NotSubstitution, PathJoinSubstitution
+from launch.substitutions import (
+    AndSubstitution,
+    LaunchConfiguration,
+    NotSubstitution,
+    PathJoinSubstitution,
+)
 
 from lbr_bringup import LBRMoveGroupMixin
 from lbr_description import GazeboMixin, LBRDescriptionMixin, RVizMixin
