@@ -300,7 +300,7 @@
         <joint name="${robot_name}_joint_ee" type="fixed">
             <parent link="${robot_name}_link_7" />
             <child link="${robot_name}_link_ee" />
-            <origin xyz="0 0 0.035" rpy="0 0 0" />
+            <origin xyz="0 0 0.045" rpy="0 0 0" />
         </joint>
 
         <link name="${robot_name}_link_ee">
