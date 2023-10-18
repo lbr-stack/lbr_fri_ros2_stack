@@ -6,7 +6,7 @@ from typing import Tuple
 import pytest
 import xacro
 from ament_index_python import get_package_share_directory
-from urdf_parser_py.urdf import URDF, Robot
+from urdf_parser_py.urdf import URDF
 
 from .lbr_model_specifications import (
     LBR_SPECIFICATIONS_DICT,
