@@ -292,7 +292,7 @@
         <joint name="joint_ee" type="fixed">
             <parent link="link_7" />
             <child link="link_ee" />
-            <origin xyz="0 0 0.045" rpy="0 0 0" />
+            <origin xyz="0 0 0.035" rpy="0 0 0" />
         </joint>
 
         <link name="link_ee">
