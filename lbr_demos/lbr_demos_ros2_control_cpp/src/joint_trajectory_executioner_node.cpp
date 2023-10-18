@@ -16,7 +16,7 @@ public:
 
     joint_trajectory_action_client_ =
         rclcpp_action::create_client<control_msgs::action::FollowJointTrajectory>(
-            this, "/joint_trajectory_controller/follow_joint_trajectory");
+            this, "/lbr/joint_trajectory_controller/follow_joint_trajectory");
 
     while (!joint_trajectory_action_client_->wait_for_action_server(std::chrono::seconds(1))) {
       RCLCPP_INFO(this->get_logger(), "Waiting for action server to become available...");
@@ -24,7 +24,7 @@ public:
     RCLCPP_INFO(this->get_logger(), "Action server available.");
   };
 
-  void execute(const std::vector<double> &positions, const int32_t &sec_from_start = 10) {
+  void execute(const std::vector<double> &positions, const int32_t &sec_from_start = 15) {
     if (positions.size() != KUKA::FRI::LBRState::NUMBER_OF_JOINTS) {
       RCLCPP_ERROR(this->get_logger(), "Invalid number of joint positions.");
       return;
@@ -73,12 +73,12 @@ protected:
 
 int main(int argc, char **argv) {
   rclcpp::init(argc, argv);
-  auto lbr_joint_trajectory_executioner_node =
-      std::make_shared<LBRJointTrajectoryExecutionerNode>("lbr_joint_trajectory_executioner_node");
+  auto joint_trajectory_executioner_node =
+      std::make_shared<LBRJointTrajectoryExecutionerNode>("joint_trajectory_executioner_node");
 
   // rotate odd joints
-  RCLCPP_INFO(lbr_joint_trajectory_executioner_node->get_logger(), "Rotating odd joints.");
-  lbr_joint_trajectory_executioner_node->execute({
+  RCLCPP_INFO(joint_trajectory_executioner_node->get_logger(), "Rotating odd joints.");
+  joint_trajectory_executioner_node->execute({
       1.0,
       0.0,
       1.0,
@@ -89,8 +89,8 @@ int main(int argc, char **argv) {
   });
 
   // move to zero position
-  RCLCPP_INFO(lbr_joint_trajectory_executioner_node->get_logger(), "Moving to zero position.");
-  lbr_joint_trajectory_executioner_node->execute({
+  RCLCPP_INFO(joint_trajectory_executioner_node->get_logger(), "Moving to zero position.");
+  joint_trajectory_executioner_node->execute({
       0.0,
       0.0,
       0.0,

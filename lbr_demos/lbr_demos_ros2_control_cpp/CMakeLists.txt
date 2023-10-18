@@ -1,8 +1,12 @@
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 3.22)
 project(lbr_demos_ros2_control_cpp)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
+endif()
+
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
 endif()
 
 # find dependencies
@@ -14,11 +18,11 @@ find_package(rclcpp REQUIRED)
 find_package(rclcpp_action REQUIRED)
 find_package(trajectory_msgs REQUIRED)
 
-add_executable(lbr_joint_trajectory_executioner_node
-  src/lbr_joint_trajectory_executioner_node.cpp
+add_executable(joint_trajectory_executioner_node
+  src/joint_trajectory_executioner_node.cpp
 )
 
-ament_target_dependencies(lbr_joint_trajectory_executioner_node
+ament_target_dependencies(joint_trajectory_executioner_node
   control_msgs
   fri_vendor
   rclcpp
@@ -26,12 +30,12 @@ ament_target_dependencies(lbr_joint_trajectory_executioner_node
   trajectory_msgs
 )
 
-target_link_libraries(lbr_joint_trajectory_executioner_node
+target_link_libraries(joint_trajectory_executioner_node
   FRIClient::FRIClient
 )
 
 install(TARGETS
-  lbr_joint_trajectory_executioner_node
+  joint_trajectory_executioner_node
   DESTINATION lib/${PROJECT_NAME}
 )
 

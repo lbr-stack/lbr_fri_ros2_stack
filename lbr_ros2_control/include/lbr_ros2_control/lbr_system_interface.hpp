@@ -1,5 +1,5 @@
-#ifndef LBR_HARDWARE_INTERFACE__LBR_HARDWARE_INTERFACE_HPP_
-#define LBR_HARDWARE_INTERFACE__LBR_HARDWARE_INTERFACE_HPP_
+#ifndef LBR_ROS2_CONTROL__LBR_SYSTEM_INTERFACE_HPP_
+#define LBR_ROS2_CONTROL__LBR_SYSTEM_INTERFACE_HPP_
 
 #include <algorithm>
 #include <cstring>
@@ -14,26 +14,25 @@
 #include "hardware_interface/system_interface.hpp"
 #include "hardware_interface/types/hardware_interface_type_values.hpp"
 #include "rclcpp/rclcpp.hpp"
-#include "rclcpp/strategies/message_pool_memory_strategy.hpp"
 #include "rclcpp_lifecycle/state.hpp"
 
 #include "friLBRState.h"
 
 #include "lbr_fri_msgs/msg/lbr_command.hpp"
 #include "lbr_fri_msgs/msg/lbr_state.hpp"
-#include "lbr_fri_msgs/srv/app_connect.hpp"
-#include "lbr_fri_msgs/srv/app_disconnect.hpp"
 #include "lbr_fri_ros2/app.hpp"
-#include "lbr_hardware_interface/lbr_hardware_interface_type_values.hpp"
+#include "lbr_fri_ros2/client.hpp"
+#include "lbr_fri_ros2/enum_maps.hpp"
+#include "lbr_ros2_control/lbr_system_interface_type_values.hpp"
 
-namespace lbr_hardware_interface {
-class LBRHardwareInterface : public hardware_interface::SystemInterface {
+namespace lbr_ros2_control {
+class LBRSystemInterface : public hardware_interface::SystemInterface {
 public:
-  LBRHardwareInterface() = default;
+  LBRSystemInterface() = default;
 
   // hardware interface
-  controller_interface::CallbackReturn on_init(
-      const hardware_interface::HardwareInfo &info) override; // check ros2 control and set status
+  controller_interface::CallbackReturn
+  on_init(const hardware_interface::HardwareInfo &info) override;
   std::vector<hardware_interface::StateInterface> export_state_interfaces() override;
   std::vector<hardware_interface::CommandInterface> export_command_interfaces() override;
 
@@ -52,38 +51,29 @@ public:
                                         const rclcpp::Duration &period) override;
 
 protected:
-  template <typename ServiceT>
-  bool wait_for_service_(const typename rclcpp::Client<ServiceT>::SharedPtr client,
-                         const uint8_t &attempts = 10,
-                         const std::chrono::seconds &timeout = std::chrono::seconds(1));
-
   // setup
-  void init_command_interfaces_();
-  void init_state_interfaces_();
+  void nan_command_interfaces_();
+  void nan_state_interfaces_();
   bool verify_number_of_joints_();
   bool verify_joint_command_interfaces_();
   bool verify_joint_state_interfaces_();
   bool verify_sensors_();
-  bool spawn_com_layer_();
-  bool spawn_clients_();
 
   // monitor end of commanding active
   bool exit_commanding_active_(const KUKA::FRI::ESessionState &previous_session_state,
                                const KUKA::FRI::ESessionState &session_state);
-
-  // connect to - disconnect from robot
-  bool connect_();
-  bool disconnect_();
-
-  void on_lbr_state_(const lbr_fri_msgs::msg::LBRState::SharedPtr lbr_state);
 
   const uint8_t LBR_FRI_STATE_INTERFACE_SIZE = 7;
   const uint8_t LBR_FRI_COMMAND_INTERFACE_SIZE = 2;
   const uint8_t LBR_FRI_SENSOR_SIZE = 12;
 
   // node for handling communication
-  rclcpp::Node::SharedPtr app_node_;
-  std::unique_ptr<lbr_fri_ros2::App> app_;
+  rclcpp::Node::SharedPtr app_node_ptr_;
+  std::shared_ptr<lbr_fri_ros2::Client> client_ptr_;
+  std::unique_ptr<lbr_fri_ros2::App> app_ptr_;
+
+  lbr_fri_msgs::msg::LBRCommand lbr_command_;
+  lbr_fri_msgs::msg::LBRState lbr_state_;
 
   // exposed state interfaces
   double hw_sample_time_;
@@ -109,7 +99,7 @@ protected:
 
   // comput velocity for state interface
   double time_stamps_to_sec_(const double &sec, const double &nano_sec) const;
-  void init_last_hw_states_();
+  void nan_last_hw_states_();
   void update_last_hw_states_();
   void compute_hw_velocity_();
 
@@ -125,20 +115,8 @@ protected:
   // app connect call request
   int32_t port_id_;
   const char *remote_host_;
-  uint8_t sample_time_;
-  std::string robot_name_;
-
-  // publisher for sending commands / subscriber to receive goals
-  lbr_fri_msgs::msg::LBRCommand lbr_command_;
-  lbr_fri_msgs::msg::LBRState lbr_state_;
-  rclcpp::Subscription<lbr_fri_msgs::msg::LBRState>::SharedPtr lbr_state_sub_;
-  rclcpp::Publisher<lbr_fri_msgs::msg::LBRCommand>::SharedPtr lbr_command_pub_;
-
-  // clients to connect to / disconnect from LBR
-  rclcpp::Client<lbr_fri_msgs::srv::AppConnect>::SharedPtr app_connect_clt_;
-  rclcpp::Client<lbr_fri_msgs::srv::AppDisconnect>::SharedPtr app_disconnect_clt_;
-
-  std::unique_ptr<std::thread> node_thread_;
+  int32_t rt_prio_;
+  bool open_loop_;
 };
-} // end of namespace lbr_hardware_interface
-#endif // LBR_HARDWARE_INTERFACE__LBR_HARDWARE_INTERFACE_HPP_
+} // end of namespace lbr_ros2_control
+#endif // LBR_ROS2_CONTROL__LBR_SYSTEM_INTERFACE_HPP_

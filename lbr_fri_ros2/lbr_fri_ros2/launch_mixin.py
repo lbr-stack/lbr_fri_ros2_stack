@@ -20,7 +20,7 @@ class LBRFRIROS2Mixin:
         return DeclareLaunchArgument(
             name="open_loop",
             default_value="true",
-            description="Open loop control. Works best for LBRs. Should only be set to false by experiences users.",
+            description="Open loop control. Works best for LBRs. Should only be set to false by experienced users.",
         )
 
     @staticmethod
@@ -31,6 +31,15 @@ class LBRFRIROS2Mixin:
             description="Realtime priority of the FRI thread. Realtime kernel required.\n"
             "\tRequires configuration in /etc/security/limits.conf. Add the line:\n"
             "\t'user - rtprio 99', where user is your username.",
+        )
+
+    @staticmethod
+    def arg_port_id() -> DeclareLaunchArgument:
+        return DeclareLaunchArgument(
+            name="port_id",
+            default_value="30200",
+            description="Port ID of the FRI communication. Valid in range [30200, 30209].\n"
+            "\tUsefull in multi-robot setups.",
         )
 
     @staticmethod
@@ -48,6 +57,10 @@ class LBRFRIROS2Mixin:
     @staticmethod
     def param_rt_prio() -> Dict[str, LaunchConfiguration]:
         return {"rt_prio": LaunchConfiguration("rt_prio", default="80")}
+
+    @staticmethod
+    def param_port_id() -> Dict[str, LaunchConfiguration]:
+        return {"port_id": LaunchConfiguration("port_id", default="30200")}
 
     @staticmethod
     def node_app(

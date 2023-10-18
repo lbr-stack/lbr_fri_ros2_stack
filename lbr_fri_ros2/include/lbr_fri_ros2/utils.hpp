@@ -98,20 +98,10 @@ protected:
 };
 
 class JointExponentialFilterArrayROS {
-  using ValueArrayType = std::array<double, KUKA::FRI::LBRState::NUMBER_OF_JOINTS>;
+  using value_array_t = std::array<double, KUKA::FRI::LBRState::NUMBER_OF_JOINTS>;
 
 public:
   JointExponentialFilterArrayROS() = delete;
-
-  /**
-   * @brief Construct a new JointExponentialFilterArrayROS object.
-   *
-   * @param[in] node Shared node for logging and parameter handling.
-   * @param[in] param_prefix Parameter prefix is e.g. used as: param_prefix + "." +
-   * "cut_off_frequency".
-   */
-  JointExponentialFilterArrayROS(const rclcpp::Node::SharedPtr node,
-                                 const std::string &param_prefix = "");
 
   /**
    * @brief Construct a new JointExponentialFilterArrayROS object.
@@ -132,10 +122,12 @@ public:
    * @param[in] current The current joint values.
    * @param[in, out] previous The previous smoothed joint values. Will be updated.
    */
-  void compute(const double *const current, ValueArrayType &previous);
+  void compute(const double *const current, value_array_t &previous);
   void init(const double &cutoff_frequency, const double &sample_time);
+  inline const std::string &param_prefix() const { return param_prefix_; }
 
 protected:
+  const std::string cutoff_frequency_param_name_ = "cutoff_frequency"; /**< Parameter name.*/
   ExponentialFilter exponential_filter_; /**< Exponential filter applied to all joints.*/
   rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr
       logging_interface_; /**< Logging interface.*/
@@ -147,9 +139,9 @@ protected:
 };
 
 class JointPIDArrayROS {
-  using ValueArrayType = std::array<double, KUKA::FRI::LBRState::NUMBER_OF_JOINTS>;
-  using NameArrayType = std::array<std::string, KUKA::FRI::LBRState::NUMBER_OF_JOINTS>;
-  using PIDArrayType = std::array<control_toolbox::PidROS, KUKA::FRI::LBRState::NUMBER_OF_JOINTS>;
+  using value_array_t = std::array<double, KUKA::FRI::LBRState::NUMBER_OF_JOINTS>;
+  using name_array_t = std::array<std::string, KUKA::FRI::LBRState::NUMBER_OF_JOINTS>;
+  using pid_array_t = std::array<control_toolbox::PidROS, KUKA::FRI::LBRState::NUMBER_OF_JOINTS>;
 
 public:
   JointPIDArrayROS() = delete;
@@ -162,7 +154,7 @@ public:
    * @param[in] names Names of the joints.
    * @param[in] prefix Prefix for the parameters.
    */
-  JointPIDArrayROS(const rclcpp::Node::SharedPtr node, const NameArrayType &names,
+  JointPIDArrayROS(const rclcpp::Node::SharedPtr node, const name_array_t &names,
                    const std::string &prefix = "");
 
   /**
@@ -173,8 +165,19 @@ public:
    * @param[in] dt The time step.
    * @param[out] command The returned joint command.
    */
-  void compute(const ValueArrayType &command_target, const ValueArrayType &state,
-               const rclcpp::Duration &dt, ValueArrayType &command);
+  void compute(const value_array_t &command_target, const value_array_t &state,
+               const rclcpp::Duration &dt, value_array_t &command);
+
+  /**
+   * @brief Compute the PID update.
+   *
+   * @param[in] command_target The target joint command.
+   * @param[in] state The current joint state.
+   * @param[in] dt The time step.
+   * @param[out] command The returned joint command.
+   */
+  void compute(const value_array_t &command_target, const double *state, const rclcpp::Duration &dt,
+               value_array_t &command);
 
   /**
    * @brief Initialize the PID controllers. Sets all #pid_controllers_ to the same parameters, but
@@ -191,7 +194,7 @@ public:
             const double &i_min, const bool &antiwindup);
 
 protected:
-  PIDArrayType pid_controllers_; /**< PID controllers for each joint.*/
+  pid_array_t pid_controllers_; /**< PID controllers for each joint.*/
 };
 } // end of namespace lbr_fri_ros2
 #endif // LBR_FRI_ROS2__UTILS_HPP_

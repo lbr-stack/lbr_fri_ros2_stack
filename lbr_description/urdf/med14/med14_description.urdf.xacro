@@ -27,22 +27,15 @@
     <xacro:include filename="$(find lbr_description)/ros2_control/lbr.ros2_control.xacro" />
 
     <!-- robot as extracted via https://github.com/syuntoku14/fusion2urdf -->
-    <xacro:macro name="med14" params="base_frame:=^|world robot_name:=^|lbr sim:=^|true">
-
-        <!--joint
-        between {base_frame} and link_0-->
-        <joint name="${base_frame}_joint" type="fixed">
-            <parent link="${base_frame}" />
-            <child link="link_0" />
-        </joint>
+    <xacro:macro name="med14"
+        params="robot_name:=^|lbr port_id:=^|30200 sim:=^|true">
 
         <link name="link_0">
             <inertial>
-                <origin rpy="0 0 0"
-                    xyz="-0.0018642104260720833 -9.120393625716289e-09 0.07751683665104403" />
-                <mass value="8.146350" />
-                <inertia ixx="0.044603" ixy="-0.000000" ixz="-0.000788" iyy="0.045465"
-                    iyz="0.000000" izz="0.061903" />
+                <origin rpy="0 0 0" xyz="-0.001864 0.0 0.077517" />
+                <mass value="8.146413" />
+                <inertia ixx="0.044604" ixy="0.0" ixz="-0.000788" iyy="0.045465" iyz="0.0"
+                    izz="0.061904" />
             </inertial>
             <visual>
                 <origin rpy="0 0 0" xyz="0 0 0" />
@@ -71,20 +64,19 @@
 
         <link name="link_1">
             <inertial>
-                <origin rpy="0 0 0"
-                    xyz="9.307232415315581e-08 -0.033795431550791004 0.13240370669453896" />
-                <mass value="5.591386" />
-                <inertia ixx="0.044885" ixy="-0.000000" ixz="-0.000000" iyy="0.045283"
-                    iyz="0.006703" izz="0.016775" />
+                <origin rpy="0 0 0" xyz="0.0 -0.033795  0.132404" />
+                <mass value="5.591419" />
+                <inertia ixx="0.044885" ixy="0.0" ixz="0.0" iyy="0.045283" iyz="0.006703"
+                    izz="0.016776" />
             </inertial>
             <visual>
-                <origin rpy="0 0 0" xyz="-0.0 -0.0 -0.147" />
+                <origin rpy="0 0 0" xyz="0.0 0.0 -0.147" />
                 <geometry>
                     <mesh filename="package://lbr_description/meshes/med14/visual/link_1.dae" />
                 </geometry>
             </visual>
             <collision>
-                <origin rpy="0 0 0" xyz="-0.0 -0.0 -0.147" />
+                <origin rpy="0 0 0" xyz="0.0 0.0 -0.147" />
                 <geometry>
                     <mesh filename="package://lbr_description/meshes/med14/collision/link_1.stl" />
                 </geometry>
@@ -104,20 +96,19 @@
 
         <link name="link_2">
             <inertial>
-                <origin rpy="0 0 0"
-                    xyz="0.0001358226533474577 0.0475476440926152 0.07632205850106144" />
-                <mass value="6.013539" />
-                <inertia ixx="0.058332" ixy="-0.000035" ixz="0.000059" iyy="0.057063" iyz="0.010606"
+                <origin rpy="0 0 0" xyz="0.000136 0.047546 0.076324" />
+                <mass value="6.013411" />
+                <inertia ixx="0.05833" ixy="-3.5e-05" ixz="5.9e-05" iyy="0.057062" iyz="0.010605"
                     izz="0.017466" />
             </inertial>
             <visual>
-                <origin rpy="0 0 0" xyz="-0.0 0.01 -0.3595" />
+                <origin rpy="0 0 0" xyz="0.0 0.01 -0.3595" />
                 <geometry>
                     <mesh filename="package://lbr_description/meshes/med14/visual/link_2.dae" />
                 </geometry>
             </visual>
             <collision>
-                <origin rpy="0 0 0" xyz="-0.0 0.01 -0.3595" />
+                <origin rpy="0 0 0" xyz="0.0 0.01 -0.3595" />
                 <geometry>
                     <mesh filename="package://lbr_description/meshes/med14/collision/link_2.stl" />
                 </geometry>
@@ -125,7 +116,7 @@
         </link>
 
         <joint name="A3" type="revolute">
-            <origin rpy="0 0 0" xyz="-0.0 0.01 0.228" />
+            <origin rpy="0 0 0" xyz="0.0 0.01 0.228" />
             <parent link="link_2" />
             <child link="link_3" />
             <axis xyz="0.0 0.0 1.0" />
@@ -137,20 +128,19 @@
 
         <link name="link_3">
             <inertial>
-                <origin rpy="0 0 0"
-                    xyz="5.689213978259012e-08 0.03491265072974692 0.12310820658934007" />
-                <mass value="3.658768" />
-                <inertia ixx="0.022960" ixy="-0.000000" ixz="0.000000" iyy="0.021913"
-                    iyz="-0.004065" izz="0.008140" />
+                <origin rpy="0 0 0" xyz="0.0 0.034913 0.123108" />
+                <mass value="3.65879" />
+                <inertia ixx="0.02296" ixy="0.0" ixz="0.0" iyy="0.021913" iyz="-0.004065"
+                    izz="0.00814" />
             </inertial>
             <visual>
-                <origin rpy="0 0 0" xyz="0.0 -0.0 -0.5875" />
+                <origin rpy="0 0 0" xyz="0.0 0.0 -0.5875" />
                 <geometry>
                     <mesh filename="package://lbr_description/meshes/med14/visual/link_3.dae" />
                 </geometry>
             </visual>
             <collision>
-                <origin rpy="0 0 0" xyz="0.0 -0.0 -0.5875" />
+                <origin rpy="0 0 0" xyz="0.0 0.0 -0.5875" />
                 <geometry>
                     <mesh filename="package://lbr_description/meshes/med14/collision/link_3.stl" />
                 </geometry>
@@ -170,11 +160,10 @@
 
         <link name="link_4">
             <inertial>
-                <origin rpy="0 0 0"
-                    xyz="-3.025185496951432e-08 -0.03979329512420171 0.08694364647762443" />
-                <mass value="4.358282" />
-                <inertia ixx="0.034259" ixy="-0.000000" ixz="-0.000000" iyy="0.032514"
-                    iyz="-0.006365" izz="0.010447" />
+                <origin rpy="0 0 0" xyz="0.0 -0.039793  0.086944" />
+                <mass value="4.358267" />
+                <inertia ixx="0.034255" ixy="0.0" ixz="0.0" iyy="0.032512" iyz="-0.006365"
+                    izz="0.010444" />
             </inertial>
             <visual>
                 <origin rpy="0 0 0" xyz="0.0 -0.0105 -0.7795" />
@@ -203,20 +192,19 @@
 
         <link name="link_5">
             <inertial>
-                <origin rpy="0 0 0"
-                    xyz="3.8871741664391765e-08 -0.029824284088761824 0.07626701716135809" />
-                <mass value="1.652994" />
-                <inertia ixx="0.009172" ixy="0.000000" ixz="-0.000000" iyy="0.007714" iyz="0.003033"
-                    izz="0.004159" />
+                <origin rpy="0 0 0" xyz="0.0 -0.029824  0.076267" />
+                <mass value="1.653015" />
+                <inertia ixx="0.009172" ixy="0.0" ixz="0.0"
+                    iyy="0.007714" iyz="0.003033" izz="0.004159" />
             </inertial>
             <visual>
-                <origin rpy="0 0 0" xyz="-0.0 0.0 -0.987" />
+                <origin rpy="0 0 0" xyz="0.0 0.0 -0.987" />
                 <geometry>
                     <mesh filename="package://lbr_description/meshes/med14/visual/link_5.dae" />
                 </geometry>
             </visual>
             <collision>
-                <origin rpy="0 0 0" xyz="-0.0 0.0 -0.987" />
+                <origin rpy="0 0 0" xyz="0.0 0.0 -0.987" />
                 <geometry>
                     <mesh filename="package://lbr_description/meshes/med14/collision/link_5.stl" />
                 </geometry>
@@ -236,20 +224,19 @@
 
         <link name="link_6">
             <inertial>
-                <origin rpy="0 0 0"
-                    xyz="-7.073221484902805e-07 0.07101990943401978 0.004952526180380223" />
-                <mass value="2.598208" />
-                <inertia ixx="0.007640" ixy="-0.000000" ixz="0.000000" iyy="0.007355" iyz="0.000336"
+                <origin rpy="0 0 0" xyz="-1.000e-06 7.102e-02 4.953e-03" />
+                <mass value="2.598211" />
+                <inertia ixx="0.00764" ixy="0.0" ixz="0.0" iyy="0.007355" iyz="0.000336"
                     izz="0.005004" />
             </inertial>
             <visual>
-                <origin rpy="0 0 0" xyz="-0.0 0.0707 -1.1795" />
+                <origin rpy="0 0 0" xyz="0.0 0.0707 -1.1795" />
                 <geometry>
                     <mesh filename="package://lbr_description/meshes/med14/visual/link_6.dae" />
                 </geometry>
             </visual>
             <collision>
-                <origin rpy="0 0 0" xyz="-0.0 0.0707 -1.1795" />
+                <origin rpy="0 0 0" xyz="0.0 0.0707 -1.1795" />
                 <geometry>
                     <mesh filename="package://lbr_description/meshes/med14/collision/link_6.stl" />
                 </geometry>
@@ -269,20 +256,18 @@
 
         <link name="link_7">
             <inertial>
-                <origin rpy="0 0 0"
-                    xyz="3.121827460016089e-06 -1.635815563460264e-06 0.0137822955218736" />
-                <mass value="0.280472" />
-                <inertia ixx="0.000185" ixy="0.000000" ixz="-0.000000" iyy="0.000185" iyz="0.000000"
-                    izz="0.000323" />
+                <origin rpy="0 0 0" xyz="3.0000e-06 -2.0000e-06 1.3782e-02" />
+                <mass value="0.280474" />
+                <inertia ixx="0.000185" ixy="0.0" ixz="0.0" iyy="0.000185" iyz="0.0" izz="0.000323" />
             </inertial>
             <visual>
-                <origin rpy="0 0 0" xyz="-0.0 -0.0 -1.2705" />
+                <origin rpy="0 0 0" xyz="0.0 0.0 -1.2705" />
                 <geometry>
                     <mesh filename="package://lbr_description/meshes/med14/visual/link_7.dae" />
                 </geometry>
             </visual>
             <collision>
-                <origin rpy="0 0 0" xyz="-0.0 -0.0 -1.2705" />
+                <origin rpy="0 0 0" xyz="0.0 0.0 -1.2705" />
                 <geometry>
                     <mesh filename="package://lbr_description/meshes/med14/collision/link_7.stl" />
                 </geometry>
@@ -299,7 +284,7 @@
 
         <xacro:lbr_gazebo />
         <!-- TODO: move modes to args, decouple urdf/gazebo/controls -->
-        <xacro:lbr_hardware_interface
+        <xacro:lbr_system_interface
             A1_position_limit="${A1_position_limit * PI / 180}"
             A2_position_limit="${A2_position_limit * PI / 180}"
             A3_position_limit="${A3_position_limit * PI / 180}"
@@ -308,8 +293,7 @@
             A6_position_limit="${A6_position_limit * PI / 180}"
             A7_position_limit="${A7_position_limit * PI / 180}"
             effort_limit="${effort_limit}"
-            sim="${sim}" remote_host="INADDR_ANY" port_id="30200"
-            robot_name="${robot_name}" />
+            sim="${sim}" remote_host="INADDR_ANY" port_id="${port_id}" />
 
     </xacro:macro>
 </robot>
