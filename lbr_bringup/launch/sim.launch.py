@@ -2,7 +2,7 @@ from typing import List
 
 from launch import LaunchContext, LaunchDescription, LaunchDescriptionEntity
 from launch.actions import DeclareLaunchArgument, OpaqueFunction, RegisterEventHandler
-from launch.conditions import IfCondition
+from launch.conditions import IfCondition, UnlessCondition
 from launch.event_handlers import OnProcessExit
 from launch.substitutions import (
     AndSubstitution,
@@ -87,6 +87,21 @@ def launch_setup(context: LaunchContext) -> List[LaunchDescriptionEntity]:
         )
     )
 
+    # unless MoveIt: add world -> robot_name/base_frame transform
+    ld.add_action(
+        LBRDescriptionMixin.node_static_tf(
+            tf=[0, 0, 0, 0, 0, 0],  # keep zero
+            parent="world",
+            child=PathJoinSubstitution(
+                [
+                    LaunchConfiguration("robot_name"),
+                    LaunchConfiguration("base_frame"),
+                ]  # results in robot_name/base_frame
+            ),
+            condition=UnlessCondition(LaunchConfiguration("moveit")),
+        )
+    )
+
     # RViz and MoveIt
     rviz_moveit = RVizMixin.node_rviz(
         rviz_config_pkg=f"{model}_moveit_config",
@@ -106,15 +121,15 @@ def launch_setup(context: LaunchContext) -> List[LaunchDescriptionEntity]:
     )
 
     # RViz no MoveIt
-    ld.add_action(RVizMixin.arg_rviz_config_pkg())
-    ld.add_action(RVizMixin.arg_rviz_config())
     rviz = RVizMixin.node_rviz(
+        rviz_config_pkg="lbr_bringup",
+        rviz_config="config/config.rviz",
         condition=IfCondition(
             AndSubstitution(
                 LaunchConfiguration("rviz"),
                 NotSubstitution(LaunchConfiguration("moveit")),
             )
-        )
+        ),
     )
 
     # RViz event handler
