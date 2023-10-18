@@ -8,9 +8,6 @@
     <!-- include transmission for ros_control -->
     <xacro:include filename="$(find lbr_description)/urdf/lbr.transmission.xacro" />
 
-    <!-- include materials -->
-    <xacro:include filename="$(find lbr_description)/urdf/lbr.materials.xacro" />
-
     <!-- some constants -->
     <xacro:property name="PI" value="3.1415926535897931" />
     <xacro:property name="safety_controller_k_pos" value="100" />
@@ -90,7 +87,7 @@
         </link>
 
         <joint name="${robot_name}_joint_2" type="revolute">
-            <origin rpy="0 0 0" xyz="-0.0 -0.0105 0.193" />
+            <origin rpy="0 0 0" xyz="0.0 -0.0105 0.1925" />
             <parent link="${robot_name}_link_1" />
             <child link="${robot_name}_link_2" />
             <axis xyz="0.0 0.01 0.0" />
@@ -127,7 +124,7 @@
         </link>
 
         <joint name="${robot_name}_joint_3" type="revolute">
-            <origin rpy="0 0 0" xyz="0.0 0.0105 0.1745" />
+            <origin rpy="0 0 0" xyz="0.0 0.0105 0.2075" />
             <parent link="${robot_name}_link_2" />
             <child link="${robot_name}_link_3" />
             <axis xyz="0.0 0.0 0.01" />
@@ -164,7 +161,7 @@
         </link>
 
         <joint name="${robot_name}_joint_4" type="revolute">
-            <origin rpy="0 0 0" xyz="0.0 0.0105 0.2255" />
+            <origin rpy="0 0 0" xyz="0.0 0.0105 0.1925" />
             <parent link="${robot_name}_link_3" />
             <child link="${robot_name}_link_4" />
             <axis xyz="0.0 -0.01 0.0" />
@@ -201,7 +198,7 @@
         </link>
 
         <joint name="${robot_name}_joint_5" type="revolute">
-            <origin rpy="0 0 0" xyz="0.0 -0.0105 0.1745" />
+            <origin rpy="0 0 0" xyz="0.0 -0.0105 0.2075" />
             <parent link="${robot_name}_link_4" />
             <child link="${robot_name}_link_5" />
             <axis xyz="0.0 0.0 0.01" />
@@ -238,7 +235,7 @@
         </link>
 
         <joint name="${robot_name}_joint_6" type="revolute">
-            <origin rpy="0 0 0" xyz="0.0 -0.0707 0.2255" />
+            <origin rpy="0 0 0" xyz="0.0 -0.0707 0.1925" />
             <parent link="${robot_name}_link_5" />
             <child link="${robot_name}_link_6" />
             <axis xyz="0.0 0.01 0.0" />
@@ -276,7 +273,7 @@
 
 
         <joint name="${robot_name}_joint_7" type="revolute">
-            <origin rpy="0 0 0" xyz="0.0 0.0705 0.0909" />
+            <origin rpy="0 0 0" xyz="0.0 0.0707 0.091" />
             <parent link="${robot_name}_link_6" />
             <child link="${robot_name}_link_7" />
             <axis xyz="0.0 0.0 0.01" />
