@@ -2,7 +2,7 @@ from typing import List
 
 from launch import LaunchContext, LaunchDescription, LaunchDescriptionEntity
 from launch.actions import DeclareLaunchArgument, OpaqueFunction, RegisterEventHandler
-from launch.conditions import IfCondition
+from launch.conditions import IfCondition, UnlessCondition
 from launch.event_handlers import OnProcessExit, OnProcessStart
 from launch.substitutions import (
     AndSubstitution,
@@ -55,8 +55,6 @@ def launch_setup(context: LaunchContext) -> List[LaunchDescriptionEntity]:
     ld.add_action(LBRMoveGroupMixin.arg_monitor_dynamics())
     ld.add_action(LBRMoveGroupMixin.args_publish_monitored_planning_scene())
 
-    robot_name = LaunchConfiguration("robot_name").perform(context)
-
     # MoveGroup:
     # - requires world frame
     # - maps link robot_name/base_frame -> base_frame
@@ -101,6 +99,21 @@ def launch_setup(context: LaunchContext) -> List[LaunchDescriptionEntity]:
             ],
             condition=IfCondition(LaunchConfiguration("moveit")),
             namespace=robot_name,
+        )
+    )
+
+    # unless MoveIt: add world -> robot_name/base_frame transform
+    ld.add_action(
+        LBRDescriptionMixin.node_static_tf(
+            tf=[0, 0, 0, 0, 0, 0],  # keep zero
+            parent="world",
+            child=PathJoinSubstitution(
+                [
+                    LaunchConfiguration("robot_name"),
+                    LaunchConfiguration("base_frame"),
+                ]  # results in robot_name/base_frame
+            ),
+            condition=UnlessCondition(LaunchConfiguration("moveit")),
         )
     )
 
