@@ -11,10 +11,12 @@
   <buildtool_depend>ament_cmake_pytest</buildtool_depend>
   <buildtool_depend>ament_cmake_python</buildtool_depend>
 
-  <exec_depend>xacro</exec_depend>
+  <exec_depend>gazebo_ros2_control</exec_depend>
   <exec_depend>joint_state_publisher_gui</exec_depend>
+  <exec_depend>tf2_ros</exec_depend>
   <exec_depend>robot_state_publisher</exec_depend>
   <exec_depend>rviz2</exec_depend>
+  <exec_depend>xacro</exec_depend>
 
   <test_depend>python3-pytest</test_depend>
 
