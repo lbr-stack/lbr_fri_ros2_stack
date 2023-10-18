@@ -34,9 +34,9 @@
             <inertial>
                 <origin rpy="0 0 0"
                     xyz="-0.0128215344957798 -7.86364415362405e-08 0.07150661827888387" />
-                <mass value="7.05037793" />
-                <inertia ixx="0.031177" ixy="0.000000" ixz="0.000870" iyy="0.039634" iyz="0.000000"
-                    izz="0.043034" />
+                <mass value="7.050378" />
+                <inertia ixx="0.031226" ixy="0.0" ixz="0.000871" iyy="0.039697" iyz="0.0"
+                    izz="0.043102" />
             </inertial>
             <visual>
                 <origin rpy="0 0 0" xyz="0 0 0" />
@@ -67,18 +67,18 @@
             <inertial>
                 <origin rpy="0 0 0"
                     xyz="9.307232415315581e-08 -0.03379543155079102 0.13240370669453902" />
-                <mass value="5.28952872" />
-                <inertia ixx="0.042394" ixy="-0.000000" ixz="-0.000000" iyy="0.042770"
-                    iyz="0.006331" izz="0.015845" />
+                <mass value="5.289529" />
+                <inertia ixx="0.042462" ixy="0.0" ixz="0.0" iyy="0.042838" iyz="0.006341"
+                    izz="0.01587" />
             </inertial>
             <visual>
-                <origin rpy="0 0 0" xyz="-0.0 0.0 -0.1475" />
+                <origin rpy="0 0 0" xyz="0.0 0.0 -0.1475" />
                 <geometry>
                     <mesh filename="package://lbr_description/meshes/iiwa14/visual/link_1.dae" />
                 </geometry>
             </visual>
             <collision>
-                <origin rpy="0 0 0" xyz="-0.0 0.0 -0.1475" />
+                <origin rpy="0 0 0" xyz="0.0 0.0 -0.1475" />
                 <geometry>
                     <mesh filename="package://lbr_description/meshes/iiwa14/collision/link_1.stl" />
                 </geometry>
@@ -86,7 +86,7 @@
         </link>
 
         <joint name="A2" type="revolute">
-            <origin rpy="0 0 0" xyz="-0.0 -0.01 0.2125" />
+            <origin rpy="0 0 0" xyz="0.0 -0.01 0.2125" />
             <parent link="link_1" />
             <child link="link_2" />
             <axis xyz="0.0 1.0 0.0" />
@@ -100,18 +100,18 @@
             <inertial>
                 <origin rpy="0 0 0"
                     xyz="0.00015188022518878674 0.051987109728758904 0.05880129877994178" />
-                <mass value="5.68888779" />
-                <inertia ixx="0.039326" ixy="-0.000029" ixz="0.000042" iyy="0.039101" iyz="0.006282"
-                    izz="0.014161" />
+                <mass value="5.688888" />
+                <inertia ixx="0.055182" ixy="-3.3e-05" ixz="5.6e-05" iyy="0.053983" iyz="0.010034"
+                    izz="0.016523" />
             </inertial>
             <visual>
-                <origin rpy="0 0 0" xyz="-0.0 0.01 -0.36" />
+                <origin rpy="0 0 0" xyz="0.0 0.01 -0.36" />
                 <geometry>
                     <mesh filename="package://lbr_description/meshes/iiwa14/visual/link_2.dae" />
                 </geometry>
             </visual>
             <collision>
-                <origin rpy="0 0 0" xyz="-0.0 0.01 -0.36" />
+                <origin rpy="0 0 0" xyz="0.0 0.01 -0.36" />
                 <geometry>
                     <mesh filename="package://lbr_description/meshes/iiwa14/collision/link_2.stl" />
                 </geometry>
@@ -133,18 +133,18 @@
             <inertial>
                 <origin rpy="0 0 0"
                     xyz="-5.974614313346012e-09 0.029563618732667742 0.13650341869763982" />
-                <mass value="3.46124535" />
-                <inertia ixx="0.032236" ixy="-0.000000" ixz="0.000000" iyy="0.030602"
-                    iyz="-0.006265" izz="0.009779" />
+                <mass value="3.461245" />
+                <inertia ixx="0.02172" ixy="0.0" ixz="0.0" iyy="0.02073" iyz="-0.003845"
+                    izz="0.007701" />
             </inertial>
             <visual>
-                <origin rpy="0 0 0" xyz="0.0 -0.0 -0.588" />
+                <origin rpy="0 0 0" xyz="0.0 0.0 -0.588" />
                 <geometry>
                     <mesh filename="package://lbr_description/meshes/iiwa14/visual/link_3.dae" />
                 </geometry>
             </visual>
             <collision>
-                <origin rpy="0 0 0" xyz="0.0 -0.0 -0.588" />
+                <origin rpy="0 0 0" xyz="0.0 0.0 -0.588" />
                 <geometry>
                     <mesh filename="package://lbr_description/meshes/iiwa14/collision/link_3.stl" />
                 </geometry>
@@ -166,18 +166,18 @@
             <inertial>
                 <origin rpy="0 0 0"
                     xyz="-2.09625967727708e-08 -0.04476439079596513 0.06741903952954653" />
-                <mass value="4.12299549" />
-                <inertia ixx="0.022114" ixy="-0.000000" ixz="-0.000000" iyy="0.021074"
-                    iyz="-0.003660" izz="0.007890" />
+                <mass value="4.122995" />
+                <inertia ixx="0.03241" ixy="0.0" ixz="0.0" iyy="0.030758" iyz="-0.006022"
+                    izz="0.009883" />
             </inertial>
             <visual>
-                <origin rpy="0 0 0" xyz="-0.0 -0.0105 -0.78" />
+                <origin rpy="0 0 0" xyz="0.0 -0.0105 -0.78" />
                 <geometry>
                     <mesh filename="package://lbr_description/meshes/iiwa14/visual/link_4.dae" />
                 </geometry>
             </visual>
             <collision>
-                <origin rpy="0 0 0" xyz="-0.0 -0.0105 -0.78" />
+                <origin rpy="0 0 0" xyz="0.0 -0.0105 -0.78" />
                 <geometry>
                     <mesh filename="package://lbr_description/meshes/iiwa14/collision/link_4.stl" />
                 </geometry>
@@ -185,7 +185,7 @@
         </link>
 
         <joint name="A5" type="revolute">
-            <origin rpy="0 0 0" xyz="-0.0 -0.0105 0.2075" />
+            <origin rpy="0 0 0" xyz="0.0 -0.0105 0.2075" />
             <parent link="link_4" />
             <child link="link_5" />
             <axis xyz="0.0 0.0 1.0" />
@@ -199,9 +199,9 @@
             <inertial>
                 <origin rpy="0 0 0"
                     xyz="-0.00012008657208039079 -0.021390023245727908 0.0854754261653966" />
-                <mass value="1.56375558" />
-                <inertia ixx="0.012955" ixy="0.000002" ixz="-0.000001" iyy="0.011185" iyz="0.003972"
-                    izz="0.005744" />
+                <mass value="1.563756" />
+                <inertia ixx="0.008677" ixy="0.0" ixz="0.0" iyy="0.007297" iyz="0.002869"
+                    izz="0.003935" />
             </inertial>
             <visual>
                 <origin rpy="0 0 0" xyz="0.0 0.0 -0.9875" />
@@ -232,9 +232,9 @@
             <inertial>
                 <origin rpy="0 0 0"
                     xyz="-6.000032555678588e-08 0.07103825551434698 0.000565530522845803" />
-                <mass value="2.4578784" />
-                <inertia ixx="0.006292" ixy="-0.000000" ixz="-0.000000" iyy="0.006023"
-                    iyz="0.000314" izz="0.004585" />
+                <mass value="2.457878" />
+                <inertia ixx="0.007227" ixy="0.0" ixz="0.0" iyy="0.006958" iyz="0.000318"
+                    izz="0.004734" />
             </inertial>
             <visual>
                 <origin rpy="0 0 0" xyz="0.0 0.0707 -1.18" />
@@ -265,18 +265,17 @@
             <inertial>
                 <origin rpy="0 0 0"
                     xyz="3.963019849314055e-06 -1.5392768444664745e-08 0.027186686478491096" />
-                <mass value="0.26533073" />
-                <inertia ixx="0.000281" ixy="-0.000000" ixz="-0.000000" iyy="0.000277"
-                    iyz="0.000000" izz="0.000430" />
+                <mass value="0.265331" />
+                <inertia ixx="0.000175" ixy="0.0" ixz="0.0" iyy="0.000175" iyz="0.0" izz="0.000306" />
             </inertial>
             <visual>
-                <origin rpy="0 0 0" xyz="-0.0 0.0 -1.271" />
+                <origin rpy="0 0 0" xyz="0.0 0.0 -1.271" />
                 <geometry>
                     <mesh filename="package://lbr_description/meshes/iiwa14/visual/link_7.dae" />
                 </geometry>
             </visual>
             <collision>
-                <origin rpy="0 0 0" xyz="-0.0 0.0 -1.271" />
+                <origin rpy="0 0 0" xyz="0.0 0.0 -1.271" />
                 <geometry>
                     <mesh filename="package://lbr_description/meshes/iiwa14/collision/link_7.stl" />
                 </geometry>
