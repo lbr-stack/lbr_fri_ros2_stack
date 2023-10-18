@@ -1,6 +1,7 @@
 import argparse
 
 import numpy as np
+import transformations as tf
 import urchin
 
 
@@ -39,6 +40,16 @@ def main() -> None:
 
     print("Got actuated joints:")
     print(urdf.actuated_joint_names)
+
+    def print_origin(origin: np.ndarray) -> None:
+        xyz = tf.translation_from_matrix(origin)
+        rpy = tf.euler_from_matrix(origin)
+        xyz = np.around(xyz, decimals=order)
+        rpy = np.around(rpy, decimals=order)
+        print(f"xyz: {xyz} rpy: {rpy}")
+
+    print("Inertial origins:")
+    [print_origin(link.inertial.origin) for link in urdf.links]
 
     print("Got link masses:")
     link_masses = [link.inertial.mass for link in urdf.links]
