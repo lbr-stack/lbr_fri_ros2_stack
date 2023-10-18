@@ -7,7 +7,7 @@ Install [catkin](http://wiki.ros.org/catkin), [rosdep](http://wiki.ros.org/rosde
 mkdir -p lbr_fri_ros_ws/src && cd lbr_fri_ros_ws
 wget https://raw.githubusercontent.com/KCL-BMEIS/lbr_fri_ros2_stack/noetic/lbr_fri_ros_stack/repos.yml -P src
 vcs import src < src/repos.yml
-rosdep install --rosdistro noetic --ignore-src --from-paths src
+rosdep install --rosdistro noetic --ignore-src --from-paths src -r -y
 catkin_make
 ```
 Next, launch an example via
