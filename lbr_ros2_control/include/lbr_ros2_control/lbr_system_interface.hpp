@@ -23,6 +23,7 @@
 #include "lbr_fri_ros2/app.hpp"
 #include "lbr_fri_ros2/client.hpp"
 #include "lbr_fri_ros2/enum_maps.hpp"
+#include "lbr_ros2_control/lbr_state_interface_reference.hpp"
 #include "lbr_ros2_control/lbr_system_interface_type_values.hpp"
 
 namespace lbr_ros2_control {

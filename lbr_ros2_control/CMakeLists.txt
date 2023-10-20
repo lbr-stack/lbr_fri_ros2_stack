@@ -20,19 +20,21 @@ find_package(hardware_interface REQUIRED)
 find_package(controller_interface REQUIRED)
 find_package(pluginlib REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(realtime_tools REQUIRED)
 find_package(lbr_fri_msgs REQUIRED)
 find_package(lbr_fri_ros2 REQUIRED)
 find_package(fri_vendor REQUIRED)
 find_package(FRIClient REQUIRED)
 
-# Define targets
+# LBR ROS 2 control library
 add_library(
   ${PROJECT_NAME}
   SHARED
+  src/lbr_state_broadcaster.cpp
   src/lbr_system_interface.cpp
 )
 
-# Add include directories for target
+# Add include directories
 target_include_directories(
   ${PROJECT_NAME}
   PUBLIC
@@ -49,6 +51,7 @@ ament_target_dependencies(
   controller_interface
   pluginlib
   rclcpp
+  realtime_tools
   lbr_fri_msgs
   lbr_fri_ros2
   fri_vendor
@@ -58,7 +61,7 @@ target_link_libraries(${PROJECT_NAME}
   FRIClient::FRIClient
 )
 
-pluginlib_export_plugin_description_file(hardware_interface lbr_system_interface.xml)
+pluginlib_export_plugin_description_file(hardware_interface lbr_ros2_control.xml)
 
 # Export for downstream usage, see https://docs.ros.org/en/foxy/Guides/Ament-CMake-Documentation.html
 ament_export_targets(
@@ -70,6 +73,7 @@ ament_export_dependencies(
   controller_interface
   pluginlib
   rclcpp
+  realtime_tools
   lbr_fri_msgs
   lbr_fri_ros2
   fri_vendor
