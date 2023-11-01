@@ -10,6 +10,7 @@
 #include "realtime_tools/realtime_publisher.h"
 
 #include "lbr_fri_msgs/msg/lbr_state.hpp"
+#include "lbr_ros2_control/lbr_state_interface_wrapper.hpp"
 
 namespace lbr_ros2_control {
 class LBRStateBroadcaster : public controller_interface::ControllerInterface {
@@ -35,6 +36,8 @@ public:
   on_deactivate(const rclcpp_lifecycle::State &previous_state) override;
 
 protected:
+  LBRStateInterfaceWrapper state_interface_wrapper_;
+
   rclcpp::Publisher<lbr_fri_msgs::msg::LBRState>::SharedPtr state_publisher_ptr_;
   std::shared_ptr<realtime_tools::RealtimePublisher<lbr_fri_msgs::msg::LBRState>>
       rt_state_publisher_ptr_;

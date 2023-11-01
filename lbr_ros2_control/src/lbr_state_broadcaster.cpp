@@ -33,9 +33,9 @@ controller_interface::CallbackReturn LBRStateBroadcaster::on_init() {
 controller_interface::return_type LBRStateBroadcaster::update(const rclcpp::Time & /*time*/,
                                                               const rclcpp::Duration & /*period*/) {
 
-  // read state from command interfaces
+  // read state from state interfaces
 
-  // publish state from command interfaces
+  // publish state from state interfaces
 
   // rt_state_publisher_ptr_->msg_
 
@@ -51,6 +51,8 @@ LBRStateBroadcaster::on_configure(const rclcpp_lifecycle::State & /*previous_sta
 
 controller_interface::CallbackReturn
 LBRStateBroadcaster::on_activate(const rclcpp_lifecycle::State & /*previous_state*/) {
+  // state_interface_wrapper_.reference(this->state_interfaces_);
+
   rt_state_publisher_ptr_->msg_.client_command_mode = std::numeric_limits<int8_t>::quiet_NaN();
   rt_state_publisher_ptr_->msg_.commanded_joint_position.fill(
       std::numeric_limits<double>::quiet_NaN());
