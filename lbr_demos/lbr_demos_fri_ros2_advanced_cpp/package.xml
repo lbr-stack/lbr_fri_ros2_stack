@@ -17,7 +17,7 @@
   <depend>kdl_parser</depend>
   <depend>lbr_fri_ros2</depend>
   <depend>lbr_fri_msgs</depend>
-  <depend>orocos_kdl</depend>
+  <depend>orocos_kdl_vendor</depend>
   <depend>rclcpp</depend>
   <depend>rclcpp_components</depend>
 
