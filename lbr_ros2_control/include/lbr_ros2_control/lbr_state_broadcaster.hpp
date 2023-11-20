@@ -1,6 +1,7 @@
 #ifndef LBR_ROS2_CONTROL__LBR_STATE_BROADCASTER_HPP_
 #define LBR_ROS2_CONTROL__LBR_STATE_BROADCASTER_HPP_
 
+#include <cmath>
 #include <limits>
 #include <map>
 #include <memory>

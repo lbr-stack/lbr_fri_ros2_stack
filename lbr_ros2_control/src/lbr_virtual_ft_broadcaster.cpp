@@ -55,6 +55,10 @@ controller_interface::CallbackReturn LBRVirtualFTBroadcaster::on_init() {
 controller_interface::return_type
 LBRVirtualFTBroadcaster::update(const rclcpp::Time & /*time*/,
                                 const rclcpp::Duration & /*period*/) {
+  // check any for nan
+  if (std::isnan(joint_position_interfaces_[0].get().get_value())) {
+    return controller_interface::return_type::OK;
+  }
   for (std::size_t i = 0; i < joint_names_.size(); ++i) {
     joint_positions_(i) = joint_position_interfaces_[i].get().get_value();
     external_joint_torques_(i) = external_joint_torque_interfaces_[i].get().get_value();

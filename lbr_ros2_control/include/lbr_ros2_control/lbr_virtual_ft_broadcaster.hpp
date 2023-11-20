@@ -1,6 +1,7 @@
 #ifndef LBR_ROS2_CONTROL__LBR_VIRTUAL_FT_BROADCASTER_HPP_
 #define LBR_ROS2_CONTROL__LBR_VIRTUAL_FT_BROADCASTER_HPP_
 
+#include <cmath>
 #include <functional>
 #include <limits>
 #include <memory>
