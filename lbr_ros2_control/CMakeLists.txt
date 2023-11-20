@@ -37,6 +37,7 @@ add_library(
   SHARED
   src/lbr_state_broadcaster.cpp
   src/lbr_system_interface.cpp
+  src/lbr_virtual_ft_broadcaster.cpp
 )
 
 # Add include directories
@@ -69,7 +70,7 @@ target_link_libraries(${PROJECT_NAME}
   FRIClient::FRIClient
 )
 
-pluginlib_export_plugin_description_file(controller_interface lbr_controllers.xml)
+pluginlib_export_plugin_description_file(controller_interface lbr_broadcasters.xml)
 pluginlib_export_plugin_description_file(hardware_interface lbr_system_interface.xml)
 
 # Export for downstream usage, see https://docs.ros.org/en/foxy/Guides/Ament-CMake-Documentation.html

@@ -1,6 +1,7 @@
 #ifndef LBR_ROS2_CONTROL__LBR_VIRTUAL_FT_BROADCASTER_HPP_
 #define LBR_ROS2_CONTROL__LBR_VIRTUAL_FT_BROADCASTER_HPP_
 
+#include <functional>
 #include <limits>
 #include <memory>
 #include <stdexcept>
@@ -24,7 +25,7 @@
 namespace lbr_ros2_control {
 class LBRVirtualFTBroadcaster : public controller_interface::ControllerInterface {
 public:
-  LBRVirtualFTBroadcaster() = default;
+  LBRVirtualFTBroadcaster();
 
   controller_interface::InterfaceConfiguration command_interface_configuration() const override;
 
@@ -54,13 +55,13 @@ protected:
 
   kinematics_interface_kdl::KinematicsInterfaceKDL kinematics_interface_kdl_;
 
-  Eigen::Matrix<double, 6, KUKA::FRI::LBRState::NUMBER_OF_JOINTS> jacobian_;
-  Eigen::Matrix<double, KUKA::FRI::LBRState::NUMBER_OF_JOINTS, 6> jacobian_pinv_;
+  Eigen::Matrix<double, 6, Eigen::Dynamic> jacobian_;
+  Eigen::Matrix<double, Eigen::Dynamic, 6> jacobian_pinv_;
   Eigen::Matrix<double, KUKA::FRI::LBRState::NUMBER_OF_JOINTS, 1> joint_positions_,
       external_joint_torques_;
   Eigen::Matrix<double, 6, 1> virtual_ft_;
 
-  std::string link_name_ = "link_ee";
+  std::string end_effector_link_ = "link_ee";
   std::array<std::string, 7> joint_names_ = {"A1", "A2", "A3", "A4", "A5", "A6", "A7"};
 
   std::vector<std::reference_wrapper<hardware_interface::LoanedStateInterface>>

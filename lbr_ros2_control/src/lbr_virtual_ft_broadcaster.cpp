@@ -1,6 +1,10 @@
 #include "lbr_ros2_control/lbr_virtual_ft_broadcaster.hpp"
 
 namespace lbr_ros2_control {
+LBRVirtualFTBroadcaster::LBRVirtualFTBroadcaster()
+    : jacobian_(6, KUKA::FRI::LBRState::NUMBER_OF_JOINTS),
+      jacobian_pinv_(KUKA::FRI::LBRState::NUMBER_OF_JOINTS, 6) {}
+
 controller_interface::InterfaceConfiguration
 LBRVirtualFTBroadcaster::command_interface_configuration() const {
   return controller_interface::InterfaceConfiguration{
@@ -12,7 +16,7 @@ LBRVirtualFTBroadcaster::state_interface_configuration() const {
   controller_interface::InterfaceConfiguration interface_configuration;
   interface_configuration.type = controller_interface::interface_configuration_type::INDIVIDUAL;
   for (const auto &joint_name : joint_names_) {
-    interface_configuration.names.push_back(joint_name + "/" + HW_IF_POSITION);
+    interface_configuration.names.push_back(joint_name + "/" + hardware_interface::HW_IF_POSITION);
     interface_configuration.names.push_back(joint_name + "/" + HW_IF_EXTERNAL_TORQUE);
   }
   return interface_configuration;
@@ -26,9 +30,10 @@ controller_interface::CallbackReturn LBRVirtualFTBroadcaster::on_init() {
     rt_wrench_stamped_publisher_ptr_ =
         std::make_shared<realtime_tools::RealtimePublisher<geometry_msgs::msg::WrenchStamped>>(
             wrench_stamped_publisher_ptr_);
-    kinematics_interface_kdl_.initialize(this->get_node(), link_name_);
-    for (const auto &state_interface : state_interfaces_) {
-      if (state_interface.get_interface_name() == HW_IF_POSITION) {
+    kinematics_interface_kdl_.initialize(this->get_node()->get_node_parameters_interface(),
+                                         end_effector_link_);
+    for (auto &state_interface : state_interfaces_) {
+      if (state_interface.get_interface_name() == hardware_interface::HW_IF_POSITION) {
         joint_position_interfaces_.emplace_back(std::ref(state_interface));
       }
       if (state_interface.get_interface_name() == HW_IF_EXTERNAL_TORQUE) {
@@ -51,10 +56,9 @@ LBRVirtualFTBroadcaster::update(const rclcpp::Time & /*time*/,
     external_joint_torques_(i) = external_joint_torque_interfaces_[i].get().get_value();
   }
   // compute virtual FT given Jacobian and external joint torques
-  kinematics_interface_kdl_.calculate_jacobian(joint_positions_, link_name_, jacobian_);
+  kinematics_interface_kdl_.calculate_jacobian(joint_positions_, end_effector_link_, jacobian_);
   jacobian_pinv_ = damped_least_squares_(jacobian_);
   virtual_ft_ = jacobian_pinv_.transpose() * external_joint_torques_;
-
   // publish
   if (rt_wrench_stamped_publisher_ptr_->trylock()) {
     rt_wrench_stamped_publisher_ptr_->msg_.header.stamp = this->get_node()->now();
@@ -66,21 +70,22 @@ LBRVirtualFTBroadcaster::update(const rclcpp::Time & /*time*/,
     rt_wrench_stamped_publisher_ptr_->msg_.wrench.torque.z = virtual_ft_(5);
     rt_wrench_stamped_publisher_ptr_->unlockAndPublish();
   }
+  return controller_interface::return_type::OK;
 }
 
 controller_interface::CallbackReturn
-LBRVirtualFTBroadcaster::on_configure(const rclcpp_lifecycle::State &previous_state) {
+LBRVirtualFTBroadcaster::on_configure(const rclcpp_lifecycle::State & /*previous_state*/) {
   return controller_interface::CallbackReturn::SUCCESS;
 }
 
 controller_interface::CallbackReturn
-LBRVirtualFTBroadcaster::on_activate(const rclcpp_lifecycle::State &previous_state) {
+LBRVirtualFTBroadcaster::on_activate(const rclcpp_lifecycle::State & /*previous_state*/) {
   init_state_();
   return controller_interface::CallbackReturn::SUCCESS;
 }
 
 controller_interface::CallbackReturn
-LBRVirtualFTBroadcaster::on_deactivate(const rclcpp_lifecycle::State &previous_state) {
+LBRVirtualFTBroadcaster::on_deactivate(const rclcpp_lifecycle::State & /*previous_state*/) {
   return controller_interface::CallbackReturn::SUCCESS;
 }
 
@@ -100,9 +105,8 @@ void LBRVirtualFTBroadcaster::init_state_() {
 
 template <class MatT>
 Eigen::Matrix<typename MatT::Scalar, MatT::ColsAtCompileTime, MatT::RowsAtCompileTime>
-LBRVirtualFTBroadcaster::damped_least_squares_(
-    const MatT &mat,
-    typename MatT::Scalar lambda = typename MatT::Scalar{2e-1}) // choose appropriately
+LBRVirtualFTBroadcaster::damped_least_squares_(const MatT &mat,
+                                               typename MatT::Scalar lambda) // choose appropriately
 {
   typedef typename MatT::Scalar Scalar;
   auto svd = mat.jacobiSvd(Eigen::ComputeFullU | Eigen::ComputeFullV);
@@ -117,3 +121,8 @@ LBRVirtualFTBroadcaster::damped_least_squares_(
   return svd.matrixV() * dampedSingularValuesInv * svd.matrixU().adjoint();
 }
 } // end of namespace lbr_ros2_control
+
+#include "pluginlib/class_list_macros.hpp"
+
+PLUGINLIB_EXPORT_CLASS(lbr_ros2_control::LBRVirtualFTBroadcaster,
+                       controller_interface::ControllerInterface)
