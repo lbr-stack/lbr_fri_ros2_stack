@@ -21,6 +21,10 @@
     forward_position_controller:
       type: position_controllers/JointGroupPositionController
 
+/**/lbr_virtual_ft_broadcaster:
+  ros__parameters:
+    damping: 0.2
+
 /**/position_trajectory_controller:
   ros__parameters:
     joints:

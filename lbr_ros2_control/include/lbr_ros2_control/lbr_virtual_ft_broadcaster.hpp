@@ -61,6 +61,8 @@ protected:
       external_joint_torques_;
   Eigen::Matrix<double, 6, 1> virtual_ft_;
 
+  double damping_;
+
   std::string end_effector_link_ = "link_ee";
   std::array<std::string, 7> joint_names_ = {"A1", "A2", "A3", "A4", "A5", "A6", "A7"};
 

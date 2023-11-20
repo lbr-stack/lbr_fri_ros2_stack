@@ -32,6 +32,10 @@ controller_interface::CallbackReturn LBRVirtualFTBroadcaster::on_init() {
             wrench_stamped_publisher_ptr_);
     kinematics_interface_kdl_.initialize(this->get_node()->get_node_parameters_interface(),
                                          end_effector_link_);
+    if (!this->get_node()->get_parameter_or<double>("damping", damping_, 2e-1)) {
+      RCLCPP_WARN(this->get_node()->get_logger(),
+                  "Failed to get damping parameter, using default value: %f.", damping_);
+    }
     for (auto &state_interface : state_interfaces_) {
       if (state_interface.get_interface_name() == hardware_interface::HW_IF_POSITION) {
         joint_position_interfaces_.emplace_back(std::ref(state_interface));
@@ -57,7 +61,7 @@ LBRVirtualFTBroadcaster::update(const rclcpp::Time & /*time*/,
   }
   // compute virtual FT given Jacobian and external joint torques
   kinematics_interface_kdl_.calculate_jacobian(joint_positions_, end_effector_link_, jacobian_);
-  jacobian_pinv_ = damped_least_squares_(jacobian_);
+  jacobian_pinv_ = damped_least_squares_(jacobian_, damping_);
   virtual_ft_ = jacobian_pinv_.transpose() * external_joint_torques_;
   // publish
   if (rt_wrench_stamped_publisher_ptr_->trylock()) {
