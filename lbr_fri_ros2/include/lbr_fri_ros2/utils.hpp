@@ -46,7 +46,9 @@ public:
    * @param[in] previous The previous smoothed value.
    * @return double The returned smoothed value.
    */
-  inline double compute(const double &current, const double &previous);
+  inline double compute(const double &current, const double &previous) {
+    return filters::exponentialSmoothing(current, previous, alpha_);
+  };
 
   /**
    * @brief Set the cutoff frequency object. Internally computes the new #alpha_.
@@ -61,14 +63,14 @@ public:
    *
    * @return const double&
    */
-  inline const double &get_sample_time() const;
+  inline const double &get_sample_time() const { return sample_time_; };
 
   /**
    * @brief Get #alpha_.
    *
    * @return const double&
    */
-  inline const double &get_alpha() const;
+  inline const double &get_alpha() const { return alpha_; };
 
 protected:
   /**
