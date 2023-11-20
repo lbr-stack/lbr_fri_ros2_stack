@@ -23,7 +23,9 @@ def launch_setup(context: LaunchContext) -> List[LaunchDescriptionEntity]:
     ld.add_action(GazeboMixin.include_gazebo())  # Gazebo has its own controller manager
     spawn_entity = GazeboMixin.node_spawn_entity()
     ld.add_action(spawn_entity)
-    joint_state_broadcaster = LBRROS2ControlMixin.node_joint_state_broadcaster()
+    joint_state_broadcaster = LBRROS2ControlMixin.node_controller_spawner(
+        controller="joint_state_broadcaster"
+    )
     ld.add_action(joint_state_broadcaster)
     robot_state_publisher = LBRROS2ControlMixin.node_robot_state_publisher(
         robot_description=robot_description, use_sim_time=True
@@ -31,7 +33,11 @@ def launch_setup(context: LaunchContext) -> List[LaunchDescriptionEntity]:
     ld.add_action(
         robot_state_publisher
     )  # Do not condition robot state publisher on joint state broadcaster as Gazebo uses robot state publisher to retrieve robot description
-    ld.add_action(LBRROS2ControlMixin.node_controller())
+    ld.add_action(
+        LBRROS2ControlMixin.node_controller_spawner(
+            controller=LaunchConfiguration("ctrl")
+        )
+    )
 
     # MoveIt 2
     ld.add_action(LBRMoveGroupMixin.arg_allow_trajectory_execution())

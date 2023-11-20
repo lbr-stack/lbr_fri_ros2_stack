@@ -1,12 +1,15 @@
 from typing import List
 
 from launch import LaunchContext, LaunchDescription, LaunchDescriptionEntity
-from launch.actions import (DeclareLaunchArgument, OpaqueFunction,
-                            RegisterEventHandler)
+from launch.actions import DeclareLaunchArgument, OpaqueFunction, RegisterEventHandler
 from launch.conditions import IfCondition, UnlessCondition
 from launch.event_handlers import OnProcessExit, OnProcessStart
-from launch.substitutions import (AndSubstitution, LaunchConfiguration,
-                                  NotSubstitution, PathJoinSubstitution)
+from launch.substitutions import (
+    AndSubstitution,
+    LaunchConfiguration,
+    NotSubstitution,
+    PathJoinSubstitution,
+)
 
 from lbr_bringup import LBRMoveGroupMixin
 from lbr_description import LBRDescriptionMixin, RVizMixin
@@ -23,8 +26,12 @@ def launch_setup(context: LaunchContext) -> List[LaunchDescriptionEntity]:
     ld.add_action(ros2_control_node)
 
     # joint state broad caster and controller on ros2 control node start
-    joint_state_broadcaster = LBRROS2ControlMixin.node_joint_state_broadcaster()
-    controller = LBRROS2ControlMixin.node_controller()
+    joint_state_broadcaster = LBRROS2ControlMixin.node_controller_spawner(
+        controller="joint_state_broadcaster"
+    )
+    controller = LBRROS2ControlMixin.node_controller_spawner(
+        controller=LaunchConfiguration("ctrl")
+    )
 
     controller_event_handler = RegisterEventHandler(
         OnProcessStart(

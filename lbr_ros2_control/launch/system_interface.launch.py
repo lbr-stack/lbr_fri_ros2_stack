@@ -1,6 +1,7 @@
 from launch import LaunchDescription
 from launch.actions import RegisterEventHandler
 from launch.event_handlers import OnProcessStart
+from launch.substitutions import LaunchConfiguration
 
 from lbr_description import LBRDescriptionMixin
 from lbr_ros2_control import LBRROS2ControlMixin
@@ -24,8 +25,12 @@ def generate_launch_description() -> LaunchDescription:
         robot_description=robot_description
     )
     ld.add_action(ros2_control_node)
-    joint_state_broadcaster = LBRSystemInterface.node_joint_state_broadcaster()
-    controller = LBRSystemInterface.node_controller()
+    joint_state_broadcaster = LBRSystemInterface.node_controller_spawner(
+        controller="joint_state_broadcaster"
+    )
+    controller = LBRSystemInterface.node_controller_spawner(
+        controller=LaunchConfiguration("ctrl")
+    )
     controller_event_handler = RegisterEventHandler(
         OnProcessStart(
             target_action=ros2_control_node,
