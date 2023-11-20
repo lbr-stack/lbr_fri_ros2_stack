@@ -11,6 +11,9 @@
     lbr_state_broadcaster:
       type: lbr_ros2_control/LBRStateBroadcaster
 
+    lbr_virtual_ft_broadcaster:
+      type: lbr_ros2_control/LBRVirtualFTBroadcaster
+
     # Controllers
     position_trajectory_controller:
       type: joint_trajectory_controller/JointTrajectoryController

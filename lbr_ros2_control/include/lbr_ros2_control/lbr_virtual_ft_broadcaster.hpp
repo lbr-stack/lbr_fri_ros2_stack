@@ -4,14 +4,20 @@
 #include <limits>
 #include <memory>
 #include <stdexcept>
+#include <vector>
 
 #include "controller_interface/controller_interface.hpp"
+#include "eigen3/Eigen/Core"
+#include "eigen3/Eigen/SVD"
 #include "geometry_msgs/msg/wrench_stamped.hpp"
+#include "hardware_interface/loaned_state_interface.hpp"
 #include "hardware_interface/types/hardware_interface_type_values.hpp"
+#include "kinematics_interface_kdl/kinematics_interface_kdl.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include "realtime_tools/realtime_publisher.h"
 
 #include "friClientIf.h"
+#include "friLBRState.h"
 
 #include "lbr_ros2_control/lbr_system_interface_type_values.hpp"
 
@@ -39,6 +45,27 @@ public:
   on_deactivate(const rclcpp_lifecycle::State &previous_state) override;
 
 protected:
+  void init_state_();
+
+  template <class MatT>
+  Eigen::Matrix<typename MatT::Scalar, MatT::ColsAtCompileTime, MatT::RowsAtCompileTime>
+  damped_least_squares_(const MatT &mat,
+                        typename MatT::Scalar lambda = typename MatT::Scalar{2e-1});
+
+  kinematics_interface_kdl::KinematicsInterfaceKDL kinematics_interface_kdl_;
+
+  Eigen::Matrix<double, 6, KUKA::FRI::LBRState::NUMBER_OF_JOINTS> jacobian_;
+  Eigen::Matrix<double, KUKA::FRI::LBRState::NUMBER_OF_JOINTS, 6> jacobian_pinv_;
+  Eigen::Matrix<double, KUKA::FRI::LBRState::NUMBER_OF_JOINTS, 1> joint_positions_,
+      external_joint_torques_;
+  Eigen::Matrix<double, 6, 1> virtual_ft_;
+
+  std::string link_name_ = "link_ee";
+  std::array<std::string, 7> joint_names_ = {"A1", "A2", "A3", "A4", "A5", "A6", "A7"};
+
+  std::vector<std::reference_wrapper<hardware_interface::LoanedStateInterface>>
+      joint_position_interfaces_, external_joint_torque_interfaces_;
+
   rclcpp::Publisher<geometry_msgs::msg::WrenchStamped>::SharedPtr wrench_stamped_publisher_ptr_;
   std::shared_ptr<realtime_tools::RealtimePublisher<geometry_msgs::msg::WrenchStamped>>
       rt_wrench_stamped_publisher_ptr_;

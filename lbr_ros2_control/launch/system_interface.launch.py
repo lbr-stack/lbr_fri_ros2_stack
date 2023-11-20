@@ -31,13 +31,21 @@ def generate_launch_description() -> LaunchDescription:
     lbr_state_broadcaster = LBRSystemInterface.node_controller_spawner(
         controller="lbr_state_broadcaster"
     )
+    lbr_virtual_ft_broadcast = LBRSystemInterface.node_controller_spawner(
+        controller="lbr_virtual_ft_broadcaster"
+    )
     controller = LBRSystemInterface.node_controller_spawner(
         controller=LaunchConfiguration("ctrl")
     )
     controller_event_handler = RegisterEventHandler(
         OnProcessStart(
             target_action=ros2_control_node,
-            on_start=[joint_state_broadcaster, lbr_state_broadcaster, controller],
+            on_start=[
+                joint_state_broadcaster,
+                lbr_state_broadcaster,
+                lbr_virtual_ft_broadcast,
+                controller,
+            ],
         )
     )
     ld.add_action(controller_event_handler)

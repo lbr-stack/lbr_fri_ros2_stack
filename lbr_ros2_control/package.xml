@@ -9,9 +9,12 @@
 
   <buildtool_depend>ament_cmake</buildtool_depend>
   <buildtool_depend>ament_cmake_python</buildtool_depend>
+  <buildtool_depend>eigen3_cmake_module</buildtool_depend>
 
+  <depend>eigen</depend>
   <depend>fri_vendor</depend>
   <depend>geometry_msgs</depend>
+  <depend>kinematics_interface_kdl</depend>
   <depend>lbr_fri_msgs</depend>
   <depend>lbr_fri_ros2</depend>
   <depend>pluginlib</depend>
