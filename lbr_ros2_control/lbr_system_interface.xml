@@ -1,14 +1,6 @@
 <?xml version="1.0"?>
 <library path="lbr_ros2_control">
-    <description>
-        TODO
-    </description>
-
     <!-- LBR system interface plugin -->
     <class type="lbr_ros2_control::LBRSystemInterface"
         base_class_type="hardware_interface::SystemInterface" />
-
-    <!-- LBR state broadcaster plugin -->
-    <class type="lbr_ros2_control::LBRStateBroadcaster"
-        base_class_type="controller_interface::ControllerInterface" />
 </library>

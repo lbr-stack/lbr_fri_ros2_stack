@@ -2,15 +2,19 @@
 #define LBR_ROS2_CONTROL__LBR_STATE_BROADCASTER_HPP_
 
 #include <limits>
+#include <map>
 #include <memory>
 #include <stdexcept>
 
 #include "controller_interface/controller_interface.hpp"
+#include "hardware_interface/types/hardware_interface_type_values.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include "realtime_tools/realtime_publisher.h"
 
+#include "friClientIf.h"
+
 #include "lbr_fri_msgs/msg/lbr_state.hpp"
-#include "lbr_ros2_control/lbr_state_interface_wrapper.hpp"
+#include "lbr_ros2_control/lbr_system_interface_type_values.hpp"
 
 namespace lbr_ros2_control {
 class LBRStateBroadcaster : public controller_interface::ControllerInterface {
@@ -36,7 +40,11 @@ public:
   on_deactivate(const rclcpp_lifecycle::State &previous_state) override;
 
 protected:
-  LBRStateInterfaceWrapper state_interface_wrapper_;
+  void init_state_interface_map_();
+  void init_state_msg_();
+
+  std::array<std::string, 7> joint_names_ = {"A1", "A2", "A3", "A4", "A5", "A6", "A7"};
+  std::unordered_map<std::string, std::unordered_map<std::string, double>> state_interface_map_;
 
   rclcpp::Publisher<lbr_fri_msgs::msg::LBRState>::SharedPtr state_publisher_ptr_;
   std::shared_ptr<realtime_tools::RealtimePublisher<lbr_fri_msgs::msg::LBRState>>

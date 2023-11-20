@@ -61,7 +61,8 @@ target_link_libraries(${PROJECT_NAME}
   FRIClient::FRIClient
 )
 
-pluginlib_export_plugin_description_file(hardware_interface lbr_ros2_control.xml)
+pluginlib_export_plugin_description_file(controller_interface lbr_controllers.xml)
+pluginlib_export_plugin_description_file(hardware_interface lbr_system_interface.xml)
 
 # Export for downstream usage, see https://docs.ros.org/en/foxy/Guides/Ament-CMake-Documentation.html
 ament_export_targets(
