@@ -3,10 +3,10 @@ from launch.actions import RegisterEventHandler
 from launch.event_handlers import OnProcessStart
 
 from lbr_description import LBRDescriptionMixin
-from lbr_ros2_control import LBRSystemInterfaceMixin
+from lbr_ros2_control import LBRROS2ControlMixin
 
 
-class LBRSystemInterface(LBRDescriptionMixin, LBRSystemInterfaceMixin):
+class LBRSystemInterface(LBRDescriptionMixin, LBRROS2ControlMixin):
     pass
 
 

@@ -1,1 +1,1 @@
-from .launch_mixin import LBRSystemInterfaceMixin
+from .launch_mixin import LBRROS2ControlMixin
