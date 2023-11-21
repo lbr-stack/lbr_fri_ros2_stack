@@ -26,7 +26,7 @@ controller_interface::CallbackReturn LBRVirtualFTBroadcaster::on_init() {
   try {
     wrench_stamped_publisher_ptr_ =
         this->get_node()->create_publisher<geometry_msgs::msg::WrenchStamped>(
-            "wrench", rclcpp::SensorDataQoS());
+            "estimated_force_torque", rclcpp::SensorDataQoS());
     rt_wrench_stamped_publisher_ptr_ =
         std::make_shared<realtime_tools::RealtimePublisher<geometry_msgs::msg::WrenchStamped>>(
             wrench_stamped_publisher_ptr_);
@@ -41,7 +41,7 @@ controller_interface::CallbackReturn LBRVirtualFTBroadcaster::on_init() {
           this->get_node()->get_logger(),
           "Number of joint names (%ld) does not match the number of joints in the robot (%d).",
           joint_names_.size(), KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
-      return false;
+      return controller_interface::CallbackReturn::ERROR;
     }
   } catch (const std::exception &e) {
     RCLCPP_ERROR(this->get_node()->get_logger(),
