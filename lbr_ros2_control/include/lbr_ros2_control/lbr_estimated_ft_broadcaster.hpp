@@ -1,5 +1,5 @@
-#ifndef LBR_ROS2_CONTROL__LBR_VIRTUAL_FT_BROADCASTER_HPP_
-#define LBR_ROS2_CONTROL__LBR_VIRTUAL_FT_BROADCASTER_HPP_
+#ifndef LBR_ROS2_CONTROL__LBR_ESTIMATED_FT_BROADCASTER_HPP_
+#define LBR_ROS2_CONTROL__LBR_ESTIMATED_FT_BROADCASTER_HPP_
 
 #include <cmath>
 #include <functional>
@@ -77,4 +77,4 @@ protected:
       rt_wrench_stamped_publisher_ptr_;
 };
 } // end of namespace lbr_ros2_control
-#endif // LBR_ROS2_CONTROL__LBR_VIRTUAL_FT_BROADCASTER_HPP_
+#endif // LBR_ROS2_CONTROL__LBR_ESTIMATED_FT_BROADCASTER_HPP_
