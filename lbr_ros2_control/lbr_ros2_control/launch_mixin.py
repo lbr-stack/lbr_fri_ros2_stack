@@ -6,7 +6,7 @@ from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 
 
-class LBRSystemInterfaceMixin:
+class LBRROS2ControlMixin:
     @staticmethod
     def arg_ctrl_cfg_pkg() -> DeclareLaunchArgument:
         return DeclareLaunchArgument(
@@ -72,38 +72,21 @@ class LBRSystemInterfaceMixin:
         )
 
     @staticmethod
-    def node_joint_state_broadcaster(
+    def node_controller_spawner(
         robot_name: Optional[Union[LaunchConfiguration, str]] = None,
+        controller: Optional[Union[LaunchConfiguration, str]] = None,
         **kwargs,
     ) -> Node:
         if robot_name is None:
             robot_name = LaunchConfiguration("robot_name", default="lbr")
+        if controller is None:
+            controller = LaunchConfiguration("ctrl")
         return Node(
             package="controller_manager",
             executable="spawner",
             output="screen",
             arguments=[
-                "joint_state_broadcaster",
-                "--controller-manager",
-                "controller_manager",
-            ],
-            namespace=robot_name,
-            **kwargs,
-        )
-
-    @staticmethod
-    def node_controller(
-        robot_name: Optional[Union[LaunchConfiguration, str]] = None,
-        **kwargs,
-    ) -> Node:
-        if robot_name is None:
-            robot_name = LaunchConfiguration("robot_name", default="lbr")
-        return Node(
-            package="controller_manager",
-            executable="spawner",
-            output="screen",
-            arguments=[
-                LaunchConfiguration("ctrl", default="position_trajectory_controller"),
+                controller,
                 "--controller-manager",
                 "controller_manager",
             ],

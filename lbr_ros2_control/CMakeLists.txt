@@ -16,23 +16,31 @@ endif()
 
 find_package(ament_cmake REQUIRED)
 find_package(ament_cmake_python REQUIRED)
-find_package(hardware_interface REQUIRED)
 find_package(controller_interface REQUIRED)
-find_package(pluginlib REQUIRED)
-find_package(rclcpp REQUIRED)
-find_package(lbr_fri_msgs REQUIRED)
-find_package(lbr_fri_ros2 REQUIRED)
+find_package(eigen3_cmake_module REQUIRED)
+find_package(Eigen3 REQUIRED)
 find_package(fri_vendor REQUIRED)
 find_package(FRIClient REQUIRED)
+find_package(geometry_msgs REQUIRED)
+find_package(hardware_interface REQUIRED)
+find_package(kinematics_interface_kdl REQUIRED)
+find_package(lbr_fri_msgs REQUIRED)
+find_package(lbr_fri_ros2 REQUIRED)
+find_package(kinematics_interface REQUIRED)
+find_package(pluginlib REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(realtime_tools REQUIRED)
 
-# Define targets
+# LBR ROS 2 control library
 add_library(
   ${PROJECT_NAME}
   SHARED
+  src/lbr_estimated_ft_broadcaster.cpp
+  src/lbr_state_broadcaster.cpp
   src/lbr_system_interface.cpp
 )
 
-# Add include directories for target
+# Add include directories
 target_include_directories(
   ${PROJECT_NAME}
   PUBLIC
@@ -45,19 +53,24 @@ target_include_directories(
 # Link against dependencies
 ament_target_dependencies(
   ${PROJECT_NAME}
-  hardware_interface
   controller_interface
-  pluginlib
-  rclcpp
+  Eigen3
+  fri_vendor
+  geometry_msgs
+  hardware_interface
+  kinematics_interface_kdl
   lbr_fri_msgs
   lbr_fri_ros2
-  fri_vendor
+  pluginlib
+  rclcpp
+  realtime_tools
 )
 
 target_link_libraries(${PROJECT_NAME}
   FRIClient::FRIClient
 )
 
+pluginlib_export_plugin_description_file(controller_interface lbr_broadcasters.xml)
 pluginlib_export_plugin_description_file(hardware_interface lbr_system_interface.xml)
 
 # Export for downstream usage, see https://docs.ros.org/en/foxy/Guides/Ament-CMake-Documentation.html
@@ -66,16 +79,21 @@ ament_export_targets(
 )
 
 ament_export_dependencies(
-  hardware_interface
   controller_interface
-  pluginlib
-  rclcpp
-  lbr_fri_msgs
-  lbr_fri_ros2
+  eigen3_cmake_module
+  Eigen3
   fri_vendor
   FRIClient
+  geometry_msgs
+  hardware_interface
+  kinematics_interface_kdl
+  lbr_fri_msgs
+  lbr_fri_ros2
+  pluginlib
+  rclcpp
+  realtime_tools
 )
-
+  
 install(
   DIRECTORY include/
   DESTINATION include

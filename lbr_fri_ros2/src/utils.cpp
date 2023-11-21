@@ -7,10 +7,6 @@ ExponentialFilter::ExponentialFilter(const double &cutoff_frequency, const doubl
   set_cutoff_frequency(cutoff_frequency, sample_time);
 }
 
-inline double ExponentialFilter::compute(const double &current, const double &previous) {
-  return filters::exponentialSmoothing(current, previous, alpha_);
-}
-
 void ExponentialFilter::set_cutoff_frequency(const double &cutoff_frequency,
                                              const double &sample_time) {
   cutoff_frequency_ = cutoff_frequency;
@@ -23,10 +19,6 @@ void ExponentialFilter::set_cutoff_frequency(const double &cutoff_frequency,
     throw std::runtime_error("Alpha is not within [0, 1].");
   }
 }
-
-inline const double &ExponentialFilter::get_sample_time() const { return sample_time_; }
-
-inline const double &ExponentialFilter::get_alpha() const { return alpha_; }
 
 double ExponentialFilter::compute_alpha_(const double &cutoff_frequency,
                                          const double &sample_time) {

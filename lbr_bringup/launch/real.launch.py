@@ -13,32 +13,47 @@ from launch.substitutions import (
 
 from lbr_bringup import LBRMoveGroupMixin
 from lbr_description import LBRDescriptionMixin, RVizMixin
-from lbr_ros2_control import LBRSystemInterfaceMixin
+from lbr_ros2_control import LBRROS2ControlMixin
 
 
 def launch_setup(context: LaunchContext) -> List[LaunchDescriptionEntity]:
     ld = LaunchDescription()
 
     robot_description = LBRDescriptionMixin.param_robot_description(sim=False)
-    ros2_control_node = LBRSystemInterfaceMixin.node_ros2_control(
+    ros2_control_node = LBRROS2ControlMixin.node_ros2_control(
         robot_description=robot_description
     )
     ld.add_action(ros2_control_node)
 
     # joint state broad caster and controller on ros2 control node start
-    joint_state_broadcaster = LBRSystemInterfaceMixin.node_joint_state_broadcaster()
-    controller = LBRSystemInterfaceMixin.node_controller()
+    joint_state_broadcaster = LBRROS2ControlMixin.node_controller_spawner(
+        controller="joint_state_broadcaster"
+    )
+    lbr_state_broadcaster = LBRROS2ControlMixin.node_controller_spawner(
+        controller="lbr_state_broadcaster"
+    )
+    lbr_estimated_ft_broadcast = LBRROS2ControlMixin.node_controller_spawner(
+        controller="lbr_estimated_ft_broadcaster"
+    )
+    controller = LBRROS2ControlMixin.node_controller_spawner(
+        controller=LaunchConfiguration("ctrl")
+    )
 
     controller_event_handler = RegisterEventHandler(
         OnProcessStart(
             target_action=ros2_control_node,
-            on_start=[joint_state_broadcaster, controller],
+            on_start=[
+                joint_state_broadcaster,
+                lbr_state_broadcaster,
+                lbr_estimated_ft_broadcast,
+                controller,
+            ],
         )
     )
     ld.add_action(controller_event_handler)
 
     # robot state publisher on joint state broadcaster spawn exit
-    robot_state_publisher = LBRSystemInterfaceMixin.node_robot_state_publisher(
+    robot_state_publisher = LBRROS2ControlMixin.node_robot_state_publisher(
         robot_description=robot_description, use_sim_time=False
     )
     robot_state_publisher_event_handler = RegisterEventHandler(
@@ -176,8 +191,8 @@ def generate_launch_description() -> LaunchDescription:
             name="rviz", default_value="true", description="Whether to launch RViz."
         )
     )
-    ld.add_action(LBRSystemInterfaceMixin.arg_ctrl_cfg_pkg())
-    ld.add_action(LBRSystemInterfaceMixin.arg_ctrl_cfg())
-    ld.add_action(LBRSystemInterfaceMixin.arg_ctrl())
+    ld.add_action(LBRROS2ControlMixin.arg_ctrl_cfg_pkg())
+    ld.add_action(LBRROS2ControlMixin.arg_ctrl_cfg())
+    ld.add_action(LBRROS2ControlMixin.arg_ctrl())
     ld.add_action(OpaqueFunction(function=launch_setup))
     return ld
