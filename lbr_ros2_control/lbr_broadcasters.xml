@@ -7,8 +7,8 @@
     </class>
 
     <!-- LBR virtual force-torque broadcaster plugin -->
-    <class name="lbr_ros2_control/LBRVirtualFTBroadcaster"
-        type="lbr_ros2_control::LBRVirtualFTBroadcaster"
+    <class name="lbr_ros2_control/LBREstimatedFTBroadcaster"
+        type="lbr_ros2_control::LBREstimatedFTBroadcaster"
         base_class_type="controller_interface::ControllerInterface">
         <description>Broadcaster for end-effector force-torque as estimated from external joint
             torques.</description>

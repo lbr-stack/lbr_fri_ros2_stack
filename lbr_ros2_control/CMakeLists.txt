@@ -35,9 +35,9 @@ find_package(realtime_tools REQUIRED)
 add_library(
   ${PROJECT_NAME}
   SHARED
+  src/lbr_estimated_ft_broadcaster.cpp
   src/lbr_state_broadcaster.cpp
   src/lbr_system_interface.cpp
-  src/lbr_virtual_ft_broadcaster.cpp
 )
 
 # Add include directories

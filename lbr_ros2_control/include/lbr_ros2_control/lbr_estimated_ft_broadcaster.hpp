@@ -24,9 +24,9 @@
 #include "lbr_ros2_control/lbr_system_interface_type_values.hpp"
 
 namespace lbr_ros2_control {
-class LBRVirtualFTBroadcaster : public controller_interface::ControllerInterface {
+class LBREstimatedFTBroadcaster : public controller_interface::ControllerInterface {
 public:
-  LBRVirtualFTBroadcaster();
+  LBREstimatedFTBroadcaster();
 
   controller_interface::InterfaceConfiguration command_interface_configuration() const override;
 
