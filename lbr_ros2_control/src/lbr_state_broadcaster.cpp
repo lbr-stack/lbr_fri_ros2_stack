@@ -39,13 +39,15 @@ controller_interface::CallbackReturn LBRStateBroadcaster::on_init() {
 
 controller_interface::return_type LBRStateBroadcaster::update(const rclcpp::Time & /*time*/,
                                                               const rclcpp::Duration & /*period*/) {
-  // check any for nan
-  if (std::isnan(state_interface_map_[joint_names_[0]][hardware_interface::HW_IF_POSITION])) {
-    return controller_interface::return_type::OK;
-  }
   for (const auto &state_interface : state_interfaces_) {
     state_interface_map_[state_interface.get_prefix_name()][state_interface.get_interface_name()] =
         state_interface.get_value();
+  }
+  // check any for nan
+  if (std::isnan(state_interface_map_[joint_names_[0]][hardware_interface::HW_IF_POSITION])) {
+    RCLCPP_INFO(this->get_node()->get_logger(),
+                "LBRStateBroadcaster: joint position is nan, skipping publish.");
+    return controller_interface::return_type::OK;
   }
   if (rt_state_publisher_ptr_->trylock()) {
     // FRI related states
