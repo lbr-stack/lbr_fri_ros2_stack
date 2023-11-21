@@ -29,6 +29,12 @@ def launch_setup(context: LaunchContext) -> List[LaunchDescriptionEntity]:
     joint_state_broadcaster = LBRROS2ControlMixin.node_controller_spawner(
         controller="joint_state_broadcaster"
     )
+    lbr_state_broadcaster = LBRROS2ControlMixin.node_controller_spawner(
+        controller="lbr_state_broadcaster"
+    )
+    lbr_virtual_ft_broadcast = LBRROS2ControlMixin.node_controller_spawner(
+        controller="lbr_virtual_ft_broadcaster"
+    )
     controller = LBRROS2ControlMixin.node_controller_spawner(
         controller=LaunchConfiguration("ctrl")
     )
@@ -36,7 +42,12 @@ def launch_setup(context: LaunchContext) -> List[LaunchDescriptionEntity]:
     controller_event_handler = RegisterEventHandler(
         OnProcessStart(
             target_action=ros2_control_node,
-            on_start=[joint_state_broadcaster, controller],
+            on_start=[
+                joint_state_broadcaster,
+                lbr_state_broadcaster,
+                lbr_virtual_ft_broadcast,
+                controller,
+            ],
         )
     )
     ld.add_action(controller_event_handler)
