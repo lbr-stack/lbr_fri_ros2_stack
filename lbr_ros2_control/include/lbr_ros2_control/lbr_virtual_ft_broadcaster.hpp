@@ -47,7 +47,9 @@ public:
   on_deactivate(const rclcpp_lifecycle::State &previous_state) override;
 
 protected:
-  void init_state_();
+  void init_states_();
+  bool reference_state_interfaces_();
+  void clear_state_interfaces_();
 
   template <class MatT>
   Eigen::Matrix<typename MatT::Scalar, MatT::ColsAtCompileTime, MatT::RowsAtCompileTime>

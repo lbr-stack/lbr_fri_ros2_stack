@@ -36,13 +36,12 @@ controller_interface::CallbackReturn LBRVirtualFTBroadcaster::on_init() {
       RCLCPP_WARN(this->get_node()->get_logger(),
                   "Failed to get damping parameter, using default value: %f.", damping_);
     }
-    for (auto &state_interface : state_interfaces_) {
-      if (state_interface.get_interface_name() == hardware_interface::HW_IF_POSITION) {
-        joint_position_interfaces_.emplace_back(std::ref(state_interface));
-      }
-      if (state_interface.get_interface_name() == HW_IF_EXTERNAL_TORQUE) {
-        external_joint_torque_interfaces_.emplace_back(std::ref(state_interface));
-      }
+    if (joint_names_.size() != KUKA::FRI::LBRState::NUMBER_OF_JOINTS) {
+      RCLCPP_ERROR(
+          this->get_node()->get_logger(),
+          "Number of joint names (%ld) does not match the number of joints in the robot (%d).",
+          joint_names_.size(), KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
+      return false;
     }
   } catch (const std::exception &e) {
     RCLCPP_ERROR(this->get_node()->get_logger(),
@@ -88,27 +87,64 @@ LBRVirtualFTBroadcaster::on_configure(const rclcpp_lifecycle::State & /*previous
 
 controller_interface::CallbackReturn
 LBRVirtualFTBroadcaster::on_activate(const rclcpp_lifecycle::State & /*previous_state*/) {
-  init_state_();
+  init_states_();
+  if (!reference_state_interfaces_()) {
+    return controller_interface::CallbackReturn::ERROR;
+  }
   return controller_interface::CallbackReturn::SUCCESS;
 }
 
 controller_interface::CallbackReturn
 LBRVirtualFTBroadcaster::on_deactivate(const rclcpp_lifecycle::State & /*previous_state*/) {
+  clear_state_interfaces_();
   return controller_interface::CallbackReturn::SUCCESS;
 }
 
-void LBRVirtualFTBroadcaster::init_state_() {
+void LBRVirtualFTBroadcaster::init_states_() {
   jacobian_.setConstant(std::numeric_limits<double>::quiet_NaN());
   jacobian_pinv_.setConstant(std::numeric_limits<double>::quiet_NaN());
   joint_positions_.setConstant(std::numeric_limits<double>::quiet_NaN());
   external_joint_torques_.setConstant(std::numeric_limits<double>::quiet_NaN());
   virtual_ft_.setConstant(std::numeric_limits<double>::quiet_NaN());
+  rt_wrench_stamped_publisher_ptr_->msg_.header.frame_id = end_effector_link_;
   rt_wrench_stamped_publisher_ptr_->msg_.wrench.force.x = virtual_ft_(0);
   rt_wrench_stamped_publisher_ptr_->msg_.wrench.force.y = virtual_ft_(1);
   rt_wrench_stamped_publisher_ptr_->msg_.wrench.force.z = virtual_ft_(2);
   rt_wrench_stamped_publisher_ptr_->msg_.wrench.torque.x = virtual_ft_(3);
   rt_wrench_stamped_publisher_ptr_->msg_.wrench.torque.y = virtual_ft_(4);
   rt_wrench_stamped_publisher_ptr_->msg_.wrench.torque.z = virtual_ft_(5);
+}
+
+bool LBRVirtualFTBroadcaster::reference_state_interfaces_() {
+  for (auto &state_interface : state_interfaces_) {
+    if (state_interface.get_interface_name() == hardware_interface::HW_IF_POSITION) {
+      joint_position_interfaces_.emplace_back(std::ref(state_interface));
+    }
+    if (state_interface.get_interface_name() == HW_IF_EXTERNAL_TORQUE) {
+      external_joint_torque_interfaces_.emplace_back(std::ref(state_interface));
+    }
+  }
+  if (joint_position_interfaces_.size() != KUKA::FRI::LBRState::NUMBER_OF_JOINTS) {
+    RCLCPP_ERROR(this->get_node()->get_logger(),
+                 "Number of joint position interfaces (%ld) does not match the number of joints "
+                 "in the robot (%d).",
+                 joint_position_interfaces_.size(), KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
+    return false;
+  }
+  if (external_joint_torque_interfaces_.size() != KUKA::FRI::LBRState::NUMBER_OF_JOINTS) {
+    RCLCPP_ERROR(
+        this->get_node()->get_logger(),
+        "Number of external joint torque interfaces (%ld) does not match the number of joints "
+        "in the robot (%d).",
+        external_joint_torque_interfaces_.size(), KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
+    return false;
+  }
+  return true;
+}
+
+void LBRVirtualFTBroadcaster::clear_state_interfaces_() {
+  joint_position_interfaces_.clear();
+  external_joint_torque_interfaces_.clear();
 }
 
 template <class MatT>

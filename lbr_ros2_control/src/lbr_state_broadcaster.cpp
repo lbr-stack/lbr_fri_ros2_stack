@@ -21,6 +21,13 @@ controller_interface::CallbackReturn LBRStateBroadcaster::on_init() {
     rt_state_publisher_ptr_ =
         std::make_shared<realtime_tools::RealtimePublisher<lbr_fri_msgs::msg::LBRState>>(
             state_publisher_ptr_);
+    if (joint_names_.size() != KUKA::FRI::LBRState::NUMBER_OF_JOINTS) {
+      RCLCPP_ERROR(
+          this->get_node()->get_logger(),
+          "Number of joint names (%ld) does not match the number of joints in the robot (%d).",
+          joint_names_.size(), KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
+      return controller_interface::CallbackReturn::ERROR;
+    }
   } catch (const std::exception &e) {
     RCLCPP_ERROR(this->get_node()->get_logger(),
                  "Failed to initialize LBR state broadcaster with: %s.", e.what());

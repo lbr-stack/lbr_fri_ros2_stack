@@ -13,6 +13,7 @@
 #include "realtime_tools/realtime_publisher.h"
 
 #include "friClientIf.h"
+#include "friLBRState.h"
 
 #include "lbr_fri_msgs/msg/lbr_state.hpp"
 #include "lbr_ros2_control/lbr_system_interface_type_values.hpp"
