@@ -4,22 +4,27 @@
   ros__parameters:
     update_rate: 200
 
-    # Broadcasters
+    # ROS 2 control broadcasters
     joint_state_broadcaster:
       type: joint_state_broadcaster/JointStateBroadcaster
 
+    # LBR ROS 2 control broadcasters
     lbr_state_broadcaster:
       type: lbr_ros2_control/LBRStateBroadcaster
 
     lbr_estimated_ft_broadcaster:
       type: lbr_ros2_control/LBREstimatedFTBroadcaster
 
-    # Controllers
+    # ROS 2 control controllers
     position_trajectory_controller:
       type: joint_trajectory_controller/JointTrajectoryController
 
     forward_position_controller:
       type: position_controllers/JointGroupPositionController
+
+    # LBR ROS 2 control controllers
+    forward_lbr_position_command_controller:
+      type: lbr_ros2_control/LBRForwardPositionCommandController
 
 /**/lbr_estimated_ft_broadcaster:
   ros__parameters:
