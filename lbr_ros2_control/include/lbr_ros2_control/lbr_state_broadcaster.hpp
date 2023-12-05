@@ -1,11 +1,13 @@
 #ifndef LBR_ROS2_CONTROL__LBR_STATE_BROADCASTER_HPP_
 #define LBR_ROS2_CONTROL__LBR_STATE_BROADCASTER_HPP_
 
+#include <array>
 #include <cmath>
 #include <limits>
 #include <map>
 #include <memory>
 #include <stdexcept>
+#include <string>
 
 #include "controller_interface/controller_interface.hpp"
 #include "hardware_interface/types/hardware_interface_type_values.hpp"
@@ -45,7 +47,7 @@ protected:
   void init_state_interface_map_();
   void init_state_msg_();
 
-  std::array<std::string, 7> joint_names_ = {"A1", "A2", "A3", "A4", "A5", "A6", "A7"};
+  std::array<std::string, KUKA::FRI::LBRState::NUMBER_OF_JOINTS> joint_names_ = {"A1", "A2", "A3", "A4", "A5", "A6", "A7"};
   std::unordered_map<std::string, std::unordered_map<std::string, double>> state_interface_map_;
 
   rclcpp::Publisher<lbr_fri_msgs::msg::LBRState>::SharedPtr state_publisher_ptr_;
