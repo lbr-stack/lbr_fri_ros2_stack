@@ -37,6 +37,7 @@ add_library(
   SHARED
   src/lbr_estimated_ft_broadcaster.cpp
   src/lbr_forward_position_command_controller.cpp
+  src/lbr_forward_torque_command_controller.cpp
   src/lbr_state_broadcaster.cpp
   src/lbr_system_interface.cpp
 )
