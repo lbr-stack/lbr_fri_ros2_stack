@@ -1,0 +1,63 @@
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Changelog for package LBR FRI ROS 2 Stack 
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Humble v1.3.1 (2023-11-21)
+--------------------------
+* v1.3.0 Gazebo namespace fixes in https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/123
+* Fix iiwa ee link in https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/126
+* Humble v.1.3.1 in https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/130
+
+Humble v1.3.0 beta (2023-10-03)
+-------------------------------
+* Namespaced robot_description and joint_states
+* De-coupled commands, user will interact through LBRPositionCommand, LBRTorqueCommand, LBRWrenchCommand
+* Multi-robot support
+* New command / state interfaces in lbr_fri_ros2
+* Topic free ros2_control support through command / state interfaces in lbr_fri_ros2
+* Intraprocess cpp admittance demo
+* New app component based on command / state interfaces in lbr_fri_ros2
+* Refers to https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/121
+
+Humble v1.2.5 (2023-09-08)
+--------------------------
+* Updated visualization (STL -> DAE files with materials, might occur dark in Gazebo, caused by lack of light)
+* Fixes joint bug in Gazebo
+* Improved logging in command guard
+
+Humble v1.2.4 (2023-08-09)
+--------------------------
+* Remove robot name from configs and use frame_prefix from robot state publisher instead
+* Removed robot name from joint names, e.g. lbr_A1 -> A1
+* Added PID for asynchronous control rate
+* Simplified class names, e.g. LBRApp -> App
+* Add utils.hpp for PID and exponential filter
+
+Humble v1.2.3 (2023-08-07)
+--------------------------
+* Utilizes FRI through vendor package for common fri source in https://github.com/lbr-stack/
+* Addresses some of https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/85
+* Give command guard only logger interface
+* Fix open loop bug
+* Adds real-time priority via rt_prio parameter
+
+Humble v1.2.2 (2023-08-05)
+--------------------------
+* Adds base frame parameter to URDF and launch
+* Adds an open loop option to control the robot, which works extremely well
+* Updates logo in readme
+* Updates joint names to KUKA convention, i.e. A1,...
+
+Humble v1.2.1 (2023-08-04)
+--------------------------
+* Stack's new home at: https://github.com/lbr-stack
+
+Humble v1.2.0 (2023-08-03)
+--------------------------
+* Re-introduces MoveIt, refer to https://github.com/lbr-stack/lbr_fri_ros2_stack/issues/52
+* Moves demo prefix to front for improved package overview
+* Single node for hardware interface
+* Static executors where possible
+* Adds plenty documentation
+* Introduce /lbr, i.e. robot name, namespace to LBRClient for better multi-robot support. Commands / states now e.g. published to /lbr/command / /lbr/state
+* Hardware interface exact limits (stand-alone use has safety-limits)
+* Gives command guard a node handle
