@@ -24,7 +24,7 @@
 
     <!-- includes -->
     <xacro:include filename="$(find lbr_description)/gazebo/lbr.gazebo.xacro" />
-    <xacro:include filename="$(find lbr_description)/ros2_control/lbr.ros2_control.xacro" />
+    <xacro:include filename="$(find lbr_ros2_control)/config/lbr_system_interface.xacro" />
 
     <!-- robot as extracted via https://github.com/syuntoku14/fusion2urdf -->
     <xacro:macro name="iiwa7"

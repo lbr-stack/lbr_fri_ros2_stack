@@ -72,9 +72,9 @@ target_link_libraries(${PROJECT_NAME}
   FRIClient::FRIClient
 )
 
-pluginlib_export_plugin_description_file(controller_interface broadcasters.xml)
-pluginlib_export_plugin_description_file(controller_interface forward_command_controllers.xml)
-pluginlib_export_plugin_description_file(hardware_interface system_interface.xml)
+pluginlib_export_plugin_description_file(controller_interface plugin_description_files/broadcasters.xml)
+pluginlib_export_plugin_description_file(controller_interface plugin_description_files/forward_command_controllers.xml)
+pluginlib_export_plugin_description_file(hardware_interface plugin_description_files/system_interface.xml)
 
 # Export for downstream usage, see https://docs.ros.org/en/foxy/Guides/Ament-CMake-Documentation.html
 ament_export_targets(

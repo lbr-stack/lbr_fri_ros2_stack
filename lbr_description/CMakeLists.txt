@@ -12,7 +12,7 @@ find_package(ament_cmake_python REQUIRED)
 
 # install
 install(
-  DIRECTORY config gazebo launch meshes ros2_control urdf
+  DIRECTORY config gazebo launch meshes urdf
   DESTINATION share/${PROJECT_NAME}
 )
 

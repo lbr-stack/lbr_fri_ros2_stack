@@ -9,7 +9,7 @@ SystemInterface::on_init(const hardware_interface::HardwareInfo &system_info) {
     return ret;
   }
 
-  // parameters from lbr.ros2_control.xacro
+  // parameters from config/lbr_system_interface.xacro
   port_id_ = std::stoul(info_.hardware_parameters["port_id"]);
   info_.hardware_parameters["remote_host"] == "INADDR_ANY"
       ? remote_host_ = NULL
@@ -346,7 +346,7 @@ bool SystemInterface::verify_sensors_() {
     return false;
   }
 
-  // check all interfaces are defined in lbr.ros2_control.xacro
+  // check all interfaces are defined in config/lbr_system_interface.xacro
   const auto &lbr_fri_sensor = info_.sensors[0];
   if (lbr_fri_sensor.state_interfaces.size() != LBR_FRI_SENSOR_SIZE) {
     RCLCPP_ERROR(app_node_ptr_->get_logger(),
