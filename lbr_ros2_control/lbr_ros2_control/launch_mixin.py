@@ -29,7 +29,12 @@ class LBRROS2ControlMixin:
             name="ctrl",
             default_value="position_trajectory_controller",
             description="Desired default controller. One of specified in ctrl_cfg.",
-            choices=["position_trajectory_controller", "forward_position_controller"],
+            choices=[
+                "position_trajectory_controller",
+                "forward_position_controller",
+                "forward_lbr_position_command_controller",
+                "forward_lbr_torque_command_controller",
+            ],
         )
 
     @staticmethod
