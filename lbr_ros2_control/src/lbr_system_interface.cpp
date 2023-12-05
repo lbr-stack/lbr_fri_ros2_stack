@@ -227,6 +227,23 @@ hardware_interface::return_type LBRSystemInterface::write(const rclcpp::Time & /
     client_ptr_->get_command_interface().set_command_target(lbr_command_);
     return hardware_interface::return_type::OK;
   }
+  if (hw_client_command_mode_ == KUKA::FRI::EClientCommandMode::TORQUE) {
+    if (std::any_of(hw_position_command_.cbegin(), hw_position_command_.cend(),
+                    [](const double &v) { return std::isnan(v); }) ||
+        std::any_of(hw_effort_command_.cbegin(), hw_effort_command_.cend(),
+                    [](const double &v) { return std::isnan(v); })) {
+      return hardware_interface::return_type::OK;
+    }
+    std::memcpy(lbr_command_.joint_position.data(), hw_position_command_.data(),
+                sizeof(double) * KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
+    std::memcpy(lbr_command_.torque.data(), hw_effort_command_.data(),
+                sizeof(double) * KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
+    client_ptr_->get_command_interface().set_command_target(lbr_command_);
+    return hardware_interface::return_type::OK;
+  }
+  if (hw_client_command_mode_ == KUKA::FRI::EClientCommandMode::WRENCH) {
+    throw std::runtime_error("Wrench command mode not implemented.");
+  }
   return hardware_interface::return_type::ERROR;
 }
 
