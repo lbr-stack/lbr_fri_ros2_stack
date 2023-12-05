@@ -18,7 +18,7 @@
 #include "friLBRState.h"
 
 #include "lbr_fri_msgs/msg/lbr_state.hpp"
-#include "lbr_ros2_control/lbr_system_interface_type_values.hpp"
+#include "lbr_ros2_control/system_interface_type_values.hpp"
 
 namespace lbr_ros2_control {
 class LBRStateBroadcaster : public controller_interface::ControllerInterface {
@@ -47,7 +47,8 @@ protected:
   void init_state_interface_map_();
   void init_state_msg_();
 
-  std::array<std::string, KUKA::FRI::LBRState::NUMBER_OF_JOINTS> joint_names_ = {"A1", "A2", "A3", "A4", "A5", "A6", "A7"};
+  std::array<std::string, KUKA::FRI::LBRState::NUMBER_OF_JOINTS> joint_names_ = {
+      "A1", "A2", "A3", "A4", "A5", "A6", "A7"};
   std::unordered_map<std::string, std::unordered_map<std::string, double>> state_interface_map_;
 
   rclcpp::Publisher<lbr_fri_msgs::msg::LBRState>::SharedPtr state_publisher_ptr_;

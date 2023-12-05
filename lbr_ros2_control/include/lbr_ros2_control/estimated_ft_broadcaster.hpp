@@ -1,5 +1,5 @@
-#ifndef LBR_ROS2_CONTROL__LBR_VIRTUAL_FT_BROADCASTER_HPP_
-#define LBR_ROS2_CONTROL__LBR_VIRTUAL_FT_BROADCASTER_HPP_
+#ifndef LBR_ROS2_CONTROL__ESTIMATED_FT_BROADCASTER_HPP_
+#define LBR_ROS2_CONTROL__ESTIMATED_FT_BROADCASTER_HPP_
 
 #include <array>
 #include <cmath>
@@ -23,12 +23,12 @@
 #include "friClientIf.h"
 #include "friLBRState.h"
 
-#include "lbr_ros2_control/lbr_system_interface_type_values.hpp"
+#include "lbr_ros2_control/system_interface_type_values.hpp"
 
 namespace lbr_ros2_control {
-class LBREstimatedFTBroadcaster : public controller_interface::ControllerInterface {
+class EstimatedFTBroadcaster : public controller_interface::ControllerInterface {
 public:
-  LBREstimatedFTBroadcaster();
+  EstimatedFTBroadcaster();
 
   controller_interface::InterfaceConfiguration command_interface_configuration() const override;
 
@@ -80,4 +80,4 @@ protected:
       rt_wrench_stamped_publisher_ptr_;
 };
 } // end of namespace lbr_ros2_control
-#endif // LBR_ROS2_CONTROL__LBR_VIRTUAL_FT_BROADCASTER_HPP_
+#endif // LBR_ROS2_CONTROL__ESTIMATED_FT_BROADCASTER_HPP_

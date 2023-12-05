@@ -1,11 +1,11 @@
-#include "lbr_ros2_control/lbr_forward_position_command_controller.hpp"
+#include "lbr_ros2_control/forward_lbr_position_command_controller.hpp"
 
 namespace lbr_ros2_control {
-LBRForwardPositionCommandController::LBRForwardPositionCommandController()
+ForwardLBRPositionCommandController::ForwardLBRPositionCommandController()
     : rt_lbr_position_command_ptr_(nullptr), lbr_position_command_subscription_ptr_(nullptr) {}
 
 controller_interface::InterfaceConfiguration
-LBRForwardPositionCommandController::command_interface_configuration() const {
+ForwardLBRPositionCommandController::command_interface_configuration() const {
   controller_interface::InterfaceConfiguration interface_configuration;
   interface_configuration.type = controller_interface::interface_configuration_type::INDIVIDUAL;
   for (const auto &joint_name : joint_names_) {
@@ -15,12 +15,12 @@ LBRForwardPositionCommandController::command_interface_configuration() const {
 }
 
 controller_interface::InterfaceConfiguration
-LBRForwardPositionCommandController::state_interface_configuration() const {
+ForwardLBRPositionCommandController::state_interface_configuration() const {
   return controller_interface::InterfaceConfiguration{
       controller_interface::interface_configuration_type::NONE};
 }
 
-controller_interface::CallbackReturn LBRForwardPositionCommandController::on_init() {
+controller_interface::CallbackReturn ForwardLBRPositionCommandController::on_init() {
   try {
     lbr_position_command_subscription_ptr_ =
         this->get_node()->create_subscription<lbr_fri_msgs::msg::LBRPositionCommand>(
@@ -30,7 +30,7 @@ controller_interface::CallbackReturn LBRForwardPositionCommandController::on_ini
             });
   } catch (const std::exception &e) {
     RCLCPP_ERROR(this->get_node()->get_logger(),
-                 "Failed to initialize LBR forward position command controller with: %s.",
+                 "Failed to initialize forward LBR position command controller with: %s.",
                  e.what());
     return controller_interface::CallbackReturn::ERROR;
   }
@@ -39,7 +39,7 @@ controller_interface::CallbackReturn LBRForwardPositionCommandController::on_ini
 }
 
 controller_interface::return_type
-LBRForwardPositionCommandController::update(const rclcpp::Time & /*time*/,
+ForwardLBRPositionCommandController::update(const rclcpp::Time & /*time*/,
                                             const rclcpp::Duration & /*period*/) {
   auto lbr_position_command = rt_lbr_position_command_ptr_.readFromRT();
   if (!lbr_position_command || !(*lbr_position_command)) {
@@ -52,17 +52,17 @@ LBRForwardPositionCommandController::update(const rclcpp::Time & /*time*/,
   return controller_interface::return_type::OK;
 }
 
-controller_interface::CallbackReturn LBRForwardPositionCommandController::on_configure(
+controller_interface::CallbackReturn ForwardLBRPositionCommandController::on_configure(
     const rclcpp_lifecycle::State & /*previous_state*/) {
   return controller_interface::CallbackReturn::SUCCESS;
 }
 
-controller_interface::CallbackReturn LBRForwardPositionCommandController::on_activate(
+controller_interface::CallbackReturn ForwardLBRPositionCommandController::on_activate(
     const rclcpp_lifecycle::State & /*previous_state*/) {
   return controller_interface::CallbackReturn::SUCCESS;
 }
 
-controller_interface::CallbackReturn LBRForwardPositionCommandController::on_deactivate(
+controller_interface::CallbackReturn ForwardLBRPositionCommandController::on_deactivate(
     const rclcpp_lifecycle::State & /*previous_state*/) {
   return controller_interface::CallbackReturn::SUCCESS;
 }
@@ -70,5 +70,5 @@ controller_interface::CallbackReturn LBRForwardPositionCommandController::on_dea
 
 #include "pluginlib/class_list_macros.hpp"
 
-PLUGINLIB_EXPORT_CLASS(lbr_ros2_control::LBRForwardPositionCommandController,
+PLUGINLIB_EXPORT_CLASS(lbr_ros2_control::ForwardLBRPositionCommandController,
                        controller_interface::ControllerInterface)

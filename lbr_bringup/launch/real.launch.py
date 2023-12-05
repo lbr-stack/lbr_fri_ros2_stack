@@ -32,8 +32,8 @@ def launch_setup(context: LaunchContext) -> List[LaunchDescriptionEntity]:
     lbr_state_broadcaster = LBRROS2ControlMixin.node_controller_spawner(
         controller="lbr_state_broadcaster"
     )
-    lbr_estimated_ft_broadcast = LBRROS2ControlMixin.node_controller_spawner(
-        controller="lbr_estimated_ft_broadcaster"
+    estimated_ft_broadcaster = LBRROS2ControlMixin.node_controller_spawner(
+        controller="estimated_ft_broadcaster"
     )
     controller = LBRROS2ControlMixin.node_controller_spawner(
         controller=LaunchConfiguration("ctrl")
@@ -45,7 +45,7 @@ def launch_setup(context: LaunchContext) -> List[LaunchDescriptionEntity]:
             on_start=[
                 joint_state_broadcaster,
                 lbr_state_broadcaster,
-                lbr_estimated_ft_broadcast,
+                estimated_ft_broadcaster,
                 controller,
             ],
         )

@@ -1,5 +1,5 @@
-#ifndef LBR_ROS2_CONTROL__LBR_SYSTEM_INTERFACE_HPP_
-#define LBR_ROS2_CONTROL__LBR_SYSTEM_INTERFACE_HPP_
+#ifndef LBR_ROS2_CONTROL__SYSTEM_INTERFACE_HPP_
+#define LBR_ROS2_CONTROL__SYSTEM_INTERFACE_HPP_
 
 #include <algorithm>
 #include <cstring>
@@ -23,12 +23,12 @@
 #include "lbr_fri_ros2/app.hpp"
 #include "lbr_fri_ros2/client.hpp"
 #include "lbr_fri_ros2/enum_maps.hpp"
-#include "lbr_ros2_control/lbr_system_interface_type_values.hpp"
+#include "lbr_ros2_control/system_interface_type_values.hpp"
 
 namespace lbr_ros2_control {
-class LBRSystemInterface : public hardware_interface::SystemInterface {
+class SystemInterface : public hardware_interface::SystemInterface {
 public:
-  LBRSystemInterface() = default;
+  SystemInterface() = default;
 
   // hardware interface
   controller_interface::CallbackReturn
@@ -119,4 +119,4 @@ protected:
   bool open_loop_;
 };
 } // end of namespace lbr_ros2_control
-#endif // LBR_ROS2_CONTROL__LBR_SYSTEM_INTERFACE_HPP_
+#endif // LBR_ROS2_CONTROL__SYSTEM_INTERFACE_HPP_

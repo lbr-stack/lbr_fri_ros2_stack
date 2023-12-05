@@ -1,11 +1,11 @@
-#include "lbr_ros2_control/lbr_forward_torque_command_controller.hpp"
+#include "lbr_ros2_control/forward_lbr_torque_command_controller.hpp"
 
 namespace lbr_ros2_control {
-LBRForwardTorqueCommandController::LBRForwardTorqueCommandController()
+ForwardLBRTorqueCommandController::ForwardLBRTorqueCommandController()
     : rt_lbr_torque_command_ptr_(nullptr), lbr_torque_command_subscription_ptr_(nullptr) {}
 
 controller_interface::InterfaceConfiguration
-LBRForwardTorqueCommandController::command_interface_configuration() const {
+ForwardLBRTorqueCommandController::command_interface_configuration() const {
   controller_interface::InterfaceConfiguration interface_configuration;
   interface_configuration.type = controller_interface::interface_configuration_type::INDIVIDUAL;
   for (const auto &joint_name : joint_names_) {
@@ -16,12 +16,12 @@ LBRForwardTorqueCommandController::command_interface_configuration() const {
 }
 
 controller_interface::InterfaceConfiguration
-LBRForwardTorqueCommandController::state_interface_configuration() const {
+ForwardLBRTorqueCommandController::state_interface_configuration() const {
   return controller_interface::InterfaceConfiguration{
       controller_interface::interface_configuration_type::NONE};
 }
 
-controller_interface::CallbackReturn LBRForwardTorqueCommandController::on_init() {
+controller_interface::CallbackReturn ForwardLBRTorqueCommandController::on_init() {
   try {
     lbr_torque_command_subscription_ptr_ =
         this->get_node()->create_subscription<lbr_fri_msgs::msg::LBRTorqueCommand>(
@@ -31,7 +31,7 @@ controller_interface::CallbackReturn LBRForwardTorqueCommandController::on_init(
             });
   } catch (const std::exception &e) {
     RCLCPP_ERROR(this->get_node()->get_logger(),
-                 "Failed to initialize LBR forward torque command controller with: %s.", e.what());
+                 "Failed to initialize forward LBR torque command controller with: %s.", e.what());
     return controller_interface::CallbackReturn::ERROR;
   }
 
@@ -39,7 +39,7 @@ controller_interface::CallbackReturn LBRForwardTorqueCommandController::on_init(
 }
 
 controller_interface::return_type
-LBRForwardTorqueCommandController::update(const rclcpp::Time & /*time*/,
+ForwardLBRTorqueCommandController::update(const rclcpp::Time & /*time*/,
                                           const rclcpp::Duration & /*period*/) {
   auto lbr_torque_command = rt_lbr_torque_command_ptr_.readFromRT();
   if (!lbr_torque_command || !(*lbr_torque_command)) {
@@ -53,26 +53,26 @@ LBRForwardTorqueCommandController::update(const rclcpp::Time & /*time*/,
   return controller_interface::return_type::OK;
 }
 
-controller_interface::CallbackReturn LBRForwardTorqueCommandController::on_configure(
+controller_interface::CallbackReturn ForwardLBRTorqueCommandController::on_configure(
     const rclcpp_lifecycle::State & /*previous_state*/) {
   return controller_interface::CallbackReturn::SUCCESS;
 }
 
 controller_interface::CallbackReturn
-LBRForwardTorqueCommandController::on_activate(const rclcpp_lifecycle::State & /*previous_state*/) {
+ForwardLBRTorqueCommandController::on_activate(const rclcpp_lifecycle::State & /*previous_state*/) {
   if (!reference_command_interfaces_()) {
     return controller_interface::CallbackReturn::ERROR;
   }
   return controller_interface::CallbackReturn::SUCCESS;
 }
 
-controller_interface::CallbackReturn LBRForwardTorqueCommandController::on_deactivate(
+controller_interface::CallbackReturn ForwardLBRTorqueCommandController::on_deactivate(
     const rclcpp_lifecycle::State & /*previous_state*/) {
   clear_command_interfaces_();
   return controller_interface::CallbackReturn::SUCCESS;
 }
 
-bool LBRForwardTorqueCommandController::reference_command_interfaces_() {
+bool ForwardLBRTorqueCommandController::reference_command_interfaces_() {
   for (auto &command_interface : command_interfaces_) {
     if (command_interface.get_interface_name() == hardware_interface::HW_IF_POSITION) {
       joint_position_command_interfaces_.emplace_back(std::ref(command_interface));
@@ -99,7 +99,7 @@ bool LBRForwardTorqueCommandController::reference_command_interfaces_() {
   return true;
 }
 
-void LBRForwardTorqueCommandController::clear_command_interfaces_() {
+void ForwardLBRTorqueCommandController::clear_command_interfaces_() {
   joint_position_command_interfaces_.clear();
   torque_command_interfaces_.clear();
 }
@@ -107,5 +107,5 @@ void LBRForwardTorqueCommandController::clear_command_interfaces_() {
 
 #include "pluginlib/class_list_macros.hpp"
 
-PLUGINLIB_EXPORT_CLASS(lbr_ros2_control::LBRForwardTorqueCommandController,
+PLUGINLIB_EXPORT_CLASS(lbr_ros2_control::ForwardLBRTorqueCommandController,
                        controller_interface::ControllerInterface)

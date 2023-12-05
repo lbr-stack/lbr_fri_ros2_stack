@@ -1,11 +1,11 @@
-#include "lbr_ros2_control/lbr_system_interface.hpp"
+#include "lbr_ros2_control/system_interface.hpp"
 
 namespace lbr_ros2_control {
 controller_interface::CallbackReturn
-LBRSystemInterface::on_init(const hardware_interface::HardwareInfo &system_info) {
+SystemInterface::on_init(const hardware_interface::HardwareInfo &system_info) {
   auto ret = hardware_interface::SystemInterface::on_init(system_info);
   if (ret != controller_interface::CallbackReturn::SUCCESS) {
-    RCLCPP_ERROR(app_node_ptr_->get_logger(), "Failed to initialize LBRSystemInterface.");
+    RCLCPP_ERROR(app_node_ptr_->get_logger(), "Failed to initialize SystemInterface.");
     return ret;
   }
 
@@ -60,7 +60,7 @@ LBRSystemInterface::on_init(const hardware_interface::HardwareInfo &system_info)
   return controller_interface::CallbackReturn::SUCCESS;
 }
 
-std::vector<hardware_interface::StateInterface> LBRSystemInterface::export_state_interfaces() {
+std::vector<hardware_interface::StateInterface> SystemInterface::export_state_interfaces() {
   std::vector<hardware_interface::StateInterface> state_interfaces;
 
   const auto &lbr_fri_sensor = info_.sensors[0];
@@ -109,7 +109,7 @@ std::vector<hardware_interface::StateInterface> LBRSystemInterface::export_state
   return state_interfaces;
 }
 
-std::vector<hardware_interface::CommandInterface> LBRSystemInterface::export_command_interfaces() {
+std::vector<hardware_interface::CommandInterface> SystemInterface::export_command_interfaces() {
   std::vector<hardware_interface::CommandInterface> command_interfaces;
 
   for (std::size_t i = 0; i < info_.joints.size(); ++i) {
@@ -123,14 +123,13 @@ std::vector<hardware_interface::CommandInterface> LBRSystemInterface::export_com
   return command_interfaces;
 }
 
-hardware_interface::return_type LBRSystemInterface::prepare_command_mode_switch(
-    const std::vector<std::string> & /*start_interfaces*/,
-    const std::vector<std::string> & /*stop_interfaces*/) {
+hardware_interface::return_type
+SystemInterface::prepare_command_mode_switch(const std::vector<std::string> & /*start_interfaces*/,
+                                             const std::vector<std::string> & /*stop_interfaces*/) {
   return hardware_interface::return_type::OK;
 }
 
-controller_interface::CallbackReturn
-LBRSystemInterface::on_activate(const rclcpp_lifecycle::State &) {
+controller_interface::CallbackReturn SystemInterface::on_activate(const rclcpp_lifecycle::State &) {
   if (!client_ptr_) {
     RCLCPP_ERROR(app_node_ptr_->get_logger(), "Client not configured.");
     return controller_interface::CallbackReturn::ERROR;
@@ -162,14 +161,14 @@ LBRSystemInterface::on_activate(const rclcpp_lifecycle::State &) {
 }
 
 controller_interface::CallbackReturn
-LBRSystemInterface::on_deactivate(const rclcpp_lifecycle::State &) {
+SystemInterface::on_deactivate(const rclcpp_lifecycle::State &) {
   app_ptr_->stop_run();
   app_ptr_->close_udp_socket();
   return controller_interface::CallbackReturn::SUCCESS;
 }
 
-hardware_interface::return_type LBRSystemInterface::read(const rclcpp::Time & /*time*/,
-                                                         const rclcpp::Duration & /*period*/) {
+hardware_interface::return_type SystemInterface::read(const rclcpp::Time & /*time*/,
+                                                      const rclcpp::Duration & /*period*/) {
   lbr_state_ = client_ptr_->get_state_interface().get_state();
   if (exit_commanding_active_(static_cast<KUKA::FRI::ESessionState>(hw_session_state_),
                               static_cast<KUKA::FRI::ESessionState>(lbr_state_.session_state))) {
@@ -212,8 +211,8 @@ hardware_interface::return_type LBRSystemInterface::read(const rclcpp::Time & /*
   return hardware_interface::return_type::OK;
 }
 
-hardware_interface::return_type LBRSystemInterface::write(const rclcpp::Time & /*time*/,
-                                                          const rclcpp::Duration & /*period*/) {
+hardware_interface::return_type SystemInterface::write(const rclcpp::Time & /*time*/,
+                                                       const rclcpp::Duration & /*period*/) {
   if (hw_session_state_ != KUKA::FRI::COMMANDING_ACTIVE) {
     return hardware_interface::return_type::OK;
   }
@@ -247,12 +246,12 @@ hardware_interface::return_type LBRSystemInterface::write(const rclcpp::Time & /
   return hardware_interface::return_type::ERROR;
 }
 
-void LBRSystemInterface::nan_command_interfaces_() {
+void SystemInterface::nan_command_interfaces_() {
   hw_position_command_.fill(std::numeric_limits<double>::quiet_NaN());
   hw_effort_command_.fill(std::numeric_limits<double>::quiet_NaN());
 }
 
-void LBRSystemInterface::nan_state_interfaces_() {
+void SystemInterface::nan_state_interfaces_() {
   hw_sample_time_ = std::numeric_limits<double>::quiet_NaN();
   hw_session_state_ = std::numeric_limits<double>::quiet_NaN();
   hw_connection_quality_ = std::numeric_limits<double>::quiet_NaN();
@@ -277,7 +276,7 @@ void LBRSystemInterface::nan_state_interfaces_() {
   hw_velocity_.fill(std::numeric_limits<double>::quiet_NaN());
 }
 
-bool LBRSystemInterface::verify_number_of_joints_() {
+bool SystemInterface::verify_number_of_joints_() {
   if (info_.joints.size() != KUKA::FRI::LBRState::NUMBER_OF_JOINTS) {
     RCLCPP_ERROR(app_node_ptr_->get_logger(), "Expected %d joints in URDF. Found %ld.",
                  KUKA::FRI::LBRState::NUMBER_OF_JOINTS, info_.joints.size());
@@ -286,7 +285,7 @@ bool LBRSystemInterface::verify_number_of_joints_() {
   return true;
 }
 
-bool LBRSystemInterface::verify_joint_command_interfaces_() {
+bool SystemInterface::verify_joint_command_interfaces_() {
   // check command interfaces
   for (auto &joint : info_.joints) {
     if (joint.command_interfaces.size() != LBR_FRI_COMMAND_INTERFACE_SIZE) {
@@ -310,7 +309,7 @@ bool LBRSystemInterface::verify_joint_command_interfaces_() {
   return true;
 }
 
-bool LBRSystemInterface::verify_joint_state_interfaces_() {
+bool SystemInterface::verify_joint_state_interfaces_() {
   // check state interfaces
   for (auto &joint : info_.joints) {
     if (joint.state_interfaces.size() != LBR_FRI_STATE_INTERFACE_SIZE) {
@@ -340,7 +339,7 @@ bool LBRSystemInterface::verify_joint_state_interfaces_() {
   return true;
 }
 
-bool LBRSystemInterface::verify_sensors_() {
+bool SystemInterface::verify_sensors_() {
   // check lbr specific state interfaces
   if (info_.sensors.size() > 1) {
     RCLCPP_ERROR(app_node_ptr_->get_logger(), "Expected 1 sensor, got %ld", info_.sensors.size());
@@ -376,7 +375,7 @@ bool LBRSystemInterface::verify_sensors_() {
   return true;
 }
 
-bool LBRSystemInterface::exit_commanding_active_(
+bool SystemInterface::exit_commanding_active_(
     const KUKA::FRI::ESessionState &previous_session_state,
     const KUKA::FRI::ESessionState &session_state) {
   if (previous_session_state == KUKA::FRI::ESessionState::COMMANDING_ACTIVE &&
@@ -386,23 +385,23 @@ bool LBRSystemInterface::exit_commanding_active_(
   return false;
 }
 
-double LBRSystemInterface::time_stamps_to_sec_(const double &sec, const double &nano_sec) const {
+double SystemInterface::time_stamps_to_sec_(const double &sec, const double &nano_sec) const {
   return sec + nano_sec / 1.e9;
 }
 
-void LBRSystemInterface::nan_last_hw_states_() {
+void SystemInterface::nan_last_hw_states_() {
   last_hw_position_.fill(std::numeric_limits<double>::quiet_NaN());
   last_hw_time_stamp_sec_ = std::numeric_limits<double>::quiet_NaN();
   last_hw_time_stamp_nano_sec_ = std::numeric_limits<double>::quiet_NaN();
 }
 
-void LBRSystemInterface::update_last_hw_states_() {
+void SystemInterface::update_last_hw_states_() {
   last_hw_position_ = hw_position_;
   last_hw_time_stamp_sec_ = hw_time_stamp_sec_;
   last_hw_time_stamp_nano_sec_ = hw_time_stamp_nano_sec_;
 }
 
-void LBRSystemInterface::compute_hw_velocity_() {
+void SystemInterface::compute_hw_velocity_() {
   // state uninitialized
   if (std::isnan(last_hw_time_stamp_nano_sec_) || std::isnan(last_hw_position_[0])) {
     return;
@@ -427,4 +426,4 @@ void LBRSystemInterface::compute_hw_velocity_() {
 
 #include <pluginlib/class_list_macros.hpp>
 
-PLUGINLIB_EXPORT_CLASS(lbr_ros2_control::LBRSystemInterface, hardware_interface::SystemInterface)
+PLUGINLIB_EXPORT_CLASS(lbr_ros2_control::SystemInterface, hardware_interface::SystemInterface)
