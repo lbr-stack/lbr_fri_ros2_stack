@@ -6,6 +6,7 @@ Humble v1.3.1 (2023-11-21)
 * v1.3.0 Gazebo namespace fixes in https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/123
 * Fix iiwa ee link in https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/126
 * Humble v.1.3.1 in https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/130
+* Full log: https://github.com/lbr-stack/lbr_fri_ros2_stack/compare/humble-v1.3.0-beta...humble-v1.3.1
 
 Humble v1.3.0 beta (2023-10-03)
 -------------------------------
