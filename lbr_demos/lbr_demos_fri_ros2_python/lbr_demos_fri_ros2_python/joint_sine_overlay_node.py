@@ -2,6 +2,7 @@ import math
 
 import rclpy
 from rclpy.node import Node
+from rclpy.qos import qos_profile_sensor_data, qos_profile_system_default
 
 # import lbr_fri_msgs
 from lbr_fri_msgs.msg import LBRPositionCommand, LBRState
@@ -18,12 +19,14 @@ class JointSineOverlayNode(Node):
 
         # create publisher to /lbr/command/joint_position
         self.lbr_position_command_pub_ = self.create_publisher(
-            LBRPositionCommand, "/lbr/command/joint_position", 1
+            LBRPositionCommand,
+            "/lbr/command/joint_position",
+            qos_profile_system_default,
         )
 
         # create subscription to /lbr_state
         self.lbr_state_sub_ = self.create_subscription(
-            LBRState, "/lbr/state", self.on_lbr_state_, 1
+            LBRState, "/lbr/state", self.on_lbr_state_, qos_profile_sensor_data
         )
 
     def on_lbr_state_(self, lbr_state: LBRState) -> None:
