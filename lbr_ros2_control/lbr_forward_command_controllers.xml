@@ -7,4 +7,12 @@
         <description>Forward command controller for LBRPositionCommand message, see
             lbr_fri_msgs/msg/LBRPositionCommand.msg.</description>
     </class>
+
+    <!-- LBR forward torque command controller plugin -->
+    <class name="lbr_ros2_control/LBRForwardTorqueCommandController"
+        type="lbr_ros2_control::LBRForwardTorqueCommandController"
+        base_class_type="controller_interface::ControllerInterface">
+        <description>Forward command controller for LBRTorqueCommand message, see
+            lbr_fri_msgs/msg/LBRTorqueCommand.msg.</description>
+    </class>
 </library>

@@ -26,6 +26,9 @@
     forward_lbr_position_command_controller:
       type: lbr_ros2_control/LBRForwardPositionCommandController
 
+    forward_lbr_torque_command_controller:
+      type: lbr_ros2_control/LBRForwardTorqueCommandController
+
 /**/lbr_estimated_ft_broadcaster:
   ros__parameters:
     damping: 0.2
