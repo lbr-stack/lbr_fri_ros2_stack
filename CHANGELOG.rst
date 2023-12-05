@@ -3,9 +3,9 @@ Changelog for package LBR FRI ROS 2 Stack
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Humble v1.3.1 (2023-11-21)
 --------------------------
-* v1.3.0 Gazebo namespace fixes in https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/123
-* Fix iiwa ee link in https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/126
-* Humble v.1.3.1 in https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/130
+* v1.3.0 Gazebo namespace fixes in #123
+* Fix iiwa ee link in #126
+* Humble v.1.3.1 in #130
 
 Humble v1.3.0 beta (2023-10-03)
 -------------------------------
@@ -16,7 +16,7 @@ Humble v1.3.0 beta (2023-10-03)
 * Topic free ros2_control support through command / state interfaces in lbr_fri_ros2
 * Intraprocess cpp admittance demo
 * New app component based on command / state interfaces in lbr_fri_ros2
-* Refers to https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/121
+* Refers to #121
 
 Humble v1.2.5 (2023-09-08)
 --------------------------
@@ -35,7 +35,7 @@ Humble v1.2.4 (2023-08-09)
 Humble v1.2.3 (2023-08-07)
 --------------------------
 * Utilizes FRI through vendor package for common fri source in https://github.com/lbr-stack/
-* Addresses some of https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/85
+* Addresses some of #85
 * Give command guard only logger interface
 * Fix open loop bug
 * Adds real-time priority via rt_prio parameter
@@ -53,7 +53,7 @@ Humble v1.2.1 (2023-08-04)
 
 Humble v1.2.0 (2023-08-03)
 --------------------------
-* Re-introduces MoveIt, refer to https://github.com/lbr-stack/lbr_fri_ros2_stack/issues/52
+* Re-introduces MoveIt, refer to #52
 * Moves demo prefix to front for improved package overview
 * Single node for hardware interface
 * Static executors where possible
