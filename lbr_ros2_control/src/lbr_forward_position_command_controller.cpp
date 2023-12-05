@@ -24,13 +24,14 @@ controller_interface::CallbackReturn LBRForwardPositionCommandController::on_ini
   try {
     lbr_position_command_subscription_ptr_ =
         this->get_node()->create_subscription<lbr_fri_msgs::msg::LBRPositionCommand>(
-            "command/position", rclcpp::SystemDefaultsQoS(),
+            "command/joint_position", rclcpp::SystemDefaultsQoS(),
             [this](const lbr_fri_msgs::msg::LBRPositionCommand::SharedPtr msg) {
               rt_lbr_position_command_ptr_.writeFromNonRT(msg);
             });
   } catch (const std::exception &e) {
     RCLCPP_ERROR(this->get_node()->get_logger(),
-                 "Failed to initialize LBR forward position command with: %s.", e.what());
+                 "Failed to initialize LBR forward position command controller with: %s.",
+                 e.what());
     return controller_interface::CallbackReturn::ERROR;
   }
 

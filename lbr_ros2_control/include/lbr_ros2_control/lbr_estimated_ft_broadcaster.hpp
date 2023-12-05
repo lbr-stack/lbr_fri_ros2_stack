@@ -73,7 +73,7 @@ protected:
       "A1", "A2", "A3", "A4", "A5", "A6", "A7"};
 
   std::vector<std::reference_wrapper<hardware_interface::LoanedStateInterface>>
-      joint_position_interfaces_, external_joint_torque_interfaces_;
+      joint_position_state_interfaces_, external_joint_torque_state_interfaces_;
 
   rclcpp::Publisher<geometry_msgs::msg::WrenchStamped>::SharedPtr wrench_stamped_publisher_ptr_;
   std::shared_ptr<realtime_tools::RealtimePublisher<geometry_msgs::msg::WrenchStamped>>

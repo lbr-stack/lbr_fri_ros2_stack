@@ -55,12 +55,12 @@ controller_interface::return_type
 LBREstimatedFTBroadcaster::update(const rclcpp::Time & /*time*/,
                                   const rclcpp::Duration & /*period*/) {
   // check any for nan
-  if (std::isnan(joint_position_interfaces_[0].get().get_value())) {
+  if (std::isnan(joint_position_state_interfaces_[0].get().get_value())) {
     return controller_interface::return_type::OK;
   }
   for (std::size_t i = 0; i < joint_names_.size(); ++i) {
-    joint_positions_(i) = joint_position_interfaces_[i].get().get_value();
-    external_joint_torques_(i) = external_joint_torque_interfaces_[i].get().get_value();
+    joint_positions_(i) = joint_position_state_interfaces_[i].get().get_value();
+    external_joint_torques_(i) = external_joint_torque_state_interfaces_[i].get().get_value();
   }
   // compute virtual FT given Jacobian and external joint torques
   kinematics_interface_kdl_.calculate_jacobian(joint_positions_, end_effector_link_, jacobian_);
@@ -118,33 +118,35 @@ void LBREstimatedFTBroadcaster::init_states_() {
 bool LBREstimatedFTBroadcaster::reference_state_interfaces_() {
   for (auto &state_interface : state_interfaces_) {
     if (state_interface.get_interface_name() == hardware_interface::HW_IF_POSITION) {
-      joint_position_interfaces_.emplace_back(std::ref(state_interface));
+      joint_position_state_interfaces_.emplace_back(std::ref(state_interface));
     }
     if (state_interface.get_interface_name() == HW_IF_EXTERNAL_TORQUE) {
-      external_joint_torque_interfaces_.emplace_back(std::ref(state_interface));
+      external_joint_torque_state_interfaces_.emplace_back(std::ref(state_interface));
     }
   }
-  if (joint_position_interfaces_.size() != KUKA::FRI::LBRState::NUMBER_OF_JOINTS) {
-    RCLCPP_ERROR(this->get_node()->get_logger(),
-                 "Number of joint position interfaces (%ld) does not match the number of joints "
-                 "in the robot (%d).",
-                 joint_position_interfaces_.size(), KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
-    return false;
-  }
-  if (external_joint_torque_interfaces_.size() != KUKA::FRI::LBRState::NUMBER_OF_JOINTS) {
+  if (joint_position_state_interfaces_.size() != KUKA::FRI::LBRState::NUMBER_OF_JOINTS) {
     RCLCPP_ERROR(
         this->get_node()->get_logger(),
-        "Number of external joint torque interfaces (%ld) does not match the number of joints "
+        "Number of joint position state interfaces (%ld) does not match the number of joints "
         "in the robot (%d).",
-        external_joint_torque_interfaces_.size(), KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
+        joint_position_state_interfaces_.size(), KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
+    return false;
+  }
+  if (external_joint_torque_state_interfaces_.size() != KUKA::FRI::LBRState::NUMBER_OF_JOINTS) {
+    RCLCPP_ERROR(this->get_node()->get_logger(),
+                 "Number of external joint torque state interfaces (%ld) does not match the number "
+                 "of joints "
+                 "in the robot (%d).",
+                 external_joint_torque_state_interfaces_.size(),
+                 KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
     return false;
   }
   return true;
 }
 
 void LBREstimatedFTBroadcaster::clear_state_interfaces_() {
-  joint_position_interfaces_.clear();
-  external_joint_torque_interfaces_.clear();
+  joint_position_state_interfaces_.clear();
+  external_joint_torque_state_interfaces_.clear();
 }
 
 template <class MatT>

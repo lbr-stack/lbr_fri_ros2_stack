@@ -85,7 +85,7 @@ void AppComponent::connect_(const int &port_id, const char *const remote_host,
     case KUKA::FRI::EClientCommandMode::POSITION:
       position_command_sub_ =
           app_node_ptr_->create_subscription<lbr_fri_msgs::msg::LBRPositionCommand>(
-              "command/position", 1,
+              "command/joint_position", 1,
               std::bind(&AppComponent::on_position_command_, this, std::placeholders::_1));
       break;
     case KUKA::FRI::EClientCommandMode::TORQUE:

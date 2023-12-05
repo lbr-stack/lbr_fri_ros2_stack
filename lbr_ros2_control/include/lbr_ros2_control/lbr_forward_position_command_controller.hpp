@@ -1,19 +1,17 @@
 #ifndef LBR_ROS2_CONTROL__LBR_FORWARD_POSITION_COMMAND_CONTROLLER_HPP_
 #define LBR_ROS2_CONTROL__LBR_FORWARD_POSITION_COMMAND_CONTROLLER_HPP_
 
+#include <algorithm>
 #include <array>
-#include <limits>
 #include <memory>
 #include <stdexcept>
 #include <string>
-#include <vector>
 
 #include "controller_interface/controller_interface.hpp"
 #include "hardware_interface/types/hardware_interface_type_values.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include "realtime_tools/realtime_buffer.h"
 
-#include "friClientIf.h"
 #include "friLBRState.h"
 
 #include "lbr_fri_msgs/msg/lbr_position_command.hpp"
