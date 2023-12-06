@@ -111,31 +111,35 @@ def test_position_limits_ros2_control(
 ) -> None:
     xml, lbr_specification = setup_xml_and_reference
     xml = ET.ElementTree(ET.fromstring(xml))
-    for joint in xml.find("ros2_control").iter("joint"):
-        for command_interface in joint.iter("command_interface"):
+    for joint_interface in xml.find("ros2_control").iter("joint_interface"):
+        for command_interface in joint_interface.iter("command_interface"):
             if command_interface.get("name") == "position":
                 for param in command_interface.iter("param"):
                     if param.get("name") == "min":
                         urdf_min_position = float(param.text)
                         kuka_min_position = math.radians(
-                            lbr_specification.joint_limits[joint.name].min_position
+                            lbr_specification.joint_limits[
+                                joint_interface.name
+                            ].min_position
                         )
                         if not math.isclose(
                             urdf_min_position, kuka_min_position, abs_tol=abs_tol
                         ):
                             raise ValueError(
-                                f"Expected minimum joint position {kuka_min_position} rad, found {urdf_min_position} rad for model {lbr_specification.name} and position command interface joint {joint.name}."
+                                f"Expected minimum joint position {kuka_min_position} rad, found {urdf_min_position} rad for model {lbr_specification.name} and position command interface joint {joint_interface.name}."
                             )
                     elif param.get("name") == "max":
                         urdf_max_position = float(param.text)
                         kuka_max_position = math.radians(
-                            lbr_specification.joint_limits[joint.name].max_position
+                            lbr_specification.joint_limits[
+                                joint_interface.name
+                            ].max_position
                         )
                         if not math.isclose(
                             urdf_max_position, kuka_max_position, abs_tol=abs_tol
                         ):
                             raise ValueError(
-                                f"Expected maximum joint position {kuka_max_position} rad, found {urdf_max_position} rad for model {lbr_specification.name} and position command interface joint {joint.name}."
+                                f"Expected maximum joint position {kuka_max_position} rad, found {urdf_max_position} rad for model {lbr_specification.name} and position command interface joint {joint_interface.name}."
                             )
                     else:
                         raise ValueError("Couldn't find name.")
