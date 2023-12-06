@@ -62,9 +62,36 @@ SystemInterface::on_init(const hardware_interface::HardwareInfo &system_info) {
 
 std::vector<hardware_interface::StateInterface> SystemInterface::export_state_interfaces() {
   std::vector<hardware_interface::StateInterface> state_interfaces;
+  // state interfaces of type double
+  for (std::size_t i = 0; i < info_.joints.size(); ++i) {
+    state_interfaces.emplace_back(info_.joints[i].name, hardware_interface::HW_IF_POSITION,
+                                  &hw_lbr_state_.measured_joint_position[i]);
 
+    state_interfaces.emplace_back(info_.joints[i].name, HW_IF_COMMANDED_JOINT_POSITION,
+                                  &hw_lbr_state_.commanded_joint_position[i]);
+
+    state_interfaces.emplace_back(info_.joints[i].name, hardware_interface::HW_IF_EFFORT,
+                                  &hw_lbr_state_.measured_torque[i]);
+
+    state_interfaces.emplace_back(info_.joints[i].name, HW_IF_COMMANDED_TORQUE,
+                                  &hw_lbr_state_.commanded_torque[i]);
+
+    state_interfaces.emplace_back(info_.joints[i].name, HW_IF_EXTERNAL_TORQUE,
+                                  &hw_lbr_state_.external_torque[i]);
+
+    state_interfaces.emplace_back(info_.joints[i].name, HW_IF_IPO_JOINT_POSITION,
+                                  &hw_lbr_state_.ipo_joint_position[i]);
+
+    // added velocity state interface
+    state_interfaces.emplace_back(info_.joints[i].name, hardware_interface::HW_IF_VELOCITY,
+                                  &hw_velocity_[i]);
+  }
   const auto &lbr_fri_sensor = info_.sensors[0];
-  state_interfaces.emplace_back(lbr_fri_sensor.name, HW_IF_SAMPLE_TIME, &hw_sample_time_);
+  state_interfaces.emplace_back(lbr_fri_sensor.name, HW_IF_SAMPLE_TIME, &hw_lbr_state_.sample_time);
+  state_interfaces.emplace_back(lbr_fri_sensor.name, HW_IF_TRACKING_PERFORMANCE,
+                                &hw_lbr_state_.tracking_performance);
+
+  // state interfaces that require cast
   state_interfaces.emplace_back(lbr_fri_sensor.name, HW_IF_SESSION_STATE, &hw_session_state_);
   state_interfaces.emplace_back(lbr_fri_sensor.name, HW_IF_CONNECTION_QUALITY,
                                 &hw_connection_quality_);
@@ -80,32 +107,6 @@ std::vector<hardware_interface::StateInterface> SystemInterface::export_state_in
   state_interfaces.emplace_back(lbr_fri_sensor.name, HW_IF_TIME_STAMP_NANO_SEC,
                                 &hw_time_stamp_nano_sec_);
 
-  for (std::size_t i = 0; i < info_.joints.size(); ++i) {
-    state_interfaces.emplace_back(info_.joints[i].name, hardware_interface::HW_IF_POSITION,
-                                  &hw_position_[i]);
-
-    state_interfaces.emplace_back(info_.joints[i].name, HW_IF_COMMANDED_JOINT_POSITION,
-                                  &hw_commanded_joint_position_[i]);
-
-    state_interfaces.emplace_back(info_.joints[i].name, hardware_interface::HW_IF_EFFORT,
-                                  &hw_effort_[i]);
-
-    state_interfaces.emplace_back(info_.joints[i].name, HW_IF_COMMANDED_TORQUE,
-                                  &hw_commanded_torque_[i]);
-
-    state_interfaces.emplace_back(info_.joints[i].name, HW_IF_EXTERNAL_TORQUE,
-                                  &hw_external_torque_[i]);
-
-    state_interfaces.emplace_back(info_.joints[i].name, HW_IF_IPO_JOINT_POSITION,
-                                  &hw_ipo_joint_position_[i]);
-
-    state_interfaces.emplace_back(info_.joints[i].name, hardware_interface::HW_IF_VELOCITY,
-                                  &hw_velocity_[i]);
-  }
-
-  state_interfaces.emplace_back(lbr_fri_sensor.name, HW_IF_TRACKING_PERFORMANCE,
-                                &hw_tracking_performance_);
-
   return state_interfaces;
 }
 
@@ -114,11 +115,14 @@ std::vector<hardware_interface::CommandInterface> SystemInterface::export_comman
 
   for (std::size_t i = 0; i < info_.joints.size(); ++i) {
     command_interfaces.emplace_back(info_.joints[i].name, hardware_interface::HW_IF_POSITION,
-                                    &hw_position_command_[i]);
+                                    &hw_lbr_command_.joint_position[i]);
 
     command_interfaces.emplace_back(info_.joints[i].name, hardware_interface::HW_IF_EFFORT,
-                                    &hw_effort_command_[i]);
+                                    &hw_lbr_command_.torque[i]);
   }
+
+  // prefix?
+  // /link_ee/
 
   return command_interfaces;
 }
@@ -169,9 +173,10 @@ SystemInterface::on_deactivate(const rclcpp_lifecycle::State &) {
 
 hardware_interface::return_type SystemInterface::read(const rclcpp::Time & /*time*/,
                                                       const rclcpp::Duration & /*period*/) {
-  lbr_state_ = client_ptr_->get_state_interface().get_state();
+  // read state
+  hw_lbr_state_ = client_ptr_->get_state_interface().get_state();
   if (exit_commanding_active_(static_cast<KUKA::FRI::ESessionState>(hw_session_state_),
-                              static_cast<KUKA::FRI::ESessionState>(lbr_state_.session_state))) {
+                              static_cast<KUKA::FRI::ESessionState>(hw_lbr_state_.session_state))) {
     RCLCPP_ERROR(app_node_ptr_->get_logger(),
                  "LBR left COMMANDING_ACTIVE. Please re-run lbr_bringup.");
     app_ptr_->stop_run();
@@ -179,32 +184,19 @@ hardware_interface::return_type SystemInterface::read(const rclcpp::Time & /*tim
     return hardware_interface::return_type::ERROR;
   }
 
-  hw_sample_time_ = lbr_state_.sample_time;
-  hw_session_state_ = static_cast<double>(lbr_state_.session_state);
-  hw_connection_quality_ = static_cast<double>(lbr_state_.connection_quality);
-  hw_safety_state_ = static_cast<double>(lbr_state_.safety_state);
-  hw_operation_mode_ = static_cast<double>(lbr_state_.operation_mode);
-  hw_drive_state_ = static_cast<double>(lbr_state_.drive_state);
-  hw_client_command_mode_ = static_cast<double>(lbr_state_.client_command_mode);
-  hw_overlay_type_ = static_cast<double>(lbr_state_.overlay_type);
-  hw_control_mode_ = static_cast<double>(lbr_state_.control_mode);
+  // state interfaces that require cast
+  hw_session_state_ = static_cast<double>(hw_lbr_state_.session_state);
+  hw_connection_quality_ = static_cast<double>(hw_lbr_state_.connection_quality);
+  hw_safety_state_ = static_cast<double>(hw_lbr_state_.safety_state);
+  hw_operation_mode_ = static_cast<double>(hw_lbr_state_.operation_mode);
+  hw_drive_state_ = static_cast<double>(hw_lbr_state_.drive_state);
+  hw_client_command_mode_ = static_cast<double>(hw_lbr_state_.client_command_mode);
+  hw_overlay_type_ = static_cast<double>(hw_lbr_state_.overlay_type);
+  hw_control_mode_ = static_cast<double>(hw_lbr_state_.control_mode);
+  hw_time_stamp_sec_ = static_cast<double>(hw_lbr_state_.time_stamp_sec);
+  hw_time_stamp_nano_sec_ = static_cast<double>(hw_lbr_state_.time_stamp_nano_sec);
 
-  hw_time_stamp_sec_ = static_cast<double>(lbr_state_.time_stamp_sec);
-  hw_time_stamp_nano_sec_ = static_cast<double>(lbr_state_.time_stamp_nano_sec);
-
-  std::memcpy(hw_position_.data(), lbr_state_.measured_joint_position.data(),
-              sizeof(double) * KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
-  std::memcpy(hw_commanded_joint_position_.data(), lbr_state_.commanded_joint_position.data(),
-              sizeof(double) * KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
-  std::memcpy(hw_effort_.data(), lbr_state_.measured_torque.data(),
-              sizeof(double) * KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
-  std::memcpy(hw_commanded_torque_.data(), lbr_state_.commanded_torque.data(),
-              sizeof(double) * KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
-  std::memcpy(hw_external_torque_.data(), lbr_state_.external_torque.data(),
-              sizeof(double) * KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
-  std::memcpy(hw_ipo_joint_position_.data(), lbr_state_.ipo_joint_position.data(),
-              sizeof(double) * KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
-  hw_tracking_performance_ = lbr_state_.tracking_performance;
+  // added velocity state interface
   compute_hw_velocity_();
   update_last_hw_states_();
 
@@ -217,42 +209,47 @@ hardware_interface::return_type SystemInterface::write(const rclcpp::Time & /*ti
     return hardware_interface::return_type::OK;
   }
   if (hw_client_command_mode_ == KUKA::FRI::EClientCommandMode::POSITION) {
-    if (std::any_of(hw_position_command_.cbegin(), hw_position_command_.cend(),
+    if (std::any_of(hw_lbr_command_.joint_position.cbegin(), hw_lbr_command_.joint_position.cend(),
                     [](const double &v) { return std::isnan(v); })) {
       return hardware_interface::return_type::OK;
     }
-    std::memcpy(lbr_command_.joint_position.data(), hw_position_command_.data(),
-                sizeof(double) * KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
-    client_ptr_->get_command_interface().set_command_target(lbr_command_);
+    client_ptr_->get_command_interface().set_command_target(hw_lbr_command_);
     return hardware_interface::return_type::OK;
   }
   if (hw_client_command_mode_ == KUKA::FRI::EClientCommandMode::TORQUE) {
-    if (std::any_of(hw_position_command_.cbegin(), hw_position_command_.cend(),
+    if (std::any_of(hw_lbr_command_.joint_position.cbegin(), hw_lbr_command_.joint_position.cend(),
                     [](const double &v) { return std::isnan(v); }) ||
-        std::any_of(hw_effort_command_.cbegin(), hw_effort_command_.cend(),
+        std::any_of(hw_lbr_command_.torque.cbegin(), hw_lbr_command_.torque.cend(),
                     [](const double &v) { return std::isnan(v); })) {
       return hardware_interface::return_type::OK;
     }
-    std::memcpy(lbr_command_.joint_position.data(), hw_position_command_.data(),
-                sizeof(double) * KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
-    std::memcpy(lbr_command_.torque.data(), hw_effort_command_.data(),
-                sizeof(double) * KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
-    client_ptr_->get_command_interface().set_command_target(lbr_command_);
+    client_ptr_->get_command_interface().set_command_target(hw_lbr_command_);
     return hardware_interface::return_type::OK;
   }
   if (hw_client_command_mode_ == KUKA::FRI::EClientCommandMode::WRENCH) {
-    throw std::runtime_error("Wrench command mode not implemented.");
+    throw std::runtime_error("Wrench command mode currently not implemented.");
   }
   return hardware_interface::return_type::ERROR;
 }
 
 void SystemInterface::nan_command_interfaces_() {
-  hw_position_command_.fill(std::numeric_limits<double>::quiet_NaN());
-  hw_effort_command_.fill(std::numeric_limits<double>::quiet_NaN());
+  hw_lbr_command_.joint_position.fill(std::numeric_limits<double>::quiet_NaN());
+  hw_lbr_command_.torque.fill(std::numeric_limits<double>::quiet_NaN());
+  hw_lbr_command_.wrench.fill(std::numeric_limits<double>::quiet_NaN());
 }
 
 void SystemInterface::nan_state_interfaces_() {
-  hw_sample_time_ = std::numeric_limits<double>::quiet_NaN();
+  // state interfaces of type double
+  hw_lbr_state_.measured_joint_position.fill(std::numeric_limits<double>::quiet_NaN());
+  hw_lbr_state_.commanded_joint_position.fill(std::numeric_limits<double>::quiet_NaN());
+  hw_lbr_state_.measured_torque.fill(std::numeric_limits<double>::quiet_NaN());
+  hw_lbr_state_.commanded_torque.fill(std::numeric_limits<double>::quiet_NaN());
+  hw_lbr_state_.external_torque.fill(std::numeric_limits<double>::quiet_NaN());
+  hw_lbr_state_.ipo_joint_position.fill(std::numeric_limits<double>::quiet_NaN());
+  hw_lbr_state_.sample_time = std::numeric_limits<double>::quiet_NaN();
+  hw_lbr_state_.tracking_performance = std::numeric_limits<double>::quiet_NaN();
+
+  // state interfaces that require cast
   hw_session_state_ = std::numeric_limits<double>::quiet_NaN();
   hw_connection_quality_ = std::numeric_limits<double>::quiet_NaN();
   hw_safety_state_ = std::numeric_limits<double>::quiet_NaN();
@@ -261,18 +258,10 @@ void SystemInterface::nan_state_interfaces_() {
   hw_client_command_mode_ = std::numeric_limits<double>::quiet_NaN();
   hw_overlay_type_ = std::numeric_limits<double>::quiet_NaN();
   hw_control_mode_ = std::numeric_limits<double>::quiet_NaN();
-
   hw_time_stamp_sec_ = std::numeric_limits<double>::quiet_NaN();
   hw_time_stamp_nano_sec_ = std::numeric_limits<double>::quiet_NaN();
 
-  hw_position_.fill(std::numeric_limits<double>::quiet_NaN());
-  hw_commanded_joint_position_.fill(std::numeric_limits<double>::quiet_NaN());
-  hw_effort_.fill(std::numeric_limits<double>::quiet_NaN());
-  hw_commanded_torque_.fill(std::numeric_limits<double>::quiet_NaN());
-  hw_external_torque_.fill(std::numeric_limits<double>::quiet_NaN());
-  hw_ipo_joint_position_.fill(std::numeric_limits<double>::quiet_NaN());
-  hw_tracking_performance_ = std::numeric_limits<double>::quiet_NaN();
-
+  // added velocity state interface
   hw_velocity_.fill(std::numeric_limits<double>::quiet_NaN());
 }
 
@@ -390,20 +379,20 @@ double SystemInterface::time_stamps_to_sec_(const double &sec, const double &nan
 }
 
 void SystemInterface::nan_last_hw_states_() {
-  last_hw_position_.fill(std::numeric_limits<double>::quiet_NaN());
+  last_hw_measured_joint_position_.fill(std::numeric_limits<double>::quiet_NaN());
   last_hw_time_stamp_sec_ = std::numeric_limits<double>::quiet_NaN();
   last_hw_time_stamp_nano_sec_ = std::numeric_limits<double>::quiet_NaN();
 }
 
 void SystemInterface::update_last_hw_states_() {
-  last_hw_position_ = hw_position_;
+  last_hw_measured_joint_position_ = hw_lbr_state_.measured_joint_position;
   last_hw_time_stamp_sec_ = hw_time_stamp_sec_;
   last_hw_time_stamp_nano_sec_ = hw_time_stamp_nano_sec_;
 }
 
 void SystemInterface::compute_hw_velocity_() {
   // state uninitialized
-  if (std::isnan(last_hw_time_stamp_nano_sec_) || std::isnan(last_hw_position_[0])) {
+  if (std::isnan(last_hw_time_stamp_nano_sec_) || std::isnan(last_hw_measured_joint_position_[0])) {
     return;
   }
 
@@ -417,7 +406,7 @@ void SystemInterface::compute_hw_velocity_() {
               time_stamps_to_sec_(last_hw_time_stamp_sec_, last_hw_time_stamp_nano_sec_);
   std::size_t i = 0;
   std::for_each(hw_velocity_.begin(), hw_velocity_.end(), [&](double &v) {
-    v = (hw_position_[i] - last_hw_position_[i]) / dt;
+    v = (hw_lbr_state_.measured_joint_position[i] - last_hw_measured_joint_position_[i]) / dt;
     ++i;
   });
 }

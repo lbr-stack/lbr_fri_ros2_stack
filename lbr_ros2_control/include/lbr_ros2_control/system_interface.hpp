@@ -27,6 +27,10 @@
 
 namespace lbr_ros2_control {
 class SystemInterface : public hardware_interface::SystemInterface {
+  static constexpr uint8_t LBR_FRI_STATE_INTERFACE_SIZE = 7;
+  static constexpr uint8_t LBR_FRI_COMMAND_INTERFACE_SIZE = 2;
+  static constexpr uint8_t LBR_FRI_SENSOR_SIZE = 12;
+
 public:
   SystemInterface() = default;
 
@@ -63,20 +67,22 @@ protected:
   bool exit_commanding_active_(const KUKA::FRI::ESessionState &previous_session_state,
                                const KUKA::FRI::ESessionState &session_state);
 
-  const uint8_t LBR_FRI_STATE_INTERFACE_SIZE = 7;
-  const uint8_t LBR_FRI_COMMAND_INTERFACE_SIZE = 2;
-  const uint8_t LBR_FRI_SENSOR_SIZE = 12;
+  // robot parameters
+  int32_t port_id_;
+  const char *remote_host_;
+  int32_t rt_prio_;
+  bool open_loop_;
 
-  // node for handling communication
+  // robot driver
   rclcpp::Node::SharedPtr app_node_ptr_;
   std::shared_ptr<lbr_fri_ros2::Client> client_ptr_;
   std::unique_ptr<lbr_fri_ros2::App> app_ptr_;
 
-  lbr_fri_msgs::msg::LBRCommand lbr_command_;
-  lbr_fri_msgs::msg::LBRState lbr_state_;
-
   // exposed state interfaces
-  double hw_sample_time_;
+  lbr_fri_msgs::msg::LBRState hw_lbr_state_;
+
+  // state interfaces that require cast, this could be mitigated by defining LBRState exclusively
+  // with doubles
   double hw_session_state_;
   double hw_connection_quality_;
   double hw_safety_state_;
@@ -85,38 +91,23 @@ protected:
   double hw_client_command_mode_;
   double hw_overlay_type_;
   double hw_control_mode_;
-
   double hw_time_stamp_sec_;
   double hw_time_stamp_nano_sec_;
 
-  lbr_fri_msgs::msg::LBRState::_measured_joint_position_type hw_position_;
-  lbr_fri_msgs::msg::LBRState::_commanded_joint_position_type hw_commanded_joint_position_;
-  lbr_fri_msgs::msg::LBRState::_measured_torque_type hw_effort_;
-  lbr_fri_msgs::msg::LBRState::_commanded_torque_type hw_commanded_torque_;
-  lbr_fri_msgs::msg::LBRState::_external_torque_type hw_external_torque_;
-  lbr_fri_msgs::msg::LBRState::_ipo_joint_position_type hw_ipo_joint_position_;
-  double hw_tracking_performance_;
+  // added velocity state interface
+  lbr_fri_msgs::msg::LBRState::_measured_joint_position_type last_hw_measured_joint_position_;
+  double last_hw_time_stamp_sec_;
+  double last_hw_time_stamp_nano_sec_;
+  lbr_fri_msgs::msg::LBRState::_measured_joint_position_type hw_velocity_;
 
-  // comput velocity for state interface
+  // compute velocity for state interface
   double time_stamps_to_sec_(const double &sec, const double &nano_sec) const;
   void nan_last_hw_states_();
   void update_last_hw_states_();
   void compute_hw_velocity_();
 
-  lbr_fri_msgs::msg::LBRState::_measured_joint_position_type last_hw_position_;
-  double last_hw_time_stamp_sec_;
-  double last_hw_time_stamp_nano_sec_;
-  lbr_fri_msgs::msg::LBRState::_measured_joint_position_type hw_velocity_;
-
   // exposed command interfaces
-  lbr_fri_msgs::msg::LBRCommand::_joint_position_type hw_position_command_;
-  lbr_fri_msgs::msg::LBRCommand::_torque_type hw_effort_command_;
-
-  // app connect call request
-  int32_t port_id_;
-  const char *remote_host_;
-  int32_t rt_prio_;
-  bool open_loop_;
+  lbr_fri_msgs::msg::LBRCommand hw_lbr_command_;
 };
 } // end of namespace lbr_ros2_control
 #endif // LBR_ROS2_CONTROL__SYSTEM_INTERFACE_HPP_
