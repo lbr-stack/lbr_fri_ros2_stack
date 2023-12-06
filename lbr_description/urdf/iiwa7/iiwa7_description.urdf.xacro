@@ -6,13 +6,13 @@
     <xacro:property name="PI" value="3.1415926535897931" />
     <xacro:property name="joint_damping" value="10.0" />
     <xacro:property name="joint_friction" value="0.1" />
-    <xacro:property name="joint_0_position_limit" value="170" />
-    <xacro:property name="joint_1_position_limit" value="120" />
-    <xacro:property name="joint_2_position_limit" value="170" />
-    <xacro:property name="joint_3_position_limit" value="120" />
-    <xacro:property name="joint_4_position_limit" value="170" />
-    <xacro:property name="joint_5_position_limit" value="120" />
-    <xacro:property name="joint_6_position_limit" value="175" />
+    <xacro:property name="A1_position_limit" value="170" />
+    <xacro:property name="A2_position_limit" value="120" />
+    <xacro:property name="A3_position_limit" value="170" />
+    <xacro:property name="A4_position_limit" value="120" />
+    <xacro:property name="A5_position_limit" value="170" />
+    <xacro:property name="A6_position_limit" value="120" />
+    <xacro:property name="A7_position_limit" value="175" />
     <xacro:property name="joint_0_velocity_limit" value="98" />
     <xacro:property name="joint_1_velocity_limit" value="98" />
     <xacro:property name="joint_2_velocity_limit" value="100" />
@@ -56,8 +56,8 @@
             <parent link="link_0" />
             <child link="link_1" />
             <axis xyz="0.0 0.0 1.0" />
-            <limit effort="${effort_limit}" lower="${-joint_0_position_limit * PI / 180}"
-                upper="${joint_0_position_limit * PI / 180}"
+            <limit effort="${effort_limit}" lower="${-A1_position_limit * PI / 180}"
+                upper="${A1_position_limit * PI / 180}"
                 velocity="${joint_0_velocity_limit * PI / 180}" />
             <dynamics damping="${joint_damping}" friction="${joint_friction}" />
         </joint>
@@ -88,8 +88,8 @@
             <parent link="link_1" />
             <child link="link_2" />
             <axis xyz="0.0 1.0 0.0" />
-            <limit effort="${effort_limit}" lower="${-joint_1_position_limit * PI / 180}"
-                upper="${joint_1_position_limit * PI / 180}"
+            <limit effort="${effort_limit}" lower="${-A2_position_limit * PI / 180}"
+                upper="${A2_position_limit * PI / 180}"
                 velocity="${joint_1_velocity_limit * PI / 180}" />
             <dynamics damping="${joint_damping}" friction="${joint_friction}" />
         </joint>
@@ -120,8 +120,8 @@
             <parent link="link_2" />
             <child link="link_3" />
             <axis xyz="0.0 0.0 1.0" />
-            <limit effort="${effort_limit}" lower="${-joint_2_position_limit * PI / 180}"
-                upper="${joint_2_position_limit * PI / 180}"
+            <limit effort="${effort_limit}" lower="${-A3_position_limit * PI / 180}"
+                upper="${A3_position_limit * PI / 180}"
                 velocity="${joint_2_velocity_limit * PI / 180}" />
             <dynamics damping="${joint_damping}" friction="${joint_friction}" />
         </joint>
@@ -152,8 +152,8 @@
             <parent link="link_3" />
             <child link="link_4" />
             <axis xyz="0.0 -1.0 0.0" />
-            <limit effort="${effort_limit}" lower="${-joint_3_position_limit * PI / 180}"
-                upper="${joint_3_position_limit * PI / 180}"
+            <limit effort="${effort_limit}" lower="${-A4_position_limit * PI / 180}"
+                upper="${A4_position_limit * PI / 180}"
                 velocity="${joint_3_velocity_limit * PI / 180}" />
             <dynamics damping="${joint_damping}" friction="${joint_friction}" />
         </joint>
@@ -184,8 +184,8 @@
             <parent link="link_4" />
             <child link="link_5" />
             <axis xyz="0.0 0.0 1.0" />
-            <limit effort="${effort_limit}" lower="${-joint_4_position_limit * PI / 180}"
-                upper="${joint_4_position_limit * PI / 180}"
+            <limit effort="${effort_limit}" lower="${-A5_position_limit * PI / 180}"
+                upper="${A5_position_limit * PI / 180}"
                 velocity="${joint_4_velocity_limit * PI / 180}" />
             <dynamics damping="${joint_damping}" friction="${joint_friction}" />
         </joint>
@@ -216,8 +216,8 @@
             <parent link="link_5" />
             <child link="link_6" />
             <axis xyz="0.0 1.0 0.0" />
-            <limit effort="${effort_limit}" lower="${-joint_5_position_limit * PI / 180}"
-                upper="${joint_5_position_limit * PI / 180}"
+            <limit effort="${effort_limit}" lower="${-A6_position_limit * PI / 180}"
+                upper="${A6_position_limit * PI / 180}"
                 velocity="${joint_5_velocity_limit * PI / 180}" />
             <dynamics damping="${joint_damping}" friction="${joint_friction}" />
         </joint>
@@ -249,8 +249,8 @@
             <parent link="link_6" />
             <child link="link_7" />
             <axis xyz="0.0 0.0 1.0" />
-            <limit effort="${effort_limit}" lower="${-joint_6_position_limit * PI / 180}"
-                upper="${joint_6_position_limit * PI / 180}"
+            <limit effort="${effort_limit}" lower="${-A7_position_limit * PI / 180}"
+                upper="${A7_position_limit * PI / 180}"
                 velocity="${joint_6_velocity_limit * PI / 180}" />
             <dynamics damping="${joint_damping}" friction="${joint_friction}" />
         </joint>
@@ -287,13 +287,13 @@
         <xacro:lbr_gazebo robot_name="${robot_name}" />
         <!-- TODO: move modes to args, decouple urdf/gazebo/controls -->
         <xacro:lbr_system_interface
-            joint_0_position_limit="${joint_0_position_limit * PI / 180}"
-            joint_1_position_limit="${joint_1_position_limit * PI / 180}"
-            joint_2_position_limit="${joint_2_position_limit * PI / 180}"
-            joint_3_position_limit="${joint_3_position_limit * PI / 180}"
-            joint_4_position_limit="${joint_4_position_limit * PI / 180}"
-            joint_5_position_limit="${joint_5_position_limit * PI / 180}"
-            joint_6_position_limit="${joint_6_position_limit * PI / 180}"
+            A1_position_limit="${A1_position_limit * PI / 180}"
+            A2_position_limit="${A2_position_limit * PI / 180}"
+            A3_position_limit="${A3_position_limit * PI / 180}"
+            A4_position_limit="${A4_position_limit * PI / 180}"
+            A5_position_limit="${A5_position_limit * PI / 180}"
+            A6_position_limit="${A6_position_limit * PI / 180}"
+            A7_position_limit="${A7_position_limit * PI / 180}"
             effort_limit="${effort_limit}"
             sim="${sim}" remote_host="INADDR_ANY" port_id="${port_id}" />
 

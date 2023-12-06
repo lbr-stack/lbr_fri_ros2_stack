@@ -10,94 +10,36 @@
             </plugin>
         </gazebo>
 
-        <!-- link 0 -->
-        <gazebo reference="link_0">
-            <mu1>0.2</mu1>
-            <mu2>0.2</mu2>
-        </gazebo>
+        <!-- macros -->
+        <xacro:macro name="gazebo_link_reference" params="name">
+            <gazebo reference="${name}">
+                <mu1>0.2</mu1>
+                <mu2>0.2</mu2>
+            </gazebo>
+        </xacro:macro>
 
-        <!-- A1 -->
-        <gazebo reference="A1">
-            <implicitSpringDamper>true</implicitSpringDamper>
-            <provideFeedback>true</provideFeedback>
-        </gazebo>
+        <xacro:macro name="gazebo_joint_reference" params="name">
+            <gazebo reference="${name}">
+                <implicitSpringDamper>true</implicitSpringDamper>
+                <provideFeedback>true</provideFeedback>
+            </gazebo>
+        </xacro:macro>
 
-        <!-- link 1 -->
-        <gazebo reference="link_1">
-            <mu1>0.2</mu1>
-            <mu2>0.2</mu2>
-        </gazebo>
-
-        <!-- A2 -->
-        <gazebo reference="A2">
-            <implicitSpringDamper>true</implicitSpringDamper>
-            <provideFeedback>true</provideFeedback>
-        </gazebo>
-
-        <!-- link 2 -->
-        <gazebo reference="link_2">
-            <mu1>0.2</mu1>
-            <mu2>0.2</mu2>
-        </gazebo>
-
-        <!-- A3 -->
-        <gazebo reference="A3">
-            <implicitSpringDamper>true</implicitSpringDamper>
-            <provideFeedback>true</provideFeedback>
-        </gazebo>
-
-        <!-- link 3 -->
-        <gazebo reference="link_3">
-            <mu1>0.2</mu1>
-            <mu2>0.2</mu2>
-        </gazebo>
-
-        <!-- A4 -->
-        <gazebo reference="A4">
-            <implicitSpringDamper>true</implicitSpringDamper>
-            <provideFeedback>true</provideFeedback>
-        </gazebo>
-
-        <!-- link 4 -->
-        <gazebo reference="link_4">
-            <mu1>0.2</mu1>
-            <mu2>0.2</mu2>
-        </gazebo>
-
-        <!-- A5 -->
-        <gazebo reference="A5">
-            <implicitSpringDamper>true</implicitSpringDamper>
-            <provideFeedback>true</provideFeedback>
-        </gazebo>
-
-        <!-- link 5 -->
-        <gazebo reference="link_5">
-            <mu1>0.2</mu1>
-            <mu2>0.2</mu2>
-        </gazebo>
-
-        <!-- A6 -->
-        <gazebo reference="A6">
-            <implicitSpringDamper>true</implicitSpringDamper>
-            <provideFeedback>true</provideFeedback>
-        </gazebo>
-
-        <!-- link 6 -->
-        <gazebo reference="link_6">
-            <mu1>0.2</mu1>
-            <mu2>0.2</mu2>
-        </gazebo>
-
-        <!-- A7 -->
-        <gazebo reference="A7">
-            <implicitSpringDamper>true</implicitSpringDamper>
-            <provideFeedback>true</provideFeedback>
-        </gazebo>
-
-        <!-- link 7 -->
-        <gazebo reference="link_7">
-            <mu1>0.2</mu1>
-            <mu2>0.2</mu2>
-        </gazebo>
+        <!-- references -->
+        <xacro:gazebo_link_reference name="link_0" />
+        <xacro:gazebo_joint_reference name="A1" />
+        <xacro:gazebo_link_reference name="link_1" />
+        <xacro:gazebo_joint_reference name="A2" />
+        <xacro:gazebo_link_reference name="link_2" />
+        <xacro:gazebo_joint_reference name="A3" />
+        <xacro:gazebo_link_reference name="link_3" />
+        <xacro:gazebo_joint_reference name="A4" />
+        <xacro:gazebo_link_reference name="link_4" />
+        <xacro:gazebo_joint_reference name="A5" />
+        <xacro:gazebo_link_reference name="link_5" />
+        <xacro:gazebo_joint_reference name="A6" />
+        <xacro:gazebo_link_reference name="link_6" />
+        <xacro:gazebo_joint_reference name="A7" />
+        <xacro:gazebo_link_reference name="link_7" />
     </xacro:macro>
 </robot>
