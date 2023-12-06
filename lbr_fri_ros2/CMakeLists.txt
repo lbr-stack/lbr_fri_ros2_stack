@@ -13,6 +13,8 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(ament_cmake_python REQUIRED)
 find_package(control_toolbox REQUIRED)
+find_package(eigen3_cmake_module REQUIRED)
+find_package(Eigen3)
 find_package(fri_vendor REQUIRED)
 find_package(FRIClient REQUIRED)
 find_package(lbr_fri_msgs REQUIRED)
@@ -40,6 +42,7 @@ target_include_directories(lbr_fri_ros2
 
 ament_target_dependencies(lbr_fri_ros2
   control_toolbox
+  Eigen3
   lbr_fri_msgs
   rclcpp
   realtime_tools
@@ -53,6 +56,8 @@ target_link_libraries(lbr_fri_ros2
 ament_export_targets(lbr_fri_ros2_export HAS_LIBRARY_TARGET)
 ament_export_dependencies(
   control_toolbox
+  eigen3_cmake_module
+  Eigen3
   fri_vendor
   FRIClient
   lbr_fri_msgs

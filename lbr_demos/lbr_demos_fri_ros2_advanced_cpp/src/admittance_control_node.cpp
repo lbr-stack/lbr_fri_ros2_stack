@@ -8,7 +8,6 @@
 #include "lbr_fri_ros2/app.hpp"
 
 #include "admittance_controller.hpp"
-#include "damped_least_squares.hpp"
 
 namespace lbr_fri_ros2 {
 class AdmittanceControlNode : public rclcpp::Node {

@@ -14,8 +14,7 @@
 
 #include "lbr_fri_msgs/msg/lbr_position_command.hpp"
 #include "lbr_fri_msgs/msg/lbr_state.hpp"
-
-#include "damped_least_squares.hpp"
+#include "lbr_fri_ros2/damped_least_squares.hpp"
 
 namespace lbr_fri_ros2 {
 class AdmittanceController {

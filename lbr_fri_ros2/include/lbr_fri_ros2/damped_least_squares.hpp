@@ -1,9 +1,10 @@
-#ifndef LBR_DEMOS_FRI_ROS2_ADVANCED_CPP__DAMPED_LEAST_SQUARES_HPP_
-#define LBR_DEMOS_FRI_ROS2_ADVANCED_CPP__DAMPED_LEAST_SQUARES_HPP_
+#ifndef LBR_FRI_ROS2__DAMPED_LEAST_SQUARES_HPP_
+#define LBR_FRI_ROS2__DAMPED_LEAST_SQUARES_HPP_
 
 #include <Eigen/Core>
 #include <Eigen/SVD>
 
+namespace lbr_fri_ros2 {
 template <class MatT>
 Eigen::Matrix<typename MatT::Scalar, MatT::ColsAtCompileTime, MatT::RowsAtCompileTime>
 damped_least_squares(const MatT &mat, typename MatT::Scalar lambda =
@@ -21,4 +22,5 @@ damped_least_squares(const MatT &mat, typename MatT::Scalar lambda =
   }
   return svd.matrixV() * dampedSingularValuesInv * svd.matrixU().adjoint();
 }
-#endif // LBR_DEMOS_FRI_ROS2_ADVANCED_CPP__DAMPED_LEAST_SQUARES_HPP_
+} // end of namespace lbr_fri_ros2
+#endif // LBR_FRI_ROS2__DAMPED_LEAST_SQUARES_HPP_
