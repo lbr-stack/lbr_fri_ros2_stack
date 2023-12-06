@@ -64,16 +64,16 @@ EstimatedFTBroadcaster::update(const rclcpp::Time & /*time*/, const rclcpp::Dura
   // compute virtual FT given Jacobian and external joint torques
   kinematics_interface_kdl_.calculate_jacobian(joint_positions_, end_effector_link_, jacobian_);
   jacobian_pinv_ = damped_least_squares_(jacobian_, damping_);
-  virtual_ft_ = jacobian_pinv_.transpose() * external_joint_torques_;
+  estimated_ft_ = jacobian_pinv_.transpose() * external_joint_torques_;
   // publish
   if (rt_wrench_stamped_publisher_ptr_->trylock()) {
     rt_wrench_stamped_publisher_ptr_->msg_.header.stamp = this->get_node()->now();
-    rt_wrench_stamped_publisher_ptr_->msg_.wrench.force.x = virtual_ft_(0);
-    rt_wrench_stamped_publisher_ptr_->msg_.wrench.force.y = virtual_ft_(1);
-    rt_wrench_stamped_publisher_ptr_->msg_.wrench.force.z = virtual_ft_(2);
-    rt_wrench_stamped_publisher_ptr_->msg_.wrench.torque.x = virtual_ft_(3);
-    rt_wrench_stamped_publisher_ptr_->msg_.wrench.torque.y = virtual_ft_(4);
-    rt_wrench_stamped_publisher_ptr_->msg_.wrench.torque.z = virtual_ft_(5);
+    rt_wrench_stamped_publisher_ptr_->msg_.wrench.force.x = estimated_ft_(0);
+    rt_wrench_stamped_publisher_ptr_->msg_.wrench.force.y = estimated_ft_(1);
+    rt_wrench_stamped_publisher_ptr_->msg_.wrench.force.z = estimated_ft_(2);
+    rt_wrench_stamped_publisher_ptr_->msg_.wrench.torque.x = estimated_ft_(3);
+    rt_wrench_stamped_publisher_ptr_->msg_.wrench.torque.y = estimated_ft_(4);
+    rt_wrench_stamped_publisher_ptr_->msg_.wrench.torque.z = estimated_ft_(5);
     rt_wrench_stamped_publisher_ptr_->unlockAndPublish();
   }
   return controller_interface::return_type::OK;
@@ -104,14 +104,14 @@ void EstimatedFTBroadcaster::init_states_() {
   jacobian_pinv_.setConstant(std::numeric_limits<double>::quiet_NaN());
   joint_positions_.setConstant(std::numeric_limits<double>::quiet_NaN());
   external_joint_torques_.setConstant(std::numeric_limits<double>::quiet_NaN());
-  virtual_ft_.setConstant(std::numeric_limits<double>::quiet_NaN());
+  estimated_ft_.setConstant(std::numeric_limits<double>::quiet_NaN());
   rt_wrench_stamped_publisher_ptr_->msg_.header.frame_id = end_effector_link_;
-  rt_wrench_stamped_publisher_ptr_->msg_.wrench.force.x = virtual_ft_(0);
-  rt_wrench_stamped_publisher_ptr_->msg_.wrench.force.y = virtual_ft_(1);
-  rt_wrench_stamped_publisher_ptr_->msg_.wrench.force.z = virtual_ft_(2);
-  rt_wrench_stamped_publisher_ptr_->msg_.wrench.torque.x = virtual_ft_(3);
-  rt_wrench_stamped_publisher_ptr_->msg_.wrench.torque.y = virtual_ft_(4);
-  rt_wrench_stamped_publisher_ptr_->msg_.wrench.torque.z = virtual_ft_(5);
+  rt_wrench_stamped_publisher_ptr_->msg_.wrench.force.x = estimated_ft_(0);
+  rt_wrench_stamped_publisher_ptr_->msg_.wrench.force.y = estimated_ft_(1);
+  rt_wrench_stamped_publisher_ptr_->msg_.wrench.force.z = estimated_ft_(2);
+  rt_wrench_stamped_publisher_ptr_->msg_.wrench.torque.x = estimated_ft_(3);
+  rt_wrench_stamped_publisher_ptr_->msg_.wrench.torque.y = estimated_ft_(4);
+  rt_wrench_stamped_publisher_ptr_->msg_.wrench.torque.z = estimated_ft_(5);
 }
 
 bool EstimatedFTBroadcaster::reference_state_interfaces_() {

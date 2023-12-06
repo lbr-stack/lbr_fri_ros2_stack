@@ -64,7 +64,7 @@ protected:
   Eigen::Matrix<double, Eigen::Dynamic, 6> jacobian_pinv_;
   Eigen::Matrix<double, KUKA::FRI::LBRState::NUMBER_OF_JOINTS, 1> joint_positions_,
       external_joint_torques_;
-  Eigen::Matrix<double, 6, 1> virtual_ft_;
+  Eigen::Matrix<double, 6, 1> estimated_ft_;
 
   double damping_;
 
