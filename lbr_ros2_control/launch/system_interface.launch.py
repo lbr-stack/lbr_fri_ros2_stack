@@ -31,9 +31,6 @@ def generate_launch_description() -> LaunchDescription:
     lbr_state_broadcaster = LBRSystemInterface.node_controller_spawner(
         controller="lbr_state_broadcaster"
     )
-    lbr_estimated_ft_broadcast = LBRSystemInterface.node_controller_spawner(
-        controller="lbr_estimated_ft_broadcaster"
-    )
     controller = LBRSystemInterface.node_controller_spawner(
         controller=LaunchConfiguration("ctrl")
     )
@@ -43,7 +40,6 @@ def generate_launch_description() -> LaunchDescription:
             on_start=[
                 joint_state_broadcaster,
                 lbr_state_broadcaster,
-                lbr_estimated_ft_broadcast,
                 controller,
             ],
         )

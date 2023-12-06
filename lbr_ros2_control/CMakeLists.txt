@@ -35,7 +35,6 @@ find_package(realtime_tools REQUIRED)
 add_library(
   ${PROJECT_NAME}
   SHARED
-  src/estimated_ft_broadcaster.cpp
   src/forward_lbr_position_command_controller.cpp
   src/forward_lbr_torque_command_controller.cpp
   src/lbr_state_broadcaster.cpp

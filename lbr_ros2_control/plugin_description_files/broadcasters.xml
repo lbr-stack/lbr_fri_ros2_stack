@@ -5,12 +5,4 @@
         base_class_type="controller_interface::ControllerInterface">
         <description>Broadcaster for LBRState messages, see lbr_fri_msgs/msg/LBRState.msg.</description>
     </class>
-
-    <!-- LBR virtual force-torque broadcaster plugin -->
-    <class name="lbr_ros2_control/EstimatedFTBroadcaster"
-        type="lbr_ros2_control::EstimatedFTBroadcaster"
-        base_class_type="controller_interface::ControllerInterface">
-        <description>Broadcaster for end-effector force-torque as estimated from external joint
-            torques.</description>
-    </class>
 </library>
