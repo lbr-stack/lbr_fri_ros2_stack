@@ -16,7 +16,7 @@
       type: lbr_ros2_control/EstimatedFTBroadcaster
 
     # ROS 2 control controllers
-    position_trajectory_controller:
+    joint_trajectory_controller:
       type: joint_trajectory_controller/JointTrajectoryController
 
     forward_position_controller:
@@ -33,7 +33,7 @@
   ros__parameters:
     damping: 0.2
 
-/**/position_trajectory_controller:
+/**/joint_trajectory_controller:
   ros__parameters:
     joints:
       - A1

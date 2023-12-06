@@ -16,7 +16,7 @@ public:
 
     joint_trajectory_action_client_ =
         rclcpp_action::create_client<control_msgs::action::FollowJointTrajectory>(
-            this, "/lbr/position_trajectory_controller/follow_joint_trajectory");
+            this, "/lbr/joint_trajectory_controller/follow_joint_trajectory");
 
     while (!joint_trajectory_action_client_->wait_for_action_server(std::chrono::seconds(1))) {
       RCLCPP_INFO(this->get_logger(), "Waiting for action server to become available...");
