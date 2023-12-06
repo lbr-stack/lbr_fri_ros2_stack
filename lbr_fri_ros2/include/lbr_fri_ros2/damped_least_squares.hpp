@@ -1,8 +1,8 @@
 #ifndef LBR_FRI_ROS2__DAMPED_LEAST_SQUARES_HPP_
 #define LBR_FRI_ROS2__DAMPED_LEAST_SQUARES_HPP_
 
-#include <Eigen/Core>
-#include <Eigen/SVD>
+#include "eigen3/Eigen/Core"
+#include "eigen3/Eigen/SVD"
 
 namespace lbr_fri_ros2 {
 template <class MatT>
