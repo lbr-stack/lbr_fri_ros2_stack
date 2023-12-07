@@ -89,11 +89,11 @@ protected:
   std::unique_ptr<lbr_fri_ros2::App> app_ptr_;
 
   // exposed state interfaces (ideally these are taken from async_client_ptr_ but
-  // ros2_control ReadOnlyHandle does not allow for const pointers)
+  // ros2_control ReadOnlyHandle does not allow for const pointers, refer
+  // https://github.com/ros-controls/ros2_control/issues/1196)
   lbr_fri_msgs::msg::LBRState hw_lbr_state_;
 
-  // state interfaces that require cast, this could be mitigated by defining LBRState exclusively
-  // with doubles
+  // exposed state interfaces that require casting
   double hw_session_state_;
   double hw_connection_quality_;
   double hw_safety_state_;
