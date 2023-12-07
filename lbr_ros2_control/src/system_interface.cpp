@@ -20,19 +20,35 @@ SystemInterface::on_init(const hardware_interface::HardwareInfo &system_info) {
       ? parameters_.remote_host = NULL
       : parameters_.remote_host = info_.hardware_parameters["remote_host"].c_str();
   parameters_.rt_prio = std::stoul(info_.hardware_parameters["rt_prio"]);
+  std::transform(info_.hardware_parameters["open_loop"].begin(),
+                 info_.hardware_parameters["open_loop"].end(),
+                 info_.hardware_parameters["open_loop"].begin(), ::tolower);
+  parameters_.open_loop = info_.hardware_parameters["open_loop"] == "true";
+  std::transform(info_.hardware_parameters["pid_antiwindup"].begin(),
+                 info_.hardware_parameters["pid_antiwindup"].end(),
+                 info_.hardware_parameters["pid_antiwindup"].begin(), ::tolower);
+  parameters_.pid_p = std::stod(info_.hardware_parameters["pid_p"]);
+  parameters_.pid_i = std::stod(info_.hardware_parameters["pid_i"]);
+  parameters_.pid_d = std::stod(info_.hardware_parameters["pid_d"]);
+  parameters_.pid_i_max = std::stod(info_.hardware_parameters["pid_i_max"]);
+  parameters_.pid_i_min = std::stod(info_.hardware_parameters["pid_i_min"]);
+  parameters_.pid_antiwindup = info_.hardware_parameters["pid_antiwindup"] == "true";
   parameters_.command_guard_variant = system_info.hardware_parameters.at("command_guard_variant");
   parameters_.external_torque_cutoff_frequency =
       std::stod(info_.hardware_parameters["external_torque_cutoff_frequency"]);
   parameters_.measured_torque_cutoff_frequency =
       std::stod(info_.hardware_parameters["measured_torque_cutoff_frequency"]);
-  std::transform(info_.hardware_parameters["open_loop"].begin(),
-                 info_.hardware_parameters["open_loop"].end(),
-                 info_.hardware_parameters["open_loop"].begin(), ::tolower);
-  parameters_.open_loop = info_.hardware_parameters["open_loop"] == "true";
 
   // setup driver
+  lbr_fri_ros2::PIDParameters pid_parameters;
   lbr_fri_ros2::CommandGuardParameters command_guard_parameters;
   lbr_fri_ros2::StateInterfaceParameters state_interface_parameters;
+  pid_parameters.p = parameters_.pid_p;
+  pid_parameters.i = parameters_.pid_i;
+  pid_parameters.d = parameters_.pid_d;
+  pid_parameters.i_max = parameters_.pid_i_max;
+  pid_parameters.i_min = parameters_.pid_i_min;
+  pid_parameters.antiwindup = parameters_.pid_antiwindup;
   for (std::size_t idx = 0; idx < system_info.joints.size(); ++idx) {
     command_guard_parameters.joint_names[idx] = system_info.joints[idx].name;
     command_guard_parameters.max_position[idx] =
@@ -50,8 +66,8 @@ SystemInterface::on_init(const hardware_interface::HardwareInfo &system_info) {
       parameters_.measured_torque_cutoff_frequency;
 
   async_client_ptr_ = std::make_shared<lbr_fri_ros2::AsyncClient>(
-      command_guard_parameters, parameters_.command_guard_variant, state_interface_parameters,
-      parameters_.open_loop);
+      pid_parameters, command_guard_parameters, parameters_.command_guard_variant,
+      state_interface_parameters, parameters_.open_loop);
   app_ptr_ = std::make_unique<lbr_fri_ros2::App>(async_client_ptr_);
 
   nan_command_interfaces_();

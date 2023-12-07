@@ -23,6 +23,7 @@
 #include "lbr_fri_ros2/async_client.hpp"
 #include "lbr_fri_ros2/command_guard.hpp"
 #include "lbr_fri_ros2/enum_maps.hpp"
+#include "lbr_fri_ros2/filters.hpp"
 #include "lbr_fri_ros2/state_interface.hpp"
 #include "lbr_ros2_control/system_interface_type_values.hpp"
 
@@ -32,6 +33,12 @@ struct SystemInterfaceParameters {
   const char *remote_host{nullptr};
   int32_t rt_prio{80};
   bool open_loop{true};
+  double pid_p{0.0};
+  double pid_i{0.0};
+  double pid_d{0.0};
+  double pid_i_max{0.0};
+  double pid_i_min{0.0};
+  double pid_antiwindup{0.0};
   std::string command_guard_variant{"default"};
   double external_torque_cutoff_frequency{10.0};
   double measured_torque_cutoff_frequency{10.0};

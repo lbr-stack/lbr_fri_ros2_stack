@@ -21,6 +21,12 @@
         port_id:=^|30200
         remote_host:=^|INADDR_ANY
         rt_prio:=^|80
+        pid_p:=^|1.0
+        pid_i:=^|0.0
+        pid_d:=^|0.0
+        pid_i_max:=^|0.0
+        pid_i_min:=^|0.0
+        pid_antiwindup:=^|false
         command_guard_variant:=^|default
         external_torque_cutoff_frequency:=^|10
         measured_torque_cutoff_frequency:=^|10
@@ -40,6 +46,12 @@
                     <param name="port_id">${port_id}</param>
                     <param name="remote_host">${remote_host}</param>
                     <param name="rt_prio">${rt_prio}</param>
+                    <param name="pid_p">${pid_p}</param>
+                    <param name="pid_i">${pid_i}</param>
+                    <param name="pid_d">${pid_d}</param>
+                    <param name="pid_i_max">${pid_i_max}</param>
+                    <param name="pid_i_min">${pid_i_min}</param>
+                    <param name="pid_antiwindup">${pid_antiwindup}</param>
                     <param name="command_guard_variant">${command_guard_variant}</param>
                     <param name="external_torque_cutoff_frequency">
                         ${external_torque_cutoff_frequency}</param>
