@@ -4,8 +4,7 @@ namespace lbr_fri_ros2 {
 
 CommandInterface::CommandInterface(const rclcpp::Node::SharedPtr node_ptr)
     : logging_interface_ptr_(node_ptr->get_node_logging_interface()),
-      parameters_interface_ptr_(node_ptr->get_node_parameters_interface()),
-      joint_position_pid_(node_ptr, {"A1", "A2", "A3", "A4", "A5", "A6", "A7"}), pid_init_(false) {
+      parameters_interface_ptr_(node_ptr->get_node_parameters_interface()) {
   rclcpp::Parameter command_guard_variant_param;
   if (!parameters_interface_ptr_->has_parameter("command_guard_variant")) {
     parameters_interface_ptr_->declare_parameter("command_guard_variant",
@@ -33,14 +32,13 @@ void CommandInterface::get_joint_position_command(fri_command_t_ref command,
   }
 
   // PID
-  if (!pid_init_) {
-    joint_position_pid_.init(state.getSampleTime() * 1.0, 0.0, 0.0, 0.0, 0.0, false);
-    pid_init_ = true;
+  if (!joint_position_pid_.is_initialized()) {
+    joint_position_pid_.initialize(state.getSampleTime() * 1.0, 0.0, 0.0, 0.0, 0.0, false);
   }
-  joint_position_pid_.compute(command_target_.joint_position, state.getMeasuredJointPosition(),
-                              rclcpp::Duration(std::chrono::milliseconds(
-                                  static_cast<int64_t>(state.getSampleTime() * 1e3))),
-                              command_.joint_position);
+  joint_position_pid_.compute(
+      command_target_.joint_position, state.getMeasuredJointPosition(),
+      std::chrono::nanoseconds(static_cast<int64_t>(state.getSampleTime() * 1.e9)),
+      command_.joint_position);
 
   // validate
   if (!command_guard_->is_valid_command(command_, state)) {
@@ -66,14 +64,13 @@ void CommandInterface::get_torque_command(fri_command_t_ref command, const_fri_s
   }
 
   // PID
-  if (!pid_init_) {
-    joint_position_pid_.init(state.getSampleTime() * 1.0, 0.0, 0.0, 0.0, 0.0, false);
-    pid_init_ = true;
+  if (!joint_position_pid_.is_initialized()) {
+    joint_position_pid_.initialize(state.getSampleTime() * 1.0, 0.0, 0.0, 0.0, 0.0, false);
   }
-  joint_position_pid_.compute(command_target_.joint_position, state.getMeasuredJointPosition(),
-                              rclcpp::Duration(std::chrono::milliseconds(
-                                  static_cast<int64_t>(state.getSampleTime() * 1e3))),
-                              command_.joint_position);
+  joint_position_pid_.compute(
+      command_target_.joint_position, state.getMeasuredJointPosition(),
+      std::chrono::nanoseconds(static_cast<int64_t>(state.getSampleTime() * 1.e9)),
+      command_.joint_position);
   command_.torque = command_target_.torque;
 
   // validate
@@ -99,14 +96,13 @@ void CommandInterface::get_wrench_command(fri_command_t_ref command, const_fri_s
   }
 
   // PID
-  if (!pid_init_) {
-    joint_position_pid_.init(state.getSampleTime() * 1.0, 0.0, 0.0, 0.0, 0.0, false);
-    pid_init_ = true;
+  if (!joint_position_pid_.is_initialized()) {
+    joint_position_pid_.initialize(state.getSampleTime() * 1.0, 0.0, 0.0, 0.0, 0.0, false);
   }
-  joint_position_pid_.compute(command_target_.joint_position, state.getMeasuredJointPosition(),
-                              rclcpp::Duration(std::chrono::milliseconds(
-                                  static_cast<int64_t>(state.getSampleTime() * 1e3))),
-                              command_.joint_position);
+  joint_position_pid_.compute(
+      command_target_.joint_position, state.getMeasuredJointPosition(),
+      std::chrono::nanoseconds(static_cast<int64_t>(state.getSampleTime() * 1.e9)),
+      command_.joint_position);
   command_.wrench = command_target_.wrench;
 
   // validate

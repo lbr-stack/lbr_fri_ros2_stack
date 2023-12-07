@@ -3,18 +3,14 @@
 
 #include <algorithm>
 #include <array>
+#include <chrono>
 #include <cmath>
-#include <cstdint>
-#include <string>
 
 #include "control_toolbox/filters.hpp"
 #include "control_toolbox/pid_ros.hpp"
-#include "rclcpp/duration.hpp"
-#include "rclcpp/rclcpp.hpp"
 
 #include "friLBRClient.h"
 
-#include "lbr_fri_msgs/msg/lbr_command.hpp"
 #include "lbr_fri_msgs/msg/lbr_state.hpp"
 
 namespace lbr_fri_ros2 {
@@ -99,103 +95,38 @@ protected:
                  https://dsp.stackexchange.com/questions/40462/exponential-moving-average-cut-off-frequency.*/
 };
 
-class JointExponentialFilterArrayROS {
+class JointExponentialFilterArray {
   using value_array_t = std::array<double, KUKA::FRI::LBRState::NUMBER_OF_JOINTS>;
 
 public:
-  JointExponentialFilterArrayROS() = delete;
+  JointExponentialFilterArray() = default;
 
-  /**
-   * @brief Construct a new JointExponentialFilterArrayROS object.
-   *
-   * @param[in] logging_interface Logging interface.
-   * @param[in] parameter_interface Parameter interface.
-   * @param[in] param_prefix Parameter prefix is e.g. used as: param_prefix + "." +
-   * "cut_off_frequency".
-   */
-  JointExponentialFilterArrayROS(
-      const rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr logging_interface,
-      const rclcpp::node_interfaces::NodeParametersInterface::SharedPtr parameter_interface,
-      const std::string &param_prefix = "");
-
-  /**
-   * @brief Compute the exponential smoothing for each joints using #exponential_filter_.
-   *
-   * @param[in] current The current joint values.
-   * @param[in, out] previous The previous smoothed joint values. Will be updated.
-   */
   void compute(const double *const current, value_array_t &previous);
-  void init(const double &cutoff_frequency, const double &sample_time);
-  inline const std::string &param_prefix() const { return param_prefix_; }
+  void initialize(const double &cutoff_frequency, const double &sample_time);
+  inline const bool &is_initialized() const { return initialized_; };
 
 protected:
-  const std::string cutoff_frequency_param_name_ = "cutoff_frequency"; /**< Parameter name.*/
+  bool initialized_{false};              /**< True if initialized.*/
   ExponentialFilter exponential_filter_; /**< Exponential filter applied to all joints.*/
-  rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr
-      logging_interface_; /**< Logging interface.*/
-  rclcpp::node_interfaces::NodeParametersInterface::SharedPtr
-      parameter_interface_;  /** Parameter interface.*/
-  std::string param_prefix_; /** Parameter prefix is used as "param_prefix" + "." + "param_name".*/
-  rclcpp::node_interfaces::OnSetParametersCallbackHandle::SharedPtr
-      parameter_callback_handle_; /**< Parameter callback handle to update parameters.*/
 };
 
-class JointPIDArrayROS {
+class JointPIDArray {
   using value_array_t = std::array<double, KUKA::FRI::LBRState::NUMBER_OF_JOINTS>;
-  using name_array_t = std::array<std::string, KUKA::FRI::LBRState::NUMBER_OF_JOINTS>;
-  using pid_array_t = std::array<control_toolbox::PidROS, KUKA::FRI::LBRState::NUMBER_OF_JOINTS>;
+  using pid_array_t = std::array<control_toolbox::Pid, KUKA::FRI::LBRState::NUMBER_OF_JOINTS>;
 
 public:
-  JointPIDArrayROS() = delete;
+  JointPIDArray() = default;
 
-  /**
-   * @brief Construct a new JointPIDArrayROS object. Used to control the LBRs joints. The parameters
-   * / topics are prefixed as prefix + names[i].
-   *
-   * @param[in] node Shared node.
-   * @param[in] names Names of the joints.
-   * @param[in] prefix Prefix for the parameters.
-   */
-  JointPIDArrayROS(const rclcpp::Node::SharedPtr node, const name_array_t &names,
-                   const std::string &prefix = "");
-
-  /**
-   * @brief Compute the PID update.
-   *
-   * @param[in] command_target The target joint command.
-   * @param[in] state The current joint state.
-   * @param[in] dt The time step.
-   * @param[out] command The returned joint command.
-   */
   void compute(const value_array_t &command_target, const value_array_t &state,
-               const rclcpp::Duration &dt, value_array_t &command);
-
-  /**
-   * @brief Compute the PID update.
-   *
-   * @param[in] command_target The target joint command.
-   * @param[in] state The current joint state.
-   * @param[in] dt The time step.
-   * @param[out] command The returned joint command.
-   */
-  void compute(const value_array_t &command_target, const double *state, const rclcpp::Duration &dt,
-               value_array_t &command);
-
-  /**
-   * @brief Initialize the PID controllers. Sets all #pid_controllers_ to the same parameters, but
-   * can be overriden individually.
-   *
-   * @param[in] p The proportional gain.
-   * @param[in] i The integral gain.
-   * @param[in] d The derivative gain.
-   * @param[in] i_max The maximum integral value.
-   * @param[in] i_min The minimum integral value.
-   * @param[in] antiwindup Antiwindup enabled or disabled.
-   */
-  void init(const double &p, const double &i, const double &d, const double &i_max,
-            const double &i_min, const bool &antiwindup);
+               const std::chrono::nanoseconds &dt, value_array_t &command);
+  void compute(const value_array_t &command_target, const double *state,
+               const std::chrono::nanoseconds &dt, value_array_t &command);
+  void initialize(const double &p, const double &i, const double &d, const double &i_max,
+                  const double &i_min, const bool &antiwindup);
+  inline const bool &is_initialized() const { return initialized_; };
 
 protected:
+  bool initialized_{false};     /**< True if initialized.*/
   pid_array_t pid_controllers_; /**< PID controllers for each joint.*/
 };
 } // end of namespace lbr_fri_ros2

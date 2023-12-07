@@ -1,6 +1,7 @@
 #ifndef LBR_FRI_ROS2__COMMAND_INTERFACE_HPP_
 #define LBR_FRI_ROS2__COMMAND_INTERFACE_HPP_
 
+#include <chrono>
 #include <memory>
 #include <stdexcept>
 #include <string>
@@ -44,9 +45,8 @@ protected:
   rclcpp::node_interfaces::NodeParametersInterface::SharedPtr parameters_interface_ptr_;
 
   std::unique_ptr<CommandGuard> command_guard_;
-  JointPIDArrayROS joint_position_pid_;
+  JointPIDArray joint_position_pid_;
   idl_command_t command_, command_target_;
-  bool pid_init_;
 };
 } // namespace lbr_fri_ros2
 #endif // LBR_FRI_ROS2__COMMAND_INTERFACE_HPP_
