@@ -5,37 +5,54 @@ controller_interface::CallbackReturn
 SystemInterface::on_init(const hardware_interface::HardwareInfo &system_info) {
   auto ret = hardware_interface::SystemInterface::on_init(system_info);
   if (ret != controller_interface::CallbackReturn::SUCCESS) {
-    RCLCPP_ERROR(app_node_ptr_->get_logger(), "Failed to initialize SystemInterface.");
+    RCLCPP_ERROR(rclcpp::get_logger(LOGGER), "Failed to initialize SystemInterface.");
     return ret;
   }
 
-  // parameters from config/lbr_system_interface.xacro
-  port_id_ = std::stoul(info_.hardware_parameters["port_id"]);
-  info_.hardware_parameters["remote_host"] == "INADDR_ANY"
-      ? remote_host_ = NULL
-      : remote_host_ = info_.hardware_parameters["remote_host"].c_str();
-  rt_prio_ = std::stoul(info_.hardware_parameters["rt_prio"]);
-
-  if (port_id_ < 30200 || port_id_ > 30209) {
-    RCLCPP_ERROR(app_node_ptr_->get_logger(), "Expected port_id in [30200, 30209]. Found %d.",
-                 port_id_);
+  // parameters_ from config/lbr_system_interface.xacro
+  parameters_.port_id = std::stoul(info_.hardware_parameters["port_id"]);
+  if (parameters_.port_id < 30200 || parameters_.port_id > 30209) {
+    RCLCPP_ERROR(rclcpp::get_logger(LOGGER), "Expected port_id in [30200, 30209]. Found %d.",
+                 parameters_.port_id);
     return controller_interface::CallbackReturn::ERROR;
   }
+  info_.hardware_parameters["remote_host"] == "INADDR_ANY"
+      ? parameters_.remote_host = NULL
+      : parameters_.remote_host = info_.hardware_parameters["remote_host"].c_str();
+  parameters_.rt_prio = std::stoul(info_.hardware_parameters["rt_prio"]);
+  parameters_.command_guard_variant = system_info.hardware_parameters.at("command_guard_variant");
+  parameters_.external_torque_cutoff_frequency =
+      std::stod(info_.hardware_parameters["external_torque_cutoff_frequency"]);
+  parameters_.measured_torque_cutoff_frequency =
+      std::stod(info_.hardware_parameters["measured_torque_cutoff_frequency"]);
   std::transform(info_.hardware_parameters["open_loop"].begin(),
                  info_.hardware_parameters["open_loop"].end(),
                  info_.hardware_parameters["open_loop"].begin(), ::tolower);
-  open_loop_ = info_.hardware_parameters["open_loop"] == "true";
+  parameters_.open_loop = info_.hardware_parameters["open_loop"] == "true";
 
-  // setup node
-  app_node_ptr_ = std::make_shared<rclcpp::Node>("app");
+  // setup driver
+  lbr_fri_ros2::CommandGuardParameters command_guard_parameters;
+  lbr_fri_ros2::StateInterfaceParameters state_interface_parameters;
+  for (std::size_t idx = 0; idx < system_info.joints.size(); ++idx) {
+    command_guard_parameters.joint_names[idx] = system_info.joints[idx].name;
+    command_guard_parameters.max_position[idx] =
+        std::stod(system_info.joints[idx].parameters.at("max_position"));
+    command_guard_parameters.min_position[idx] =
+        std::stod(system_info.joints[idx].parameters.at("min_position"));
+    command_guard_parameters.max_velocity[idx] =
+        std::stod(system_info.joints[idx].parameters.at("max_velocity"));
+    command_guard_parameters.max_torque[idx] =
+        std::stod(system_info.joints[idx].parameters.at("max_torque"));
+  }
+  state_interface_parameters.external_torque_cutoff_frequency =
+      parameters_.external_torque_cutoff_frequency;
+  state_interface_parameters.measured_torque_cutoff_frequency =
+      parameters_.measured_torque_cutoff_frequency;
 
-  app_node_ptr_->declare_parameter<int>("port_id", port_id_);
-  app_node_ptr_->declare_parameter<std::string>("remote_host", remote_host_ ? remote_host_ : "");
-  app_node_ptr_->declare_parameter<std::string>("command_guard_variant", "default");
-  app_node_ptr_->declare_parameter<bool>("open_loop", open_loop_);
-
-  client_ptr_ = std::make_shared<lbr_fri_ros2::Client>(app_node_ptr_);
-  app_ptr_ = std::make_unique<lbr_fri_ros2::App>(app_node_ptr_, client_ptr_);
+  async_client_ptr_ = std::make_shared<lbr_fri_ros2::AsyncClient>(
+      command_guard_parameters, parameters_.command_guard_variant, state_interface_parameters,
+      parameters_.open_loop);
+  app_ptr_ = std::make_unique<lbr_fri_ros2::App>(async_client_ptr_);
 
   nan_command_interfaces_();
   nan_state_interfaces_();
@@ -112,7 +129,6 @@ std::vector<hardware_interface::StateInterface> SystemInterface::export_state_in
 
 std::vector<hardware_interface::CommandInterface> SystemInterface::export_command_interfaces() {
   std::vector<hardware_interface::CommandInterface> command_interfaces;
-
   for (std::size_t i = 0; i < info_.joints.size(); ++i) {
     command_interfaces.emplace_back(info_.joints[i].name, hardware_interface::HW_IF_POSITION,
                                     &hw_lbr_command_.joint_position[i]);
@@ -120,10 +136,6 @@ std::vector<hardware_interface::CommandInterface> SystemInterface::export_comman
     command_interfaces.emplace_back(info_.joints[i].name, hardware_interface::HW_IF_EFFORT,
                                     &hw_lbr_command_.torque[i]);
   }
-
-  // prefix?
-  // /link_ee/
-
   return command_interfaces;
 }
 
@@ -134,33 +146,32 @@ SystemInterface::prepare_command_mode_switch(const std::vector<std::string> & /*
 }
 
 controller_interface::CallbackReturn SystemInterface::on_activate(const rclcpp_lifecycle::State &) {
-  if (!client_ptr_) {
-    RCLCPP_ERROR(app_node_ptr_->get_logger(), "Client not configured.");
+  if (!async_client_ptr_) {
+    RCLCPP_ERROR(rclcpp::get_logger(LOGGER), "AsyncClient not configured.");
     return controller_interface::CallbackReturn::ERROR;
   }
-  if (!app_ptr_->open_udp_socket(port_id_, remote_host_)) {
+  if (!app_ptr_->open_udp_socket(parameters_.port_id, parameters_.remote_host)) {
     return controller_interface::CallbackReturn::ERROR;
   }
-  app_ptr_->run(rt_prio_);
+  app_ptr_->run(parameters_.rt_prio);
   uint8_t attempt = 0;
   uint8_t max_attempts = 10;
-  while (!client_ptr_->get_state_interface().is_initialized() && rclcpp::ok()) {
-    RCLCPP_INFO(app_node_ptr_->get_logger(), "Waiting for robot heartbeat [%d/%d]. Port ID: %d.",
-                attempt + 1, max_attempts, port_id_);
+  while (!async_client_ptr_->get_state_interface().is_initialized() && rclcpp::ok()) {
+    RCLCPP_INFO(rclcpp::get_logger(LOGGER), "Waiting for robot heartbeat [%d/%d]. Port ID: %d.",
+                attempt + 1, max_attempts, parameters_.port_id);
     std::this_thread::sleep_for(std::chrono::seconds(1));
     if (++attempt >= max_attempts) {
       app_ptr_->close_udp_socket(); // hard close as run gets stuck
-      RCLCPP_ERROR(app_node_ptr_->get_logger(), "Failed to connect to robot on max attempts.");
+      RCLCPP_ERROR(rclcpp::get_logger(LOGGER), "Failed to connect to robot on max attempts.");
       return controller_interface::CallbackReturn::ERROR;
     }
   }
-  RCLCPP_INFO(app_node_ptr_->get_logger(), "Robot connected.");
-  RCLCPP_INFO(app_node_ptr_->get_logger(), "Control mode: %s.",
-              lbr_fri_ros2::EnumMaps::control_mode_map(
-                  client_ptr_->get_state_interface().get_state().control_mode)
-                  .c_str());
-  RCLCPP_INFO(app_node_ptr_->get_logger(), "Sample time: %.3f s.",
-              client_ptr_->get_state_interface().get_state().sample_time);
+  RCLCPP_INFO(rclcpp::get_logger(LOGGER), "Robot connected.");
+  RCLCPP_INFO(rclcpp::get_logger(LOGGER), "Control mode: '%s'.",
+              lbr_fri_ros2::EnumMaps::control_mode_map(hw_lbr_state_.control_mode).c_str());
+  RCLCPP_INFO(rclcpp::get_logger(LOGGER), "Sample time: %.3f s / %.1f Hz.",
+              async_client_ptr_->get_state_interface().get_state().sample_time,
+              1. / async_client_ptr_->get_state_interface().get_state().sample_time);
   return controller_interface::CallbackReturn::SUCCESS;
 }
 
@@ -173,11 +184,12 @@ SystemInterface::on_deactivate(const rclcpp_lifecycle::State &) {
 
 hardware_interface::return_type SystemInterface::read(const rclcpp::Time & /*time*/,
                                                       const rclcpp::Duration & /*period*/) {
-  // read state
-  hw_lbr_state_ = client_ptr_->get_state_interface().get_state();
+  hw_lbr_state_ = async_client_ptr_->get_state_interface().get_state();
+
+  // exit once robot exits COMMANDING_ACTIVE (for safety)
   if (exit_commanding_active_(static_cast<KUKA::FRI::ESessionState>(hw_session_state_),
                               static_cast<KUKA::FRI::ESessionState>(hw_lbr_state_.session_state))) {
-    RCLCPP_ERROR(app_node_ptr_->get_logger(),
+    RCLCPP_ERROR(rclcpp::get_logger(LOGGER),
                  "LBR left COMMANDING_ACTIVE. Please re-run lbr_bringup.");
     app_ptr_->stop_run();
     app_ptr_->close_udp_socket();
@@ -213,7 +225,7 @@ hardware_interface::return_type SystemInterface::write(const rclcpp::Time & /*ti
                     [](const double &v) { return std::isnan(v); })) {
       return hardware_interface::return_type::OK;
     }
-    client_ptr_->get_command_interface().set_command_target(hw_lbr_command_);
+    async_client_ptr_->get_command_interface().set_command_target(hw_lbr_command_);
     return hardware_interface::return_type::OK;
   }
   if (hw_client_command_mode_ == KUKA::FRI::EClientCommandMode::TORQUE) {
@@ -223,7 +235,7 @@ hardware_interface::return_type SystemInterface::write(const rclcpp::Time & /*ti
                     [](const double &v) { return std::isnan(v); })) {
       return hardware_interface::return_type::OK;
     }
-    client_ptr_->get_command_interface().set_command_target(hw_lbr_command_);
+    async_client_ptr_->get_command_interface().set_command_target(hw_lbr_command_);
     return hardware_interface::return_type::OK;
   }
   if (hw_client_command_mode_ == KUKA::FRI::EClientCommandMode::WRENCH) {
@@ -267,7 +279,7 @@ void SystemInterface::nan_state_interfaces_() {
 
 bool SystemInterface::verify_number_of_joints_() {
   if (info_.joints.size() != KUKA::FRI::LBRState::NUMBER_OF_JOINTS) {
-    RCLCPP_ERROR(app_node_ptr_->get_logger(), "Expected %d joints in URDF. Found %ld.",
+    RCLCPP_ERROR(rclcpp::get_logger(LOGGER), "Expected %d joints in URDF. Found %ld.",
                  KUKA::FRI::LBRState::NUMBER_OF_JOINTS, info_.joints.size());
     return false;
   }
@@ -279,7 +291,7 @@ bool SystemInterface::verify_joint_command_interfaces_() {
   for (auto &joint : info_.joints) {
     if (joint.command_interfaces.size() != LBR_FRI_COMMAND_INTERFACE_SIZE) {
       RCLCPP_ERROR(
-          app_node_ptr_->get_logger(),
+          rclcpp::get_logger(LOGGER),
           "Joint %s received invalid number of command interfaces. Received %ld, expected %d.",
           joint.name.c_str(), joint.command_interfaces.size(), LBR_FRI_COMMAND_INTERFACE_SIZE);
       return false;
@@ -287,7 +299,7 @@ bool SystemInterface::verify_joint_command_interfaces_() {
     for (auto &ci : joint.command_interfaces) {
       if (ci.name != hardware_interface::HW_IF_POSITION &&
           ci.name != hardware_interface::HW_IF_EFFORT) {
-        RCLCPP_ERROR(app_node_ptr_->get_logger(),
+        RCLCPP_ERROR(rclcpp::get_logger(LOGGER),
                      "Joint %s received invalid command interface: %s. Expected %s or %s.",
                      joint.name.c_str(), ci.name.c_str(), hardware_interface::HW_IF_POSITION,
                      hardware_interface::HW_IF_EFFORT);
@@ -303,7 +315,7 @@ bool SystemInterface::verify_joint_state_interfaces_() {
   for (auto &joint : info_.joints) {
     if (joint.state_interfaces.size() != LBR_FRI_STATE_INTERFACE_SIZE) {
       RCLCPP_ERROR(
-          app_node_ptr_->get_logger(),
+          rclcpp::get_logger(LOGGER),
           "Joint %s received invalid number of state interfaces. Received %ld, expected %d.",
           joint.name.c_str(), joint.state_interfaces.size(), LBR_FRI_STATE_INTERFACE_SIZE);
       return false;
@@ -315,7 +327,7 @@ bool SystemInterface::verify_joint_state_interfaces_() {
           si.name != HW_IF_EXTERNAL_TORQUE && si.name != HW_IF_IPO_JOINT_POSITION &&
           si.name != hardware_interface::HW_IF_VELOCITY) {
         RCLCPP_ERROR(
-            app_node_ptr_->get_logger(),
+            rclcpp::get_logger(LOGGER),
             "Joint %s received invalid state interface: %s. Expected %s, %s, %s, %s, %s, %s or %s.",
             joint.name.c_str(), si.name.c_str(), hardware_interface::HW_IF_POSITION,
             HW_IF_COMMANDED_JOINT_POSITION, hardware_interface::HW_IF_EFFORT,
@@ -331,14 +343,14 @@ bool SystemInterface::verify_joint_state_interfaces_() {
 bool SystemInterface::verify_sensors_() {
   // check lbr specific state interfaces
   if (info_.sensors.size() > 1) {
-    RCLCPP_ERROR(app_node_ptr_->get_logger(), "Expected 1 sensor, got %ld", info_.sensors.size());
+    RCLCPP_ERROR(rclcpp::get_logger(LOGGER), "Expected 1 sensor, got %ld", info_.sensors.size());
     return false;
   }
 
   // check all interfaces are defined in config/lbr_system_interface.xacro
   const auto &lbr_fri_sensor = info_.sensors[0];
   if (lbr_fri_sensor.state_interfaces.size() != LBR_FRI_SENSOR_SIZE) {
-    RCLCPP_ERROR(app_node_ptr_->get_logger(),
+    RCLCPP_ERROR(rclcpp::get_logger(LOGGER),
                  "Sensor %s received invalid state interface. Received %ld, expected %d. ",
                  lbr_fri_sensor.name.c_str(), lbr_fri_sensor.state_interfaces.size(),
                  LBR_FRI_SENSOR_SIZE);
@@ -355,7 +367,7 @@ bool SystemInterface::verify_sensors_() {
         si.name != HW_IF_TIME_STAMP_NANO_SEC && si.name != HW_IF_COMMANDED_JOINT_POSITION &&
         si.name != HW_IF_COMMANDED_TORQUE && si.name != HW_IF_EXTERNAL_TORQUE &&
         si.name != HW_IF_IPO_JOINT_POSITION && si.name != HW_IF_TRACKING_PERFORMANCE) {
-      RCLCPP_ERROR(app_node_ptr_->get_logger(), "Sensor %s received invalid state interface %s.",
+      RCLCPP_ERROR(rclcpp::get_logger(LOGGER), "Sensor %s received invalid state interface %s.",
                    lbr_fri_sensor.name.c_str(), si.name.c_str());
 
       return false;

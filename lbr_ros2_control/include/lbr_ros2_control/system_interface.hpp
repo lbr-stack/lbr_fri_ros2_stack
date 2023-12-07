@@ -3,7 +3,6 @@
 
 #include <algorithm>
 #include <cstring>
-#include <future>
 #include <memory>
 #include <stdexcept>
 #include <string>
@@ -21,12 +20,27 @@
 #include "lbr_fri_msgs/msg/lbr_command.hpp"
 #include "lbr_fri_msgs/msg/lbr_state.hpp"
 #include "lbr_fri_ros2/app.hpp"
-#include "lbr_fri_ros2/client.hpp"
+#include "lbr_fri_ros2/async_client.hpp"
+#include "lbr_fri_ros2/command_guard.hpp"
 #include "lbr_fri_ros2/enum_maps.hpp"
+#include "lbr_fri_ros2/state_interface.hpp"
 #include "lbr_ros2_control/system_interface_type_values.hpp"
 
 namespace lbr_ros2_control {
+struct SystemInterfaceParameters {
+  int32_t port_id{30200};
+  const char *remote_host{nullptr};
+  int32_t rt_prio{80};
+  bool open_loop{true};
+  std::string command_guard_variant{"default"};
+  double external_torque_cutoff_frequency{10.0};
+  double measured_torque_cutoff_frequency{10.0};
+};
+
 class SystemInterface : public hardware_interface::SystemInterface {
+protected:
+  static constexpr char LOGGER[] = "lbr_ros2_control::SystemInterface";
+
   static constexpr uint8_t LBR_FRI_STATE_INTERFACE_SIZE = 7;
   static constexpr uint8_t LBR_FRI_COMMAND_INTERFACE_SIZE = 2;
   static constexpr uint8_t LBR_FRI_SENSOR_SIZE = 12;
@@ -68,17 +82,14 @@ protected:
                                const KUKA::FRI::ESessionState &session_state);
 
   // robot parameters
-  int32_t port_id_;
-  const char *remote_host_;
-  int32_t rt_prio_;
-  bool open_loop_;
+  SystemInterfaceParameters parameters_;
 
   // robot driver
-  rclcpp::Node::SharedPtr app_node_ptr_;
-  std::shared_ptr<lbr_fri_ros2::Client> client_ptr_;
+  std::shared_ptr<lbr_fri_ros2::AsyncClient> async_client_ptr_;
   std::unique_ptr<lbr_fri_ros2::App> app_ptr_;
 
-  // exposed state interfaces
+  // exposed state interfaces (ideally these are taken from async_client_ptr_ but
+  // ros2_control ReadOnlyHandle does not allow for const pointers)
   lbr_fri_msgs::msg::LBRState hw_lbr_state_;
 
   // state interfaces that require cast, this could be mitigated by defining LBRState exclusively
