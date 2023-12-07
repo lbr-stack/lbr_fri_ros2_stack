@@ -2,8 +2,10 @@
 
 namespace lbr_fri_ros2 {
 
-CommandInterface::CommandInterface(const CommandGuardParameters &command_guard_parameters,
-                                   const std::string &command_guard_variant) {
+CommandInterface::CommandInterface(const PIDParameters &pid_parameters,
+                                   const CommandGuardParameters &command_guard_parameters,
+                                   const std::string &command_guard_variant)
+    : pid_parameters_(pid_parameters) {
   command_guard_ = command_guard_factory(command_guard_parameters, command_guard_variant);
 };
 
@@ -22,7 +24,8 @@ void CommandInterface::get_joint_position_command(fri_command_t_ref command,
 
   // PID
   if (!joint_position_pid_.is_initialized()) {
-    joint_position_pid_.initialize(state.getSampleTime() * 1.0, 0.0, 0.0, 0.0, 0.0, false);
+    joint_position_pid_.initialize(pid_parameters_, state.getSampleTime());
+    joint_position_pid_.log_info();
   }
   joint_position_pid_.compute(
       command_target_.joint_position, state.getMeasuredJointPosition(),
@@ -54,7 +57,8 @@ void CommandInterface::get_torque_command(fri_command_t_ref command, const_fri_s
 
   // PID
   if (!joint_position_pid_.is_initialized()) {
-    joint_position_pid_.initialize(state.getSampleTime() * 1.0, 0.0, 0.0, 0.0, 0.0, false);
+    joint_position_pid_.initialize(pid_parameters_, state.getSampleTime());
+    joint_position_pid_.log_info();
   }
   joint_position_pid_.compute(
       command_target_.joint_position, state.getMeasuredJointPosition(),
@@ -86,7 +90,8 @@ void CommandInterface::get_wrench_command(fri_command_t_ref command, const_fri_s
 
   // PID
   if (!joint_position_pid_.is_initialized()) {
-    joint_position_pid_.initialize(state.getSampleTime() * 1.0, 0.0, 0.0, 0.0, 0.0, false);
+    joint_position_pid_.initialize(pid_parameters_, state.getSampleTime());
+    joint_position_pid_.log_info();
   }
   joint_position_pid_.compute(
       command_target_.joint_position, state.getMeasuredJointPosition(),

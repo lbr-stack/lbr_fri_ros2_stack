@@ -32,7 +32,8 @@ protected:
 
 public:
   CommandInterface() = delete;
-  CommandInterface(const CommandGuardParameters &command_guard_parameters,
+  CommandInterface(const PIDParameters &pid_parameters,
+                   const CommandGuardParameters &command_guard_parameters,
                    const std::string &command_guard_variant = "default");
 
   void get_joint_position_command(fri_command_t_ref command, const_fri_state_t_ref state);
@@ -48,6 +49,7 @@ public:
 
 protected:
   std::unique_ptr<CommandGuard> command_guard_;
+  PIDParameters pid_parameters_;
   JointPIDArray joint_position_pid_;
   idl_command_t command_, command_target_;
 };

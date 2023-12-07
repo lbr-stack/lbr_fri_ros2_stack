@@ -8,6 +8,8 @@
 
 #include "control_toolbox/filters.hpp"
 #include "control_toolbox/pid_ros.hpp"
+#include "rclcpp/logger.hpp"
+#include "rclcpp/logging.hpp"
 
 #include "friLBRClient.h"
 
@@ -110,7 +112,18 @@ protected:
   ExponentialFilter exponential_filter_; /**< Exponential filter applied to all joints.*/
 };
 
+struct PIDParameters {
+  double p{0.0};          /**< Proportional gain.*/
+  double i{0.0};          /**< Integral gain.*/
+  double d{0.0};          /**< Derivative gain.*/
+  double i_max{0.0};      /**< Maximum integral value.*/
+  double i_min{0.0};      /**< Minimum integral value.*/
+  bool antiwindup{false}; /**< Antiwindup enabled.*/
+};
+
 class JointPIDArray {
+protected:
+  static constexpr char LOGGER_NAME[] = "lbr_fri_ros2::JointPIDArray";
   using value_array_t = std::array<double, KUKA::FRI::LBRState::NUMBER_OF_JOINTS>;
   using pid_array_t = std::array<control_toolbox::Pid, KUKA::FRI::LBRState::NUMBER_OF_JOINTS>;
 
@@ -121,12 +134,14 @@ public:
                const std::chrono::nanoseconds &dt, value_array_t &command);
   void compute(const value_array_t &command_target, const double *state,
                const std::chrono::nanoseconds &dt, value_array_t &command);
-  void initialize(const double &p, const double &i, const double &d, const double &i_max,
-                  const double &i_min, const bool &antiwindup);
+  void initialize(const PIDParameters &pid_parameters, const double &dt);
   inline const bool &is_initialized() const { return initialized_; };
+
+  void log_info() const;
 
 protected:
   bool initialized_{false};     /**< True if initialized.*/
+  PIDParameters parameters_;    /**< PID parameters.*/
   pid_array_t pid_controllers_; /**< PID controllers for each joint.*/
 };
 } // end of namespace lbr_fri_ros2

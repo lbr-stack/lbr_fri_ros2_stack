@@ -18,6 +18,7 @@
 #include "lbr_fri_ros2/async_client.hpp"
 #include "lbr_fri_ros2/command_guard.hpp"
 #include "lbr_fri_ros2/enum_maps.hpp"
+#include "lbr_fri_ros2/filters.hpp"
 #include "lbr_fri_ros2/state_interface.hpp"
 
 namespace lbr_fri_ros2 {

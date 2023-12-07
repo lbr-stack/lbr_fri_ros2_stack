@@ -8,12 +8,25 @@ AppComponent::AppComponent(const rclcpp::NodeOptions &options) {
   app_node_ptr_->declare_parameter("remote_host", std::string(""));
   app_node_ptr_->declare_parameter("rt_prio", 80);
   app_node_ptr_->declare_parameter("robot_description", std::string(""));
+  app_node_ptr_->declare_parameter("pid.p", 1.0);
+  app_node_ptr_->declare_parameter("pid.i", 0.0);
+  app_node_ptr_->declare_parameter("pid.d", 0.0);
+  app_node_ptr_->declare_parameter("pid.i_max", 0.0);
+  app_node_ptr_->declare_parameter("pid.i_min", 0.0);
+  app_node_ptr_->declare_parameter("pid.antiwindup", false);
   app_node_ptr_->declare_parameter("command_guard_variant", std::string("safe_stop"));
   app_node_ptr_->declare_parameter("external_torque_cutoff_frequency", 10.);
   app_node_ptr_->declare_parameter("measured_torque_cutoff_frequency", 10.);
   app_node_ptr_->declare_parameter("open_loop", true);
 
   // prepare parameters
+  PIDParameters pid_parameters;
+  pid_parameters.p = app_node_ptr_->get_parameter("pid.p").as_double();
+  pid_parameters.i = app_node_ptr_->get_parameter("pid.i").as_double();
+  pid_parameters.d = app_node_ptr_->get_parameter("pid.d").as_double();
+  pid_parameters.i_max = app_node_ptr_->get_parameter("pid.i_max").as_double();
+  pid_parameters.i_min = app_node_ptr_->get_parameter("pid.i_min").as_double();
+  pid_parameters.antiwindup = app_node_ptr_->get_parameter("pid.antiwindup").as_bool();
   CommandGuardParameters command_guard_parameters;
   std::string command_guard_variant =
       app_node_ptr_->get_parameter("command_guard_variant").as_string();
@@ -54,8 +67,9 @@ AppComponent::AppComponent(const rclcpp::NodeOptions &options) {
   }
 
   // configure client
-  async_client_ptr_ = std::make_shared<AsyncClient>(command_guard_parameters, command_guard_variant,
-                                                    state_interface_parameters, open_loop);
+  async_client_ptr_ =
+      std::make_shared<AsyncClient>(pid_parameters, command_guard_parameters, command_guard_variant,
+                                    state_interface_parameters, open_loop);
   app_ptr_ = std::make_unique<App>(async_client_ptr_);
 
   // default connect

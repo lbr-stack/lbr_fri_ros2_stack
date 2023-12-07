@@ -1,11 +1,12 @@
 #include "lbr_fri_ros2/async_client.hpp"
 
 namespace lbr_fri_ros2 {
-AsyncClient::AsyncClient(const CommandGuardParameters &command_guard_parameters,
+AsyncClient::AsyncClient(const PIDParameters &pid_parameters,
+                         const CommandGuardParameters &command_guard_parameters,
                          const std::string &command_guard_variant,
                          const StateInterfaceParameters &state_interface_parameters,
                          const bool &open_loop)
-    : command_interface_(command_guard_parameters, command_guard_variant),
+    : command_interface_(pid_parameters, command_guard_parameters, command_guard_variant),
       state_interface_(state_interface_parameters), open_loop_(open_loop) {
   RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "Configuring client.");
   RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "Command guard variant: '%s'.",

@@ -12,6 +12,7 @@
 
 #include "lbr_fri_ros2/command_interface.hpp"
 #include "lbr_fri_ros2/enum_maps.hpp"
+#include "lbr_fri_ros2/filters.hpp"
 #include "lbr_fri_ros2/state_interface.hpp"
 
 namespace lbr_fri_ros2 {
@@ -21,7 +22,8 @@ protected:
 
 public:
   AsyncClient() = delete;
-  AsyncClient(const CommandGuardParameters &command_guard_parameters,
+  AsyncClient(const PIDParameters &pid_parameters,
+              const CommandGuardParameters &command_guard_parameters,
               const std::string &command_guard_variant,
               const StateInterfaceParameters &state_interface_parameters = {10.0, 10.0},
               const bool &open_loop = true);

@@ -3,6 +3,12 @@ app:
     port_id: 30200 # valid in range [30200, 30209], usefull for multi-robot setup
     remote_host: null # if null, any IP is accepted
     rt_prio: 80 # real-time priority of the FRI thread
+    pid.p: 1.0 # proportional gain on joint position, which will be scaled by sample time
+    pid.i: 0.0 # integral gain on joint position, which will be scaled by sample time
+    pid.d: 0.0 # derivative gain on joint position, which will be scaled by sample time
+    pid.i_max: 0.0 # maximum integral term
+    pid.i_min: 0.0 # minimum integral term
+    pid.antiwindup: false # if true, anti-windup is enabled
     command_guard_variant: "safe_stop" # ["default", "safe_stop"] - default uses exact position limits, safe_stop uses safe zone
     external_torque_cutoff_frequency: 10.0 # cutoff frequency of the low-pass filter for the external torque in Hz
     measured_torque_cutoff_frequency: 10.0 # cutoff frequency of the low-pass filter for the measured torque in Hz

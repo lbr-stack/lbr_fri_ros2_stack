@@ -59,10 +59,23 @@ void JointPIDArray::compute(const value_array_t &command_target, const double *s
   });
 }
 
-void JointPIDArray::initialize(const double &p, const double &i, const double &d,
-                               const double &i_max, const double &i_min, const bool &antiwindup) {
-  std::for_each(pid_controllers_.begin(), pid_controllers_.end(),
-                [&](auto &pid) { pid.initPid(p, i, d, i_max, i_min, antiwindup); });
+void JointPIDArray::initialize(const PIDParameters &pid_parameters, const double &dt) {
+  parameters_ = pid_parameters;
+  std::for_each(pid_controllers_.begin(), pid_controllers_.end(), [&](auto &pid) {
+    pid.initPid(parameters_.p * dt, parameters_.i * dt, parameters_.d * dt, parameters_.i_max * dt,
+                parameters_.i_min * dt, parameters_.antiwindup);
+  });
   initialized_ = true;
+}
+
+void JointPIDArray::log_info() const {
+  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "*** Parameters:");
+  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "*   pid.p: %f", parameters_.p);
+  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "*   pid.i: %f", parameters_.i);
+  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "*   pid.d: %f", parameters_.d);
+  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "*   pid.i_max: %f", parameters_.i_max);
+  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "*   pid.i_min: %f", parameters_.i_min);
+  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "*   pid.antiwindup: %s",
+              parameters_.antiwindup ? "true" : "false");
 }
 } // end of namespace lbr_fri_ros2
