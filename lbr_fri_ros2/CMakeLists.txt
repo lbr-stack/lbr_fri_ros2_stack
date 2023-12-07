@@ -30,8 +30,8 @@ add_library(lbr_fri_ros2
     src/client.cpp
     src/command_guard.cpp
     src/command_interface.cpp
+    src/filters.cpp
     src/state_interface.cpp
-    src/utils.cpp
 )
 
 target_include_directories(lbr_fri_ros2

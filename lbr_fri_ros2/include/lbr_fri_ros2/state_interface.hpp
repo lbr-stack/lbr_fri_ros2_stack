@@ -8,7 +8,7 @@
 #include "friLBRClient.h"
 
 #include "lbr_fri_msgs/msg/lbr_state.hpp"
-#include "lbr_fri_ros2/utils.hpp"
+#include "lbr_fri_ros2/filters.hpp"
 
 namespace lbr_fri_ros2 {
 class StateInterface {

@@ -1,4 +1,4 @@
-#include "lbr_fri_ros2/utils.hpp"
+#include "lbr_fri_ros2/filters.hpp"
 
 namespace lbr_fri_ros2 {
 ExponentialFilter::ExponentialFilter() : ExponentialFilter::ExponentialFilter(0, 0.0) {}

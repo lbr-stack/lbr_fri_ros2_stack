@@ -1,5 +1,5 @@
-#ifndef LBR_FRI_ROS2__UTILS_HPP_
-#define LBR_FRI_ROS2__UTILS_HPP_
+#ifndef LBR_FRI_ROS2__FILTERS_HPP_
+#define LBR_FRI_ROS2__FILTERS_HPP_
 
 #include <algorithm>
 #include <array>
@@ -130,4 +130,4 @@ protected:
   pid_array_t pid_controllers_; /**< PID controllers for each joint.*/
 };
 } // end of namespace lbr_fri_ros2
-#endif // LBR_FRI_ROS2__UTILS_HPP_
+#endif // LBR_FRI_ROS2__FILTERS_HPP_
