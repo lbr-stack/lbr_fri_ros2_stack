@@ -25,7 +25,6 @@ void CommandInterface::get_joint_position_command(fri_command_t_ref command,
   // PID
   if (!joint_position_pid_.is_initialized()) {
     joint_position_pid_.initialize(pid_parameters_, state.getSampleTime());
-    joint_position_pid_.log_info();
   }
   joint_position_pid_.compute(
       command_target_.joint_position, state.getMeasuredJointPosition(),
@@ -58,7 +57,6 @@ void CommandInterface::get_torque_command(fri_command_t_ref command, const_fri_s
   // PID
   if (!joint_position_pid_.is_initialized()) {
     joint_position_pid_.initialize(pid_parameters_, state.getSampleTime());
-    joint_position_pid_.log_info();
   }
   joint_position_pid_.compute(
       command_target_.joint_position, state.getMeasuredJointPosition(),
@@ -91,7 +89,6 @@ void CommandInterface::get_wrench_command(fri_command_t_ref command, const_fri_s
   // PID
   if (!joint_position_pid_.is_initialized()) {
     joint_position_pid_.initialize(pid_parameters_, state.getSampleTime());
-    joint_position_pid_.log_info();
   }
   joint_position_pid_.compute(
       command_target_.joint_position, state.getMeasuredJointPosition(),
@@ -119,5 +116,8 @@ void CommandInterface::init_command(const_fri_state_t_ref state) {
   command_ = command_target_;
 }
 
-void CommandInterface::log_info() const { command_guard_->log_info(); }
+void CommandInterface::log_info() const {
+  command_guard_->log_info();
+  joint_position_pid_.log_info();
+}
 } // namespace lbr_fri_ros2
