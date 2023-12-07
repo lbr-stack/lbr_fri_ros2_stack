@@ -36,7 +36,7 @@ public:
   StateInterface() = delete;
   StateInterface(const StateInterfaceParameters &state_interface_parameters = {10.0, 10.0});
 
-  inline const_idl_state_t_ref &get_state() const { return state_; };
+  inline const_idl_state_t_ref get_state() const { return state_; };
 
   void set_state(const_fri_state_t_ref state);
   void set_state_open_loop(const_fri_state_t_ref state, const_idl_joint_pos_t_ref joint_position);
