@@ -4,5 +4,6 @@ app:
     remote_host: null # if null, any IP is accepted
     rt_prio: 80 # real-time priority of the FRI thread
     command_guard_variant: "safe_stop" # ["default", "safe_stop"] - default uses exact position limits, safe_stop uses safe zone
-    external_torque.cutoff_frequency: 10.0 # cutoff frequency of the low-pass filter for the external torque in Hz
-    measured_torque.cutoff_frequency: 10.0 # cutoff frequency of the low-pass filter for the measured torque in Hz
+    external_torque_cutoff_frequency: 10.0 # cutoff frequency of the low-pass filter for the external torque in Hz
+    measured_torque_cutoff_frequency: 10.0 # cutoff frequency of the low-pass filter for the measured torque in Hz
+    open_loop: true # if true, the robot is controlled in open loop mode
