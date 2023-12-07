@@ -12,7 +12,7 @@
 #include "friClientApplication.h"
 #include "friUdpConnection.h"
 
-#include "lbr_fri_ros2/client.hpp"
+#include "lbr_fri_ros2/async_client.hpp"
 
 namespace lbr_fri_ros2 {
 class App {
@@ -20,7 +20,7 @@ protected:
   static constexpr char APP_LOGGER_NAME[] = "lbr_fri_ros2::App";
 
 public:
-  App(const std::shared_ptr<Client> client_ptr);
+  App(const std::shared_ptr<AsyncClient> client_ptr);
   ~App();
 
   bool open_udp_socket(const int &port_id = 30200, const char *const remote_host = NULL);
@@ -34,7 +34,7 @@ protected:
   std::atomic_bool should_stop_, running_;
   std::thread run_thread_;
 
-  std::shared_ptr<Client> client_ptr_;
+  std::shared_ptr<AsyncClient> client_ptr_;
   std::unique_ptr<KUKA::FRI::UdpConnection> connection_ptr_;
   std::unique_ptr<KUKA::FRI::ClientApplication> app_ptr_;
 };

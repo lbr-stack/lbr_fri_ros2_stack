@@ -1,31 +1,33 @@
-#include "lbr_fri_ros2/client.hpp"
+#include "lbr_fri_ros2/async_client.hpp"
 
 namespace lbr_fri_ros2 {
-Client::Client(const CommandGuardParameters &command_guard_parameters,
-               const std::string &command_guard_variant,
-               const StateInterfaceParameters &state_interface_parameters, const bool &open_loop)
+AsyncClient::AsyncClient(const CommandGuardParameters &command_guard_parameters,
+                         const std::string &command_guard_variant,
+                         const StateInterfaceParameters &state_interface_parameters,
+                         const bool &open_loop)
     : command_interface_(command_guard_parameters, command_guard_variant),
       state_interface_(state_interface_parameters), open_loop_(open_loop) {
-  RCLCPP_INFO(rclcpp::get_logger(CLIENT_LOGGER_NAME), "Configuring client.");
-  RCLCPP_INFO(rclcpp::get_logger(CLIENT_LOGGER_NAME), "Command guard variant: %s.",
+  RCLCPP_INFO(rclcpp::get_logger(ASYNC_CLIENT_LOGGER_NAME), "Configuring client.");
+  RCLCPP_INFO(rclcpp::get_logger(ASYNC_CLIENT_LOGGER_NAME), "Command guard variant: %s.",
               command_guard_variant.c_str());
   command_interface_.log_info();
   state_interface_.log_info();
-  RCLCPP_INFO(rclcpp::get_logger(CLIENT_LOGGER_NAME), "Open loop: %s.",
+  RCLCPP_INFO(rclcpp::get_logger(ASYNC_CLIENT_LOGGER_NAME), "Open loop: %s.",
               open_loop_ ? "true" : "false");
-  RCLCPP_INFO(rclcpp::get_logger(CLIENT_LOGGER_NAME), "Client configured.");
+  RCLCPP_INFO(rclcpp::get_logger(ASYNC_CLIENT_LOGGER_NAME), "AsyncClient configured.");
 }
 
-void Client::onStateChange(KUKA::FRI::ESessionState old_state, KUKA::FRI::ESessionState new_state) {
-  RCLCPP_INFO(rclcpp::get_logger(CLIENT_LOGGER_NAME), "LBR switched from %s to %s.",
+void AsyncClient::onStateChange(KUKA::FRI::ESessionState old_state,
+                                KUKA::FRI::ESessionState new_state) {
+  RCLCPP_INFO(rclcpp::get_logger(ASYNC_CLIENT_LOGGER_NAME), "LBR switched from %s to %s.",
               EnumMaps::session_state_map(old_state).c_str(),
               EnumMaps::session_state_map(new_state).c_str());
   command_interface_.init_command(robotState());
 }
 
-void Client::monitor() { state_interface_.set_state(robotState()); };
+void AsyncClient::monitor() { state_interface_.set_state(robotState()); };
 
-void Client::waitForCommand() {
+void AsyncClient::waitForCommand() {
   KUKA::FRI::LBRClient::waitForCommand();
   state_interface_.set_state(robotState());
 
@@ -38,7 +40,7 @@ void Client::waitForCommand() {
   }
 }
 
-void Client::command() {
+void AsyncClient::command() {
   if (open_loop_) {
     state_interface_.set_state_open_loop(robotState(),
                                          command_interface_.get_command().joint_position);
@@ -59,7 +61,7 @@ void Client::command() {
   default:
     std::string err =
         "Unsupported command mode: " + std::to_string(robotState().getClientCommandMode()) + ".";
-    RCLCPP_ERROR(rclcpp::get_logger(CLIENT_LOGGER_NAME), err.c_str());
+    RCLCPP_ERROR(rclcpp::get_logger(ASYNC_CLIENT_LOGGER_NAME), err.c_str());
     throw std::runtime_error(err);
   }
 }

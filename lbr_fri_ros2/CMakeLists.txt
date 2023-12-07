@@ -27,7 +27,7 @@ find_package(urdf REQUIRED)
 add_library(lbr_fri_ros2
   SHARED
     src/app.cpp
-    src/client.cpp
+    src/async_client.cpp
     src/command_guard.cpp
     src/command_interface.cpp
     src/filters.cpp
@@ -82,36 +82,36 @@ install(
   DESTINATION share/lbr_fri_ros2
 )
 
-# app_component
-add_library(app_component
-  SHARED
-    src/app_component.cpp
-)
+# # app_component
+# add_library(app_component
+#   SHARED
+#     src/app_component.cpp
+# )
 
-target_include_directories(app_component
-  PRIVATE src
-)
+# target_include_directories(app_component
+#   PRIVATE src
+# )
 
-ament_target_dependencies(app_component
-  rclcpp
-  urdf
-  rclcpp_components
-)
+# ament_target_dependencies(app_component
+#   rclcpp
+#   urdf
+#   rclcpp_components
+# )
 
-target_link_libraries(app_component
-  lbr_fri_ros2
-)
+# target_link_libraries(app_component
+#   lbr_fri_ros2
+# )
 
-rclcpp_components_register_node(app_component
-  PLUGIN lbr_fri_ros2::AppComponent
-  EXECUTABLE app
-)
+# rclcpp_components_register_node(app_component
+#   PLUGIN lbr_fri_ros2::AppComponent
+#   EXECUTABLE app
+# )
 
-install(
-  TARGETS app_component
-  LIBRARY DESTINATION lib
-  RUNTIME DESTINATION lib/lbr_fri_ros2
-)
+# install(
+#   TARGETS app_component
+#   LIBRARY DESTINATION lib
+#   RUNTIME DESTINATION lib/lbr_fri_ros2
+# )
 
 install(
   DIRECTORY config launch

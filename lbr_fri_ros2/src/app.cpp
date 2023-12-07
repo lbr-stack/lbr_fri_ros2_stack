@@ -1,7 +1,7 @@
 #include "lbr_fri_ros2/app.hpp"
 
 namespace lbr_fri_ros2 {
-App::App(const std::shared_ptr<Client> client_ptr)
+App::App(const std::shared_ptr<AsyncClient> client_ptr)
     : should_stop_(true), running_(false), client_ptr_(nullptr), connection_ptr_(nullptr),
       app_ptr_(nullptr) {
   client_ptr_ = client_ptr;
@@ -52,7 +52,7 @@ bool App::close_udp_socket() {
 
 void App::run(int rt_prio) {
   if (!client_ptr_) {
-    RCLCPP_ERROR(rclcpp::get_logger(APP_LOGGER_NAME), "Client not configured.");
+    RCLCPP_ERROR(rclcpp::get_logger(APP_LOGGER_NAME), "AsyncClient not configured.");
     return;
   }
   if (!connection_ptr_) {

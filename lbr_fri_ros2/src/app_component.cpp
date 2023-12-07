@@ -8,7 +8,7 @@ AppComponent::AppComponent(const rclcpp::NodeOptions &options) {
   app_node_ptr_->declare_parameter("remote_host", std::string(""));
   app_node_ptr_->declare_parameter("rt_prio", 80);
 
-  client_ptr_ = std::make_shared<Client>(app_node_ptr_);
+  client_ptr_ = std::make_shared<AsyncClient>(app_node_ptr_);
   app_ptr_ = std::make_unique<App>(app_node_ptr_, client_ptr_);
 
   // default connect
@@ -75,7 +75,7 @@ void AppComponent::connect_(const int &port_id, const char *const remote_host,
       std::this_thread::sleep_for(std::chrono::seconds(2));
     }
 
-    RCLCPP_INFO(app_node_ptr_->get_logger(), "Client command mode: %s.",
+    RCLCPP_INFO(app_node_ptr_->get_logger(), "AsyncClient command mode: %s.",
                 EnumMaps::client_command_mode_map(
                     client_ptr_->get_state_interface().get_state().client_command_mode)
                     .c_str());
@@ -165,7 +165,7 @@ void AppComponent::on_wrench_command_(
 
 bool AppComponent::on_command_checks_(const int &expected_command_mode) {
   if (!client_ptr_) {
-    RCLCPP_ERROR(app_node_ptr_->get_logger(), "Client not configured.");
+    RCLCPP_ERROR(app_node_ptr_->get_logger(), "AsyncClient not configured.");
     return false;
   }
   if (client_ptr_->get_state_interface().get_state().client_command_mode ==

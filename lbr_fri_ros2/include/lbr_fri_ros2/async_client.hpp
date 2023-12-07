@@ -1,5 +1,5 @@
-#ifndef LBR_FRI_ROS2__CLIENT_HPP_
-#define LBR_FRI_ROS2__CLIENT_HPP_
+#ifndef LBR_FRI_ROS2__ASYNC_CLIENT_HPP_
+#define LBR_FRI_ROS2__ASYNC_CLIENT_HPP_
 
 #include <cstring>
 #include <memory>
@@ -15,16 +15,16 @@
 #include "lbr_fri_ros2/state_interface.hpp"
 
 namespace lbr_fri_ros2 {
-class Client : public KUKA::FRI::LBRClient {
+class AsyncClient : public KUKA::FRI::LBRClient {
 protected:
-  static constexpr char CLIENT_LOGGER_NAME[] = "lbr_fri_ros2::Client";
+  static constexpr char ASYNC_CLIENT_LOGGER_NAME[] = "lbr_fri_ros2::AsyncClient";
 
 public:
-  Client() = delete;
-  Client(const CommandGuardParameters &command_guard_parameters,
-         const std::string &command_guard_variant,
-         const StateInterfaceParameters &state_interface_parameters = {10.0, 10.0},
-         const bool &open_loop = true);
+  AsyncClient() = delete;
+  AsyncClient(const CommandGuardParameters &command_guard_parameters,
+              const std::string &command_guard_variant,
+              const StateInterfaceParameters &state_interface_parameters = {10.0, 10.0},
+              const bool &open_loop = true);
 
   inline CommandInterface &get_command_interface() { return command_interface_; }
   inline StateInterface &get_state_interface() { return state_interface_; }
@@ -42,4 +42,4 @@ protected:
   bool open_loop_;
 };
 } // end of namespace lbr_fri_ros2
-#endif // LBR_FRI_ROS2__CLIENT_HPP_
+#endif // LBR_FRI_ROS2__ASYNC_CLIENT_HPP_
