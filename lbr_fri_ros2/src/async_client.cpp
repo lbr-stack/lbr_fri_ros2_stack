@@ -8,7 +8,7 @@ AsyncClient::AsyncClient(const CommandGuardParameters &command_guard_parameters,
     : command_interface_(command_guard_parameters, command_guard_variant),
       state_interface_(state_interface_parameters), open_loop_(open_loop) {
   RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "Configuring client.");
-  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "Command guard variant: %s.",
+  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "Command guard variant: '%s'.",
               command_guard_variant.c_str());
   command_interface_.log_info();
   state_interface_.log_info();

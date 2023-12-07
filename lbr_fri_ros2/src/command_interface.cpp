@@ -4,9 +4,6 @@ namespace lbr_fri_ros2 {
 
 CommandInterface::CommandInterface(const CommandGuardParameters &command_guard_parameters,
                                    const std::string &command_guard_variant) {
-  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME),
-              "Configuring command interface with command guard '%s'.",
-              command_guard_variant.c_str());
   command_guard_ = command_guard_factory(command_guard_parameters, command_guard_variant);
 };
 
