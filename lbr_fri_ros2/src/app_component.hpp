@@ -6,6 +6,7 @@
 #include <thread>
 
 #include "rclcpp/rclcpp.hpp"
+#include "urdf/model.h"
 
 #include "lbr_fri_msgs/msg/lbr_position_command.hpp"
 #include "lbr_fri_msgs/msg/lbr_state.hpp"
@@ -15,7 +16,9 @@
 #include "lbr_fri_msgs/srv/app_disconnect.hpp"
 #include "lbr_fri_ros2/app.hpp"
 #include "lbr_fri_ros2/async_client.hpp"
+#include "lbr_fri_ros2/command_guard.hpp"
 #include "lbr_fri_ros2/enum_maps.hpp"
+#include "lbr_fri_ros2/state_interface.hpp"
 
 namespace lbr_fri_ros2 {
 /**

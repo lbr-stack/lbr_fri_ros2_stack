@@ -7,9 +7,56 @@ AppComponent::AppComponent(const rclcpp::NodeOptions &options) {
   app_node_ptr_->declare_parameter("port_id", 30200);
   app_node_ptr_->declare_parameter("remote_host", std::string(""));
   app_node_ptr_->declare_parameter("rt_prio", 80);
+  app_node_ptr_->declare_parameter("robot_description", std::string(""));
+  app_node_ptr_->declare_parameter("command_guard_variant", std::string("safe_stop"));
+  app_node_ptr_->declare_parameter("external_torque_cutoff_frequency", 10.);
+  app_node_ptr_->declare_parameter("measured_torque_cutoff_frequency", 10.);
+  app_node_ptr_->declare_parameter("open_loop", true);
 
-  async_client_ptr_ = std::make_shared<AsyncClient>(app_node_ptr_);
-  app_ptr_ = std::make_unique<App>(app_node_ptr_, async_client_ptr_);
+  // prepare parameters
+  CommandGuardParameters command_guard_parameters;
+  std::string command_guard_variant =
+      app_node_ptr_->get_parameter("command_guard_variant").as_string();
+  StateInterfaceParameters state_interface_parameters;
+  state_interface_parameters.external_torque_cutoff_frequency =
+      app_node_ptr_->get_parameter("external_torque_cutoff_frequency").as_double();
+  state_interface_parameters.measured_torque_cutoff_frequency =
+      app_node_ptr_->get_parameter("measured_torque_cutoff_frequency").as_double();
+  bool open_loop = app_node_ptr_->get_parameter("open_loop").as_bool();
+
+  // load robot description and parse limits
+  auto robot_description_param = app_node_ptr_->get_parameter("robot_description");
+  urdf::Model model;
+  if (!model.initString(robot_description_param.as_string())) {
+    std::string err = "Failed to intialize urdf model from '" + robot_description_param.get_name() +
+                      "' parameter.";
+    RCLCPP_ERROR(app_node_ptr_->get_logger(), err.c_str());
+    throw std::runtime_error(err);
+  }
+
+  std::size_t jnt_cnt = 0;
+  for (const auto &name_joint_pair : model.joints_) {
+    const auto joint = name_joint_pair.second;
+    if (joint->type == urdf::Joint::REVOLUTE) {
+      if (jnt_cnt >= command_guard_parameters.joint_names.size()) {
+        std::string errs =
+            "Found too many joints in '" + robot_description_param.get_name() + "' parameter.";
+        RCLCPP_ERROR(app_node_ptr_->get_logger(), errs.c_str());
+        throw std::runtime_error(errs);
+      }
+      command_guard_parameters.joint_names[jnt_cnt] = name_joint_pair.first;
+      command_guard_parameters.min_position[jnt_cnt] = joint->limits->lower;
+      command_guard_parameters.max_position[jnt_cnt] = joint->limits->upper;
+      command_guard_parameters.max_velocity[jnt_cnt] = joint->limits->velocity;
+      command_guard_parameters.max_torque[jnt_cnt] = joint->limits->effort;
+      ++jnt_cnt;
+    }
+  }
+
+  // configure client
+  async_client_ptr_ = std::make_shared<AsyncClient>(command_guard_parameters, command_guard_variant,
+                                                    state_interface_parameters, open_loop);
+  app_ptr_ = std::make_unique<App>(async_client_ptr_);
 
   // default connect
   connect_(app_node_ptr_->get_parameter("port_id").as_int(),
