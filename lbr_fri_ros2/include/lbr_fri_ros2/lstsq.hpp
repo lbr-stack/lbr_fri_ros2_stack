@@ -1,5 +1,7 @@
-#ifndef LBR_FRI_ROS2__DAMPED_LEAST_SQUARES_HPP_
-#define LBR_FRI_ROS2__DAMPED_LEAST_SQUARES_HPP_
+#ifndef LBR_FRI_ROS2__LSTSQ_HPP_
+#define LBR_FRI_ROS2__LSTSQ_HPP_
+
+#include <algorithm>
 
 #include "eigen3/Eigen/Core"
 #include "eigen3/Eigen/SVD"
@@ -7,8 +9,8 @@
 namespace lbr_fri_ros2 {
 template <class MatT>
 Eigen::Matrix<typename MatT::Scalar, MatT::ColsAtCompileTime, MatT::RowsAtCompileTime>
-damped_least_squares(const MatT &mat, typename MatT::Scalar lambda =
-                                          typename MatT::Scalar{2e-1}) // choose appropriately
+lstsq(const MatT &mat,
+      typename MatT::Scalar lambda = typename MatT::Scalar{2e-1}) // choose appropriately
 {
   typedef typename MatT::Scalar Scalar;
   auto svd = mat.jacobiSvd(Eigen::ComputeFullU | Eigen::ComputeFullV);
@@ -16,11 +18,12 @@ damped_least_squares(const MatT &mat, typename MatT::Scalar lambda =
   Eigen::Matrix<Scalar, MatT::ColsAtCompileTime, MatT::RowsAtCompileTime> dampedSingularValuesInv(
       mat.cols(), mat.rows());
   dampedSingularValuesInv.setZero();
-  for (unsigned int i = 0; i < singularValues.size(); ++i) {
-    dampedSingularValuesInv(i, i) =
-        singularValues(i) / (singularValues(i) * singularValues(i) + lambda * lambda);
-  }
+  std::for_each(singularValues.data(), singularValues.data() + singularValues.size(),
+                [&, i = 0](Scalar &s)[mutable] {
+                  dampedSingularValuesInv(i, i) = s / (s * s + lambda * lambda);
+                  ++i;
+                });
   return svd.matrixV() * dampedSingularValuesInv * svd.matrixU().adjoint();
 }
 } // end of namespace lbr_fri_ros2
-#endif // LBR_FRI_ROS2__DAMPED_LEAST_SQUARES_HPP_
+#endif // LBR_FRI_ROS2__LSTSQ_HPP_

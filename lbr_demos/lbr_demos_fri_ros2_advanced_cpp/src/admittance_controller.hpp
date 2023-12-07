@@ -14,7 +14,7 @@
 
 #include "lbr_fri_msgs/msg/lbr_position_command.hpp"
 #include "lbr_fri_msgs/msg/lbr_state.hpp"
-#include "lbr_fri_ros2/damped_least_squares.hpp"
+#include "lbr_fri_ros2/lstsq.hpp"
 
 namespace lbr_fri_ros2 {
 class AdmittanceController {
@@ -50,7 +50,7 @@ public:
 
     jacobian_solver_->JntToJac(q_, jacobian_);
 
-    jacobian_inv_ = damped_least_squares(jacobian_.data);
+    jacobian_inv_ = lstsq(jacobian_.data);
     f_ext_ = jacobian_inv_.transpose() * tau_ext_;
 
     for (int i = 0; i < 6; i++) {
