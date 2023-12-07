@@ -1,5 +1,5 @@
-#ifndef LBR_FRI_ROS2__LSTSQ_HPP_
-#define LBR_FRI_ROS2__LSTSQ_HPP_
+#ifndef LBR_FRI_ROS2__PINV_HPP_
+#define LBR_FRI_ROS2__PINV_HPP_
 
 #include <algorithm>
 
@@ -9,8 +9,8 @@
 namespace lbr_fri_ros2 {
 template <class MatT>
 Eigen::Matrix<typename MatT::Scalar, MatT::ColsAtCompileTime, MatT::RowsAtCompileTime>
-lstsq(const MatT &mat,
-      typename MatT::Scalar lambda = typename MatT::Scalar{2e-1}) // choose appropriately
+pinv(const MatT &mat,
+     typename MatT::Scalar lambda = typename MatT::Scalar{2e-1}) // choose appropriately
 {
   typedef typename MatT::Scalar Scalar;
   auto svd = mat.jacobiSvd(Eigen::ComputeFullU | Eigen::ComputeFullV);
@@ -26,4 +26,4 @@ lstsq(const MatT &mat,
   return svd.matrixV() * dampedSingularValuesInv * svd.matrixU().adjoint();
 }
 } // end of namespace lbr_fri_ros2
-#endif // LBR_FRI_ROS2__LSTSQ_HPP_
+#endif // LBR_FRI_ROS2__PINV_HPP_
