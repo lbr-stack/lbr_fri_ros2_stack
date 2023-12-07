@@ -19,7 +19,7 @@ pinv(const MatT &mat,
       mat.cols(), mat.rows());
   dampedSingularValuesInv.setZero();
   std::for_each(singularValues.data(), singularValues.data() + singularValues.size(),
-                [&, i = 0](Scalar &s)[mutable] {
+                [&, i = 0](Scalar &s) mutable {
                   dampedSingularValuesInv(i, i) = s / (s * s + lambda * lambda);
                   ++i;
                 });
