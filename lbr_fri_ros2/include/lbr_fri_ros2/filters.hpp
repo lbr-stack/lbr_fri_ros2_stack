@@ -8,8 +8,6 @@
 
 #include "control_toolbox/filters.hpp"
 #include "control_toolbox/pid_ros.hpp"
-#include "rclcpp/logger.hpp"
-#include "rclcpp/logging.hpp"
 
 #include "friLBRClient.h"
 
@@ -141,7 +139,6 @@ public:
 
 protected:
   bool initialized_{false};     /**< True if initialized.*/
-  PIDParameters parameters_;    /**< PID parameters.*/
   pid_array_t pid_controllers_; /**< PID controllers for each joint.*/
 };
 } // end of namespace lbr_fri_ros2
