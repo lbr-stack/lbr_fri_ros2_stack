@@ -1,12 +1,12 @@
 #include "lbr_fri_ros2/app.hpp"
 
 namespace lbr_fri_ros2 {
-App::App(const std::shared_ptr<AsyncClient> client_ptr)
-    : should_stop_(true), running_(false), client_ptr_(nullptr), connection_ptr_(nullptr),
+App::App(const std::shared_ptr<AsyncClient> async_client_ptr)
+    : should_stop_(true), running_(false), async_client_ptr_(nullptr), connection_ptr_(nullptr),
       app_ptr_(nullptr) {
-  client_ptr_ = client_ptr;
+  async_client_ptr_ = async_client_ptr;
   connection_ptr_ = std::make_unique<KUKA::FRI::UdpConnection>();
-  app_ptr_ = std::make_unique<KUKA::FRI::ClientApplication>(*connection_ptr_, *client_ptr_);
+  app_ptr_ = std::make_unique<KUKA::FRI::ClientApplication>(*connection_ptr_, *async_client_ptr_);
 }
 
 App::~App() {
@@ -51,7 +51,7 @@ bool App::close_udp_socket() {
 }
 
 void App::run(int rt_prio) {
-  if (!client_ptr_) {
+  if (!async_client_ptr_) {
     RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME), "AsyncClient not configured.");
     return;
   }
@@ -87,12 +87,12 @@ void App::run(int rt_prio) {
     bool success = true;
     while (rclcpp::ok() && success && !should_stop_) {
       success = app_ptr_->step(); // TODO: blocks until robot heartbeat, stuck if port id mismatches
-      if (client_ptr_->robotState().getSessionState() == KUKA::FRI::ESessionState::IDLE) {
+      if (async_client_ptr_->robotState().getSessionState() == KUKA::FRI::ESessionState::IDLE) {
         RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "LBR in session state idle, exiting.");
         break;
       }
     }
-    client_ptr_->get_state_interface().uninitialize();
+    async_client_ptr_->get_state_interface().uninitialize();
     running_ = false;
     RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "Exiting run thread.");
   });

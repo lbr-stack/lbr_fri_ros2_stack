@@ -81,7 +81,7 @@ protected:
 
   // app
   rclcpp::Node::SharedPtr app_node_ptr_; /** Node for communicating with ROS.<*/
-  std::shared_ptr<AsyncClient> client_ptr_;
+  std::shared_ptr<AsyncClient> async_client_ptr_;
   std::unique_ptr<App> app_ptr_; /** #lbr_fri_ros2::App for communicating with the hardware.<*/
 };
 } // end of namespace lbr_fri_ros2
