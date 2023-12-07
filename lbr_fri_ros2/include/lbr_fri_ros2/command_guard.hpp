@@ -29,7 +29,7 @@ struct CommandGuardParameters {
 
 class CommandGuard {
 protected:
-  static constexpr char COMMAND_GUARD_LOGGER_NAME[] = "lbr_fri_ros2::CommandGuard";
+  static constexpr char LOGGER_NAME[] = "lbr_fri_ros2::CommandGuard";
 
   // ROS IDL types
   using idl_command_t = lbr_fri_msgs::msg::LBRCommand;

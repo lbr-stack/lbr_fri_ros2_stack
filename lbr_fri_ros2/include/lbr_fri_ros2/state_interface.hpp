@@ -19,7 +19,7 @@ struct StateInterfaceParameters {
 
 class StateInterface {
 protected:
-  static constexpr char STATE_INTERFACE_LOGGER_NAME[] = "lbr_fri_ros2::StateInterface";
+  static constexpr char LOGGER_NAME[] = "lbr_fri_ros2::StateInterface";
 
   // ROS IDL types
   using idl_state_t = lbr_fri_msgs::msg::LBRState;

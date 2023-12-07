@@ -17,7 +17,7 @@
 namespace lbr_fri_ros2 {
 class AsyncClient : public KUKA::FRI::LBRClient {
 protected:
-  static constexpr char ASYNC_CLIENT_LOGGER_NAME[] = "lbr_fri_ros2::AsyncClient";
+  static constexpr char LOGGER_NAME[] = "lbr_fri_ros2::AsyncClient";
 
 public:
   AsyncClient() = delete;

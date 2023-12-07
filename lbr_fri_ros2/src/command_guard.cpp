@@ -28,18 +28,17 @@ bool CommandGuard::is_valid_command(const_idl_command_t_ref lbr_command,
     }
     return true;
   default:
-    RCLCPP_ERROR(rclcpp::get_logger(COMMAND_GUARD_LOGGER_NAME),
-                 "Invalid EClientCommandMode provided.");
+    RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME), "Invalid EClientCommandMode provided.");
     return false;
   }
   return false;
 }
 
 void CommandGuard::log_info() const {
-  RCLCPP_INFO(rclcpp::get_logger(COMMAND_GUARD_LOGGER_NAME), "Parameters:");
+  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "Parameters:");
   for (std::size_t i = 0; i < parameters_.joint_names_.size(); ++i) {
     RCLCPP_INFO(
-        rclcpp::get_logger(COMMAND_GUARD_LOGGER_NAME),
+        rclcpp::get_logger(LOGGER_NAME),
         "  Joint %s limits: Position: [%.1f, %.1f] deg, velocity: %.1f deg/s, torque: %.1f Nm",
         parameters_.joint_names_[i].c_str(), parameters_.min_position_[i],
         parameters_.max_position_[i], parameters_.max_velocity_[i], parameters_.max_torque_[i]);
@@ -51,8 +50,7 @@ bool CommandGuard::command_in_position_limits_(const_idl_command_t_ref lbr_comma
   for (std::size_t i = 0; i < lbr_command.joint_position.size(); ++i) {
     if (lbr_command.joint_position[i] < parameters_.min_position_[i] ||
         lbr_command.joint_position[i] > parameters_.max_position_[i]) {
-      RCLCPP_ERROR(rclcpp::get_logger(COMMAND_GUARD_LOGGER_NAME),
-                   "Position command not in limits for joint %s.",
+      RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME), "Position command not in limits for joint %s.",
                    parameters_.joint_names_[i].c_str());
       return false;
     }
@@ -66,8 +64,8 @@ bool CommandGuard::command_in_velocity_limits_(const_idl_command_t_ref lbr_comma
   for (std::size_t i = 0; i < lbr_command.joint_position[i]; ++i) {
     if (std::abs(lbr_command.joint_position[i] - lbr_state.getMeasuredJointPosition()[i]) / dt >
         parameters_.max_velocity_[i]) {
-      RCLCPP_ERROR(rclcpp::get_logger(COMMAND_GUARD_LOGGER_NAME),
-                   "Velocity not in limits for joint %s.", parameters_.joint_names_[i].c_str());
+      RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME), "Velocity not in limits for joint %s.",
+                   parameters_.joint_names_[i].c_str());
       return false;
     }
   }
@@ -79,8 +77,7 @@ bool CommandGuard::command_in_torque_limits_(const_idl_command_t_ref lbr_command
   for (std::size_t i = 0; i < lbr_command.torque.size(); ++i) {
     if (std::abs(lbr_command.torque[i] + lbr_state.getExternalTorque()[i]) >
         parameters_.max_torque_[i]) {
-      RCLCPP_ERROR(rclcpp::get_logger(COMMAND_GUARD_LOGGER_NAME),
-                   "Torque command not in limits for joint %s.",
+      RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME), "Torque command not in limits for joint %s.",
                    parameters_.joint_names_[i].c_str());
       return false;
     }
@@ -97,8 +94,7 @@ bool SafeStopCommandGuard::command_in_position_limits_(const_idl_command_t_ref l
         lbr_command.joint_position[i] >
             parameters_.max_position_[i] -
                 parameters_.max_velocity_[i] * lbr_state.getSampleTime()) {
-      RCLCPP_ERROR(rclcpp::get_logger(COMMAND_GUARD_LOGGER_NAME),
-                   "Position command not in limits for joint %s.",
+      RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME), "Position command not in limits for joint %s.",
                    parameters_.joint_names_[i].c_str());
       return false;
     }
@@ -109,7 +105,7 @@ bool SafeStopCommandGuard::command_in_position_limits_(const_idl_command_t_ref l
 std::unique_ptr<CommandGuard>
 command_guard_factory(const CommandGuardParameters &command_guard_parameters,
                       const std::string &variant) {
-  constexpr char COMMANG_GUARD_FACTORY_LOGGER_NAME[] = "lbr_fri_ros2::command_guard_factory";
+  constexpr char LOGGER_NAME[] = "lbr_fri_ros2::command_guard_factory";
   if (variant == "default") {
     return std::make_unique<CommandGuard>(command_guard_parameters);
   }
@@ -117,7 +113,7 @@ command_guard_factory(const CommandGuardParameters &command_guard_parameters,
     return std::make_unique<SafeStopCommandGuard>(command_guard_parameters);
   }
   std::string err = "Invalid CommandGuard variant provided.";
-  RCLCPP_ERROR(rclcpp::get_logger(COMMANG_GUARD_FACTORY_LOGGER_NAME), err.c_str());
+  RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME), err.c_str());
   throw std::runtime_error(err);
 }
 } // end of namespace lbr_fri_ros2

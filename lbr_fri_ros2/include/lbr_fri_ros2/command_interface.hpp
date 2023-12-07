@@ -18,7 +18,7 @@
 namespace lbr_fri_ros2 {
 class CommandInterface {
 protected:
-  static constexpr char COMMAND_INTERFACE_LOGGER_NAME[] = "lbr_fri_ros2::CommandInterface";
+  static constexpr char LOGGER_NAME[] = "lbr_fri_ros2::CommandInterface";
 
   // ROS IDL types
   using idl_command_t = lbr_fri_msgs::msg::LBRCommand;

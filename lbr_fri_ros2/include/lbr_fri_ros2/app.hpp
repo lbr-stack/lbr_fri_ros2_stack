@@ -17,7 +17,7 @@
 namespace lbr_fri_ros2 {
 class App {
 protected:
-  static constexpr char APP_LOGGER_NAME[] = "lbr_fri_ros2::App";
+  static constexpr char LOGGER_NAME[] = "lbr_fri_ros2::App";
 
 public:
   App(const std::shared_ptr<AsyncClient> client_ptr);

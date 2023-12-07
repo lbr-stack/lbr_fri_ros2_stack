@@ -4,7 +4,7 @@ namespace lbr_fri_ros2 {
 
 CommandInterface::CommandInterface(const CommandGuardParameters &command_guard_parameters,
                                    const std::string &command_guard_variant) {
-  RCLCPP_INFO(rclcpp::get_logger(COMMAND_INTERFACE_LOGGER_NAME),
+  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME),
               "Configuring command interface with command guard '%s'.",
               command_guard_variant.c_str());
   command_guard_ = command_guard_factory(command_guard_parameters, command_guard_variant);
@@ -14,12 +14,12 @@ void CommandInterface::get_joint_position_command(fri_command_t_ref command,
                                                   const_fri_state_t_ref state) {
   if (state.getClientCommandMode() != KUKA::FRI::EClientCommandMode::POSITION) {
     std::string err = "Set joint position only allowed in position command mode.";
-    RCLCPP_ERROR(rclcpp::get_logger(COMMAND_INTERFACE_LOGGER_NAME), err.c_str());
+    RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME), err.c_str());
     throw std::runtime_error(err);
   }
   if (!command_guard_) {
     std::string err = "Uninitialized command guard.";
-    RCLCPP_ERROR(rclcpp::get_logger(COMMAND_INTERFACE_LOGGER_NAME), err.c_str());
+    RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME), err.c_str());
     throw std::runtime_error(err);
   }
 
@@ -35,7 +35,7 @@ void CommandInterface::get_joint_position_command(fri_command_t_ref command,
   // validate
   if (!command_guard_->is_valid_command(command_, state)) {
     std::string err = "Invalid command.";
-    RCLCPP_ERROR(rclcpp::get_logger(COMMAND_INTERFACE_LOGGER_NAME), err.c_str());
+    RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME), err.c_str());
     throw std::runtime_error(err);
   }
 
@@ -46,12 +46,12 @@ void CommandInterface::get_joint_position_command(fri_command_t_ref command,
 void CommandInterface::get_torque_command(fri_command_t_ref command, const_fri_state_t_ref state) {
   if (state.getClientCommandMode() != KUKA::FRI::EClientCommandMode::TORQUE) {
     std::string err = "Set torque only allowed in torque command mode.";
-    RCLCPP_ERROR(rclcpp::get_logger(COMMAND_INTERFACE_LOGGER_NAME), err.c_str());
+    RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME), err.c_str());
     throw std::runtime_error(err);
   }
   if (!command_guard_) {
     std::string err = "Uninitialized command guard.";
-    RCLCPP_ERROR(rclcpp::get_logger(COMMAND_INTERFACE_LOGGER_NAME), err.c_str());
+    RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME), err.c_str());
     throw std::runtime_error(err);
   }
 
@@ -78,12 +78,12 @@ void CommandInterface::get_torque_command(fri_command_t_ref command, const_fri_s
 void CommandInterface::get_wrench_command(fri_command_t_ref command, const_fri_state_t_ref state) {
   if (state.getClientCommandMode() != KUKA::FRI::EClientCommandMode::WRENCH) {
     std::string err = "Set wrench only allowed in wrench command mode.";
-    RCLCPP_ERROR(rclcpp::get_logger(COMMAND_INTERFACE_LOGGER_NAME), err.c_str());
+    RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME), err.c_str());
     throw std::runtime_error(err);
   }
   if (!command_guard_) {
     std::string err = "Uninitialized command guard.";
-    RCLCPP_ERROR(rclcpp::get_logger(COMMAND_INTERFACE_LOGGER_NAME), err.c_str());
+    RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME), err.c_str());
     throw std::runtime_error(err);
   }
 
@@ -100,7 +100,7 @@ void CommandInterface::get_wrench_command(fri_command_t_ref command, const_fri_s
   // validate
   if (!command_guard_->is_valid_command(command_, state)) {
     std::string err = "Invalid command.";
-    RCLCPP_ERROR(rclcpp::get_logger(COMMAND_INTERFACE_LOGGER_NAME), err.c_str());
+    RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME), err.c_str());
     throw std::runtime_error(err);
   }
 
