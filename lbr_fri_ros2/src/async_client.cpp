@@ -12,13 +12,13 @@ AsyncClient::AsyncClient(const CommandGuardParameters &command_guard_parameters,
               command_guard_variant.c_str());
   command_interface_.log_info();
   state_interface_.log_info();
-  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "Open loop: %s.", open_loop_ ? "true" : "false");
+  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "Open loop: '%s'.", open_loop_ ? "true" : "false");
   RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "Client configured.");
 }
 
 void AsyncClient::onStateChange(KUKA::FRI::ESessionState old_state,
                                 KUKA::FRI::ESessionState new_state) {
-  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "LBR switched from %s to %s.",
+  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "LBR switched from '%s' to '%s'.",
               EnumMaps::session_state_map(old_state).c_str(),
               EnumMaps::session_state_map(new_state).c_str());
   command_interface_.init_command(robotState());

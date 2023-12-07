@@ -99,7 +99,7 @@ void AppComponent::connect_(const int &port_id, const char *const remote_host,
   RCLCPP_INFO(app_node_ptr_->get_logger(), "Robot connected.");
 
   RCLCPP_INFO(
-      app_node_ptr_->get_logger(), "Control mode: %s.",
+      app_node_ptr_->get_logger(), "Control mode: '%s'.",
       EnumMaps::control_mode_map(async_client_ptr_->get_state_interface().get_state().control_mode)
           .c_str());
   RCLCPP_INFO(app_node_ptr_->get_logger(), "Sample time: %.3f s.",
@@ -117,12 +117,12 @@ void AppComponent::connect_(const int &port_id, const char *const remote_host,
     while (async_client_ptr_->get_state_interface().get_state().session_state !=
                KUKA::FRI::ESessionState::COMMANDING_ACTIVE &&
            rclcpp::ok()) {
-      RCLCPP_INFO(app_node_ptr_->get_logger(), "Waiting for robot to enter %s state.",
+      RCLCPP_INFO(app_node_ptr_->get_logger(), "Waiting for robot to enter '%s' state.",
                   EnumMaps::session_state_map(KUKA::FRI::ESessionState::COMMANDING_ACTIVE).c_str());
       std::this_thread::sleep_for(std::chrono::seconds(2));
     }
 
-    RCLCPP_INFO(app_node_ptr_->get_logger(), "AsyncClient command mode: %s.",
+    RCLCPP_INFO(app_node_ptr_->get_logger(), "AsyncClient command mode: '%s'.",
                 EnumMaps::client_command_mode_map(
                     async_client_ptr_->get_state_interface().get_state().client_command_mode)
                     .c_str());
