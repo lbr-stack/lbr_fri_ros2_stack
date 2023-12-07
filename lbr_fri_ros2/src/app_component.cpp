@@ -102,8 +102,9 @@ void AppComponent::connect_(const int &port_id, const char *const remote_host,
       app_node_ptr_->get_logger(), "Control mode: '%s'.",
       EnumMaps::control_mode_map(async_client_ptr_->get_state_interface().get_state().control_mode)
           .c_str());
-  RCLCPP_INFO(app_node_ptr_->get_logger(), "Sample time: %.3f s.",
-              async_client_ptr_->get_state_interface().get_state().sample_time);
+  RCLCPP_INFO(app_node_ptr_->get_logger(), "Sample time: %.3f s / %.1f Hz.",
+              async_client_ptr_->get_state_interface().get_state().sample_time,
+              1. / async_client_ptr_->get_state_interface().get_state().sample_time);
 
   // publisher
   state_pub_ = app_node_ptr_->create_publisher<lbr_fri_msgs::msg::LBRState>("state", 1);
