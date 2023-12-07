@@ -36,22 +36,23 @@ bool CommandGuard::is_valid_command(const_idl_command_t_ref lbr_command,
 
 void CommandGuard::log_info() const {
   RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "*** Parameters:");
-  for (std::size_t i = 0; i < parameters_.joint_names_.size(); ++i) {
+  for (std::size_t i = 0; i < parameters_.joint_names.size(); ++i) {
     RCLCPP_INFO(
         rclcpp::get_logger(LOGGER_NAME),
         "*   Joint %s limits: Position: [%.1f, %.1f] deg, velocity: %.1f deg/s, torque: %.1f Nm",
-        parameters_.joint_names_[i].c_str(), parameters_.min_position_[i],
-        parameters_.max_position_[i], parameters_.max_velocity_[i], parameters_.max_torque_[i]);
+        parameters_.joint_names[i].c_str(), parameters_.min_position[i] * (180. / M_PI),
+        parameters_.max_position[i] * (180. / M_PI), parameters_.max_velocity[i] * (180. / M_PI),
+        parameters_.max_torque[i]);
   }
 }
 
 bool CommandGuard::command_in_position_limits_(const_idl_command_t_ref lbr_command,
                                                const_fri_state_t_ref /*lbr_state*/) const {
   for (std::size_t i = 0; i < lbr_command.joint_position.size(); ++i) {
-    if (lbr_command.joint_position[i] < parameters_.min_position_[i] ||
-        lbr_command.joint_position[i] > parameters_.max_position_[i]) {
+    if (lbr_command.joint_position[i] < parameters_.min_position[i] ||
+        lbr_command.joint_position[i] > parameters_.max_position[i]) {
       RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME), "Position command not in limits for joint %s.",
-                   parameters_.joint_names_[i].c_str());
+                   parameters_.joint_names[i].c_str());
       return false;
     }
   }
@@ -63,9 +64,9 @@ bool CommandGuard::command_in_velocity_limits_(const_idl_command_t_ref lbr_comma
   const double &dt = lbr_state.getSampleTime();
   for (std::size_t i = 0; i < lbr_command.joint_position[i]; ++i) {
     if (std::abs(lbr_command.joint_position[i] - lbr_state.getMeasuredJointPosition()[i]) / dt >
-        parameters_.max_velocity_[i]) {
+        parameters_.max_velocity[i]) {
       RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME), "Velocity not in limits for joint %s.",
-                   parameters_.joint_names_[i].c_str());
+                   parameters_.joint_names[i].c_str());
       return false;
     }
   }
@@ -76,9 +77,9 @@ bool CommandGuard::command_in_torque_limits_(const_idl_command_t_ref lbr_command
                                              const_fri_state_t_ref lbr_state) const {
   for (std::size_t i = 0; i < lbr_command.torque.size(); ++i) {
     if (std::abs(lbr_command.torque[i] + lbr_state.getExternalTorque()[i]) >
-        parameters_.max_torque_[i]) {
+        parameters_.max_torque[i]) {
       RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME), "Torque command not in limits for joint %s.",
-                   parameters_.joint_names_[i].c_str());
+                   parameters_.joint_names[i].c_str());
       return false;
     }
   }
@@ -89,13 +90,11 @@ bool SafeStopCommandGuard::command_in_position_limits_(const_idl_command_t_ref l
                                                        const_fri_state_t_ref lbr_state) const {
   for (std::size_t i = 0; i < lbr_command.joint_position.size(); ++i) {
     if (lbr_command.joint_position[i] <
-            parameters_.min_position_[i] +
-                parameters_.max_velocity_[i] * lbr_state.getSampleTime() ||
+            parameters_.min_position[i] + parameters_.max_velocity[i] * lbr_state.getSampleTime() ||
         lbr_command.joint_position[i] >
-            parameters_.max_position_[i] -
-                parameters_.max_velocity_[i] * lbr_state.getSampleTime()) {
+            parameters_.max_position[i] - parameters_.max_velocity[i] * lbr_state.getSampleTime()) {
       RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME), "Position command not in limits for joint %s.",
-                   parameters_.joint_names_[i].c_str());
+                   parameters_.joint_names[i].c_str());
       return false;
     }
   }

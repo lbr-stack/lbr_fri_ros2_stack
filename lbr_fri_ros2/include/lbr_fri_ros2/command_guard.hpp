@@ -20,11 +20,11 @@ struct CommandGuardParameters {
   using joint_array_t = std::array<double, KUKA::FRI::LBRState::NUMBER_OF_JOINTS>;
   using joint_name_array_t = std::array<std::string, KUKA::FRI::LBRState::NUMBER_OF_JOINTS>;
 
-  joint_name_array_t joint_names_; /**< Joint names.*/
-  joint_array_t min_position_;     /**< Minimum joint position [rad].*/
-  joint_array_t max_position_;     /**< Maximum joint position [rad].*/
-  joint_array_t max_velocity_;     /**< Maximum joint velocity [rad/s].*/
-  joint_array_t max_torque_;       /**< Maximum joint torque [Nm].*/
+  joint_name_array_t joint_names; /**< Joint names.*/
+  joint_array_t min_position;     /**< Minimum joint position [rad].*/
+  joint_array_t max_position;     /**< Maximum joint position [rad].*/
+  joint_array_t max_velocity;     /**< Maximum joint velocity [rad/s].*/
+  joint_array_t max_torque;       /**< Maximum joint torque [Nm].*/
 };
 
 class CommandGuard {

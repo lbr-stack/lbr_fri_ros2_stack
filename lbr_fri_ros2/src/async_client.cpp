@@ -13,7 +13,7 @@ AsyncClient::AsyncClient(const CommandGuardParameters &command_guard_parameters,
   command_interface_.log_info();
   state_interface_.log_info();
   RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "Open loop: %s.", open_loop_ ? "true" : "false");
-  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "AsyncClient configured.");
+  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "Client configured.");
 }
 
 void AsyncClient::onStateChange(KUKA::FRI::ESessionState old_state,
