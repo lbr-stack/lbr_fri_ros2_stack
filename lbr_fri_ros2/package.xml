@@ -16,7 +16,9 @@
 
   <depend>control_toolbox</depend>
   <depend>fri_vendor</depend>
+  <depend>kdl_parser</depend>
   <depend>lbr_fri_msgs</depend>
+  <depend>orocos_kdl_vendor</depend>
   <depend>rclcpp</depend>
   <depend>rclcpp_components</depend>
   <depend>realtime_tools</depend>
