@@ -3,6 +3,9 @@
 #include <atomic>
 #include <string>
 
+#include "rclcpp/logger.hpp"
+#include "rclcpp/logging.hpp"
+
 #include "friLBRClient.h"
 
 #include "lbr_fri_msgs/msg/lbr_state.hpp"
@@ -16,6 +19,8 @@ struct StateInterfaceParameters {
 
 class StateInterface {
 protected:
+  static constexpr char STATE_INTERFACE_LOGGER_NAME[] = "lbr_fri_ros2::StateInterface";
+
   // ROS IDL types
   using idl_state_t = lbr_fri_msgs::msg::LBRState;
   using const_idl_state_t_ref = const idl_state_t &;
@@ -39,12 +44,14 @@ public:
   inline void uninitialize() { state_initialized_ = false; }
   inline bool is_initialized() const { return state_initialized_; };
 
+  void log_info() const;
+
 protected:
   void init_filters_();
 
   std::atomic_bool state_initialized_;
   idl_state_t state_;
-  StateInterfaceParameters state_interface_parameters_;
+  StateInterfaceParameters parameters_;
   JointExponentialFilterArray external_torque_filter_, measured_torque_filter_;
 };
 } // end of namespace lbr_fri_ros2

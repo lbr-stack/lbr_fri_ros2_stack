@@ -6,7 +6,8 @@
 #include <stdexcept>
 #include <string>
 
-#include "rclcpp/rclcpp.hpp"
+#include "rclcpp/logger.hpp"
+#include "rclcpp/logging.hpp"
 
 #include "friLBRClient.h"
 
@@ -17,6 +18,8 @@
 namespace lbr_fri_ros2 {
 class CommandInterface {
 protected:
+  static constexpr char COMMAND_INTERFACE_LOGGER_NAME[] = "lbr_fri_ros2::CommandInterface";
+
   // ROS IDL types
   using idl_command_t = lbr_fri_msgs::msg::LBRCommand;
   using const_idl_command_t_ref = const idl_command_t &;
@@ -29,7 +32,8 @@ protected:
 
 public:
   CommandInterface() = delete;
-  CommandInterface(const rclcpp::Node::SharedPtr node_ptr);
+  CommandInterface(const CommandGuardParameters &command_guard_parameters,
+                   const std::string &command_guard_variant = "default");
 
   void get_joint_position_command(fri_command_t_ref command, const_fri_state_t_ref state);
   void get_torque_command(fri_command_t_ref command, const_fri_state_t_ref state);
@@ -40,10 +44,9 @@ public:
   inline const_idl_command_t_ref get_command() const { return command_; }
   inline const_idl_command_t_ref get_command_target() const { return command_target_; }
 
-protected:
-  rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr logging_interface_ptr_;
-  rclcpp::node_interfaces::NodeParametersInterface::SharedPtr parameters_interface_ptr_;
+  void log_info() const;
 
+protected:
   std::unique_ptr<CommandGuard> command_guard_;
   JointPIDArray joint_position_pid_;
   idl_command_t command_, command_target_;

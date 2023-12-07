@@ -5,7 +5,8 @@
 #include <memory>
 #include <string>
 
-#include "rclcpp/rclcpp.hpp"
+#include "rclcpp/logger.hpp"
+#include "rclcpp/logging.hpp"
 
 #include "friLBRClient.h"
 
@@ -15,10 +16,15 @@
 
 namespace lbr_fri_ros2 {
 class Client : public KUKA::FRI::LBRClient {
+protected:
+  static constexpr char CLIENT_LOGGER_NAME[] = "lbr_fri_ros2::Client";
+
 public:
   Client() = delete;
-  Client(const rclcpp::Node::SharedPtr node_ptr,
-         const StateInterfaceParameters &state_interface_parameters = {10.0, 10.0});
+  Client(const CommandGuardParameters &command_guard_parameters,
+         const std::string &command_guard_variant,
+         const StateInterfaceParameters &state_interface_parameters = {10.0, 10.0},
+         const bool &open_loop = true);
 
   inline CommandInterface &get_command_interface() { return command_interface_; }
   inline StateInterface &get_state_interface() { return state_interface_; }
@@ -30,9 +36,6 @@ public:
   void command() override;
 
 protected:
-  rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr logging_interface_ptr_;
-  rclcpp::node_interfaces::NodeParametersInterface::SharedPtr parameters_interface_ptr_;
-
   CommandInterface command_interface_;
   StateInterface state_interface_;
 
