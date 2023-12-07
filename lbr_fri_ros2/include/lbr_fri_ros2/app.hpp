@@ -3,10 +3,10 @@
 
 #include <atomic>
 #include <memory>
-#include <string>
 #include <thread>
 
-#include "rclcpp/rclcpp.hpp"
+#include "rclcpp/logger.hpp"
+#include "rclcpp/logging.hpp"
 #include "realtime_tools/thread_priority.hpp"
 
 #include "friClientApplication.h"
@@ -16,8 +16,11 @@
 
 namespace lbr_fri_ros2 {
 class App {
+protected:
+  static constexpr char APP_LOGGER_NAME[] = "lbr_fri_ros2::App";
+
 public:
-  App(const rclcpp::Node::SharedPtr node_ptr, const std::shared_ptr<Client> client_ptr);
+  App(const std::shared_ptr<Client> client_ptr);
   ~App();
 
   bool open_udp_socket(const int &port_id = 30200, const char *const remote_host = NULL);
@@ -27,9 +30,6 @@ public:
 
 protected:
   bool valid_port_(const int &port_id);
-
-  rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr logging_interface_ptr_;
-  rclcpp::node_interfaces::NodeParametersInterface::SharedPtr parameters_interface_ptr_;
 
   std::atomic_bool should_stop_, running_;
   std::thread run_thread_;
