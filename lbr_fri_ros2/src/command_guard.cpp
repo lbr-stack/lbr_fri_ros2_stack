@@ -35,11 +35,11 @@ bool CommandGuard::is_valid_command(const_idl_command_t_ref lbr_command,
 }
 
 void CommandGuard::log_info() const {
-  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "Parameters:");
+  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "*** Parameters:");
   for (std::size_t i = 0; i < parameters_.joint_names_.size(); ++i) {
     RCLCPP_INFO(
         rclcpp::get_logger(LOGGER_NAME),
-        "  Joint %s limits: Position: [%.1f, %.1f] deg, velocity: %.1f deg/s, torque: %.1f Nm",
+        "*   Joint %s limits: Position: [%.1f, %.1f] deg, velocity: %.1f deg/s, torque: %.1f Nm",
         parameters_.joint_names_[i].c_str(), parameters_.min_position_[i],
         parameters_.max_position_[i], parameters_.max_velocity_[i], parameters_.max_torque_[i]);
   }

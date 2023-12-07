@@ -81,10 +81,10 @@ void StateInterface::init_filters_() {
 }
 
 void StateInterface::log_info() const {
-  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "Parameters:");
-  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "  external_torque_cutoff_frequency: %f",
+  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "*** Parameters:");
+  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "*   external_torque_cutoff_frequency: %f",
               parameters_.external_torque_cutoff_frequency);
-  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "  measured_torque_cutoff_frequency: %f",
+  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "*   measured_torque_cutoff_frequency: %f",
               parameters_.measured_torque_cutoff_frequency);
 }
 } // namespace lbr_fri_ros2
