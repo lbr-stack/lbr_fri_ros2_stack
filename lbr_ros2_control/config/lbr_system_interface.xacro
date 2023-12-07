@@ -9,8 +9,22 @@
         A5_position_limit
         A6_position_limit
         A7_position_limit
-        effort_limit
-        sim:=^|true port_id:=^|30200 remote_host:=^|INADDR_ANY rt_prio:=^|80 open_loop:=^|true">
+        A1_velocity_limit
+        A2_velocity_limit
+        A3_velocity_limit
+        A4_velocity_limit
+        A5_velocity_limit
+        A6_velocity_limit
+        A7_velocity_limit
+        max_torque
+        sim:=^|true
+        port_id:=^|30200
+        remote_host:=^|INADDR_ANY
+        rt_prio:=^|80
+        command_guard_variant:=^|default
+        external_torque_cutoff_frequency:=^|10
+        measured_torque_cutoff_frequency:=^|10
+        open_loop:=^|true">
         <!-- arg for control mode -->
 
         <ros2_control name="lbr_system_interface" type="system">
@@ -26,6 +40,11 @@
                     <param name="port_id">${port_id}</param>
                     <param name="remote_host">${remote_host}</param>
                     <param name="rt_prio">${rt_prio}</param>
+                    <param name="command_guard_variant">${command_guard_variant}</param>
+                    <param name="external_torque_cutoff_frequency">
+                        ${external_torque_cutoff_frequency}</param>
+                    <param name="measured_torque_cutoff_frequency">
+                        ${measured_torque_cutoff_frequency}</param>
                     <param name="open_loop">${open_loop}</param>
                 </hardware>
             </xacro:unless>
@@ -44,25 +63,27 @@
                     <state_interface name="client_command_mode" />
                     <state_interface name="overlay_type" />
                     <state_interface name="control_mode" />
-
                     <state_interface name="time_stamp_sec" />
                     <state_interface name="time_stamp_nano_sec" />
-
                     <state_interface name="tracking_performance" />
                 </sensor>
             </xacro:unless>
 
             <!-- define joints and command/state interfaces for each joint -->
             <xacro:macro name="joint_interface"
-                params="name min_position max_position effort_limit sim">
+                params="name min_position max_position max_velocity max_torque sim">
                 <joint name="${name}">
+                    <param name="min_position">${min_position}</param>
+                    <param name="max_position">${max_position}</param>
+                    <param name="max_velocity">${max_velocity}</param>
+                    <param name="max_torque">${max_torque}</param>
                     <command_interface name="position">
                         <param name="min">${min_position}</param>
                         <param name="max">${max_position}</param>
                     </command_interface>
                     <command_interface name="effort">
-                        <param name="min">-${effort_limit}</param>
-                        <param name="max"> ${effort_limit}</param>
+                        <param name="min">-${max_torque}</param>
+                        <param name="max"> ${max_torque}</param>
                     </command_interface>
                     <state_interface name="position" />
                     <state_interface name="velocity" />
@@ -77,19 +98,26 @@
             </xacro:macro>
 
             <xacro:joint_interface name="A1" min_position="-${A1_position_limit}"
-                max_position="${A1_position_limit}" effort_limit="${effort_limit}" sim="${sim}" />
+                max_position="${A1_position_limit}" max_velocity="${A1_velocity_limit}"
+                max_torque="${max_torque}" sim="${sim}" />
             <xacro:joint_interface name="A2" min_position="-${A2_position_limit}"
-                max_position="${A2_position_limit}" effort_limit="${effort_limit}" sim="${sim}" />
+                max_position="${A2_position_limit}" max_velocity="${A2_velocity_limit}"
+                max_torque="${max_torque}" sim="${sim}" />
             <xacro:joint_interface name="A3" min_position="-${A3_position_limit}"
-                max_position="${A3_position_limit}" effort_limit="${effort_limit}" sim="${sim}" />
+                max_position="${A3_position_limit}" max_velocity="${A3_velocity_limit}"
+                max_torque="${max_torque}" sim="${sim}" />
             <xacro:joint_interface name="A4" min_position="-${A4_position_limit}"
-                max_position="${A4_position_limit}" effort_limit="${effort_limit}" sim="${sim}" />
+                max_position="${A4_position_limit}" max_velocity="${A4_velocity_limit}"
+                max_torque="${max_torque}" sim="${sim}" />
             <xacro:joint_interface name="A5" min_position="-${A5_position_limit}"
-                max_position="${A5_position_limit}" effort_limit="${effort_limit}" sim="${sim}" />
+                max_position="${A5_position_limit}" max_velocity="${A5_velocity_limit}"
+                max_torque="${max_torque}" sim="${sim}" />
             <xacro:joint_interface name="A6" min_position="-${A6_position_limit}"
-                max_position="${A6_position_limit}" effort_limit="${effort_limit}" sim="${sim}" />
+                max_position="${A6_position_limit}" max_velocity="${A6_velocity_limit}"
+                max_torque="${max_torque}" sim="${sim}" />
             <xacro:joint_interface name="A7" min_position="-${A7_position_limit}"
-                max_position="${A7_position_limit}" effort_limit="${effort_limit}" sim="${sim}" />
+                max_position="${A7_position_limit}" max_velocity="${A7_velocity_limit}"
+                max_torque="${max_torque}" sim="${sim}" />
         </ros2_control>
     </xacro:macro>
 </robot>
