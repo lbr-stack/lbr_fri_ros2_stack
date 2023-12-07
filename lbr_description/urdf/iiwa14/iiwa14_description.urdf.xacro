@@ -13,13 +13,13 @@
     <xacro:property name="A5_position_limit" value="170" />
     <xacro:property name="A6_position_limit" value="120" />
     <xacro:property name="A7_position_limit" value="175" />
-    <xacro:property name="joint_0_velocity_limit" value="85" />
-    <xacro:property name="joint_1_velocity_limit" value="85" />
-    <xacro:property name="joint_2_velocity_limit" value="100" />
-    <xacro:property name="joint_3_velocity_limit" value="75" />
-    <xacro:property name="joint_4_velocity_limit" value="130" />
-    <xacro:property name="joint_5_velocity_limit" value="135" />
-    <xacro:property name="joint_6_velocity_limit" value="135" />
+    <xacro:property name="A1_velocity_limit" value="85" />
+    <xacro:property name="A2_velocity_limit" value="85" />
+    <xacro:property name="A3_velocity_limit" value="100" />
+    <xacro:property name="A4_velocity_limit" value="75" />
+    <xacro:property name="A5_velocity_limit" value="130" />
+    <xacro:property name="A6_velocity_limit" value="135" />
+    <xacro:property name="A7_velocity_limit" value="135" />
     <xacro:property name="effort_limit" value="200" />
 
     <!-- includes -->
@@ -58,7 +58,7 @@
             <axis xyz="0.0 0.0 1.0" />
             <limit effort="${effort_limit}" lower="${-A1_position_limit * PI / 180}"
                 upper="${A1_position_limit * PI / 180}"
-                velocity="${joint_0_velocity_limit * PI / 180}" />
+                velocity="${A1_velocity_limit * PI / 180}" />
             <dynamics damping="${joint_damping}" friction="${joint_friction}" />
         </joint>
 
@@ -90,7 +90,7 @@
             <axis xyz="0.0 1.0 0.0" />
             <limit effort="${effort_limit}" lower="${-A2_position_limit * PI / 180}"
                 upper="${A2_position_limit * PI / 180}"
-                velocity="${joint_1_velocity_limit * PI / 180}" />
+                velocity="${A2_velocity_limit * PI / 180}" />
             <dynamics damping="${joint_damping}" friction="${joint_friction}" />
         </joint>
 
@@ -122,7 +122,7 @@
             <axis xyz="0.0 0.0 1.0" />
             <limit effort="${effort_limit}" lower="${-A3_position_limit * PI / 180}"
                 upper="${A3_position_limit * PI / 180}"
-                velocity="${joint_2_velocity_limit * PI / 180}" />
+                velocity="${A3_velocity_limit * PI / 180}" />
             <dynamics damping="${joint_damping}" friction="${joint_friction}" />
         </joint>
 
@@ -154,7 +154,7 @@
             <axis xyz="0.0 -1.0 0.0" />
             <limit effort="${effort_limit}" lower="${-A4_position_limit * PI / 180}"
                 upper="${A4_position_limit * PI / 180}"
-                velocity="${joint_3_velocity_limit * PI / 180}" />
+                velocity="${A4_velocity_limit * PI / 180}" />
             <dynamics damping="${joint_damping}" friction="${joint_friction}" />
         </joint>
 
@@ -186,7 +186,7 @@
             <axis xyz="0.0 0.0 1.0" />
             <limit effort="${effort_limit}" lower="${-A5_position_limit * PI / 180}"
                 upper="${A5_position_limit * PI / 180}"
-                velocity="${joint_4_velocity_limit * PI / 180}" />
+                velocity="${A5_velocity_limit * PI / 180}" />
             <dynamics damping="${joint_damping}" friction="${joint_friction}" />
         </joint>
 
@@ -218,7 +218,7 @@
             <axis xyz="0.0 1.0 0.0" />
             <limit effort="${effort_limit}" lower="${-A6_position_limit * PI / 180}"
                 upper="${A6_position_limit * PI / 180}"
-                velocity="${joint_5_velocity_limit * PI / 180}" />
+                velocity="${A6_velocity_limit * PI / 180}" />
             <dynamics damping="${joint_damping}" friction="${joint_friction}" />
         </joint>
 
@@ -250,7 +250,7 @@
             <axis xyz="0.0 0.0 1.0" />
             <limit effort="${effort_limit}" lower="${-A7_position_limit * PI / 180}"
                 upper="${A7_position_limit * PI / 180}"
-                velocity="${joint_6_velocity_limit * PI / 180}" />
+                velocity="${A7_velocity_limit * PI / 180}" />
             <dynamics damping="${joint_damping}" friction="${joint_friction}" />
         </joint>
 
