@@ -3,14 +3,17 @@
 #include <atomic>
 #include <string>
 
-#include "rclcpp/rclcpp.hpp"
-
 #include "friLBRClient.h"
 
 #include "lbr_fri_msgs/msg/lbr_state.hpp"
 #include "lbr_fri_ros2/filters.hpp"
 
 namespace lbr_fri_ros2 {
+struct StateInterfaceParameters {
+  double external_torque_cutoff_frequency; /*Hz*/
+  double measured_torque_cutoff_frequency; /*Hz*/
+};
+
 class StateInterface {
 protected:
   // ROS IDL types
@@ -26,9 +29,7 @@ protected:
 
 public:
   StateInterface() = delete;
-  StateInterface(
-      const rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr logging_interface_ptr,
-      const rclcpp::node_interfaces::NodeParametersInterface::SharedPtr parameters_interface_ptr);
+  StateInterface(const StateInterfaceParameters &state_interface_parameters = {10.0, 10.0});
 
   inline const_idl_state_t_ref &get_state() const { return state_; };
 
@@ -41,13 +42,10 @@ public:
 protected:
   void init_filters_();
 
-  rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr logging_interface_ptr_;
-  rclcpp::node_interfaces::NodeParametersInterface::SharedPtr parameters_interface_ptr_;
-
   std::atomic_bool state_initialized_;
   idl_state_t state_;
-  JointExponentialFilterArray external_torque_filter_;
-  JointExponentialFilterArray measured_torque_filter_;
+  StateInterfaceParameters state_interface_parameters_;
+  JointExponentialFilterArray external_torque_filter_, measured_torque_filter_;
 };
 } // end of namespace lbr_fri_ros2
 #endif // LBR_FRI_ROS2__STATE_INTERFACE_HPP_

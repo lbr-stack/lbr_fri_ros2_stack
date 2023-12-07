@@ -1,11 +1,8 @@
 #include "lbr_fri_ros2/state_interface.hpp"
 
 namespace lbr_fri_ros2 {
-StateInterface::StateInterface(
-    const rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr logging_interface_ptr,
-    const rclcpp::node_interfaces::NodeParametersInterface::SharedPtr parameters_interface_ptr)
-    : logging_interface_ptr_(logging_interface_ptr),
-      parameters_interface_ptr_(parameters_interface_ptr), state_initialized_(false) {}
+StateInterface::StateInterface(const StateInterfaceParameters &state_interface_parameters)
+    : state_initialized_(false), state_interface_parameters_(state_interface_parameters) {}
 
 void StateInterface::set_state(const_fri_state_t_ref state) {
   state_.client_command_mode = state.getClientCommandMode();
@@ -77,7 +74,9 @@ void StateInterface::set_state_open_loop(const_fri_state_t_ref state,
 }
 
 void StateInterface::init_filters_() {
-  external_torque_filter_.initialize(10. /*Hz*/, state_.sample_time);
-  measured_torque_filter_.initialize(10. /*Hz*/, state_.sample_time);
+  external_torque_filter_.initialize(state_interface_parameters_.external_torque_cutoff_frequency,
+                                     state_.sample_time);
+  measured_torque_filter_.initialize(state_interface_parameters_.measured_torque_cutoff_frequency,
+                                     state_.sample_time);
 }
 } // namespace lbr_fri_ros2

@@ -17,7 +17,8 @@ namespace lbr_fri_ros2 {
 class Client : public KUKA::FRI::LBRClient {
 public:
   Client() = delete;
-  Client(const rclcpp::Node::SharedPtr node_ptr);
+  Client(const rclcpp::Node::SharedPtr node_ptr,
+         const StateInterfaceParameters &state_interface_parameters = {10.0, 10.0});
 
   inline CommandInterface &get_command_interface() { return command_interface_; }
   inline StateInterface &get_state_interface() { return state_interface_; }

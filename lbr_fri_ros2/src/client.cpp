@@ -1,11 +1,11 @@
 #include "lbr_fri_ros2/client.hpp"
 
 namespace lbr_fri_ros2 {
-Client::Client(const rclcpp::Node::SharedPtr node_ptr)
+Client::Client(const rclcpp::Node::SharedPtr node_ptr,
+               const StateInterfaceParameters &state_interface_parameters)
     : logging_interface_ptr_(node_ptr->get_node_logging_interface()),
       parameters_interface_ptr_(node_ptr->get_node_parameters_interface()),
-      command_interface_(node_ptr),
-      state_interface_(logging_interface_ptr_, parameters_interface_ptr_), open_loop_(true) {
+      command_interface_(node_ptr), state_interface_(state_interface_parameters), open_loop_(true) {
   RCLCPP_INFO(logging_interface_ptr_->get_logger(), "Configuring client.");
   if (!node_ptr->has_parameter("open_loop")) {
     node_ptr->declare_parameter("open_loop", true);
