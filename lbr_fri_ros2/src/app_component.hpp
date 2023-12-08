@@ -6,6 +6,7 @@
 #include <thread>
 
 #include "rclcpp/rclcpp.hpp"
+#include "urdf/model.h"
 
 #include "lbr_fri_msgs/msg/lbr_position_command.hpp"
 #include "lbr_fri_msgs/msg/lbr_state.hpp"
@@ -14,8 +15,11 @@
 #include "lbr_fri_msgs/srv/app_connect.hpp"
 #include "lbr_fri_msgs/srv/app_disconnect.hpp"
 #include "lbr_fri_ros2/app.hpp"
-#include "lbr_fri_ros2/client.hpp"
+#include "lbr_fri_ros2/async_client.hpp"
+#include "lbr_fri_ros2/command_guard.hpp"
 #include "lbr_fri_ros2/enum_maps.hpp"
+#include "lbr_fri_ros2/filters.hpp"
+#include "lbr_fri_ros2/state_interface.hpp"
 
 namespace lbr_fri_ros2 {
 /**
@@ -81,7 +85,7 @@ protected:
 
   // app
   rclcpp::Node::SharedPtr app_node_ptr_; /** Node for communicating with ROS.<*/
-  std::shared_ptr<Client> client_ptr_;
+  std::shared_ptr<AsyncClient> async_client_ptr_;
   std::unique_ptr<App> app_ptr_; /** #lbr_fri_ros2::App for communicating with the hardware.<*/
 };
 } // end of namespace lbr_fri_ros2

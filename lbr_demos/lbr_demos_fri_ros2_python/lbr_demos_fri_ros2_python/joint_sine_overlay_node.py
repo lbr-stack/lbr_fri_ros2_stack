@@ -16,9 +16,11 @@ class JointSineOverlayNode(Node):
         self.phase_ = 0.0
         self.lbr_position_command_ = LBRPositionCommand()
 
-        # create publisher to /lbr/command/position
+        # create publisher to /lbr/command/joint_position
         self.lbr_position_command_pub_ = self.create_publisher(
-            LBRPositionCommand, "/lbr/command/position", 1
+            LBRPositionCommand,
+            "/lbr/command/joint_position",
+            1,
         )
 
         # create subscription to /lbr_state

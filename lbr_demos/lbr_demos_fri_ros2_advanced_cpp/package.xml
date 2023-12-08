@@ -2,17 +2,15 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>lbr_demos_fri_ros2_advanced_cpp</name>
-  <version>1.3.1</version>
+  <version>1.4.0</version>
   <description>Advanced C++ demos for the lbr_fri_ros2.</description>
   <maintainer email="martin.huber@kcl.ac.uk">mhubii</maintainer>
   <license>MIT</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
-  <buildtool_depend>eigen3_cmake_module</buildtool_depend>
 
   <exec_depend>lbr_description</exec_depend>
 
-  <depend>eigen</depend>
   <depend>fri_vendor</depend>
   <depend>kdl_parser</depend>
   <depend>lbr_fri_ros2</depend>

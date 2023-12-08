@@ -2,19 +2,15 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>lbr_ros2_control</name>
-  <version>1.3.1</version>
+  <version>1.4.0</version>
   <description>ROS 2 hardware hardware_interface for KUKA LBR through Fast Robot Interface (FRI).</description>
   <maintainer email="martin.huber@kcl.ac.uk">mhubii</maintainer>
   <license>MIT</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
   <buildtool_depend>ament_cmake_python</buildtool_depend>
-  <buildtool_depend>eigen3_cmake_module</buildtool_depend>
 
-  <depend>eigen</depend>
   <depend>fri_vendor</depend>
-  <depend>geometry_msgs</depend>
-  <depend>kinematics_interface_kdl</depend>
   <depend>lbr_fri_msgs</depend>
   <depend>lbr_fri_ros2</depend>
   <depend>pluginlib</depend>

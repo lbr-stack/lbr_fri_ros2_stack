@@ -57,7 +57,7 @@ and select:
 
 Make sure that the ``update_rate`` in `lbr_controllers.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/tree/humble/lbr_ros2_control/config/lbr_controllers.yaml>`_ is greater or equal ``100`` (``FRI send period``).
 
-For using other ``FRI send period``, also change the ``sample_time`` in the `lbr.ros2_control.xacro <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_description/ros2_control/lbr.ros2_control.xacro>`_ (automated in the future).
+For using other ``FRI send period``, also change the ``sample_time`` in the `lbr_system_interface.xacro <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_ros2_control/config/lbr_system_interface.xacro>`_ (automated in the future).
 
 Standalone Launch
 -----------------

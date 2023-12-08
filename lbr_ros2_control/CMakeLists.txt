@@ -17,13 +17,9 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(ament_cmake_python REQUIRED)
 find_package(controller_interface REQUIRED)
-find_package(eigen3_cmake_module REQUIRED)
-find_package(Eigen3 REQUIRED)
 find_package(fri_vendor REQUIRED)
 find_package(FRIClient REQUIRED)
-find_package(geometry_msgs REQUIRED)
 find_package(hardware_interface REQUIRED)
-find_package(kinematics_interface_kdl REQUIRED)
 find_package(lbr_fri_msgs REQUIRED)
 find_package(lbr_fri_ros2 REQUIRED)
 find_package(kinematics_interface REQUIRED)
@@ -35,9 +31,10 @@ find_package(realtime_tools REQUIRED)
 add_library(
   ${PROJECT_NAME}
   SHARED
-  src/lbr_estimated_ft_broadcaster.cpp
+  src/forward_lbr_position_command_controller.cpp
+  src/forward_lbr_torque_command_controller.cpp
   src/lbr_state_broadcaster.cpp
-  src/lbr_system_interface.cpp
+  src/system_interface.cpp
 )
 
 # Add include directories
@@ -54,11 +51,8 @@ target_include_directories(
 ament_target_dependencies(
   ${PROJECT_NAME}
   controller_interface
-  Eigen3
   fri_vendor
-  geometry_msgs
   hardware_interface
-  kinematics_interface_kdl
   lbr_fri_msgs
   lbr_fri_ros2
   pluginlib
@@ -70,8 +64,9 @@ target_link_libraries(${PROJECT_NAME}
   FRIClient::FRIClient
 )
 
-pluginlib_export_plugin_description_file(controller_interface lbr_broadcasters.xml)
-pluginlib_export_plugin_description_file(hardware_interface lbr_system_interface.xml)
+pluginlib_export_plugin_description_file(controller_interface plugin_description_files/broadcasters.xml)
+pluginlib_export_plugin_description_file(controller_interface plugin_description_files/forward_command_controllers.xml)
+pluginlib_export_plugin_description_file(hardware_interface plugin_description_files/system_interface.xml)
 
 # Export for downstream usage, see https://docs.ros.org/en/foxy/Guides/Ament-CMake-Documentation.html
 ament_export_targets(
@@ -80,13 +75,9 @@ ament_export_targets(
 
 ament_export_dependencies(
   controller_interface
-  eigen3_cmake_module
-  Eigen3
   fri_vendor
   FRIClient
-  geometry_msgs
   hardware_interface
-  kinematics_interface_kdl
   lbr_fri_msgs
   lbr_fri_ros2
   pluginlib

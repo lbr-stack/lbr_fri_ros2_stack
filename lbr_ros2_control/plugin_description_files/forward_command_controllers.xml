@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<library path="lbr_ros2_control">
+    <!-- LBR forward position command controller plugin -->
+    <class name="lbr_ros2_control/ForwardLBRPositionCommandController"
+        type="lbr_ros2_control::ForwardLBRPositionCommandController"
+        base_class_type="controller_interface::ControllerInterface">
+        <description>Forward command controller for LBRPositionCommand message, see
+            lbr_fri_msgs/msg/LBRPositionCommand.msg.</description>
+    </class>
+
+    <!-- LBR forward torque command controller plugin -->
+    <class name="lbr_ros2_control/ForwardLBRTorqueCommandController"
+        type="lbr_ros2_control::ForwardLBRTorqueCommandController"
+        base_class_type="controller_interface::ControllerInterface">
+        <description>Forward command controller for LBRTorqueCommand message, see
+            lbr_fri_msgs/msg/LBRTorqueCommand.msg.</description>
+    </class>
+</library>

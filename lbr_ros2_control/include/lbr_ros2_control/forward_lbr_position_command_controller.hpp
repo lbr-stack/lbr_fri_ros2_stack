@@ -1,10 +1,8 @@
-#ifndef LBR_ROS2_CONTROL__LBR_STATE_BROADCASTER_HPP_
-#define LBR_ROS2_CONTROL__LBR_STATE_BROADCASTER_HPP_
+#ifndef LBR_ROS2_CONTROL__FORWARD_POSITION_COMMAND_CONTROLLER_HPP_
+#define LBR_ROS2_CONTROL__FORWARD_POSITION_COMMAND_CONTROLLER_HPP_
 
+#include <algorithm>
 #include <array>
-#include <cmath>
-#include <limits>
-#include <map>
 #include <memory>
 #include <stdexcept>
 #include <string>
@@ -12,18 +10,16 @@
 #include "controller_interface/controller_interface.hpp"
 #include "hardware_interface/types/hardware_interface_type_values.hpp"
 #include "rclcpp/rclcpp.hpp"
-#include "realtime_tools/realtime_publisher.h"
+#include "realtime_tools/realtime_buffer.h"
 
-#include "friClientIf.h"
 #include "friLBRState.h"
 
-#include "lbr_fri_msgs/msg/lbr_state.hpp"
-#include "lbr_ros2_control/system_interface_type_values.hpp"
+#include "lbr_fri_msgs/msg/lbr_position_command.hpp"
 
 namespace lbr_ros2_control {
-class LBRStateBroadcaster : public controller_interface::ControllerInterface {
+class ForwardLBRPositionCommandController : public controller_interface::ControllerInterface {
 public:
-  LBRStateBroadcaster() = default;
+  ForwardLBRPositionCommandController();
 
   controller_interface::InterfaceConfiguration command_interface_configuration() const override;
 
@@ -44,16 +40,13 @@ public:
   on_deactivate(const rclcpp_lifecycle::State &previous_state) override;
 
 protected:
-  void init_state_interface_map_();
-  void init_state_msg_();
-
   std::array<std::string, KUKA::FRI::LBRState::NUMBER_OF_JOINTS> joint_names_ = {
       "A1", "A2", "A3", "A4", "A5", "A6", "A7"};
-  std::unordered_map<std::string, std::unordered_map<std::string, double>> state_interface_map_;
 
-  rclcpp::Publisher<lbr_fri_msgs::msg::LBRState>::SharedPtr state_publisher_ptr_;
-  std::shared_ptr<realtime_tools::RealtimePublisher<lbr_fri_msgs::msg::LBRState>>
-      rt_state_publisher_ptr_;
+  realtime_tools::RealtimeBuffer<lbr_fri_msgs::msg::LBRPositionCommand::SharedPtr>
+      rt_lbr_position_command_ptr_;
+  rclcpp::Subscription<lbr_fri_msgs::msg::LBRPositionCommand>::SharedPtr
+      lbr_position_command_subscription_ptr_;
 };
 } // end of namespace lbr_ros2_control
-#endif // LBR_ROS2_CONTROL__LBR_STATE_BROADCASTER_HPP_
+#endif // LBR_ROS2_CONTROL__FORWARD_POSITION_COMMAND_CONTROLLER_HPP_

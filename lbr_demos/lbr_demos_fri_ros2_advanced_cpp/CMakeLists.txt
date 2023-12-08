@@ -11,8 +11,6 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
-find_package(eigen3_cmake_module REQUIRED)
-find_package(Eigen3 REQUIRED)
 find_package(fri_vendor REQUIRED)
 find_package(FRIClient REQUIRED)
 find_package(kdl_parser REQUIRED)
@@ -34,7 +32,6 @@ target_include_directories(admittance_control_component
 
 ament_target_dependencies(
   admittance_control_component
-  Eigen3
   kdl_parser
   lbr_fri_ros2
   lbr_fri_msgs

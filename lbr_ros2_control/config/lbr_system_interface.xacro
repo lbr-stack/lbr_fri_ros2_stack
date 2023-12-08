@@ -1,0 +1,160 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+    <xacro:macro name="lbr_system_interface"
+        params="
+        A1_position_limit
+        A2_position_limit
+        A3_position_limit
+        A4_position_limit
+        A5_position_limit
+        A6_position_limit
+        A7_position_limit
+        A1_velocity_limit
+        A2_velocity_limit
+        A3_velocity_limit
+        A4_velocity_limit
+        A5_velocity_limit
+        A6_velocity_limit
+        A7_velocity_limit
+        max_torque
+        sim:=^|true
+        port_id:=^|30200
+        remote_host:=^|INADDR_ANY
+        rt_prio:=^|80
+        pid_p:=^|1.0
+        pid_i:=^|0.0
+        pid_d:=^|0.0
+        pid_i_max:=^|0.0
+        pid_i_min:=^|0.0
+        pid_antiwindup:=^|false
+        command_guard_variant:=^|default
+        external_torque_cutoff_frequency:=^|10
+        measured_torque_cutoff_frequency:=^|10
+        open_loop:=^|true
+        chain_root:=^|link_0
+        chain_tip:=^|link_ee
+        damping:=^|0.2
+        force_x_th:=^|2.0
+        force_y_th:=^|2.0
+        force_z_th:=^|2.0
+        torque_x_th:=^|0.5
+        torque_y_th:=^|0.5
+        torque_z_th:=^|0.5">
+        <ros2_control name="lbr_system_interface" type="system">
+            <!-- define hardware including parameters, also gazebo -->
+            <xacro:if value="${sim}">
+                <hardware>
+                    <plugin>gazebo_ros2_control/GazeboSystem</plugin>
+                </hardware>
+            </xacro:if>
+            <xacro:unless value="${sim}">
+                <hardware>
+                    <plugin>lbr_ros2_control::SystemInterface</plugin>
+                    <param name="port_id">${port_id}</param>
+                    <param name="remote_host">${remote_host}</param>
+                    <param name="rt_prio">${rt_prio}</param>
+                    <param name="pid_p">${pid_p}</param>
+                    <param name="pid_i">${pid_i}</param>
+                    <param name="pid_d">${pid_d}</param>
+                    <param name="pid_i_max">${pid_i_max}</param>
+                    <param name="pid_i_min">${pid_i_min}</param>
+                    <param name="pid_antiwindup">${pid_antiwindup}</param>
+                    <param name="command_guard_variant">${command_guard_variant}</param>
+                    <param name="external_torque_cutoff_frequency">
+                        ${external_torque_cutoff_frequency}</param>
+                    <param name="measured_torque_cutoff_frequency">
+                        ${measured_torque_cutoff_frequency}</param>
+                    <param name="open_loop">${open_loop}</param>
+                </hardware>
+            </xacro:unless>
+
+            <!-- define lbr specific state interfaces as sensor, see
+            https://github.com/ros-controls/roadmap/blob/master/design_drafts/components_architecture_and_urdf_examples.md -->
+            <xacro:unless value="${sim}">
+                <sensor name="auxiliary_sensor">
+                    <!-- see KUKA::FRI::LBRState -->
+                    <state_interface name="sample_time" />
+                    <state_interface name="session_state" />
+                    <state_interface name="connection_quality" />
+                    <state_interface name="safety_state" />
+                    <state_interface name="operation_mode" />
+                    <state_interface name="drive_state" />
+                    <state_interface name="client_command_mode" />
+                    <state_interface name="overlay_type" />
+                    <state_interface name="control_mode" />
+                    <state_interface name="time_stamp_sec" />
+                    <state_interface name="time_stamp_nano_sec" />
+                    <state_interface name="tracking_performance" />
+                </sensor>
+
+                <sensor name="estimated_ft_sensor">
+                    <param name="chain_root">${chain_root}</param>
+                    <param name="chain_tip">${chain_tip}</param>
+                    <param name="damping">${damping}</param>
+                    <param name="force_x_th">${force_x_th}</param>
+                    <param name="force_y_th">${force_y_th}</param>
+                    <param name="force_z_th">${force_z_th}</param>
+                    <param name="torque_x_th">${torque_x_th}</param>
+                    <param name="torque_y_th">${torque_y_th}</param>
+                    <param name="torque_z_th">${torque_z_th}</param>
+                    <state_interface name="force.x" />
+                    <state_interface name="force.y" />
+                    <state_interface name="force.z" />
+                    <state_interface name="torque.x" />
+                    <state_interface name="torque.y" />
+                    <state_interface name="torque.z" />
+                </sensor>
+            </xacro:unless>
+
+            <!-- define joints and command/state interfaces for each joint -->
+            <xacro:macro name="joint_interface"
+                params="name min_position max_position max_velocity max_torque sim">
+                <joint name="${name}">
+                    <param name="min_position">${min_position}</param>
+                    <param name="max_position">${max_position}</param>
+                    <param name="max_velocity">${max_velocity}</param>
+                    <param name="max_torque">${max_torque}</param>
+                    <command_interface name="position">
+                        <param name="min">${min_position}</param>
+                        <param name="max">${max_position}</param>
+                    </command_interface>
+                    <command_interface name="effort">
+                        <param name="min">-${max_torque}</param>
+                        <param name="max"> ${max_torque}</param>
+                    </command_interface>
+                    <state_interface name="position" />
+                    <state_interface name="velocity" />
+                    <state_interface name="effort" />
+                    <xacro:unless value="${sim}">
+                        <state_interface name="commanded_joint_position" />
+                        <state_interface name="commanded_torque" />
+                        <state_interface name="external_torque" />
+                        <state_interface name="ipo_joint_position" />
+                    </xacro:unless>
+                </joint>
+            </xacro:macro>
+
+            <xacro:joint_interface name="A1" min_position="-${A1_position_limit}"
+                max_position="${A1_position_limit}" max_velocity="${A1_velocity_limit}"
+                max_torque="${max_torque}" sim="${sim}" />
+            <xacro:joint_interface name="A2" min_position="-${A2_position_limit}"
+                max_position="${A2_position_limit}" max_velocity="${A2_velocity_limit}"
+                max_torque="${max_torque}" sim="${sim}" />
+            <xacro:joint_interface name="A3" min_position="-${A3_position_limit}"
+                max_position="${A3_position_limit}" max_velocity="${A3_velocity_limit}"
+                max_torque="${max_torque}" sim="${sim}" />
+            <xacro:joint_interface name="A4" min_position="-${A4_position_limit}"
+                max_position="${A4_position_limit}" max_velocity="${A4_velocity_limit}"
+                max_torque="${max_torque}" sim="${sim}" />
+            <xacro:joint_interface name="A5" min_position="-${A5_position_limit}"
+                max_position="${A5_position_limit}" max_velocity="${A5_velocity_limit}"
+                max_torque="${max_torque}" sim="${sim}" />
+            <xacro:joint_interface name="A6" min_position="-${A6_position_limit}"
+                max_position="${A6_position_limit}" max_velocity="${A6_velocity_limit}"
+                max_torque="${max_torque}" sim="${sim}" />
+            <xacro:joint_interface name="A7" min_position="-${A7_position_limit}"
+                max_position="${A7_position_limit}" max_velocity="${A7_velocity_limit}"
+                max_torque="${max_torque}" sim="${sim}" />
+        </ros2_control>
+    </xacro:macro>
+</robot>

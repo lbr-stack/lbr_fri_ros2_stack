@@ -1,6 +1,8 @@
+from dataclasses import dataclass
 from typing import Dict, List, Type
 
 
+@dataclass
 class JointLimit:
     min_position: float
     max_position: float
@@ -17,6 +19,7 @@ class JointLimit:
         self.max_velocity = max_velocity
 
 
+@dataclass
 class LBRSpecification:
     dof: int
     name: str
@@ -34,18 +37,6 @@ class LBRSpecification:
         if len(joint_limits) != self.dof:
             raise ValueError(f"Expected {self.dof} dof, got {len(joint_limits)}.")
         self.joint_limits = joint_limits
-
-
-# reference URDF joint names to KUKA joint names
-URDF_TO_KUKA_JOINT_NAME_DICT: Dict[str, str] = {
-    "joint_0": "A1",
-    "joint_1": "A2",
-    "joint_2": "A3",
-    "joint_3": "A4",
-    "joint_4": "A5",
-    "joint_5": "A6",
-    "joint_6": "A7",
-}
 
 
 # specifications as extracted from https://xpert.kuka.com/
