@@ -119,11 +119,11 @@ void CommandInterface::init_command(const_fri_state_t_ref state) {
 void CommandInterface::log_info() const {
   command_guard_->log_info();
   RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "*** Parameters:");
-  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "*   pid.p: %f", pid_parameters_.p);
-  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "*   pid.i: %f", pid_parameters_.i);
-  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "*   pid.d: %f", pid_parameters_.d);
-  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "*   pid.i_max: %f", pid_parameters_.i_max);
-  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "*   pid.i_min: %f", pid_parameters_.i_min);
+  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "*   pid.p: %.1f", pid_parameters_.p);
+  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "*   pid.i: %.1f", pid_parameters_.i);
+  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "*   pid.d: %.1f", pid_parameters_.d);
+  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "*   pid.i_max: %.1f", pid_parameters_.i_max);
+  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "*   pid.i_min: %.1f", pid_parameters_.i_min);
   RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "*   pid.antiwindup: %s",
               pid_parameters_.antiwindup ? "true" : "false");
 }
