@@ -19,8 +19,6 @@ Humble v1.4.0 (2023-12-08)
   * Adds configurations to ``lbr_system_interface.xacro``
   * Simplifies ``lbr_ros2_control`` class names
 * ``/lbr/command/position`` topic now under ``/lbr/command/joint_position``
-* ``/lbr/command/...`` now uses system default quality of service (QoS)
-* ``/lbr/state`` now uses sensor data quality of service (QoS)
 * Adds this changelog with release notes
 * Refers to https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/142
 

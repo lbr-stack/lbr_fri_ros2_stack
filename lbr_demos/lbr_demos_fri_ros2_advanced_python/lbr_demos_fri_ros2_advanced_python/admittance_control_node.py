@@ -1,7 +1,6 @@
 import numpy as np
 import rclpy
 from rclpy.node import Node
-from rclpy.qos import qos_profile_sensor_data, qos_profile_system_default
 
 from lbr_fri_msgs.msg import LBRPositionCommand, LBRState
 
@@ -28,12 +27,12 @@ class AdmittanceControlNode(Node):
 
         # publishers and subscribers
         self.lbr_state_sub_ = self.create_subscription(
-            LBRState, "/lbr/state", self.on_lbr_state_, qos_profile_sensor_data
+            LBRState, "/lbr/state", self.on_lbr_state_, 1
         )
         self.lbr_position_command_pub_ = self.create_publisher(
             LBRPositionCommand,
             "/lbr/command/joint_position",
-            qos_profile_system_default,
+            1,
         )
 
     def on_lbr_state_(self, lbr_state: LBRState) -> None:

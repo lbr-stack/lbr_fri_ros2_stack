@@ -24,7 +24,7 @@ controller_interface::CallbackReturn ForwardLBRPositionCommandController::on_ini
   try {
     lbr_position_command_subscription_ptr_ =
         this->get_node()->create_subscription<lbr_fri_msgs::msg::LBRPositionCommand>(
-            "command/joint_position", rclcpp::SystemDefaultsQoS(),
+            "command/joint_position", 1,
             [this](const lbr_fri_msgs::msg::LBRPositionCommand::SharedPtr msg) {
               rt_lbr_position_command_ptr_.writeFromNonRT(msg);
             });
