@@ -3,22 +3,24 @@ Changelog for package LBR FRI ROS 2 Stack
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Humble v1.4.0 (2023-12-08)
 --------------------------
-* The general goal of this release is a tighter `ros2_control` integration. The `lbr_bringup`
-  will serve as single entry point in the future. For now, `app_component` and `app.launch.py` are kept
-* Changes to `lbr_fri_ros2`:
-  * Removes logging / parameter interfaces from `lbr_fri_ros2` (so `lbr_ros2_control` serves as single interaction point)
-  * Updates legacy `app_component` in `lbr_fri_ros2` for changes. To be depracted in the future
-  * Adds force-torque estimator to `lbr_fri_ros2`
-* Changes to `lbr_ros2_control`:
-  * Removes now redundant node from `lbr_ros2_control`
-  * Adds forward position and forward torque controllers to `lbr_ros2_control`
-  * Removes estimated force-torque broadcaster from `lbr_ros2_control` in favor of `ros2_control` default implementation
-  * Adds `lbr_fri_ros2` force-torque estimator to `lbr_ros2_control` as sensor
-  * Adds configurations to `lbr_system_interface.xacro`
-  * Simplifies `lbr_ros2_control` class names
-* `/lbr/command/position` topic now under `/lbr/command/joint_position`
-* `/lbr/command/...` now uses system default quality of service (QoS)
-* `/lbr/state` now uses sensor data quality of service (QoS)
+* The general goal of this release is a tighter ``ros2_control`` integration. The ``lbr_bringup``
+  will serve as single entry point in the future. For now, ``app_component`` and ``app.launch.py`` are kept
+* Changes to ``lbr_fri_ros2``:
+
+  * Removes logging / parameter interfaces from ``lbr_fri_ros2`` (so ``lbr_ros2_control`` serves as single interaction point)
+  * Updates legacy ``app_component`` in ``lbr_fri_ros2`` for changes. To be depracted in the future
+  * Adds force-torque estimator to ``lbr_fri_ros2``
+* Changes to ``lbr_ros2_control``:
+
+  * Removes now redundant node from ``lbr_ros2_control``
+  * Adds forward position and forward torque controllers to ``lbr_ros2_control``
+  * Removes estimated force-torque broadcaster from ``lbr_ros2_control`` in favor of ``ros2_control`` default implementation
+  * Adds ``lbr_fri_ros2`` force-torque estimator to ``lbr_ros2_control`` as sensor
+  * Adds configurations to ``lbr_system_interface.xacro``
+  * Simplifies ``lbr_ros2_control`` class names
+* ``/lbr/command/position`` topic now under ``/lbr/command/joint_position``
+* ``/lbr/command/...`` now uses system default quality of service (QoS)
+* ``/lbr/state`` now uses sensor data quality of service (QoS)
 * Adds this changelog with release notes
 
 Humble v1.3.1 (2023-11-21)
