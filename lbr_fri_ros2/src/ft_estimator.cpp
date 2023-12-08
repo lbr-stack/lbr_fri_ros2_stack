@@ -17,6 +17,10 @@ FTEstimator::FTEstimator(const std::string &robot_description, const std::string
   fk_solver_ = std::make_unique<KDL::ChainFkSolverPos_recursive>(chain_);
   jacobian_.resize(KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
   q_.resize(KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
+
+  q_.data.setZero();
+  tau_ext_.setZero();
+  f_ext_.setZero();
 }
 
 void FTEstimator::compute(const_jnt_pos_array_t_ref measured_joint_position,
