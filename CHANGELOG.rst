@@ -22,6 +22,7 @@ Humble v1.4.0 (2023-12-08)
 * ``/lbr/command/...`` now uses system default quality of service (QoS)
 * ``/lbr/state`` now uses sensor data quality of service (QoS)
 * Adds this changelog with release notes
+* Refers to https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/142
 
 Humble v1.3.1 (2023-11-21)
 --------------------------
