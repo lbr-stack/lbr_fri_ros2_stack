@@ -8,6 +8,9 @@
     joint_state_broadcaster:
       type: joint_state_broadcaster/JointStateBroadcaster
 
+    force_torque_broadcaster:
+      type: force_torque_sensor_broadcaster/ForceTorqueSensorBroadcaster
+
     # LBR ROS 2 control broadcasters
     lbr_state_broadcaster:
       type: lbr_ros2_control/LBRStateBroadcaster
@@ -25,6 +28,11 @@
 
     forward_lbr_torque_command_controller:
       type: lbr_ros2_control/ForwardLBRTorqueCommandController
+
+/**/force_torque_broadcaster:
+  ros__parameters:
+    frame_id: lbr/link_ee
+    sensor_name: estimated_ft_sensor
 
 /**/joint_trajectory_controller:
   ros__parameters:

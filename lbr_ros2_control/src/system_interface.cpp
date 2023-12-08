@@ -5,14 +5,14 @@ controller_interface::CallbackReturn
 SystemInterface::on_init(const hardware_interface::HardwareInfo &system_info) {
   auto ret = hardware_interface::SystemInterface::on_init(system_info);
   if (ret != controller_interface::CallbackReturn::SUCCESS) {
-    RCLCPP_ERROR(rclcpp::get_logger(LOGGER), "Failed to initialize SystemInterface.");
+    RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME), "Failed to initialize SystemInterface.");
     return ret;
   }
 
   // parameters_ from config/lbr_system_interface.xacro
   parameters_.port_id = std::stoul(info_.hardware_parameters["port_id"]);
   if (parameters_.port_id < 30200 || parameters_.port_id > 30209) {
-    RCLCPP_ERROR(rclcpp::get_logger(LOGGER), "Expected port_id in [30200, 30209]. Found %d.",
+    RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME), "Expected port_id in [30200, 30209]. Found %d.",
                  parameters_.port_id);
     return controller_interface::CallbackReturn::ERROR;
   }
@@ -74,6 +74,8 @@ SystemInterface::on_init(const hardware_interface::HardwareInfo &system_info) {
   nan_state_interfaces_();
   nan_last_hw_states_();
 
+  ft_estimator_ptr_ = std::make_unique<lbr_fri_ros2::FTEstimator>(info_.original_xml);
+
   if (!verify_number_of_joints_()) {
     return controller_interface::CallbackReturn::ERROR;
   }
@@ -115,30 +117,41 @@ std::vector<hardware_interface::StateInterface> SystemInterface::export_state_in
     state_interfaces.emplace_back(info_.joints[i].name, HW_IF_IPO_JOINT_POSITION,
                                   &hw_lbr_state_.ipo_joint_position[i]);
 
-    // added velocity state interface
+    // additional velocity state interface
     state_interfaces.emplace_back(info_.joints[i].name, hardware_interface::HW_IF_VELOCITY,
                                   &hw_velocity_[i]);
   }
-  const auto &lbr_fri_sensor = info_.sensors[0];
-  state_interfaces.emplace_back(lbr_fri_sensor.name, HW_IF_SAMPLE_TIME, &hw_lbr_state_.sample_time);
-  state_interfaces.emplace_back(lbr_fri_sensor.name, HW_IF_TRACKING_PERFORMANCE,
+
+  const auto &auxiliary_sensor = info_.sensors[0];
+  state_interfaces.emplace_back(auxiliary_sensor.name, HW_IF_SAMPLE_TIME,
+                                &hw_lbr_state_.sample_time);
+  state_interfaces.emplace_back(auxiliary_sensor.name, HW_IF_TRACKING_PERFORMANCE,
                                 &hw_lbr_state_.tracking_performance);
 
   // state interfaces that require cast
-  state_interfaces.emplace_back(lbr_fri_sensor.name, HW_IF_SESSION_STATE, &hw_session_state_);
-  state_interfaces.emplace_back(lbr_fri_sensor.name, HW_IF_CONNECTION_QUALITY,
+  state_interfaces.emplace_back(auxiliary_sensor.name, HW_IF_SESSION_STATE, &hw_session_state_);
+  state_interfaces.emplace_back(auxiliary_sensor.name, HW_IF_CONNECTION_QUALITY,
                                 &hw_connection_quality_);
-  state_interfaces.emplace_back(lbr_fri_sensor.name, HW_IF_SAFETY_STATE, &hw_safety_state_);
-  state_interfaces.emplace_back(lbr_fri_sensor.name, HW_IF_OPERATION_MODE, &hw_operation_mode_);
-  state_interfaces.emplace_back(lbr_fri_sensor.name, HW_IF_DRIVE_STATE, &hw_drive_state_);
-  state_interfaces.emplace_back(lbr_fri_sensor.name, HW_IF_CLIENT_COMMAND_MODE,
+  state_interfaces.emplace_back(auxiliary_sensor.name, HW_IF_SAFETY_STATE, &hw_safety_state_);
+  state_interfaces.emplace_back(auxiliary_sensor.name, HW_IF_OPERATION_MODE, &hw_operation_mode_);
+  state_interfaces.emplace_back(auxiliary_sensor.name, HW_IF_DRIVE_STATE, &hw_drive_state_);
+  state_interfaces.emplace_back(auxiliary_sensor.name, HW_IF_CLIENT_COMMAND_MODE,
                                 &hw_client_command_mode_);
-  state_interfaces.emplace_back(lbr_fri_sensor.name, HW_IF_OVERLAY_TYPE, &hw_overlay_type_);
-  state_interfaces.emplace_back(lbr_fri_sensor.name, HW_IF_CONTROL_MODE, &hw_control_mode_);
+  state_interfaces.emplace_back(auxiliary_sensor.name, HW_IF_OVERLAY_TYPE, &hw_overlay_type_);
+  state_interfaces.emplace_back(auxiliary_sensor.name, HW_IF_CONTROL_MODE, &hw_control_mode_);
 
-  state_interfaces.emplace_back(lbr_fri_sensor.name, HW_IF_TIME_STAMP_SEC, &hw_time_stamp_sec_);
-  state_interfaces.emplace_back(lbr_fri_sensor.name, HW_IF_TIME_STAMP_NANO_SEC,
+  state_interfaces.emplace_back(auxiliary_sensor.name, HW_IF_TIME_STAMP_SEC, &hw_time_stamp_sec_);
+  state_interfaces.emplace_back(auxiliary_sensor.name, HW_IF_TIME_STAMP_NANO_SEC,
                                 &hw_time_stamp_nano_sec_);
+
+  // additional force-torque state interface
+  const auto &estimated_ft_sensor = info_.sensors[1];
+  state_interfaces.emplace_back(estimated_ft_sensor.name, HW_IF_FORCE_X, &hw_ft_[0]);
+  state_interfaces.emplace_back(estimated_ft_sensor.name, HW_IF_FORCE_Y, &hw_ft_[1]);
+  state_interfaces.emplace_back(estimated_ft_sensor.name, HW_IF_FORCE_Z, &hw_ft_[2]);
+  state_interfaces.emplace_back(estimated_ft_sensor.name, HW_IF_TORQUE_X, &hw_ft_[3]);
+  state_interfaces.emplace_back(estimated_ft_sensor.name, HW_IF_TORQUE_Y, &hw_ft_[4]);
+  state_interfaces.emplace_back(estimated_ft_sensor.name, HW_IF_TORQUE_Z, &hw_ft_[5]);
 
   return state_interfaces;
 }
@@ -163,7 +176,7 @@ SystemInterface::prepare_command_mode_switch(const std::vector<std::string> & /*
 
 controller_interface::CallbackReturn SystemInterface::on_activate(const rclcpp_lifecycle::State &) {
   if (!async_client_ptr_) {
-    RCLCPP_ERROR(rclcpp::get_logger(LOGGER), "AsyncClient not configured.");
+    RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME), "AsyncClient not configured.");
     return controller_interface::CallbackReturn::ERROR;
   }
   if (!app_ptr_->open_udp_socket(parameters_.port_id, parameters_.remote_host)) {
@@ -173,19 +186,20 @@ controller_interface::CallbackReturn SystemInterface::on_activate(const rclcpp_l
   uint8_t attempt = 0;
   uint8_t max_attempts = 10;
   while (!async_client_ptr_->get_state_interface().is_initialized() && rclcpp::ok()) {
-    RCLCPP_INFO(rclcpp::get_logger(LOGGER), "Waiting for robot heartbeat [%d/%d]. Port ID: %d.",
-                attempt + 1, max_attempts, parameters_.port_id);
+    RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME),
+                "Waiting for robot heartbeat [%d/%d]. Port ID: %d.", attempt + 1, max_attempts,
+                parameters_.port_id);
     std::this_thread::sleep_for(std::chrono::seconds(1));
     if (++attempt >= max_attempts) {
       app_ptr_->close_udp_socket(); // hard close as run gets stuck
-      RCLCPP_ERROR(rclcpp::get_logger(LOGGER), "Failed to connect to robot on max attempts.");
+      RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME), "Failed to connect to robot on max attempts.");
       return controller_interface::CallbackReturn::ERROR;
     }
   }
-  RCLCPP_INFO(rclcpp::get_logger(LOGGER), "Robot connected.");
-  RCLCPP_INFO(rclcpp::get_logger(LOGGER), "Control mode: '%s'.",
+  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "Robot connected.");
+  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "Control mode: '%s'.",
               lbr_fri_ros2::EnumMaps::control_mode_map(hw_lbr_state_.control_mode).c_str());
-  RCLCPP_INFO(rclcpp::get_logger(LOGGER), "Sample time: %.3f s / %.1f Hz.",
+  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "Sample time: %.3f s / %.1f Hz.",
               async_client_ptr_->get_state_interface().get_state().sample_time,
               1. / async_client_ptr_->get_state_interface().get_state().sample_time);
   return controller_interface::CallbackReturn::SUCCESS;
@@ -205,7 +219,7 @@ hardware_interface::return_type SystemInterface::read(const rclcpp::Time & /*tim
   // exit once robot exits COMMANDING_ACTIVE (for safety)
   if (exit_commanding_active_(static_cast<KUKA::FRI::ESessionState>(hw_session_state_),
                               static_cast<KUKA::FRI::ESessionState>(hw_lbr_state_.session_state))) {
-    RCLCPP_ERROR(rclcpp::get_logger(LOGGER),
+    RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME),
                  "LBR left COMMANDING_ACTIVE. Please re-run lbr_bringup.");
     app_ptr_->stop_run();
     app_ptr_->close_udp_socket();
@@ -224,10 +238,13 @@ hardware_interface::return_type SystemInterface::read(const rclcpp::Time & /*tim
   hw_time_stamp_sec_ = static_cast<double>(hw_lbr_state_.time_stamp_sec);
   hw_time_stamp_nano_sec_ = static_cast<double>(hw_lbr_state_.time_stamp_nano_sec);
 
-  // added velocity state interface
+  // additional velocity state interface
   compute_hw_velocity_();
   update_last_hw_states_();
 
+  // additional force-torque state interface
+  ft_estimator_ptr_->compute(hw_lbr_state_.measured_joint_position, hw_lbr_state_.external_torque,
+                             hw_ft_);
   return hardware_interface::return_type::OK;
 }
 
@@ -289,13 +306,16 @@ void SystemInterface::nan_state_interfaces_() {
   hw_time_stamp_sec_ = std::numeric_limits<double>::quiet_NaN();
   hw_time_stamp_nano_sec_ = std::numeric_limits<double>::quiet_NaN();
 
-  // added velocity state interface
+  // additional velocity state interface
   hw_velocity_.fill(std::numeric_limits<double>::quiet_NaN());
+
+  // additional force-torque state interface
+  hw_ft_.fill(std::numeric_limits<double>::quiet_NaN());
 }
 
 bool SystemInterface::verify_number_of_joints_() {
   if (info_.joints.size() != KUKA::FRI::LBRState::NUMBER_OF_JOINTS) {
-    RCLCPP_ERROR(rclcpp::get_logger(LOGGER), "Expected %d joints in URDF. Found %ld.",
+    RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME), "Expected %d joints in URDF. Found %ld.",
                  KUKA::FRI::LBRState::NUMBER_OF_JOINTS, info_.joints.size());
     return false;
   }
@@ -307,7 +327,7 @@ bool SystemInterface::verify_joint_command_interfaces_() {
   for (auto &joint : info_.joints) {
     if (joint.command_interfaces.size() != LBR_FRI_COMMAND_INTERFACE_SIZE) {
       RCLCPP_ERROR(
-          rclcpp::get_logger(LOGGER),
+          rclcpp::get_logger(LOGGER_NAME),
           "Joint %s received invalid number of command interfaces. Received %ld, expected %d.",
           joint.name.c_str(), joint.command_interfaces.size(), LBR_FRI_COMMAND_INTERFACE_SIZE);
       return false;
@@ -315,7 +335,7 @@ bool SystemInterface::verify_joint_command_interfaces_() {
     for (auto &ci : joint.command_interfaces) {
       if (ci.name != hardware_interface::HW_IF_POSITION &&
           ci.name != hardware_interface::HW_IF_EFFORT) {
-        RCLCPP_ERROR(rclcpp::get_logger(LOGGER),
+        RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME),
                      "Joint %s received invalid command interface: %s. Expected %s or %s.",
                      joint.name.c_str(), ci.name.c_str(), hardware_interface::HW_IF_POSITION,
                      hardware_interface::HW_IF_EFFORT);
@@ -331,7 +351,7 @@ bool SystemInterface::verify_joint_state_interfaces_() {
   for (auto &joint : info_.joints) {
     if (joint.state_interfaces.size() != LBR_FRI_STATE_INTERFACE_SIZE) {
       RCLCPP_ERROR(
-          rclcpp::get_logger(LOGGER),
+          rclcpp::get_logger(LOGGER_NAME),
           "Joint %s received invalid number of state interfaces. Received %ld, expected %d.",
           joint.name.c_str(), joint.state_interfaces.size(), LBR_FRI_STATE_INTERFACE_SIZE);
       return false;
@@ -343,7 +363,7 @@ bool SystemInterface::verify_joint_state_interfaces_() {
           si.name != HW_IF_EXTERNAL_TORQUE && si.name != HW_IF_IPO_JOINT_POSITION &&
           si.name != hardware_interface::HW_IF_VELOCITY) {
         RCLCPP_ERROR(
-            rclcpp::get_logger(LOGGER),
+            rclcpp::get_logger(LOGGER_NAME),
             "Joint %s received invalid state interface: %s. Expected %s, %s, %s, %s, %s, %s or %s.",
             joint.name.c_str(), si.name.c_str(), hardware_interface::HW_IF_POSITION,
             HW_IF_COMMANDED_JOINT_POSITION, hardware_interface::HW_IF_EFFORT,
@@ -358,23 +378,32 @@ bool SystemInterface::verify_joint_state_interfaces_() {
 
 bool SystemInterface::verify_sensors_() {
   // check lbr specific state interfaces
-  if (info_.sensors.size() > 1) {
-    RCLCPP_ERROR(rclcpp::get_logger(LOGGER), "Expected 1 sensor, got %ld", info_.sensors.size());
+  if (info_.sensors.size() != LBR_FRI_SENSORS) {
+    RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME), "Expected %d sensor, got %ld", LBR_FRI_SENSORS,
+                 info_.sensors.size());
     return false;
   }
+  if (!verify_auxiliary_sensor_()) {
+    return false;
+  }
+  if (!verify_estimated_ft_sensor_()) {
+    return false;
+  }
+  return true;
+}
 
+bool SystemInterface::verify_auxiliary_sensor_() {
   // check all interfaces are defined in config/lbr_system_interface.xacro
-  const auto &lbr_fri_sensor = info_.sensors[0];
-  if (lbr_fri_sensor.state_interfaces.size() != LBR_FRI_SENSOR_SIZE) {
-    RCLCPP_ERROR(rclcpp::get_logger(LOGGER),
+  const auto &auxiliary_sensor = info_.sensors[0];
+  if (auxiliary_sensor.state_interfaces.size() != AUXILIARY_SENSOR_SIZE) {
+    RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME),
                  "Sensor %s received invalid state interface. Received %ld, expected %d. ",
-                 lbr_fri_sensor.name.c_str(), lbr_fri_sensor.state_interfaces.size(),
-                 LBR_FRI_SENSOR_SIZE);
+                 auxiliary_sensor.name.c_str(), auxiliary_sensor.state_interfaces.size(),
+                 AUXILIARY_SENSOR_SIZE);
     return false;
   }
-
   // check only valid interfaces are defined
-  for (const auto &si : lbr_fri_sensor.state_interfaces) {
+  for (const auto &si : auxiliary_sensor.state_interfaces) {
     if (si.name != HW_IF_SAMPLE_TIME && si.name != HW_IF_SESSION_STATE &&
         si.name != HW_IF_CONNECTION_QUALITY && si.name != HW_IF_SAFETY_STATE &&
         si.name != HW_IF_OPERATION_MODE && si.name != HW_IF_DRIVE_STATE &&
@@ -383,9 +412,31 @@ bool SystemInterface::verify_sensors_() {
         si.name != HW_IF_TIME_STAMP_NANO_SEC && si.name != HW_IF_COMMANDED_JOINT_POSITION &&
         si.name != HW_IF_COMMANDED_TORQUE && si.name != HW_IF_EXTERNAL_TORQUE &&
         si.name != HW_IF_IPO_JOINT_POSITION && si.name != HW_IF_TRACKING_PERFORMANCE) {
-      RCLCPP_ERROR(rclcpp::get_logger(LOGGER), "Sensor %s received invalid state interface %s.",
-                   lbr_fri_sensor.name.c_str(), si.name.c_str());
+      RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME),
+                   "Sensor %s received invalid state interface %s.", auxiliary_sensor.name.c_str(),
+                   si.name.c_str());
+      return false;
+    }
+  }
+  return true;
+}
 
+bool SystemInterface::verify_estimated_ft_sensor_() {
+  const auto &estimated_ft_sensor = info_.sensors[1];
+  if (estimated_ft_sensor.state_interfaces.size() != ESTIMATED_FT_SENSOR_SIZE) {
+    RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME),
+                 "Sensor %s received invalid state interface. Received %ld, expected %d. ",
+                 estimated_ft_sensor.name.c_str(), estimated_ft_sensor.state_interfaces.size(),
+                 ESTIMATED_FT_SENSOR_SIZE);
+    return false;
+  }
+  // check only valid interfaces are defined
+  for (const auto &si : estimated_ft_sensor.state_interfaces) {
+    if (si.name != HW_IF_FORCE_X && si.name != HW_IF_FORCE_Y && si.name != HW_IF_FORCE_Z &&
+        si.name != HW_IF_TORQUE_X && si.name != HW_IF_TORQUE_Y && si.name != HW_IF_TORQUE_Z) {
+      RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME),
+                   "Sensor %s received invalid state interface %s.",
+                   estimated_ft_sensor.name.c_str(), si.name.c_str());
       return false;
     }
   }

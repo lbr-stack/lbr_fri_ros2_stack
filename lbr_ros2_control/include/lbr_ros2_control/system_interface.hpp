@@ -24,6 +24,7 @@
 #include "lbr_fri_ros2/command_guard.hpp"
 #include "lbr_fri_ros2/enum_maps.hpp"
 #include "lbr_fri_ros2/filters.hpp"
+#include "lbr_fri_ros2/ft_estimator.hpp"
 #include "lbr_fri_ros2/state_interface.hpp"
 #include "lbr_ros2_control/system_interface_type_values.hpp"
 
@@ -46,11 +47,13 @@ struct SystemInterfaceParameters {
 
 class SystemInterface : public hardware_interface::SystemInterface {
 protected:
-  static constexpr char LOGGER[] = "lbr_ros2_control::SystemInterface";
+  static constexpr char LOGGER_NAME[] = "lbr_ros2_control::SystemInterface";
 
   static constexpr uint8_t LBR_FRI_STATE_INTERFACE_SIZE = 7;
   static constexpr uint8_t LBR_FRI_COMMAND_INTERFACE_SIZE = 2;
-  static constexpr uint8_t LBR_FRI_SENSOR_SIZE = 12;
+  static constexpr uint8_t LBR_FRI_SENSORS = 2;
+  static constexpr uint8_t AUXILIARY_SENSOR_SIZE = 12;
+  static constexpr uint8_t ESTIMATED_FT_SENSOR_SIZE = 6;
 
 public:
   SystemInterface() = default;
@@ -83,6 +86,8 @@ protected:
   bool verify_joint_command_interfaces_();
   bool verify_joint_state_interfaces_();
   bool verify_sensors_();
+  bool verify_auxiliary_sensor_();
+  bool verify_estimated_ft_sensor_();
 
   // monitor end of commanding active
   bool exit_commanding_active_(const KUKA::FRI::ESessionState &previous_session_state,
@@ -112,7 +117,7 @@ protected:
   double hw_time_stamp_sec_;
   double hw_time_stamp_nano_sec_;
 
-  // added velocity state interface
+  // additional velocity state interface
   lbr_fri_msgs::msg::LBRState::_measured_joint_position_type last_hw_measured_joint_position_;
   double last_hw_time_stamp_sec_;
   double last_hw_time_stamp_nano_sec_;
@@ -123,6 +128,10 @@ protected:
   void nan_last_hw_states_();
   void update_last_hw_states_();
   void compute_hw_velocity_();
+
+  // additional force-torque state interface
+  lbr_fri_ros2::FTEstimator::cart_array_t hw_ft_;
+  std::unique_ptr<lbr_fri_ros2::FTEstimator> ft_estimator_ptr_;
 
   // exposed command interfaces
   lbr_fri_msgs::msg::LBRCommand hw_lbr_command_;

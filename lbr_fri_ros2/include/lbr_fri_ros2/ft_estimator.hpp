@@ -12,25 +12,30 @@
 #include "rclcpp/logger.hpp"
 #include "rclcpp/logging.hpp"
 
+#include "friLBRState.h"
+
 #include "lbr_fri_msgs/msg/lbr_state.hpp"
 #include "lbr_fri_ros2/pinv.hpp"
-
-#include "friLBRState.h"
 
 namespace lbr_fri_ros2 {
 class FTEstimator {
 protected:
-  static constexpr uint8_t CARTESIAN_DOF = 6;
   static constexpr char LOGGER_NAME[] = "lbr_fri_ros2::FTEstimator";
+  using jnt_pos_array_t = lbr_fri_msgs::msg::LBRState::_measured_joint_position_type;
+  using const_jnt_pos_array_t_ref = const jnt_pos_array_t &;
+  using ext_tau_array_t = lbr_fri_msgs::msg::LBRState::_external_torque_type;
+  using const_ext_tau_array_t_ref = const ext_tau_array_t &;
 
 public:
+  static constexpr uint8_t CARTESIAN_DOF = 6;
+  using cart_array_t = std::array<double, CARTESIAN_DOF>;
+  using cart_array_t_ref = cart_array_t &;
+
   FTEstimator(const std::string &robot_description, const std::string &chain_root = "link_0",
               const std::string &chain_tip = "link_ee");
 
-  void
-  compute(const lbr_fri_msgs::msg::LBRState::_measured_joint_position_type &measured_joint_position,
-          const lbr_fri_msgs::msg::LBRState::_external_torque_type &external_torque,
-          std::array<double, CARTESIAN_DOF> &f_ext);
+  void compute(const_jnt_pos_array_t_ref measured_joint_position,
+               const_ext_tau_array_t_ref external_torque, cart_array_t_ref f_ext);
 
 protected:
   KDL::Tree tree_;

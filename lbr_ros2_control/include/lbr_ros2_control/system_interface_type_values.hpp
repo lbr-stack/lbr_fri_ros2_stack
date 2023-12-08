@@ -26,6 +26,14 @@ constexpr char HW_IF_EXTERNAL_TORQUE[] = "external_torque";
 constexpr char HW_IF_IPO_JOINT_POSITION[] = "ipo_joint_position";
 constexpr char HW_IF_TRACKING_PERFORMANCE[] = "tracking_performance";
 
+// additional estimated force-torque state interface
+constexpr char HW_IF_FORCE_X[] = "force.x";
+constexpr char HW_IF_FORCE_Y[] = "force.y";
+constexpr char HW_IF_FORCE_Z[] = "force.z";
+constexpr char HW_IF_TORQUE_X[] = "torque.x";
+constexpr char HW_IF_TORQUE_Y[] = "torque.y";
+constexpr char HW_IF_TORQUE_Z[] = "torque.z";
+
 // additional LBR command interfaces, reference KUKA::FRI::LBRCommand
 constexpr char HW_IF_WRENCH[] = "wrench";
 } // end of namespace lbr_ros2_control

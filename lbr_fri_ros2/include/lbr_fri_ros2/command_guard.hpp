@@ -17,14 +17,14 @@
 namespace lbr_fri_ros2 {
 struct CommandGuardParameters {
   // ROS IDL types
-  using joint_array_t = std::array<double, KUKA::FRI::LBRState::NUMBER_OF_JOINTS>;
-  using joint_name_array_t = std::array<std::string, KUKA::FRI::LBRState::NUMBER_OF_JOINTS>;
+  using jnt_array_t = std::array<double, KUKA::FRI::LBRState::NUMBER_OF_JOINTS>;
+  using jnt_name_array_t = std::array<std::string, KUKA::FRI::LBRState::NUMBER_OF_JOINTS>;
 
-  joint_name_array_t joint_names;                         /**< Joint names.*/
-  joint_array_t min_position{0., 0., 0., 0., 0., 0., 0.}; /**< Minimum joint position [rad].*/
-  joint_array_t max_position{0., 0., 0., 0., 0., 0., 0.}; /**< Maximum joint position [rad].*/
-  joint_array_t max_velocity{0., 0., 0., 0., 0., 0., 0.}; /**< Maximum joint velocity [rad/s].*/
-  joint_array_t max_torque{0., 0., 0., 0., 0., 0., 0.};   /**< Maximum joint torque [Nm].*/
+  jnt_name_array_t joint_names;                         /**< Joint names.*/
+  jnt_array_t min_position{0., 0., 0., 0., 0., 0., 0.}; /**< Minimum joint position [rad].*/
+  jnt_array_t max_position{0., 0., 0., 0., 0., 0., 0.}; /**< Maximum joint position [rad].*/
+  jnt_array_t max_velocity{0., 0., 0., 0., 0., 0., 0.}; /**< Maximum joint velocity [rad/s].*/
+  jnt_array_t max_torque{0., 0., 0., 0., 0., 0., 0.};   /**< Maximum joint torque [Nm].*/
 };
 
 class CommandGuard {
@@ -34,8 +34,8 @@ protected:
   // ROS IDL types
   using idl_command_t = lbr_fri_msgs::msg::LBRCommand;
   using const_idl_command_t_ref = const idl_command_t &;
-  using joint_array_t = idl_command_t::_joint_position_type;
-  using const_joint_array_t_ref = const joint_array_t &;
+  using jnt_array_t = idl_command_t::_joint_position_type;
+  using const_jnt_array_t_ref = const jnt_array_t &;
 
   // FRI types
   using fri_state_t = KUKA::FRI::LBRState;

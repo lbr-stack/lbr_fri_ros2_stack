@@ -64,7 +64,7 @@
             <!-- define lbr specific state interfaces as sensor, see
             https://github.com/ros-controls/roadmap/blob/master/design_drafts/components_architecture_and_urdf_examples.md -->
             <xacro:unless value="${sim}">
-                <sensor name="fri_sensor">
+                <sensor name="auxiliary_sensor">
                     <!-- see KUKA::FRI::LBRState -->
                     <state_interface name="sample_time" />
                     <state_interface name="session_state" />
@@ -78,6 +78,15 @@
                     <state_interface name="time_stamp_sec" />
                     <state_interface name="time_stamp_nano_sec" />
                     <state_interface name="tracking_performance" />
+                </sensor>
+
+                <sensor name="estimated_ft_sensor">
+                    <state_interface name="force.x" />
+                    <state_interface name="force.y" />
+                    <state_interface name="force.z" />
+                    <state_interface name="torque.x" />
+                    <state_interface name="torque.y" />
+                    <state_interface name="torque.z" />
                 </sensor>
             </xacro:unless>
 

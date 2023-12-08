@@ -18,10 +18,8 @@ FTEstimator::FTEstimator(const std::string &robot_description, const std::string
   q_.resize(KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
 }
 
-void FTEstimator::compute(
-    const lbr_fri_msgs::msg::LBRState::_measured_joint_position_type &measured_joint_position,
-    const lbr_fri_msgs::msg::LBRState::_external_torque_type &external_torque,
-    std::array<double, CARTESIAN_DOF> &f_ext) {
+void FTEstimator::compute(const_jnt_pos_array_t_ref measured_joint_position,
+                          const_ext_tau_array_t_ref external_torque, cart_array_t_ref f_ext) {
   q_.data = Eigen::Map<const Eigen::Matrix<double, KUKA::FRI::LBRState::NUMBER_OF_JOINTS, 1>>(
       measured_joint_position.data());
   tau_ext_ = Eigen::Map<const Eigen::Matrix<double, KUKA::FRI::LBRState::NUMBER_OF_JOINTS, 1>>(

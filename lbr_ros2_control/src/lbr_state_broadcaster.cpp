@@ -50,29 +50,29 @@ controller_interface::return_type LBRStateBroadcaster::update(const rclcpp::Time
   if (rt_state_publisher_ptr_->trylock()) {
     // FRI related states
     rt_state_publisher_ptr_->msg_.client_command_mode =
-        static_cast<int8_t>(state_interface_map_["fri_sensor"][HW_IF_CLIENT_COMMAND_MODE]);
+        static_cast<int8_t>(state_interface_map_["auxiliary_sensor"][HW_IF_CLIENT_COMMAND_MODE]);
     rt_state_publisher_ptr_->msg_.connection_quality =
-        static_cast<int8_t>(state_interface_map_["fri_sensor"][HW_IF_CONNECTION_QUALITY]);
+        static_cast<int8_t>(state_interface_map_["auxiliary_sensor"][HW_IF_CONNECTION_QUALITY]);
     rt_state_publisher_ptr_->msg_.control_mode =
-        static_cast<int8_t>(state_interface_map_["fri_sensor"][HW_IF_CONTROL_MODE]);
+        static_cast<int8_t>(state_interface_map_["auxiliary_sensor"][HW_IF_CONTROL_MODE]);
     rt_state_publisher_ptr_->msg_.drive_state =
-        static_cast<int8_t>(state_interface_map_["fri_sensor"][HW_IF_DRIVE_STATE]);
+        static_cast<int8_t>(state_interface_map_["auxiliary_sensor"][HW_IF_DRIVE_STATE]);
     rt_state_publisher_ptr_->msg_.operation_mode =
-        static_cast<int8_t>(state_interface_map_["fri_sensor"][HW_IF_OPERATION_MODE]);
+        static_cast<int8_t>(state_interface_map_["auxiliary_sensor"][HW_IF_OPERATION_MODE]);
     rt_state_publisher_ptr_->msg_.overlay_type =
-        static_cast<int8_t>(state_interface_map_["fri_sensor"][HW_IF_OVERLAY_TYPE]);
+        static_cast<int8_t>(state_interface_map_["auxiliary_sensor"][HW_IF_OVERLAY_TYPE]);
     rt_state_publisher_ptr_->msg_.safety_state =
-        static_cast<int8_t>(state_interface_map_["fri_sensor"][HW_IF_SAFETY_STATE]);
+        static_cast<int8_t>(state_interface_map_["auxiliary_sensor"][HW_IF_SAFETY_STATE]);
     rt_state_publisher_ptr_->msg_.sample_time =
-        state_interface_map_["fri_sensor"][HW_IF_SAMPLE_TIME];
+        state_interface_map_["auxiliary_sensor"][HW_IF_SAMPLE_TIME];
     rt_state_publisher_ptr_->msg_.session_state =
-        static_cast<int8_t>(state_interface_map_["fri_sensor"][HW_IF_SESSION_STATE]);
+        static_cast<int8_t>(state_interface_map_["auxiliary_sensor"][HW_IF_SESSION_STATE]);
     rt_state_publisher_ptr_->msg_.time_stamp_nano_sec =
-        static_cast<uint32_t>(state_interface_map_["fri_sensor"][HW_IF_TIME_STAMP_NANO_SEC]);
+        static_cast<uint32_t>(state_interface_map_["auxiliary_sensor"][HW_IF_TIME_STAMP_NANO_SEC]);
     rt_state_publisher_ptr_->msg_.time_stamp_sec =
-        static_cast<uint32_t>(state_interface_map_["fri_sensor"][HW_IF_TIME_STAMP_SEC]);
+        static_cast<uint32_t>(state_interface_map_["auxiliary_sensor"][HW_IF_TIME_STAMP_SEC]);
     rt_state_publisher_ptr_->msg_.tracking_performance =
-        state_interface_map_["fri_sensor"][HW_IF_TRACKING_PERFORMANCE];
+        state_interface_map_["auxiliary_sensor"][HW_IF_TRACKING_PERFORMANCE];
 
     // joint related states
     std::for_each(joint_names_.begin(), joint_names_.end(),
