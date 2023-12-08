@@ -6,6 +6,7 @@
 
 #include "eigen3/Eigen/Core"
 #include "kdl/chain.hpp"
+#include "kdl/chainfksolverpos_recursive.hpp"
 #include "kdl/chainjnttojacsolver.hpp"
 #include "kdl/tree.hpp"
 #include "kdl_parser/kdl_parser.hpp"
@@ -40,10 +41,20 @@ public:
 protected:
   KDL::Tree tree_;
   KDL::Chain chain_;
+
+  // solvers
   std::unique_ptr<KDL::ChainJntToJacSolver> jacobian_solver_;
+  std::unique_ptr<KDL::ChainFkSolverPos_recursive> fk_solver_;
+
+  // robot state
+  KDL::JntArray q_;
+
+  // forward kinematics
+  KDL::Frame chain_tip_frame_;
+
+  // force estimation
   KDL::Jacobian jacobian_;
   Eigen::Matrix<double, KUKA::FRI::LBRState::NUMBER_OF_JOINTS, CARTESIAN_DOF> jacobian_inv_;
-  KDL::JntArray q_;
   Eigen::Matrix<double, KUKA::FRI::LBRState::NUMBER_OF_JOINTS, 1> tau_ext_;
   Eigen::Matrix<double, CARTESIAN_DOF, 1> f_ext_;
 };
