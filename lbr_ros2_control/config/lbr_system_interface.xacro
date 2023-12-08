@@ -31,9 +31,15 @@
         external_torque_cutoff_frequency:=^|10
         measured_torque_cutoff_frequency:=^|10
         open_loop:=^|true
-        damping:=^|0.2
         chain_root:=^|link_0
-        chain_tip:=^|link_ee">
+        chain_tip:=^|link_ee
+        damping:=^|0.2
+        force_x_th:=^|2.0
+        force_y_th:=^|2.0
+        force_z_th:=^|2.0
+        torque_x_th:=^|0.5
+        torque_y_th:=^|0.5
+        torque_z_th:=^|0.5">
         <ros2_control name="lbr_system_interface" type="system">
             <!-- define hardware including parameters, also gazebo -->
             <xacro:if value="${sim}">
@@ -85,6 +91,12 @@
                     <param name="chain_root">${chain_root}</param>
                     <param name="chain_tip">${chain_tip}</param>
                     <param name="damping">${damping}</param>
+                    <param name="force_x_th">${force_x_th}</param>
+                    <param name="force_y_th">${force_y_th}</param>
+                    <param name="force_z_th">${force_z_th}</param>
+                    <param name="torque_x_th">${torque_x_th}</param>
+                    <param name="torque_y_th">${torque_y_th}</param>
+                    <param name="torque_z_th">${torque_z_th}</param>
                     <state_interface name="force.x" />
                     <state_interface name="force.y" />
                     <state_interface name="force.z" />

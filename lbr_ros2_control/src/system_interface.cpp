@@ -78,8 +78,22 @@ SystemInterface::on_init(const hardware_interface::HardwareInfo &system_info) {
   ft_parameters_.chain_root = info_.sensors[1].parameters.at("chain_root");
   ft_parameters_.chain_tip = info_.sensors[1].parameters.at("chain_tip");
   ft_parameters_.damping = std::stod(info_.sensors[1].parameters.at("damping"));
+  ft_parameters_.force_x_th = std::stod(info_.sensors[1].parameters.at("force_x_th"));
+  ft_parameters_.force_y_th = std::stod(info_.sensors[1].parameters.at("force_y_th"));
+  ft_parameters_.force_z_th = std::stod(info_.sensors[1].parameters.at("force_z_th"));
+  ft_parameters_.torque_x_th = std::stod(info_.sensors[1].parameters.at("torque_x_th"));
+  ft_parameters_.torque_y_th = std::stod(info_.sensors[1].parameters.at("torque_y_th"));
+  ft_parameters_.torque_z_th = std::stod(info_.sensors[1].parameters.at("torque_z_th"));
   ft_estimator_ptr_ = std::make_unique<lbr_fri_ros2::FTEstimator>(
-      info_.original_xml, ft_parameters_.chain_root, ft_parameters_.chain_tip);
+      info_.original_xml, ft_parameters_.chain_root, ft_parameters_.chain_tip,
+      lbr_fri_ros2::FTEstimator::cart_array_t{
+          ft_parameters_.force_x_th,
+          ft_parameters_.force_y_th,
+          ft_parameters_.force_z_th,
+          ft_parameters_.torque_x_th,
+          ft_parameters_.torque_y_th,
+          ft_parameters_.torque_z_th,
+      });
 
   if (!verify_number_of_joints_()) {
     return controller_interface::CallbackReturn::ERROR;
