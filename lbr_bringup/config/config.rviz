@@ -126,10 +126,10 @@ Visualization Manager:
       Visual Enabled: true
     - Accept NaN Values: false
       Alpha: 1
-      Arrow Width: 0.5
+      Arrow Width: 0.20000000298023224
       Class: rviz_default_plugins/Wrench
       Enabled: true
-      Force Arrow Scale: 0.20000000298023224
+      Force Arrow Scale: 0.10000000149011612
       Force Color: 0; 85; 255
       History Length: 1
       Name: Wrench
@@ -140,7 +140,7 @@ Visualization Manager:
         History Policy: Keep Last
         Reliability Policy: Reliable
         Value: /lbr/force_torque_broadcaster/wrench
-      Torque Arrow Scale: 0.4000000059604645
+      Torque Arrow Scale: 0.30000001192092896
       Torque Color: 170; 85; 255
       Value: true
   Enabled: true
