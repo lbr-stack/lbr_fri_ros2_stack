@@ -18,9 +18,7 @@ FTEstimator::FTEstimator(const std::string &robot_description, const std::string
   jacobian_.resize(KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
   q_.resize(KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
 
-  q_.data.setZero();
-  tau_ext_.setZero();
-  f_ext_.setZero();
+  reset();
 }
 
 void FTEstimator::compute(const_jnt_pos_array_t_ref measured_joint_position,
@@ -39,5 +37,11 @@ void FTEstimator::compute(const_jnt_pos_array_t_ref measured_joint_position,
   f_ext_.bottomRows(3) = Eigen::Matrix3d::Map(chain_tip_frame_.M.data) * f_ext_.bottomRows(3);
 
   Eigen::Map<Eigen::Matrix<double, CARTESIAN_DOF, 1>>(f_ext.data()) = f_ext_;
+}
+
+void FTEstimator::reset() {
+  q_.data.setZero();
+  tau_ext_.setZero();
+  f_ext_.setZero();
 }
 } // end of namespace lbr_fri_ros2
