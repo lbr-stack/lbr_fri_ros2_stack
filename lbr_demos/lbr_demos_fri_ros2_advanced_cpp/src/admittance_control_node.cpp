@@ -29,8 +29,8 @@ public:
                                                this->get_parameter("dq_gains").as_double_array(),
                                                this->get_parameter("dx_gains").as_double_array());
 
-    lbr_position_command_pub_ = create_publisher<lbr_fri_msgs::msg::LBRPositionCommand>(
-        "/lbr/command/joint_position", 1);
+    lbr_position_command_pub_ =
+        create_publisher<lbr_fri_msgs::msg::LBRPositionCommand>("/lbr/command/joint_position", 1);
     lbr_state_sub_ = create_subscription<lbr_fri_msgs::msg::LBRState>(
         "/lbr/state", 1,
         std::bind(&AdmittanceControlNode::on_lbr_state, this, std::placeholders::_1));
