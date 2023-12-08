@@ -30,9 +30,10 @@
         command_guard_variant:=^|default
         external_torque_cutoff_frequency:=^|10
         measured_torque_cutoff_frequency:=^|10
-        open_loop:=^|true">
-        <!-- arg for control mode -->
-
+        open_loop:=^|true
+        damping:=^|0.2
+        chain_root:=^|link_0
+        chain_tip:=^|link_ee">
         <ros2_control name="lbr_system_interface" type="system">
             <!-- define hardware including parameters, also gazebo -->
             <xacro:if value="${sim}">
@@ -81,6 +82,9 @@
                 </sensor>
 
                 <sensor name="estimated_ft_sensor">
+                    <param name="chain_root">${chain_root}</param>
+                    <param name="chain_tip">${chain_tip}</param>
+                    <param name="damping">${damping}</param>
                     <state_interface name="force.x" />
                     <state_interface name="force.y" />
                     <state_interface name="force.z" />

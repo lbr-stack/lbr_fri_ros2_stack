@@ -45,6 +45,12 @@ struct SystemInterfaceParameters {
   double measured_torque_cutoff_frequency{10.0};
 };
 
+struct EstimatedFTSensorParameters {
+  std::string chain_root{"link_0"};
+  std::string chain_tip{"link_ee"};
+  double damping{0.2};
+};
+
 class SystemInterface : public hardware_interface::SystemInterface {
 protected:
   static constexpr char LOGGER_NAME[] = "lbr_ros2_control::SystemInterface";
@@ -95,6 +101,7 @@ protected:
 
   // robot parameters
   SystemInterfaceParameters parameters_;
+  EstimatedFTSensorParameters ft_parameters_;
 
   // robot driver
   std::shared_ptr<lbr_fri_ros2::AsyncClient> async_client_ptr_;

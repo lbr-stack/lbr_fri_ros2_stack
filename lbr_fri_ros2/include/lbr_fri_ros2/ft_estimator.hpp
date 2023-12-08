@@ -35,7 +35,8 @@ public:
   FTEstimator(const std::string &robot_description, const std::string &chain_root = "link_0",
               const std::string &chain_tip = "link_ee");
   void compute(const_jnt_pos_array_t_ref measured_joint_position,
-               const_ext_tau_array_t_ref external_torque, cart_array_t_ref f_ext);
+               const_ext_tau_array_t_ref external_torque, cart_array_t_ref f_ext,
+               const double &damping = 0.2);
   void reset();
 
 protected:

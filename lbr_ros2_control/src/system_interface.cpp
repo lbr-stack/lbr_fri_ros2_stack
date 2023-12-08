@@ -74,7 +74,12 @@ SystemInterface::on_init(const hardware_interface::HardwareInfo &system_info) {
   nan_state_interfaces_();
   nan_last_hw_states_();
 
-  ft_estimator_ptr_ = std::make_unique<lbr_fri_ros2::FTEstimator>(info_.original_xml);
+  // setup force-torque estimator
+  ft_parameters_.chain_root = info_.sensors[1].parameters.at("chain_root");
+  ft_parameters_.chain_tip = info_.sensors[1].parameters.at("chain_tip");
+  ft_parameters_.damping = std::stod(info_.sensors[1].parameters.at("damping"));
+  ft_estimator_ptr_ = std::make_unique<lbr_fri_ros2::FTEstimator>(
+      info_.original_xml, ft_parameters_.chain_root, ft_parameters_.chain_tip);
 
   if (!verify_number_of_joints_()) {
     return controller_interface::CallbackReturn::ERROR;
@@ -244,7 +249,7 @@ hardware_interface::return_type SystemInterface::read(const rclcpp::Time & /*tim
 
   // additional force-torque state interface
   ft_estimator_ptr_->compute(hw_lbr_state_.measured_joint_position, hw_lbr_state_.external_torque,
-                             hw_ft_);
+                             hw_ft_, ft_parameters_.damping);
   return hardware_interface::return_type::OK;
 }
 

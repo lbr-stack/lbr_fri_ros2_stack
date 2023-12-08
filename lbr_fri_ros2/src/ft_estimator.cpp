@@ -22,13 +22,14 @@ FTEstimator::FTEstimator(const std::string &robot_description, const std::string
 }
 
 void FTEstimator::compute(const_jnt_pos_array_t_ref measured_joint_position,
-                          const_ext_tau_array_t_ref external_torque, cart_array_t_ref f_ext) {
+                          const_ext_tau_array_t_ref external_torque, cart_array_t_ref f_ext,
+                          const double &damping) {
   q_.data = Eigen::Map<const Eigen::Matrix<double, KUKA::FRI::LBRState::NUMBER_OF_JOINTS, 1>>(
       measured_joint_position.data());
   tau_ext_ = Eigen::Map<const Eigen::Matrix<double, KUKA::FRI::LBRState::NUMBER_OF_JOINTS, 1>>(
       external_torque.data());
   jacobian_solver_->JntToJac(q_, jacobian_);
-  jacobian_inv_ = pinv(jacobian_.data);
+  jacobian_inv_ = pinv(jacobian_.data, damping);
   f_ext_ = jacobian_inv_.transpose() * tau_ext_;
 
   // rotate into chain tip frame
