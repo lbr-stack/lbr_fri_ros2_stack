@@ -15,6 +15,9 @@ Humble v1.4.0 (2023-12-08)
   * Removes now redundant node from ``lbr_ros2_control``
   * Adds forward position and forward torque controllers to ``lbr_ros2_control``
   * Removes estimated force-torque broadcaster from ``lbr_ros2_control`` in favor of ``ros2_control`` default implementation
+    
+    * Force-torque now available under ``/lbr/force_torque_broadcaster/wrench`` 
+    * Namespace issues since ``lbr_controllers.yaml`` includes namespace in ``frame_id`` parameter
   * Adds ``lbr_fri_ros2`` force-torque estimator to ``lbr_ros2_control`` as sensor
   * Adds configurations to ``lbr_system_interface.xacro``
   * Simplifies ``lbr_ros2_control`` class names
