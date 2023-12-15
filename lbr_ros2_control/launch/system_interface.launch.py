@@ -14,7 +14,6 @@ class LBRSystemInterface(LBRDescriptionMixin, LBRROS2ControlMixin):
 def generate_launch_description() -> LaunchDescription:
     ld = LaunchDescription()
     ld.add_action(LBRSystemInterface.arg_model())
-    ld.add_action(LBRSystemInterface.arg_base_frame())
     ld.add_action(LBRSystemInterface.arg_robot_name())
     ld.add_action(LBRSystemInterface.arg_port_id())
     robot_description = LBRSystemInterface.param_robot_description(sim=False)

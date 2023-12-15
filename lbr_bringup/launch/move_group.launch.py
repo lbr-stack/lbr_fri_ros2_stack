@@ -20,32 +20,24 @@ def launch_setup(context: LaunchContext) -> List[LaunchDescriptionEntity]:
     model = LaunchConfiguration("model").perform(context)
     moveit_configs_builder = LBRMoveGroupMixin.moveit_configs_builder(
         robot_name=model,
-        base_frame=LaunchConfiguration("base_frame"),
         package_name=f"{model}_moveit_config",
     )
     movegroup_params = LBRMoveGroupMixin.params_move_group()
 
     # MoveGroup:
     # - requires world frame
-    # - maps link robot_name/base_frame -> base_frame
-    # These two transform need publishing
+    # - urdf only has robot_name/world
+    # This transform needs publishing
     robot_name = LaunchConfiguration("robot_name").perform(context)
     ld.add_action(
         LBRDescriptionMixin.node_static_tf(
-            tf=[0, 0, 0, 0, 0, 0],
-            parent="world",
-            child=LaunchConfiguration("base_frame"),
-        )
-    )
-    ld.add_action(
-        LBRDescriptionMixin.node_static_tf(
             tf=[0, 0, 0, 0, 0, 0],  # keep zero
-            parent=LaunchConfiguration("base_frame"),
+            parent="world",
             child=PathJoinSubstitution(
                 [
-                    LaunchConfiguration("robot_name"),
-                    LaunchConfiguration("base_frame"),
-                ]  # results in robot_name/base_frame
+                    robot_name,
+                    "world",
+                ]  # results in robot_name/world
             ),
         )
     )
@@ -86,7 +78,6 @@ def generate_launch_description() -> LaunchDescription:
 
     ld.add_action(LBRDescriptionMixin.arg_model())
     ld.add_action(LBRDescriptionMixin.arg_robot_name())
-    ld.add_action(LBRDescriptionMixin.arg_base_frame())
     ld.add_action(LBRDescriptionMixin.arg_sim())
 
     ld.add_action(OpaqueFunction(function=launch_setup))
