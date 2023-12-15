@@ -1,6 +1,11 @@
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Changelog for package LBR FRI ROS 2 Stack
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Humble v1.4.1 (2023-12-15)
+--------------------------
+* Removes the ``base_frame`` parameter from ``lbr_bringup``, ``lbr_description``, ``lbr_fri_ros2``, ``lbr_ros2_control``
+* Updates RViZ default config in ``lbr_moveit_config``
+
 Humble v1.4.0 (2023-12-08)
 --------------------------
 * The general goal of this release is a tighter ``ros2_control`` integration. The ``lbr_bringup``
