@@ -61,6 +61,7 @@ def launch_setup(context: LaunchContext) -> List[LaunchDescriptionEntity]:
                     "world",
                 ]  # results in robot_name/world
             ),
+            parameters=[{"use_sim_time": True}],
         )
     )
 
