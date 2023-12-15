@@ -2,7 +2,7 @@ from typing import List
 
 from launch import LaunchContext, LaunchDescription, LaunchDescriptionEntity
 from launch.actions import DeclareLaunchArgument, OpaqueFunction, RegisterEventHandler
-from launch.conditions import IfCondition, UnlessCondition
+from launch.conditions import IfCondition
 from launch.event_handlers import OnProcessExit, OnProcessStart
 from launch.substitutions import (
     AndSubstitution,
@@ -72,35 +72,25 @@ def launch_setup(context: LaunchContext) -> List[LaunchDescriptionEntity]:
 
     # MoveGroup:
     # - requires world frame
-    # - maps link robot_name/base_frame -> base_frame
-    # These two transform need publishing
+    # - urdf only has robot_name/world
+    # This transform needs publishing
     robot_name = LaunchConfiguration("robot_name").perform(context)
     ld.add_action(
         LBRDescriptionMixin.node_static_tf(
-            tf=[0, 0, 0, 0, 0, 0],
-            parent="world",
-            child=LaunchConfiguration("base_frame"),
-            condition=IfCondition(LaunchConfiguration("moveit")),
-        ),
-    )
-    ld.add_action(
-        LBRDescriptionMixin.node_static_tf(
             tf=[0, 0, 0, 0, 0, 0],  # keep zero
-            parent=LaunchConfiguration("base_frame"),
+            parent="world",
             child=PathJoinSubstitution(
                 [
-                    LaunchConfiguration("robot_name"),
-                    LaunchConfiguration("base_frame"),
-                ]  # results in robot_name/base_frame
+                    robot_name,
+                    "world",
+                ]  # results in robot_name/world
             ),
-            condition=IfCondition(LaunchConfiguration("moveit")),
         )
     )
 
     model = LaunchConfiguration("model").perform(context)
     moveit_configs_builder = LBRMoveGroupMixin.moveit_configs_builder(
         robot_name=model,
-        base_frame=LaunchConfiguration("base_frame"),
         package_name=f"{model}_moveit_config",
     )
     movegroup_params = LBRMoveGroupMixin.params_move_group()
@@ -114,21 +104,6 @@ def launch_setup(context: LaunchContext) -> List[LaunchDescriptionEntity]:
             ],
             condition=IfCondition(LaunchConfiguration("moveit")),
             namespace=robot_name,
-        )
-    )
-
-    # unless MoveIt: add world -> robot_name/base_frame transform
-    ld.add_action(
-        LBRDescriptionMixin.node_static_tf(
-            tf=[0, 0, 0, 0, 0, 0],  # keep zero
-            parent="world",
-            child=PathJoinSubstitution(
-                [
-                    LaunchConfiguration("robot_name"),
-                    LaunchConfiguration("base_frame"),
-                ]  # results in robot_name/base_frame
-            ),
-            condition=UnlessCondition(LaunchConfiguration("moveit")),
         )
     )
 
@@ -177,7 +152,6 @@ def generate_launch_description() -> LaunchDescription:
     ld = LaunchDescription()
     ld.add_action(LBRDescriptionMixin.arg_model())
     ld.add_action(LBRDescriptionMixin.arg_robot_name())
-    ld.add_action(LBRDescriptionMixin.arg_base_frame())
     ld.add_action(LBRDescriptionMixin.arg_port_id())
     ld.add_action(
         DeclareLaunchArgument(

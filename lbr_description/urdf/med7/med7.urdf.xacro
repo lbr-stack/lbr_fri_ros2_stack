@@ -6,18 +6,17 @@
     <!-- include the lbr med macro -->
     <xacro:include filename="$(find lbr_description)/urdf/med7/med7_description.urdf.xacro" />
 
-    <xacro:arg name="base_frame" default="base_frame" />
     <xacro:arg name="robot_name" default="lbr" />
     <xacro:arg name="port_id" default="30200" />
     <xacro:arg name="sim" default="true" />
 
-    <!-- fixed to base_frame -->
-    <link name="$(arg base_frame)" />
+    <!-- fixed to world, see http://classic.gazebosim.org/tutorials?tut=ros_urdf&cat=connect_ros -->
+    <link name="world" />
 
     <!--joint
-        between {base_frame} and link_0-->
-    <joint name="$(arg base_frame)_joint" type="fixed">
-        <parent link="$(arg base_frame)" />
+        between world and link_0-->
+    <joint name="world_joint" type="fixed">
+        <parent link="world" />
         <child link="link_0" />
     </joint>
 
