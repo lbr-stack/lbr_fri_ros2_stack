@@ -30,10 +30,11 @@ class GazeboMixin:
 
     @staticmethod
     def node_spawn_entity(
-        robot_name: Optional[Union[LaunchConfiguration, str]] = None, **kwargs
+        robot_name: Optional[Union[LaunchConfiguration, str]] = LaunchConfiguration(
+            "robot_name", default="lbr"
+        ),
+        **kwargs,
     ) -> Node:
-        if robot_name is None:
-            robot_name = LaunchConfiguration("robot_name")
         return Node(
             package="gazebo_ros",
             executable="spawn_entity.py",
@@ -41,12 +42,12 @@ class GazeboMixin:
                 "-topic",
                 "robot_description",
                 "-entity",
-                LaunchConfiguration("robot_name"),
+                robot_name,
                 "-robot_namespace",
-                LaunchConfiguration("robot_name"),
+                robot_name,
             ],
             output="screen",
-            namespace=LaunchConfiguration("robot_name"),
+            namespace=robot_name,
             **kwargs,
         )
 
@@ -54,19 +55,19 @@ class GazeboMixin:
 class LBRDescriptionMixin:
     @staticmethod
     def param_robot_description(
-        model: Optional[Union[LaunchConfiguration, str]] = None,
-        robot_name: Optional[Union[LaunchConfiguration, str]] = None,
-        port_id: Optional[Union[LaunchConfiguration, str]] = None,
-        sim: Optional[Union[LaunchConfiguration, bool]] = None,
+        model: Optional[Union[LaunchConfiguration, str]] = LaunchConfiguration(
+            "model", default="iiwa7"
+        ),
+        robot_name: Optional[Union[LaunchConfiguration, str]] = LaunchConfiguration(
+            "robot_name", default="lbr"
+        ),
+        port_id: Optional[Union[LaunchConfiguration, str]] = LaunchConfiguration(
+            "port_id", default="30200"
+        ),
+        sim: Optional[Union[LaunchConfiguration, bool]] = LaunchConfiguration(
+            "sim", default="true"
+        ),
     ) -> Dict[str, str]:
-        if model is None:
-            model = LaunchConfiguration("model", default="iiwa7")
-        if robot_name is None:
-            robot_name = LaunchConfiguration("robot_name", default="lbr")
-        if port_id is None:
-            port_id = LaunchConfiguration("port_id", default="30200")
-        if sim is None:
-            sim = LaunchConfiguration("sim", default="true")
         if type(sim) is bool:
             sim = "true" if sim else "false"
         robot_description = {
@@ -187,18 +188,14 @@ class RVizMixin:
 
     @staticmethod
     def node_rviz(
-        rviz_config_pkg: Optional[Union[LaunchConfiguration, str]] = None,
-        rviz_config: Optional[Union[LaunchConfiguration, str]] = None,
+        rviz_config_pkg: Optional[
+            Union[LaunchConfiguration, str]
+        ] = LaunchConfiguration("rviz_config_pkg", default="lbr_description"),
+        rviz_config: Optional[Union[LaunchConfiguration, str]] = LaunchConfiguration(
+            "rviz_config", default="config/config.rviz"
+        ),
         **kwargs,
     ) -> Node:
-        if rviz_config_pkg is None:
-            rviz_config_pkg = LaunchConfiguration(
-                "rviz_config_pkg", default="lbr_description"
-            )
-        if rviz_config is None:
-            rviz_config = LaunchConfiguration(
-                "rviz_config", default="config/config.rviz"
-            )
         return Node(
             package="rviz2",
             executable="rviz2",

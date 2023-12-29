@@ -136,10 +136,11 @@ class LBRFRIROS2Mixin:
 
     @staticmethod
     def node_app(
-        robot_name: Optional[Union[LaunchConfiguration, str]] = None, **kwargs
+        robot_name: Optional[Union[LaunchConfiguration, str]] = LaunchConfiguration(
+            "robot_name", default="lbr"
+        ),
+        **kwargs
     ) -> DeclareLaunchArgument:
-        if robot_name is None:
-            robot_name = LaunchConfiguration("robot_name", default="lbr")
         return Node(
             package="lbr_fri_ros2",
             executable="app",
