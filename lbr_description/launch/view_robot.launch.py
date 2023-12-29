@@ -1,7 +1,7 @@
 from launch import LaunchDescription
 from launch_ros.actions import Node
 
-from lbr_description import LBRDescriptionMixin, RVizMixin
+from lbr_description import LBRDescriptionMixin, RViZMixin
 
 
 def generate_launch_description() -> LaunchDescription:
@@ -24,7 +24,7 @@ def generate_launch_description() -> LaunchDescription:
         )
     )
     ld.add_action(
-        RVizMixin.node_rviz(
+        RViZMixin.node_rviz(
             rviz_config_pkg="lbr_description",
             rviz_config="config/config.rviz",
         )

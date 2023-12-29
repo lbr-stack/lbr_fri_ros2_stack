@@ -12,7 +12,7 @@ from launch.substitutions import (
 )
 
 from lbr_bringup import LBRMoveGroupMixin
-from lbr_description import GazeboMixin, LBRDescriptionMixin, RVizMixin
+from lbr_description import GazeboMixin, LBRDescriptionMixin, RViZMixin
 from lbr_ros2_control import LBRROS2ControlMixin
 
 
@@ -85,7 +85,7 @@ def launch_setup(context: LaunchContext) -> List[LaunchDescriptionEntity]:
     )
 
     # RViz and MoveIt
-    rviz_moveit = RVizMixin.node_rviz(
+    rviz_moveit = RViZMixin.node_rviz(
         rviz_config_pkg=f"{model}_moveit_config",
         rviz_config="config/moveit.rviz",
         parameters=LBRMoveGroupMixin.params_rviz(
@@ -105,7 +105,7 @@ def launch_setup(context: LaunchContext) -> List[LaunchDescriptionEntity]:
     )
 
     # RViz no MoveIt
-    rviz = RVizMixin.node_rviz(
+    rviz = RViZMixin.node_rviz(
         rviz_config_pkg="lbr_bringup",
         rviz_config="config/config.rviz",
         condition=IfCondition(

@@ -5,7 +5,7 @@ from launch.actions import OpaqueFunction
 from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
 
 from lbr_bringup import LBRMoveGroupMixin
-from lbr_description import LBRDescriptionMixin, RVizMixin
+from lbr_description import LBRDescriptionMixin, RViZMixin
 
 
 def launch_setup(context: LaunchContext) -> List[LaunchDescriptionEntity]:
@@ -54,7 +54,7 @@ def launch_setup(context: LaunchContext) -> List[LaunchDescriptionEntity]:
     )
 
     # RViz
-    rviz = RVizMixin.node_rviz(
+    rviz = RViZMixin.node_rviz(
         rviz_config_pkg=f"{model}_moveit_config",
         rviz_config="config/moveit.rviz",
         parameters=LBRMoveGroupMixin.params_rviz(

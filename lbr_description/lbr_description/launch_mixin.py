@@ -165,7 +165,7 @@ class LBRDescriptionMixin:
         )
 
 
-class RVizMixin:
+class RViZMixin:
     @staticmethod
     def arg_rviz_config_pkg(
         default_value: str = "lbr_description",
