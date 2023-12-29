@@ -59,12 +59,14 @@ def launch_setup(context: LaunchContext) -> List[LaunchDescriptionEntity]:
         rviz_config="config/moveit.rviz",
         parameters=LBRMoveGroupMixin.params_rviz(
             moveit_configs=moveit_configs_builder.to_moveit_configs()
-        ),
+        )
+        + [{"use_sim_time": LaunchConfiguration("sim")}],
         remappings=[
+            ("display_planned_path", robot_name + "/display_planned_path"),
+            ("joint_states", robot_name + "/joint_states"),
+            ("monitored_planning_scene", robot_name + "/monitored_planning_scene"),
             ("robot_description", robot_name + "/robot_description"),
             ("robot_description_semantic", robot_name + "/robot_description_semantic"),
-            ("display_planned_path", robot_name + "/display_planned_path"),
-            ("monitored_planning_scene", robot_name + "/monitored_planning_scene"),
         ],
     )
 

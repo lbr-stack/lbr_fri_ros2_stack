@@ -1,10 +1,17 @@
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Changelog for package LBR FRI ROS 2 Stack
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Humble v1.4.2 (2023-12-29)
+--------------------------
+* Fixes cartesian path for move group node with namespace: https://github.com/lbr-stack/lbr_fri_ros2_stack/issues/133
+* Solution @josefinemonnet: https://github.com/ros-planning/moveit2/issues/2545#issuecomment-1868480168
+* Refers to https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/146
+
 Humble v1.4.1 (2023-12-15)
 --------------------------
 * Removes the ``base_frame`` parameter from ``lbr_bringup``, ``lbr_description``, ``lbr_fri_ros2``, ``lbr_ros2_control``
 * Updates RViZ default config in ``lbr_moveit_config``
+* Refers to https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/144
 
 Humble v1.4.0 (2023-12-08)
 --------------------------
