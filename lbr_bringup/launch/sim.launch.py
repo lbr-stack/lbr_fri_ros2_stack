@@ -12,7 +12,7 @@ from launch.substitutions import (
 )
 
 from lbr_bringup import LBRMoveGroupMixin
-from lbr_description import GazeboMixin, LBRDescriptionMixin, RVizMixin
+from lbr_description import IgnitionGazeboMixin, LBRDescriptionMixin, RVizMixin
 from lbr_ros2_control import LBRROS2ControlMixin
 
 
@@ -20,8 +20,10 @@ def launch_setup(context: LaunchContext) -> List[LaunchDescriptionEntity]:
     ld = LaunchDescription()
 
     robot_description = LBRDescriptionMixin.param_robot_description(sim=True)
-    ld.add_action(GazeboMixin.include_gazebo())  # Gazebo has its own controller manager
-    spawn_entity = GazeboMixin.node_spawn_entity()
+    ld.add_action(
+        IgnitionGazeboMixin.include_gazebo()
+    )  # Gazebo has its own controller manager
+    spawn_entity = IgnitionGazeboMixin.node_spawn_entity()
     ld.add_action(spawn_entity)
     joint_state_broadcaster = LBRROS2ControlMixin.node_controller_spawner(
         controller="joint_state_broadcaster"

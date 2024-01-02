@@ -12,7 +12,7 @@ from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 
 
-class GazeboClassicMixin:
+class GazeboMixin:
     @staticmethod
     def include_gazebo(**kwargs) -> IncludeLaunchDescription:
         return IncludeLaunchDescription(
@@ -42,8 +42,6 @@ class GazeboClassicMixin:
                 "robot_description",
                 "-entity",
                 LaunchConfiguration("robot_name"),
-                "-robot_namespace",
-                LaunchConfiguration("robot_name"),
             ],
             output="screen",
             namespace=LaunchConfiguration("robot_name"),
@@ -51,7 +49,7 @@ class GazeboClassicMixin:
         )
 
 
-class GazeboMixin:
+class IgnitionGazeboMixin:
     # https://answers.gazebosim.org//question/28813/how-to-spawn-a-urdf-robot-into-a-ignition-gazebo-world-from-ros2/
     @staticmethod
     def include_gazebo(**kwargs) -> IncludeLaunchDescription:
@@ -66,7 +64,7 @@ class GazeboMixin:
                 ),
             ),
             launch_arguments={"gz_args": "-r empty.sdf"}.items(),
-            **kwargs
+            **kwargs,
         )
 
     @staticmethod
@@ -80,12 +78,17 @@ class GazeboMixin:
             executable="create",
             arguments=[
                 "-topic",
-                "robot_description",
+                PathJoinSubstitution(
+                    [
+                        robot_name,
+                        "robot_description",
+                    ]
+                ),
                 "-name",
                 LaunchConfiguration("robot_name"),
             ],
             output="screen",
-            **kwargs
+            **kwargs,
         )
 
 

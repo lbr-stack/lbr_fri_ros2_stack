@@ -1,13 +1,15 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
-    <xacro:macro name="lbr_gazebo">
+    <xacro:macro name="lbr_gazebo" params="robot_name:=^|lbr">
 
         <!-- ros_control-plugin -->
         <gazebo>
             <plugin name="ign_ros2_control::IgnitionROS2ControlPlugin"
                 filename="ign_ros2_control-system">
                 <parameters>$(find lbr_ros2_control)/config/lbr_controllers.yaml</parameters>
-                <robotNamespace>/${robot_name}</robotNamespace>
+                <ros>
+                    <namespace>/${robot_name}</namespace>
+                </ros>
             </plugin>
         </gazebo>
 

@@ -1,6 +1,6 @@
 from .launch_mixin import (
-    GazeboClassicMixin,
     GazeboMixin,
+    IgnitionGazeboMixin,
     LBRDescriptionMixin,
     RVizMixin,
 )

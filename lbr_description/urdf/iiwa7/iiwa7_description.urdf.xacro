@@ -283,7 +283,7 @@
 
         <link name="link_ee" />
 
-        <xacro:lbr_gazebo />
+        <xacro:lbr_gazebo robot_name="${robot_name}" />
         <!-- TODO: move modes to args, decouple urdf/gazebo/controls -->
         <xacro:lbr_system_interface
             A1_position_limit="${A1_position_limit * PI / 180}"
