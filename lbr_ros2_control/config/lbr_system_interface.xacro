@@ -110,10 +110,12 @@
             <xacro:macro name="joint_interface"
                 params="name min_position max_position max_velocity max_torque sim">
                 <joint name="${name}">
-                    <param name="min_position">${min_position}</param>
-                    <param name="max_position">${max_position}</param>
-                    <param name="max_velocity">${max_velocity}</param>
-                    <param name="max_torque">${max_torque}</param>
+                    <xacro:unless value="${sim}">
+                        <param name="min_position">${min_position}</param>
+                        <param name="max_position">${max_position}</param>
+                        <param name="max_velocity">${max_velocity}</param>
+                        <param name="max_torque">${max_torque}</param>
+                    </xacro:unless>
                     <command_interface name="position">
                         <param name="min">${min_position}</param>
                         <param name="max">${max_position}</param>
