@@ -1,14 +1,8 @@
 #include "lbr_fri_ros2/state_interface.hpp"
 
 namespace lbr_fri_ros2 {
-StateInterface::StateInterface(
-    const rclcpp::node_interfaces::NodeLoggingInterface::SharedPtr logging_interface_ptr,
-    const rclcpp::node_interfaces::NodeParametersInterface::SharedPtr parameters_interface_ptr)
-    : logging_interface_ptr_(logging_interface_ptr),
-      parameters_interface_ptr_(parameters_interface_ptr), state_initialized_(false),
-      external_torque_filter_(logging_interface_ptr, parameters_interface_ptr, "external_torque"),
-      measured_torque_filter_(logging_interface_ptr, parameters_interface_ptr, "measured_torque"),
-      filters_init_(false) {}
+StateInterface::StateInterface(const StateInterfaceParameters &state_interface_parameters)
+    : state_initialized_(false), parameters_(state_interface_parameters) {}
 
 void StateInterface::set_state(const_fri_state_t_ref state) {
   state_.client_command_mode = state.getClientCommandMode();
@@ -37,10 +31,9 @@ void StateInterface::set_state(const_fri_state_t_ref state) {
   state_.time_stamp_sec = state.getTimestampSec();
   state_.tracking_performance = state.getTrackingPerformance();
 
-  if (!filters_init_) {
-    // init after state_ is available
+  if (!external_torque_filter_.is_initialized() || !measured_torque_filter_.is_initialized()) {
+    // initialize once state_ is available
     init_filters_();
-    filters_init_ = true;
   }
   state_initialized_ = true;
 };
@@ -73,16 +66,25 @@ void StateInterface::set_state_open_loop(const_fri_state_t_ref state,
   state_.time_stamp_sec = state.getTimestampSec();
   state_.tracking_performance = state.getTrackingPerformance();
 
-  if (!filters_init_) {
-    // init after state_ is available
+  if (!external_torque_filter_.is_initialized() || !measured_torque_filter_.is_initialized()) {
+    // initialize once state_ is available
     init_filters_();
-    filters_init_ = true;
   }
   state_initialized_ = true;
 }
 
 void StateInterface::init_filters_() {
-  external_torque_filter_.init(10. /*Hz*/, state_.sample_time);
-  measured_torque_filter_.init(10. /*Hz*/, state_.sample_time);
+  external_torque_filter_.initialize(parameters_.external_torque_cutoff_frequency,
+                                     state_.sample_time);
+  measured_torque_filter_.initialize(parameters_.measured_torque_cutoff_frequency,
+                                     state_.sample_time);
+}
+
+void StateInterface::log_info() const {
+  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "*** Parameters:");
+  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "*   external_torque_cutoff_frequency: %.1f Hz",
+              parameters_.external_torque_cutoff_frequency);
+  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "*   measured_torque_cutoff_frequency: %.1f Hz",
+              parameters_.measured_torque_cutoff_frequency);
 }
 } // namespace lbr_fri_ros2

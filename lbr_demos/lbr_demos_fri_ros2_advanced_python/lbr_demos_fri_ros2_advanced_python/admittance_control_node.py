@@ -30,7 +30,9 @@ class AdmittanceControlNode(Node):
             LBRState, "/lbr/state", self.on_lbr_state_, 1
         )
         self.lbr_position_command_pub_ = self.create_publisher(
-            LBRPositionCommand, "/lbr/command/position", 1
+            LBRPositionCommand,
+            "/lbr/command/joint_position",
+            1,
         )
 
     def on_lbr_state_(self, lbr_state: LBRState) -> None:

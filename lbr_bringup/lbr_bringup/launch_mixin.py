@@ -54,7 +54,7 @@ class LBRMoveGroupMixin:
 
     @staticmethod
     def moveit_configs_builder(
-        robot_name: str, base_frame: str, package_name: str
+        robot_name: str, package_name: str
     ) -> MoveItConfigsBuilder:
         return (
             MoveItConfigsBuilder(
@@ -66,7 +66,6 @@ class LBRMoveGroupMixin:
                     get_package_share_directory("lbr_description"),
                     f"urdf/{robot_name}/{robot_name}.urdf.xacro",
                 ),
-                mappings={"base_frame": base_frame},
             )
             .planning_pipelines(default_planning_pipeline="ompl", pipelines=["ompl"])
         )

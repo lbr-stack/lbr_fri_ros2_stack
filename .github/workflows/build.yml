@@ -1,7 +1,6 @@
 name: Build
 
 on:
-  push:
   pull_request:
     branches:
       - humble
@@ -17,7 +16,7 @@ jobs:
       matrix:
         os: [ubuntu-latest]
     steps:
-      - uses: ros-tooling/setup-ros@v0.3
+      - uses: ros-tooling/setup-ros@v0.7
       - uses: ros-tooling/action-ros-ci@v0.2
         with:
           package-name: lbr_fri_ros2_stack

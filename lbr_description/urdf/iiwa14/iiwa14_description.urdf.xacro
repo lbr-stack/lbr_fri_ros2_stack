@@ -24,7 +24,7 @@
 
     <!-- includes -->
     <xacro:include filename="$(find lbr_description)/gazebo/lbr.gazebo.xacro" />
-    <xacro:include filename="$(find lbr_description)/ros2_control/lbr.ros2_control.xacro" />
+    <xacro:include filename="$(find lbr_ros2_control)/config/lbr_system_interface.xacro" />
 
     <!-- robot as extracted via https://github.com/syuntoku14/fusion2urdf -->
     <xacro:macro name="iiwa14"
@@ -285,14 +285,14 @@
         <xacro:lbr_gazebo />
         <!-- TODO: move modes to args, decouple urdf/gazebo/controls -->
         <xacro:lbr_system_interface
-            A1_position_limit="${A1_position_limit * PI / 180}"
-            A2_position_limit="${A2_position_limit * PI / 180}"
-            A3_position_limit="${A3_position_limit * PI / 180}"
-            A4_position_limit="${A4_position_limit * PI / 180}"
-            A5_position_limit="${A5_position_limit * PI / 180}"
-            A6_position_limit="${A6_position_limit * PI / 180}"
-            A7_position_limit="${A7_position_limit * PI / 180}"
-            effort_limit="${effort_limit}"
+            A1_velocity_limit="${A1_velocity_limit * PI / 180}"
+            A2_velocity_limit="${A2_velocity_limit * PI / 180}"
+            A3_velocity_limit="${A3_velocity_limit * PI / 180}"
+            A4_velocity_limit="${A4_velocity_limit * PI / 180}"
+            A5_velocity_limit="${A5_velocity_limit * PI / 180}"
+            A6_velocity_limit="${A6_velocity_limit * PI / 180}"
+            A7_velocity_limit="${A7_velocity_limit * PI / 180}"
+            max_torque="${effort_limit}"
             sim="${sim}" remote_host="INADDR_ANY" port_id="${port_id}" />
 
     </xacro:macro>

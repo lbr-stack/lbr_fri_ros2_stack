@@ -4,7 +4,7 @@ import rclpy
 from rclpy.node import Node
 
 # import lbr_fri_msgs
-from lbr_fri_msgs.msg import LBRTorqueCommand, LBRState
+from lbr_fri_msgs.msg import LBRState, LBRTorqueCommand
 
 
 class TorqueSineOverlayNode(Node):

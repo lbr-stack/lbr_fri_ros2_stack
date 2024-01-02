@@ -1,0 +1,24 @@
+cff-version: 1.2.0
+message: "If you enjoyed using this repository for your work, we would really appreciate ❤️ if you could cite it, as it helps us to continue offering support."
+authors:
+  - family-names: Huber
+    given-names: Martin
+    orcid: https://orcid.org/0000-0003-4603-6773
+  - family-names: Mower
+    given-names: Christopher E.
+    orcid: https://orcid.org/0000-0002-3929-9391
+  - family-names: Ourselin
+    given-names: Sebastien
+    orcid: https://orcid.org/0000-0002-5694-5340
+  - family-names: Vercauteren
+    given-names: Tom
+    orcid: https://orcid.org/0000-0003-1794-0456
+  - family-names: Bergeles
+    given-names: Christos
+    orcid: https://orcid.org/0000-0002-9152-3194
+
+
+title: "LBR-Stack: ROS 2 and Python Integration of KUKA FRI for Med and IIWA Robots"
+version: 1.4.2
+doi: 10.48550/arXiv.2311.12709
+date-released: 2023-12-29

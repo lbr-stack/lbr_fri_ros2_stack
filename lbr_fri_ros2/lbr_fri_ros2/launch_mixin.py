@@ -34,6 +34,54 @@ class LBRFRIROS2Mixin:
         )
 
     @staticmethod
+    def arg_pid_p() -> DeclareLaunchArgument:
+        return DeclareLaunchArgument(
+            name="pid.p",
+            default_value="1.0",
+            description="Joint position PID controller proportional gain.",
+        )
+
+    @staticmethod
+    def arg_pid_i() -> DeclareLaunchArgument:
+        return DeclareLaunchArgument(
+            name="pid.i",
+            default_value="0.0",
+            description="Joint position PID controller integral gain.",
+        )
+
+    @staticmethod
+    def arg_pid_d() -> DeclareLaunchArgument:
+        return DeclareLaunchArgument(
+            name="pid.d",
+            default_value="1.0",
+            description="Joint position PID controller derivative gain.",
+        )
+
+    @staticmethod
+    def arg_pid_i_max() -> DeclareLaunchArgument:
+        return DeclareLaunchArgument(
+            name="pid.i_max",
+            default_value="0.0",
+            description="Joint position PID controller maximum integral value.",
+        )
+
+    @staticmethod
+    def arg_pid_i_min() -> DeclareLaunchArgument:
+        return DeclareLaunchArgument(
+            name="pid.i_min",
+            default_value="0.0",
+            description="Joint position PID controller minimum integral value.",
+        )
+
+    @staticmethod
+    def arg_pid_antiwindup() -> DeclareLaunchArgument:
+        return DeclareLaunchArgument(
+            name="pid.antiwindup",
+            default_value="0.0",
+            description="Joint position PID controller antiwindup.",
+        )
+
+    @staticmethod
     def arg_port_id() -> DeclareLaunchArgument:
         return DeclareLaunchArgument(
             name="port_id",
@@ -57,6 +105,30 @@ class LBRFRIROS2Mixin:
     @staticmethod
     def param_rt_prio() -> Dict[str, LaunchConfiguration]:
         return {"rt_prio": LaunchConfiguration("rt_prio", default="80")}
+
+    @staticmethod
+    def param_pid_p() -> Dict[str, LaunchConfiguration]:
+        return {"pid.p": LaunchConfiguration("pid.p", default="1.0")}
+
+    @staticmethod
+    def param_pid_i() -> Dict[str, LaunchConfiguration]:
+        return {"pid.i": LaunchConfiguration("pid.i", default="0.0")}
+
+    @staticmethod
+    def param_pid_d() -> Dict[str, LaunchConfiguration]:
+        return {"pid.d": LaunchConfiguration("pid.d", default="0.0")}
+
+    @staticmethod
+    def param_pid_i_max() -> Dict[str, LaunchConfiguration]:
+        return {"pid.i_max": LaunchConfiguration("pid.i_max", default="0.0")}
+
+    @staticmethod
+    def param_pid_i_min() -> Dict[str, LaunchConfiguration]:
+        return {"pid.i_min": LaunchConfiguration("pid.i_min", default="0.0")}
+
+    @staticmethod
+    def param_pid_antiwindup() -> Dict[str, LaunchConfiguration]:
+        return {"pid.antiwindup": LaunchConfiguration("pid.antiwindup", default="0.0")}
 
     @staticmethod
     def param_port_id() -> Dict[str, LaunchConfiguration]:

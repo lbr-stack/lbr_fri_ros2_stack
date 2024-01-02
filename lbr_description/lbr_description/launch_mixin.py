@@ -93,15 +93,12 @@ class LBRDescriptionMixin:
     @staticmethod
     def param_robot_description(
         model: Optional[Union[LaunchConfiguration, str]] = None,
-        base_frame: Optional[Union[LaunchConfiguration, str]] = None,
         robot_name: Optional[Union[LaunchConfiguration, str]] = None,
         port_id: Optional[Union[LaunchConfiguration, str]] = None,
         sim: Optional[Union[LaunchConfiguration, bool]] = None,
     ) -> Dict[str, str]:
         if model is None:
             model = LaunchConfiguration("model", default="iiwa7")
-        if base_frame is None:
-            base_frame = LaunchConfiguration("base_frame", default="base_frame")
         if robot_name is None:
             robot_name = LaunchConfiguration("robot_name", default="lbr")
         if port_id is None:
@@ -124,8 +121,6 @@ class LBRDescriptionMixin:
                         ]
                     ),
                     ".urdf.xacro",
-                    " base_frame:=",
-                    base_frame,
                     " robot_name:=",
                     robot_name,
                     " port_id:=",
@@ -144,14 +139,6 @@ class LBRDescriptionMixin:
             default_value=default_value,
             description="The LBR model in use.",
             choices=["iiwa7", "iiwa14", "med7", "med14"],
-        )
-
-    @staticmethod
-    def arg_base_frame(default_value: str = "base_frame") -> DeclareLaunchArgument:
-        return DeclareLaunchArgument(
-            name="base_frame",
-            default_value=default_value,
-            description="The robot's base frame.",
         )
 
     @staticmethod
@@ -178,10 +165,6 @@ class LBRDescriptionMixin:
             default_value=default_value,
             description="Whether to use the simulation or not.",
         )
-
-    @staticmethod
-    def param_base_frame() -> Dict[str, LaunchConfiguration]:
-        return {"base_frame": LaunchConfiguration("base_frame", default="base_frame")}
 
     @staticmethod
     def param_robot_name() -> Dict[str, LaunchConfiguration]:

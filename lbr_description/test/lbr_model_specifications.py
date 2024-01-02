@@ -1,6 +1,8 @@
+from dataclasses import dataclass
 from typing import Dict, List, Type
 
 
+@dataclass
 class JointLimit:
     min_position: float
     max_position: float
@@ -17,6 +19,7 @@ class JointLimit:
         self.max_velocity = max_velocity
 
 
+@dataclass
 class LBRSpecification:
     dof: int
     name: str

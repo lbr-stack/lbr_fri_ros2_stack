@@ -1,19 +1,19 @@
 from launch import LaunchDescription
 from launch.actions import RegisterEventHandler
 from launch.event_handlers import OnProcessStart
+from launch.substitutions import LaunchConfiguration
 
 from lbr_description import LBRDescriptionMixin
-from lbr_ros2_control import LBRSystemInterfaceMixin
+from lbr_ros2_control import LBRROS2ControlMixin
 
 
-class LBRSystemInterface(LBRDescriptionMixin, LBRSystemInterfaceMixin):
+class LBRSystemInterface(LBRDescriptionMixin, LBRROS2ControlMixin):
     pass
 
 
 def generate_launch_description() -> LaunchDescription:
     ld = LaunchDescription()
     ld.add_action(LBRSystemInterface.arg_model())
-    ld.add_action(LBRSystemInterface.arg_base_frame())
     ld.add_action(LBRSystemInterface.arg_robot_name())
     ld.add_action(LBRSystemInterface.arg_port_id())
     robot_description = LBRSystemInterface.param_robot_description(sim=False)
@@ -24,12 +24,27 @@ def generate_launch_description() -> LaunchDescription:
         robot_description=robot_description
     )
     ld.add_action(ros2_control_node)
-    joint_state_broadcaster = LBRSystemInterface.node_joint_state_broadcaster()
-    controller = LBRSystemInterface.node_controller()
+    joint_state_broadcaster = LBRSystemInterface.node_controller_spawner(
+        controller="joint_state_broadcaster"
+    )
+    force_torque_broadcaster = LBRSystemInterface.node_controller_spawner(
+        controller="force_torque_broadcaster"
+    )
+    lbr_state_broadcaster = LBRSystemInterface.node_controller_spawner(
+        controller="lbr_state_broadcaster"
+    )
+    controller = LBRSystemInterface.node_controller_spawner(
+        controller=LaunchConfiguration("ctrl")
+    )
     controller_event_handler = RegisterEventHandler(
         OnProcessStart(
             target_action=ros2_control_node,
-            on_start=[joint_state_broadcaster, controller],
+            on_start=[
+                joint_state_broadcaster,
+                force_torque_broadcaster,
+                lbr_state_broadcaster,
+                controller,
+            ],
         )
     )
     ld.add_action(controller_event_handler)

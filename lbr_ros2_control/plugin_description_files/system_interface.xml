@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<library path="lbr_ros2_control">
+    <!-- LBR system interface plugin -->
+    <class type="lbr_ros2_control::SystemInterface"
+        base_class_type="hardware_interface::SystemInterface" />
+</library>
