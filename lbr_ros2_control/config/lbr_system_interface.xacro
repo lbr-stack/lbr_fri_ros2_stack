@@ -44,7 +44,7 @@
             <!-- define hardware including parameters, also gazebo -->
             <xacro:if value="${sim}">
                 <hardware>
-                    <plugin>gazebo_ros2_control/GazeboSystem</plugin>
+                    <plugin>ign_ros2_control/IgnitionSystem</plugin>
                 </hardware>
             </xacro:if>
             <xacro:unless value="${sim}">
@@ -110,6 +110,7 @@
             <xacro:macro name="joint_interface"
                 params="name min_position max_position max_velocity max_torque sim">
                 <joint name="${name}">
+                    <!-- parameters only used for real driver -->
                     <xacro:unless value="${sim}">
                         <param name="min_position">${min_position}</param>
                         <param name="max_position">${max_position}</param>
@@ -120,10 +121,14 @@
                         <param name="min">${min_position}</param>
                         <param name="max">${max_position}</param>
                     </command_interface>
-                    <command_interface name="effort">
-                        <param name="min">-${max_torque}</param>
-                        <param name="max"> ${max_torque}</param>
-                    </command_interface>
+                    <!-- only single command interface, refer
+                    https://github.com/ros-controls/gz_ros2_control/issues/182 -->
+                    <xacro:unless value="${sim}">
+                        <command_interface name="effort">
+                            <param name="min">-${max_torque}</param>
+                            <param name="max"> ${max_torque}</param>
+                        </command_interface>
+                    </xacro:unless>
                     <state_interface name="position" />
                     <state_interface name="velocity" />
                     <state_interface name="effort" />
