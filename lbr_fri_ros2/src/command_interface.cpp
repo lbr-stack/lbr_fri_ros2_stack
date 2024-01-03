@@ -66,7 +66,7 @@ void CommandInterface::get_torque_command(fri_command_t_ref command, const_fri_s
 
   // validate
   if (!command_guard_->is_valid_command(command_, state)) {
-    throw std::runtime_error("Invalid command.");
+    throw std::runtime_error("Invalid command");
   }
 
   // write joint position and torque to output

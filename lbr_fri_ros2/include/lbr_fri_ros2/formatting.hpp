@@ -1,11 +1,24 @@
-#ifndef LBR_FRI_ROS2__ENUM_MAPS_HPP_
-#define LBR_FRI_ROS2__ENUM_MAPS_HPP_
+#ifndef LBR_FRI_ROS2__FORMATTING_HPP_
+#define LBR_FRI_ROS2__FORMATTING_HPP_
 
 #include <string>
 
 #include "friLBRClient.h"
 
 namespace lbr_fri_ros2 {
+struct ColorScheme {
+  // refer https://stackoverflow.com/a/287944
+  static constexpr char HEADER[] = "\033[95m";
+  static constexpr char OKBLUE[] = "\033[94m";
+  static constexpr char OKCYAN[] = "\033[96m";
+  static constexpr char OKGREEN[] = "\033[92m";
+  static constexpr char WARNING[] = "\033[93m";
+  static constexpr char FAIL[] = "\033[91m";
+  static constexpr char ENDC[] = "\033[0m";
+  static constexpr char BOLD[] = "\033[1m";
+  static constexpr char UNDERLINE[] = "\033[4m";
+};
+
 struct EnumMaps {
   static std::string session_state_map(const int &session_state) {
     switch (session_state) {

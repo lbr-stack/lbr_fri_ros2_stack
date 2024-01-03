@@ -28,7 +28,7 @@ bool CommandGuard::is_valid_command(const_idl_command_t_ref lbr_command,
     }
     return true;
   default:
-    RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME), "Invalid EClientCommandMode provided.");
+    RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME), "Invalid EClientCommandMode provided");
     return false;
   }
   return false;
@@ -52,8 +52,8 @@ bool CommandGuard::command_in_position_limits_(const_idl_command_t_ref lbr_comma
     if (lbr_command.joint_position[i] < parameters_.min_position[i] ||
         lbr_command.joint_position[i] > parameters_.max_position[i]) {
       RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME),
-                   "Position command not in limits for joint '%s'.",
-                   parameters_.joint_names[i].c_str());
+                   "%sPosition command not in limits for joint '%s'%s", ColorScheme::FAIL,
+                   parameters_.joint_names[i].c_str(), ColorScheme::ENDC);
       return false;
     }
   }
@@ -66,8 +66,8 @@ bool CommandGuard::command_in_velocity_limits_(const_idl_command_t_ref lbr_comma
   for (std::size_t i = 0; i < lbr_command.joint_position[i]; ++i) {
     if (std::abs(lbr_command.joint_position[i] - lbr_state.getMeasuredJointPosition()[i]) / dt >
         parameters_.max_velocity[i]) {
-      RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME), "Velocity not in limits for joint '%s'.",
-                   parameters_.joint_names[i].c_str());
+      RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME), "%sVelocity not in limits for joint '%s'%s",
+                   ColorScheme::FAIL, parameters_.joint_names[i].c_str(), ColorScheme::ENDC);
       return false;
     }
   }
@@ -79,8 +79,9 @@ bool CommandGuard::command_in_torque_limits_(const_idl_command_t_ref lbr_command
   for (std::size_t i = 0; i < lbr_command.torque.size(); ++i) {
     if (std::abs(lbr_command.torque[i] + lbr_state.getExternalTorque()[i]) >
         parameters_.max_torque[i]) {
-      RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME), "Torque command not in limits for joint '%s'.",
-                   parameters_.joint_names[i].c_str());
+      RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME),
+                   "%sTorque command not in limits for joint '%s'%s", ColorScheme::FAIL,
+                   parameters_.joint_names[i].c_str(), ColorScheme::ENDC);
       return false;
     }
   }
@@ -95,8 +96,8 @@ bool SafeStopCommandGuard::command_in_position_limits_(const_idl_command_t_ref l
         lbr_command.joint_position[i] >
             parameters_.max_position[i] - parameters_.max_velocity[i] * lbr_state.getSampleTime()) {
       RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME),
-                   "Position command not in limits for joint '%s'.",
-                   parameters_.joint_names[i].c_str());
+                   "%sPosition command not in limits for joint '%s'%s", ColorScheme::FAIL,
+                   parameters_.joint_names[i].c_str(), ColorScheme::ENDC);
       return false;
     }
   }

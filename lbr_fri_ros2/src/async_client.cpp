@@ -8,20 +8,24 @@ AsyncClient::AsyncClient(const PIDParameters &pid_parameters,
                          const bool &open_loop)
     : command_interface_(pid_parameters, command_guard_parameters, command_guard_variant),
       state_interface_(state_interface_parameters), open_loop_(open_loop) {
-  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "Configuring client.");
-  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "Command guard variant: '%s'.",
+  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "%sConfiguring client%s", ColorScheme::OKBLUE,
+              ColorScheme::ENDC);
+  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "Command guard variant: '%s'",
               command_guard_variant.c_str());
   command_interface_.log_info();
   state_interface_.log_info();
-  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "Open loop: '%s'.", open_loop_ ? "true" : "false");
-  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "Client configured.");
+  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "Open loop: '%s'", open_loop_ ? "true" : "false");
+  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "%sClient configured%s", ColorScheme::OKGREEN,
+              ColorScheme::ENDC);
 }
 
 void AsyncClient::onStateChange(KUKA::FRI::ESessionState old_state,
                                 KUKA::FRI::ESessionState new_state) {
-  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "LBR switched from '%s' to '%s'.",
-              EnumMaps::session_state_map(old_state).c_str(),
-              EnumMaps::session_state_map(new_state).c_str());
+  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "LBR switched from '%s%s%s%s' to '%s%s%s%s'.",
+              ColorScheme::OKBLUE, ColorScheme::BOLD,
+              EnumMaps::session_state_map(old_state).c_str(), ColorScheme::ENDC,
+              ColorScheme::OKGREEN, ColorScheme::BOLD,
+              EnumMaps::session_state_map(new_state).c_str(), ColorScheme::ENDC);
   command_interface_.init_command(robotState());
 }
 
