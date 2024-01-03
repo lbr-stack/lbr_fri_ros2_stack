@@ -42,11 +42,49 @@ class GazeboMixin:
                 "robot_description",
                 "-entity",
                 LaunchConfiguration("robot_name"),
-                "-robot_namespace",
-                LaunchConfiguration("robot_name"),
             ],
             output="screen",
             namespace=LaunchConfiguration("robot_name"),
+            **kwargs,
+        )
+
+
+class IgnitionGazeboMixin:
+    # https://answers.gazebosim.org//question/28813/how-to-spawn-a-urdf-robot-into-a-ignition-gazebo-world-from-ros2/
+    @staticmethod
+    def include_gazebo(**kwargs) -> IncludeLaunchDescription:
+        return IncludeLaunchDescription(
+            PythonLaunchDescriptionSource(
+                PathJoinSubstitution(
+                    [
+                        FindPackageShare("ros_gz_sim"),
+                        "launch",
+                        "gz_sim.launch.py",
+                    ]
+                ),
+            ),
+            launch_arguments={"ign_args": "-r empty.sdf"}.items(),
+            **kwargs,
+        )
+
+    @staticmethod
+    def node_create(
+        robot_name: Optional[Union[LaunchConfiguration, str]] = None,
+        **kwargs,
+    ) -> Node:
+        if robot_name is None:
+            robot_name = LaunchConfiguration("robot_name")
+        return Node(
+            package="ros_gz_sim",
+            executable="create",
+            arguments=[
+                "-topic",
+                "robot_description",
+                "-name",
+                LaunchConfiguration("robot_name"),
+            ],
+            namespace=robot_name,
+            output="screen",
             **kwargs,
         )
 

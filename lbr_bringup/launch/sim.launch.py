@@ -12,7 +12,7 @@ from launch.substitutions import (
 )
 
 from lbr_bringup import LBRMoveGroupMixin
-from lbr_description import GazeboMixin, LBRDescriptionMixin, RVizMixin
+from lbr_description import IgnitionGazeboMixin, LBRDescriptionMixin, RVizMixin
 from lbr_ros2_control import LBRROS2ControlMixin
 
 
@@ -20,9 +20,11 @@ def launch_setup(context: LaunchContext) -> List[LaunchDescriptionEntity]:
     ld = LaunchDescription()
 
     robot_description = LBRDescriptionMixin.param_robot_description(sim=True)
-    ld.add_action(GazeboMixin.include_gazebo())  # Gazebo has its own controller manager
-    spawn_entity = GazeboMixin.node_spawn_entity()
-    ld.add_action(spawn_entity)
+    ld.add_action(
+        IgnitionGazeboMixin.include_gazebo()
+    )  # Gazebo has its own controller manager
+    create = IgnitionGazeboMixin.node_create()
+    ld.add_action(create)
     joint_state_broadcaster = LBRROS2ControlMixin.node_controller_spawner(
         controller="joint_state_broadcaster"
     )
@@ -99,6 +101,9 @@ def launch_setup(context: LaunchContext) -> List[LaunchDescriptionEntity]:
             ("display_planned_path", robot_name + "/display_planned_path"),
             ("joint_states", robot_name + "/joint_states"),
             ("monitored_planning_scene", robot_name + "/monitored_planning_scene"),
+            ("planning_scene", robot_name + "/planning_scene"),
+            ("planning_scene_world", robot_name + "/planning_scene_world"),
+            ("recognized_object_array", robot_name + "/recognized_object_array"),
             ("robot_description", robot_name + "/robot_description"),
             ("robot_description_semantic", robot_name + "/robot_description_semantic"),
         ],
@@ -118,7 +123,7 @@ def launch_setup(context: LaunchContext) -> List[LaunchDescriptionEntity]:
 
     # RViz event handler
     rviz_event_handler = RegisterEventHandler(
-        OnProcessExit(target_action=spawn_entity, on_exit=[rviz_moveit, rviz])
+        OnProcessExit(target_action=create, on_exit=[rviz_moveit, rviz])
     )
     ld.add_action(rviz_event_handler)
 

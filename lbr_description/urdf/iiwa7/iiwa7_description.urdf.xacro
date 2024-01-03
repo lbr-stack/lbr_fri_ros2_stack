@@ -281,8 +281,7 @@
             <origin xyz="0 0 0.035" rpy="0 0 0" />
         </joint>
 
-        <link name="link_ee">
-        </link>
+        <link name="link_ee" />
 
         <xacro:lbr_gazebo robot_name="${robot_name}" />
         <!-- TODO: move modes to args, decouple urdf/gazebo/controls -->
