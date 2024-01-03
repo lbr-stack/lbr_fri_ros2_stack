@@ -23,7 +23,7 @@ def launch_setup(context: LaunchContext) -> List[LaunchDescriptionEntity]:
     ld.add_action(
         IgnitionGazeboMixin.include_gazebo()
     )  # Gazebo has its own controller manager
-    create = IgnitionGazeboMixin.node_create(robot_description=robot_description)
+    create = IgnitionGazeboMixin.node_create()
     ld.add_action(create)
     joint_state_broadcaster = LBRROS2ControlMixin.node_controller_spawner(
         controller="joint_state_broadcaster"
