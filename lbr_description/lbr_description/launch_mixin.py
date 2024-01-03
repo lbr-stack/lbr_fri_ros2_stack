@@ -57,9 +57,9 @@ class IgnitionGazeboMixin:
             PythonLaunchDescriptionSource(
                 PathJoinSubstitution(
                     [
-                        FindPackageShare("ros_ign_gazebo"),
+                        FindPackageShare("ros_gz_sim"),
                         "launch",
-                        "ign_gazebo.launch.py",
+                        "gz_sim.launch.py",
                     ]
                 ),
             ),
@@ -68,13 +68,14 @@ class IgnitionGazeboMixin:
         )
 
     @staticmethod
-    def node_spawn_entity(
-        robot_name: Optional[Union[LaunchConfiguration, str]] = None, **kwargs
+    def node_create(
+        robot_name: Optional[Union[LaunchConfiguration, str]] = None,
+        **kwargs,
     ) -> Node:
         if robot_name is None:
             robot_name = LaunchConfiguration("robot_name")
         return Node(
-            package="ros_ign_gazebo",
+            package="ros_gz_sim",
             executable="create",
             arguments=[
                 "-topic",
