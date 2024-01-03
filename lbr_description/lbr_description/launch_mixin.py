@@ -78,15 +78,11 @@ class IgnitionGazeboMixin:
             executable="create",
             arguments=[
                 "-topic",
-                PathJoinSubstitution(
-                    [
-                        robot_name,
-                        "robot_description",
-                    ]
-                ),
+                "robot_description",
                 "-name",
                 LaunchConfiguration("robot_name"),
             ],
+            namespace=robot_name,
             output="screen",
             **kwargs,
         )
