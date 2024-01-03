@@ -8,6 +8,7 @@
                 <parameters>$(find lbr_ros2_control)/config/lbr_controllers.yaml</parameters>
                 <ros>
                     <namespace>/${robot_name}</namespace>
+                    <!-- remapping for controller manager inside Gazebo plugin -->
                     <remapping>~/robot_description:=robot_description</remapping>
                 </ros>
             </plugin>
