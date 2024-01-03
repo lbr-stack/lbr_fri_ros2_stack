@@ -57,13 +57,13 @@ class IgnitionGazeboMixin:
             PythonLaunchDescriptionSource(
                 PathJoinSubstitution(
                     [
-                        FindPackageShare("ros_gz_sim"),
+                        FindPackageShare("ros_ign_gazebo"),
                         "launch",
-                        "gz_sim.launch.py",
+                        "ign_gazebo.launch.py",
                     ]
                 ),
             ),
-            launch_arguments={"gz_args": "-r empty.sdf"}.items(),
+            launch_arguments={"ign_args": "-r empty.sdf"}.items(),
             **kwargs,
         )
 
@@ -74,7 +74,7 @@ class IgnitionGazeboMixin:
         if robot_name is None:
             robot_name = LaunchConfiguration("robot_name")
         return Node(
-            package="ros_gz_sim",
+            package="ros_ign_gazebo",
             executable="create",
             arguments=[
                 "-topic",
