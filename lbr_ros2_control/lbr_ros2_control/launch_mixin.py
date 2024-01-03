@@ -47,7 +47,6 @@ class LBRROS2ControlMixin:
 
     @staticmethod
     def node_ros2_control(
-        robot_description: Dict[str, str],
         robot_name: Optional[Union[LaunchConfiguration, str]] = LaunchConfiguration(
             "robot_name", default="lbr"
         ),
@@ -70,9 +69,11 @@ class LBRROS2ControlMixin:
                         ),
                     ]
                 ),
-                robot_description,
             ],
             namespace=robot_name,
+            remappings=[
+                ("~/robot_description", "robot_description"),
+            ],
             **kwargs,
         )
 

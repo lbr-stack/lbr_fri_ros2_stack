@@ -3,7 +3,7 @@ from typing import List
 from launch import LaunchContext, LaunchDescription, LaunchDescriptionEntity
 from launch.actions import DeclareLaunchArgument, OpaqueFunction, RegisterEventHandler
 from launch.conditions import IfCondition
-from launch.event_handlers import OnProcessExit, OnProcessStart
+from launch.event_handlers import OnProcessStart
 from launch.substitutions import (
     AndSubstitution,
     LaunchConfiguration,
@@ -20,9 +20,15 @@ def launch_setup(context: LaunchContext) -> List[LaunchDescriptionEntity]:
     ld = LaunchDescription()
 
     robot_description = LBRDescriptionMixin.param_robot_description(sim=False)
-    ros2_control_node = LBRROS2ControlMixin.node_ros2_control(
-        robot_description=robot_description
+
+    # robot state publisher
+    robot_state_publisher = LBRROS2ControlMixin.node_robot_state_publisher(
+        robot_description=robot_description, use_sim_time=False
     )
+    ld.add_action(robot_state_publisher)
+
+    # ros2 control node
+    ros2_control_node = LBRROS2ControlMixin.node_ros2_control()
     ld.add_action(ros2_control_node)
 
     # joint state broad caster and controller on ros2 control node start
@@ -51,17 +57,6 @@ def launch_setup(context: LaunchContext) -> List[LaunchDescriptionEntity]:
         )
     )
     ld.add_action(controller_event_handler)
-
-    # robot state publisher on joint state broadcaster spawn exit
-    robot_state_publisher = LBRROS2ControlMixin.node_robot_state_publisher(
-        robot_description=robot_description, use_sim_time=False
-    )
-    robot_state_publisher_event_handler = RegisterEventHandler(
-        OnProcessExit(
-            target_action=joint_state_broadcaster, on_exit=[robot_state_publisher]
-        )
-    )
-    ld.add_action(robot_state_publisher_event_handler)
 
     # MoveIt 2
     ld.add_action(LBRMoveGroupMixin.arg_allow_trajectory_execution())
@@ -142,7 +137,7 @@ def launch_setup(context: LaunchContext) -> List[LaunchDescriptionEntity]:
     # RViz event handler
     rviz_event_handler = RegisterEventHandler(
         OnProcessStart(
-            target_action=robot_state_publisher, on_start=[rviz_moveit, rviz]
+            target_action=joint_state_broadcaster, on_start=[rviz_moveit, rviz]
         )
     )
     ld.add_action(rviz_event_handler)
