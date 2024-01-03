@@ -43,8 +43,6 @@ class GazeboMixin:
                 "robot_description",
                 "-entity",
                 robot_name,
-                "-robot_namespace",
-                robot_name,
             ],
             output="screen",
             namespace=robot_name,
