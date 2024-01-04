@@ -20,6 +20,7 @@ def launch_setup(context: LaunchContext) -> List[LaunchDescriptionEntity]:
     ld = LaunchDescription()
 
     robot_description = LBRDescriptionMixin.param_robot_description(sim=False)
+    world_robot_tf = [0, 0, 0, 0, 0, 0]  # keep zero
 
     # robot state publisher
     robot_state_publisher = LBRROS2ControlMixin.node_robot_state_publisher(
@@ -72,7 +73,7 @@ def launch_setup(context: LaunchContext) -> List[LaunchDescriptionEntity]:
     robot_name = LaunchConfiguration("robot_name").perform(context)
     ld.add_action(
         LBRDescriptionMixin.node_static_tf(
-            tf=[0, 0, 0, 0, 0, 0],  # keep zero
+            tf=world_robot_tf,
             parent="world",
             child=PathJoinSubstitution(
                 [
