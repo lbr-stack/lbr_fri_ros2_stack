@@ -1,5 +1,7 @@
 LBR Bringup
 ===========
+TODO: Mention different controllers here already
+
 The ``lbr_bringup`` works for the simulation and the real robot. Run:
 
 .. code:: bash
