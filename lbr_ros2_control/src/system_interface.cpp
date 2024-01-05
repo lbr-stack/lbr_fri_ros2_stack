@@ -209,10 +209,19 @@ controller_interface::CallbackReturn SystemInterface::on_activate(const rclcpp_l
   uint8_t attempt = 0;
   while (!async_client_ptr_->get_state_interface().is_initialized() && rclcpp::ok()) {
     RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME),
-                "Waiting for robot heartbeat. Attempt: %d, port id: %s%s%d%s", ++attempt,
-                lbr_fri_ros2::ColorScheme::OKBLUE, lbr_fri_ros2::ColorScheme::BOLD,
-                parameters_.port_id, lbr_fri_ros2::ColorScheme::ENDC);
+                "Awaiting robot heartbeat. Attempt: %d, remote host: %s%s%s%s, port id: %s%s%d%s",
+                ++attempt, lbr_fri_ros2::ColorScheme::OKBLUE, lbr_fri_ros2::ColorScheme::BOLD,
+                parameters_.remote_host == NULL ? "INADDR_ANY" : parameters_.remote_host,
+                lbr_fri_ros2::ColorScheme::ENDC, lbr_fri_ros2::ColorScheme::OKBLUE,
+                lbr_fri_ros2::ColorScheme::BOLD, parameters_.port_id,
+                lbr_fri_ros2::ColorScheme::ENDC);
     std::this_thread::sleep_for(std::chrono::seconds(1));
+  }
+  if (!async_client_ptr_->get_state_interface()
+           .is_initialized()) { // check connection should rclcpp::ok() fail
+    RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME), "%sFailed to connect%s",
+                 lbr_fri_ros2::ColorScheme::FAIL, lbr_fri_ros2::ColorScheme::ENDC);
+    return controller_interface::CallbackReturn::ERROR;
   }
   RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "%sRobot connected%s",
               lbr_fri_ros2::ColorScheme::OKGREEN, lbr_fri_ros2::ColorScheme::ENDC);

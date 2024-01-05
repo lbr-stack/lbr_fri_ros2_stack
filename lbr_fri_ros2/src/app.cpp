@@ -91,9 +91,7 @@ void App::run(int rt_prio) {
                     ColorScheme::ENDC);
       }
     } else {
-      RCLCPP_WARN(rclcpp::get_logger(LOGGER_NAME),
-                  "%sRealtime kernel recommended but not required%s", ColorScheme::WARNING,
-                  ColorScheme::ENDC);
+      RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "Realtime kernel recommended but not required");
     }
 
     RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "Starting run thread");
