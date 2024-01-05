@@ -17,7 +17,7 @@ App::~App() {
 bool App::open_udp_socket(const int &port_id, const char *const remote_host) {
   if (!connection_ptr_) {
     RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME),
-                        ColorScheme::FAIL << "Connection not configured" << ColorScheme::ENDC);
+                        ColorScheme::ERROR << "Connection not configured" << ColorScheme::ENDC);
     return false;
   }
   RCLCPP_INFO_STREAM(rclcpp::get_logger(LOGGER_NAME),
@@ -32,7 +32,7 @@ bool App::open_udp_socket(const int &port_id, const char *const remote_host) {
   }
   if (!connection_ptr_->open(port_id, remote_host)) {
     RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME),
-                        ColorScheme::FAIL << "Failed to open socket" << ColorScheme::ENDC);
+                        ColorScheme::ERROR << "Failed to open socket" << ColorScheme::ENDC);
     return false;
   }
   RCLCPP_INFO_STREAM(rclcpp::get_logger(LOGGER_NAME),
@@ -43,7 +43,7 @@ bool App::open_udp_socket(const int &port_id, const char *const remote_host) {
 bool App::close_udp_socket() {
   if (!connection_ptr_) {
     RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME),
-                        ColorScheme::FAIL << "Connection not configured" << ColorScheme::ENDC);
+                        ColorScheme::ERROR << "Connection not configured" << ColorScheme::ENDC);
     return false;
   }
   RCLCPP_INFO_STREAM(rclcpp::get_logger(LOGGER_NAME),
@@ -61,22 +61,22 @@ bool App::close_udp_socket() {
 void App::run(int rt_prio) {
   if (!async_client_ptr_) {
     RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME),
-                        ColorScheme::FAIL << "AsyncClient not configured" << ColorScheme::ENDC);
+                        ColorScheme::ERROR << "AsyncClient not configured" << ColorScheme::ENDC);
     return;
   }
   if (!connection_ptr_) {
     RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME),
-                        ColorScheme::FAIL << "Connection not configured" << ColorScheme::ENDC);
+                        ColorScheme::ERROR << "Connection not configured" << ColorScheme::ENDC);
     return;
   }
   if (!connection_ptr_->isOpen()) {
     RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME),
-                        ColorScheme::FAIL << "Connection not open" << ColorScheme::ENDC);
+                        ColorScheme::ERROR << "Connection not open" << ColorScheme::ENDC);
     return;
   }
   if (!app_ptr_) {
     RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME),
-                        ColorScheme::FAIL << "App not configured" << ColorScheme::ENDC);
+                        ColorScheme::ERROR << "App not configured" << ColorScheme::ENDC);
     return;
   }
   if (running_) {
@@ -121,9 +121,9 @@ void App::stop_run() {
 bool App::valid_port_(const int &port_id) {
   if (port_id < 30200 || port_id > 30209) {
     RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME),
-                        ColorScheme::FAIL << "Expected port_id in [30200, 30209], got '"
-                                          << ColorScheme::BOLD << port_id << "'"
-                                          << ColorScheme::ENDC);
+                        ColorScheme::ERROR << "Expected port_id in [30200, 30209], got '"
+                                           << ColorScheme::BOLD << port_id << "'"
+                                           << ColorScheme::ENDC);
     return false;
   }
   return true;

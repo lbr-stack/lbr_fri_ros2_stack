@@ -69,7 +69,7 @@ void AsyncClient::command() {
     std::string err =
         "Unsupported command mode '" + std::to_string(robotState().getClientCommandMode()) + "'";
     RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME),
-                        ColorScheme::FAIL << err << ColorScheme::ENDC);
+                        ColorScheme::ERROR << err << ColorScheme::ENDC);
     throw std::runtime_error(err);
   }
 }

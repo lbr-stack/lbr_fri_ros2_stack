@@ -13,7 +13,7 @@ struct ColorScheme {
   static constexpr char OKCYAN[] = "\033[96m";
   static constexpr char OKGREEN[] = "\033[92m";
   static constexpr char WARNING[] = "\033[93m";
-  static constexpr char FAIL[] = "\033[91m";
+  static constexpr char ERROR[] = "\033[91m";
   static constexpr char ENDC[] = "\033[0m";
   static constexpr char BOLD[] = "\033[1m";
   static constexpr char UNDERLINE[] = "\033[4m";
