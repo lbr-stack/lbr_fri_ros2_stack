@@ -76,9 +76,10 @@ SystemInterface::on_init(const hardware_interface::HardwareInfo &system_info) {
         state_interface_parameters, parameters_.open_loop);
     app_ptr_ = std::make_unique<lbr_fri_ros2::App>(async_client_ptr_);
   } catch (const std::exception &e) {
-    RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME), lbr_fri_ros2::ColorScheme::ERROR
-                                                             << e.what()
-                                                             << lbr_fri_ros2::ColorScheme::ENDC);
+    RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME),
+                        lbr_fri_ros2::ColorScheme::ERROR
+                            << "Failed to instantiate AsyncClient or App with: " << e.what()
+                            << lbr_fri_ros2::ColorScheme::ENDC);
     return controller_interface::CallbackReturn::ERROR;
   }
 
