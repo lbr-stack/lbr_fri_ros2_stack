@@ -16,7 +16,7 @@ setup(
     install_requires=["setuptools"],
     zip_safe=True,
     maintainer="mhubii",
-    maintainer_email="martin.huber@kcl.ac.uk",
+    maintainer_email="m.huber_1994@hotmail.de",
     description="Standalone Python demos for the LBR.",
     license="MIT",
     tests_require=["pytest"],

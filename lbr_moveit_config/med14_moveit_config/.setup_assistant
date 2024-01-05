@@ -6,7 +6,7 @@ moveit_setup_assistant_config:
     relative_path: config/med14.srdf
   package_settings:
     author_name: mhubii
-    author_email: martin.huber@kcl.ac.uk
+    author_email: m.huber_1994@hotmail.de
     generated_timestamp: 1690640936
   control_xacro:
     command:

@@ -4,7 +4,7 @@
   <name>lbr_demos_fri_ros2_advanced_python</name>
   <version>1.4.2</version>
   <description>Advanced Python demos for the lbr_fri_ros2.</description>
-  <maintainer email="martin.huber@kcl.ac.uk">mhubii</maintainer>
+  <maintainer email="m.huber_1994@hotmail.de">mhubii</maintainer>
   <license>MIT</license>
 
   <exec_depend>lbr_description</exec_depend>

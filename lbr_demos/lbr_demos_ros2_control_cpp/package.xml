@@ -4,7 +4,7 @@
   <name>lbr_demos_ros2_control_cpp</name>
   <version>1.4.2</version>
   <description>C++ demos for the LBR ros2_control integration.</description>
-  <maintainer email="martin.huber@kcl.ac.uk">mhubii</maintainer>
+  <maintainer email="m.huber_1994@hotmail.de">mhubii</maintainer>
   <license>MIT</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
