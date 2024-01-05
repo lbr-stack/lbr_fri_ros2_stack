@@ -120,7 +120,8 @@ command_guard_factory(const CommandGuardParameters &command_guard_parameters,
     return std::make_unique<SafeStopCommandGuard>(command_guard_parameters);
   }
   std::string err = "Invalid CommandGuard variant provided.";
-  RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME), err.c_str());
+  RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME),
+                      ColorScheme::ERROR << err.c_str() << ColorScheme::ENDC);
   throw std::runtime_error(err);
 }
 } // end of namespace lbr_fri_ros2
