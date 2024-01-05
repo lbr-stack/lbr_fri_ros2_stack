@@ -28,9 +28,7 @@ void AsyncClient::onStateChange(KUKA::FRI::ESessionState old_state,
                          << EnumMaps::session_state_map(old_state).c_str() << ColorScheme::ENDC
                          << "' to '" << ColorScheme::OKGREEN << ColorScheme::BOLD
                          << EnumMaps::session_state_map(new_state).c_str() << ColorScheme::ENDC
-                         << "'. Control mode '" << ColorScheme::OKBLUE << ColorScheme::BOLD
-                         << EnumMaps::control_mode_map(robotState().getControlMode())
-                         << ColorScheme::ENDC << "'");
+                         << "'");
   command_interface_.init_command(robotState());
 }
 
