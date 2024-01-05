@@ -26,7 +26,13 @@ def generate_launch_description() -> LaunchDescription:
     )
     ld.add_action(robot_state_publisher)
     ros2_control_node = LBRSystemInterface.node_ros2_control()
-    ld.add_action(ros2_control_node)
+    ros2_control_node_event_handler = RegisterEventHandler(
+        OnProcessStart(
+            target_action=robot_state_publisher,
+            on_start=[ros2_control_node],
+        )
+    )
+    ld.add_action(ros2_control_node_event_handler)
     joint_state_broadcaster = LBRSystemInterface.node_controller_spawner(
         controller="joint_state_broadcaster"
     )
