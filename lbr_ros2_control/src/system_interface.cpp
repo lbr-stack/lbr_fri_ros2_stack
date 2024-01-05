@@ -219,7 +219,7 @@ controller_interface::CallbackReturn SystemInterface::on_activate(const rclcpp_l
   }
   if (!async_client_ptr_->get_state_interface()
            .is_initialized()) { // check connection should rclcpp::ok() fail
-    RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "%sFailed to connect%s");
+    RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "Failed to connect");
     return controller_interface::CallbackReturn::ERROR;
   }
   RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "%sRobot connected%s",
