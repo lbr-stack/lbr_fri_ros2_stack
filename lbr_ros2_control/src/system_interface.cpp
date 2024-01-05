@@ -5,18 +5,20 @@ controller_interface::CallbackReturn
 SystemInterface::on_init(const hardware_interface::HardwareInfo &system_info) {
   auto ret = hardware_interface::SystemInterface::on_init(system_info);
   if (ret != controller_interface::CallbackReturn::SUCCESS) {
-    RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME), "%sFailed to initialize SystemInterface%s",
-                 lbr_fri_ros2::ColorScheme::FAIL, lbr_fri_ros2::ColorScheme::ENDC);
+    RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME),
+                        lbr_fri_ros2::ColorScheme::FAIL << "Failed to initialize SystemInterface"
+                                                        << lbr_fri_ros2::ColorScheme::ENDC);
     return ret;
   }
 
   // parameters_ from config/lbr_system_interface.xacro
   parameters_.port_id = std::stoul(info_.hardware_parameters["port_id"]);
   if (parameters_.port_id < 30200 || parameters_.port_id > 30209) {
-    RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME),
-                 "%sExpected port_id in [30200, 30209]. Found %s%d%s",
-                 lbr_fri_ros2::ColorScheme::FAIL, lbr_fri_ros2::ColorScheme::BOLD,
-                 parameters_.port_id, lbr_fri_ros2::ColorScheme::ENDC);
+    RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME),
+                        lbr_fri_ros2::ColorScheme::FAIL
+                            << "Expected port_id in [30200, 30209], got '"
+                            << lbr_fri_ros2::ColorScheme::BOLD << parameters_.port_id << "'"
+                            << lbr_fri_ros2::ColorScheme::ENDC);
     return controller_interface::CallbackReturn::ERROR;
   }
   info_.hardware_parameters["remote_host"] == "INADDR_ANY"
@@ -198,23 +200,26 @@ SystemInterface::prepare_command_mode_switch(const std::vector<std::string> & /*
 
 controller_interface::CallbackReturn SystemInterface::on_activate(const rclcpp_lifecycle::State &) {
   if (!async_client_ptr_) {
-    RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME), "%sAsyncClient not configured%s",
-                 lbr_fri_ros2::ColorScheme::FAIL, lbr_fri_ros2::ColorScheme::ENDC);
+    RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME), lbr_fri_ros2::ColorScheme::FAIL
+                                                             << "AsyncClient not configured"
+                                                             << lbr_fri_ros2::ColorScheme::ENDC);
     return controller_interface::CallbackReturn::ERROR;
   }
   if (!app_ptr_->open_udp_socket(parameters_.port_id, parameters_.remote_host)) {
     return controller_interface::CallbackReturn::ERROR;
   }
   app_ptr_->run(parameters_.rt_prio);
-  uint8_t attempt = 0;
+  int attempt = 0;
   while (!async_client_ptr_->get_state_interface().is_initialized() && rclcpp::ok()) {
-    RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME),
-                "Awaiting robot heartbeat. Attempt: %d, remote host: %s%s%s%s, port id: %s%s%d%s",
-                ++attempt, lbr_fri_ros2::ColorScheme::OKBLUE, lbr_fri_ros2::ColorScheme::BOLD,
-                parameters_.remote_host == NULL ? "INADDR_ANY" : parameters_.remote_host,
-                lbr_fri_ros2::ColorScheme::ENDC, lbr_fri_ros2::ColorScheme::OKBLUE,
-                lbr_fri_ros2::ColorScheme::BOLD, parameters_.port_id,
-                lbr_fri_ros2::ColorScheme::ENDC);
+    RCLCPP_INFO_STREAM(
+        rclcpp::get_logger(LOGGER_NAME),
+        "Awaiting robot heartbeat. Attempt "
+            << ++attempt << ", remote_host '" << lbr_fri_ros2::ColorScheme::OKBLUE
+            << lbr_fri_ros2::ColorScheme::BOLD
+            << (parameters_.remote_host == NULL ? "INADDR_ANY" : parameters_.remote_host)
+            << lbr_fri_ros2::ColorScheme::ENDC << "', port_id '"
+            << lbr_fri_ros2::ColorScheme::OKBLUE << lbr_fri_ros2::ColorScheme::BOLD
+            << parameters_.port_id << "'" << lbr_fri_ros2::ColorScheme::ENDC);
     std::this_thread::sleep_for(std::chrono::seconds(1));
   }
   if (!async_client_ptr_->get_state_interface()
@@ -222,11 +227,14 @@ controller_interface::CallbackReturn SystemInterface::on_activate(const rclcpp_l
     RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "Failed to connect");
     return controller_interface::CallbackReturn::ERROR;
   }
-  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "%sRobot connected%s",
-              lbr_fri_ros2::ColorScheme::OKGREEN, lbr_fri_ros2::ColorScheme::ENDC);
-  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "Control mode: '%s'",
-              lbr_fri_ros2::EnumMaps::control_mode_map(hw_lbr_state_.control_mode).c_str());
-  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "Sample time: %.3f s / %.1f Hz",
+  RCLCPP_INFO_STREAM(rclcpp::get_logger(LOGGER_NAME), lbr_fri_ros2::ColorScheme::OKGREEN
+                                                          << "Robot connected"
+                                                          << lbr_fri_ros2::ColorScheme::ENDC);
+  RCLCPP_INFO_STREAM(
+      rclcpp::get_logger(LOGGER_NAME),
+      "Control mode '"
+          << lbr_fri_ros2::EnumMaps::control_mode_map(hw_lbr_state_.control_mode).c_str() << "'");
+  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "Sample time %.3f s / %.1f Hz",
               async_client_ptr_->get_state_interface().get_state().sample_time,
               1. / async_client_ptr_->get_state_interface().get_state().sample_time);
   return controller_interface::CallbackReturn::SUCCESS;
@@ -246,9 +254,10 @@ hardware_interface::return_type SystemInterface::read(const rclcpp::Time & /*tim
   // exit once robot exits COMMANDING_ACTIVE (for safety)
   if (exit_commanding_active_(static_cast<KUKA::FRI::ESessionState>(hw_session_state_),
                               static_cast<KUKA::FRI::ESessionState>(hw_lbr_state_.session_state))) {
-    RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME),
-                 "%sLBR left COMMANDING_ACTIVE. Please re-run lbr_bringup%s",
-                 lbr_fri_ros2::ColorScheme::FAIL, lbr_fri_ros2::ColorScheme::ENDC);
+    RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME),
+                        lbr_fri_ros2::ColorScheme::FAIL
+                            << "LBR left COMMANDING_ACTIVE. Please re-run lbr_bringup"
+                            << lbr_fri_ros2::ColorScheme::ENDC);
     app_ptr_->stop_run();
     app_ptr_->close_udp_socket();
     return hardware_interface::return_type::ERROR;
@@ -343,9 +352,11 @@ void SystemInterface::nan_state_interfaces_() {
 
 bool SystemInterface::verify_number_of_joints_() {
   if (info_.joints.size() != KUKA::FRI::LBRState::NUMBER_OF_JOINTS) {
-    RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME), "%sExpected %d joints in URDF. Found %ld%s",
-                 lbr_fri_ros2::ColorScheme::FAIL, KUKA::FRI::LBRState::NUMBER_OF_JOINTS,
-                 info_.joints.size(), lbr_fri_ros2::ColorScheme::ENDC);
+    RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME),
+                        lbr_fri_ros2::ColorScheme::FAIL
+                            << "Expected '" << KUKA::FRI::LBRState::NUMBER_OF_JOINTS
+                            << "' joints in URDF, got '" << info_.joints.size() << "'"
+                            << lbr_fri_ros2::ColorScheme::ENDC);
     return false;
   }
   return true;
@@ -355,21 +366,25 @@ bool SystemInterface::verify_joint_command_interfaces_() {
   // check command interfaces
   for (auto &joint : info_.joints) {
     if (joint.command_interfaces.size() != LBR_FRI_COMMAND_INTERFACE_SIZE) {
-      RCLCPP_ERROR(
-          rclcpp::get_logger(LOGGER_NAME),
-          "%sJoint %s received invalid number of command interfaces. Received %ld, expected %d%s",
-          lbr_fri_ros2::ColorScheme::FAIL, joint.name.c_str(), joint.command_interfaces.size(),
-          LBR_FRI_COMMAND_INTERFACE_SIZE, lbr_fri_ros2::ColorScheme::ENDC);
+      RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME),
+                          lbr_fri_ros2::ColorScheme::FAIL
+                              << "Joint '" << joint.name.c_str()
+                              << "' received invalid number of command interfaces. Received '"
+                              << joint.command_interfaces.size() << "', expected "
+                              << static_cast<int>(LBR_FRI_COMMAND_INTERFACE_SIZE)
+                              << lbr_fri_ros2::ColorScheme::ENDC);
       return false;
     }
     for (auto &ci : joint.command_interfaces) {
       if (ci.name != hardware_interface::HW_IF_POSITION &&
           ci.name != hardware_interface::HW_IF_EFFORT) {
-        RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME),
-                     "%sJoint %s received invalid command interface: %s. Expected %s or %s%s",
-                     lbr_fri_ros2::ColorScheme::FAIL, joint.name.c_str(), ci.name.c_str(),
-                     hardware_interface::HW_IF_POSITION, hardware_interface::HW_IF_EFFORT,
-                     lbr_fri_ros2::ColorScheme::ENDC);
+        RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME),
+                            lbr_fri_ros2::ColorScheme::FAIL
+                                << "Joint '" << joint.name.c_str()
+                                << "' received invalid command interface '" << ci.name.c_str()
+                                << "'. Expected '" << hardware_interface::HW_IF_POSITION << "' or '"
+                                << hardware_interface::HW_IF_EFFORT << "'"
+                                << lbr_fri_ros2::ColorScheme::ENDC);
         return false;
       }
     }
@@ -381,11 +396,13 @@ bool SystemInterface::verify_joint_state_interfaces_() {
   // check state interfaces
   for (auto &joint : info_.joints) {
     if (joint.state_interfaces.size() != LBR_FRI_STATE_INTERFACE_SIZE) {
-      RCLCPP_ERROR(
-          rclcpp::get_logger(LOGGER_NAME),
-          "%sJoint %s received invalid number of state interfaces. Received %ld, expected %d%s",
-          lbr_fri_ros2::ColorScheme::FAIL, joint.name.c_str(), joint.state_interfaces.size(),
-          LBR_FRI_STATE_INTERFACE_SIZE, lbr_fri_ros2::ColorScheme::ENDC);
+      RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME),
+                          lbr_fri_ros2::ColorScheme::FAIL
+                              << "Joint '" << joint.name.c_str()
+                              << "' received invalid number of state interfaces. Received '"
+                              << joint.state_interfaces.size() << "', expected '"
+                              << static_cast<int>(LBR_FRI_STATE_INTERFACE_SIZE) << "'"
+                              << lbr_fri_ros2::ColorScheme::ENDC);
       return false;
     }
     for (auto &si : joint.state_interfaces) {
@@ -394,14 +411,15 @@ bool SystemInterface::verify_joint_state_interfaces_() {
           si.name != hardware_interface::HW_IF_EFFORT && si.name != HW_IF_COMMANDED_TORQUE &&
           si.name != HW_IF_EXTERNAL_TORQUE && si.name != HW_IF_IPO_JOINT_POSITION &&
           si.name != hardware_interface::HW_IF_VELOCITY) {
-        RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME),
-                     "%sJoint %s received invalid state interface: %s. Expected %s, %s, %s, %s, "
-                     "%s, %s or %s%s",
-                     lbr_fri_ros2::ColorScheme::FAIL, joint.name.c_str(), si.name.c_str(),
-                     hardware_interface::HW_IF_POSITION, HW_IF_COMMANDED_JOINT_POSITION,
-                     hardware_interface::HW_IF_EFFORT, HW_IF_COMMANDED_TORQUE,
-                     HW_IF_EXTERNAL_TORQUE, HW_IF_IPO_JOINT_POSITION,
-                     hardware_interface::HW_IF_VELOCITY, lbr_fri_ros2::ColorScheme::ENDC);
+        RCLCPP_ERROR_STREAM(
+            rclcpp::get_logger(LOGGER_NAME),
+            lbr_fri_ros2::ColorScheme::FAIL
+                << "Joint '" << joint.name.c_str() << "' received invalid state interface '"
+                << si.name.c_str() << "'. Expected one of '" << hardware_interface::HW_IF_POSITION
+                << "', '" << HW_IF_COMMANDED_JOINT_POSITION << "', '"
+                << hardware_interface::HW_IF_EFFORT << "', '" << HW_IF_COMMANDED_TORQUE << "', '"
+                << HW_IF_EXTERNAL_TORQUE << "', '" << HW_IF_IPO_JOINT_POSITION << "' or '"
+                << hardware_interface::HW_IF_VELOCITY << "'" << lbr_fri_ros2::ColorScheme::ENDC);
         return false;
       }
     }
@@ -412,9 +430,11 @@ bool SystemInterface::verify_joint_state_interfaces_() {
 bool SystemInterface::verify_sensors_() {
   // check lbr specific state interfaces
   if (info_.sensors.size() != LBR_FRI_SENSORS) {
-    RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME), "%sExpected %d sensor, got %ld%s",
-                 lbr_fri_ros2::ColorScheme::FAIL, LBR_FRI_SENSORS, info_.sensors.size(),
-                 lbr_fri_ros2::ColorScheme::ENDC);
+    RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME),
+                        lbr_fri_ros2::ColorScheme::FAIL
+                            << "Expected '" << static_cast<int>(LBR_FRI_SENSORS)
+                            << "' sensors, got '" << info_.sensors.size() << "'"
+                            << lbr_fri_ros2::ColorScheme::ENDC);
     return false;
   }
   if (!verify_auxiliary_sensor_()) {
@@ -430,11 +450,13 @@ bool SystemInterface::verify_auxiliary_sensor_() {
   // check all interfaces are defined in config/lbr_system_interface.xacro
   const auto &auxiliary_sensor = info_.sensors[0];
   if (auxiliary_sensor.state_interfaces.size() != AUXILIARY_SENSOR_SIZE) {
-    RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME),
-                 "%sSensor %s received invalid state interface. Received %ld, expected %d%s",
-                 lbr_fri_ros2::ColorScheme::FAIL, auxiliary_sensor.name.c_str(),
-                 auxiliary_sensor.state_interfaces.size(), AUXILIARY_SENSOR_SIZE,
-                 lbr_fri_ros2::ColorScheme::ENDC);
+    RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME),
+                        lbr_fri_ros2::ColorScheme::FAIL
+                            << "Sensor '" << auxiliary_sensor.name.c_str()
+                            << "' received invalid number of state interfaces."
+                            << " Received '" << auxiliary_sensor.state_interfaces.size()
+                            << "', expected '" << static_cast<int>(AUXILIARY_SENSOR_SIZE) << "'"
+                            << lbr_fri_ros2::ColorScheme::ENDC);
     return false;
   }
   // check only valid interfaces are defined
@@ -447,10 +469,11 @@ bool SystemInterface::verify_auxiliary_sensor_() {
         si.name != HW_IF_TIME_STAMP_NANO_SEC && si.name != HW_IF_COMMANDED_JOINT_POSITION &&
         si.name != HW_IF_COMMANDED_TORQUE && si.name != HW_IF_EXTERNAL_TORQUE &&
         si.name != HW_IF_IPO_JOINT_POSITION && si.name != HW_IF_TRACKING_PERFORMANCE) {
-      RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME),
-                   "%sSensor %s received invalid state interface %s%s",
-                   lbr_fri_ros2::ColorScheme::FAIL, auxiliary_sensor.name.c_str(), si.name.c_str(),
-                   lbr_fri_ros2::ColorScheme::ENDC);
+      RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME),
+                          lbr_fri_ros2::ColorScheme::FAIL
+                              << "Sensor '" << auxiliary_sensor.name.c_str()
+                              << "' received invalid state interface '" << si.name.c_str() << "'"
+                              << lbr_fri_ros2::ColorScheme::ENDC);
       return false;
     }
   }
@@ -460,21 +483,24 @@ bool SystemInterface::verify_auxiliary_sensor_() {
 bool SystemInterface::verify_estimated_ft_sensor_() {
   const auto &estimated_ft_sensor = info_.sensors[1];
   if (estimated_ft_sensor.state_interfaces.size() != ESTIMATED_FT_SENSOR_SIZE) {
-    RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME),
-                 "%sSensor %s received invalid state interface. Received %ld, expected %d%s",
-                 lbr_fri_ros2::ColorScheme::FAIL, estimated_ft_sensor.name.c_str(),
-                 estimated_ft_sensor.state_interfaces.size(), ESTIMATED_FT_SENSOR_SIZE,
-                 lbr_fri_ros2::ColorScheme::ENDC);
+    RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME),
+                        lbr_fri_ros2::ColorScheme::FAIL
+                            << "Sensor '" << estimated_ft_sensor.name.c_str()
+                            << "' received invalid number of state interfaces. Received '"
+                            << estimated_ft_sensor.state_interfaces.size() << "', expected '"
+                            << static_cast<int>(ESTIMATED_FT_SENSOR_SIZE) << "'"
+                            << lbr_fri_ros2::ColorScheme::ENDC);
     return false;
   }
   // check only valid interfaces are defined
   for (const auto &si : estimated_ft_sensor.state_interfaces) {
     if (si.name != HW_IF_FORCE_X && si.name != HW_IF_FORCE_Y && si.name != HW_IF_FORCE_Z &&
         si.name != HW_IF_TORQUE_X && si.name != HW_IF_TORQUE_Y && si.name != HW_IF_TORQUE_Z) {
-      RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME),
-                   "%sSensor %s received invalid state interface %s%s",
-                   lbr_fri_ros2::ColorScheme::FAIL, estimated_ft_sensor.name.c_str(),
-                   si.name.c_str(), lbr_fri_ros2::ColorScheme::ENDC);
+      RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME),
+                          lbr_fri_ros2::ColorScheme::FAIL
+                              << "Sensor '" << estimated_ft_sensor.name.c_str()
+                              << "' received invalid state interface '" << si.name.c_str() << "'"
+                              << lbr_fri_ros2::ColorScheme::ENDC);
       return false;
     }
   }
