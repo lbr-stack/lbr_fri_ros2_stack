@@ -30,13 +30,7 @@ def launch_setup(context: LaunchContext) -> List[LaunchDescriptionEntity]:
 
     # ros2 control node
     ros2_control_node = LBRROS2ControlMixin.node_ros2_control()
-    ros2_control_node_event_handler = RegisterEventHandler(
-        OnProcessStart(
-            target_action=robot_state_publisher,
-            on_start=[ros2_control_node],
-        )
-    )
-    ld.add_action(ros2_control_node_event_handler)
+    ld.add_action(ros2_control_node)
 
     # joint state broad caster and controller on ros2 control node start
     joint_state_broadcaster = LBRROS2ControlMixin.node_controller_spawner(
