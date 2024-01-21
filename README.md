@@ -35,6 +35,12 @@ vcs import src < src/repos.yaml
 rosdep install --from-paths src --ignore-src -r -y
 colcon build --symlink-install
 ```
+Copy the Dockerfile and the container scripts to the lbr-stack directory. Build and start the container. 
+```shell
+cp -r src/lbr_fri_ros2_stack/lbr_humble_docker/* .
+chmod +x container_build.sh 
+sudo ./container_build.sh
+```
 Next, launch the simulation via
 ```shell
 source install/setup.bash
