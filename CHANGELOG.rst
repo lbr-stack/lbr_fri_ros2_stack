@@ -1,6 +1,11 @@
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Changelog for package LBR FRI ROS 2 Stack
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Humble v1.4.3 (2024-02-03)
+--------------------------
+* Fixes planning scene namespace https://github.com/lbr-stack/lbr_fri_ros2_stack/issues/153
+* Refers to https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/155
+
 Humble v1.4.2 (2023-12-29)
 --------------------------
 * Fixes cartesian path for move group node with namespace: https://github.com/lbr-stack/lbr_fri_ros2_stack/issues/133
