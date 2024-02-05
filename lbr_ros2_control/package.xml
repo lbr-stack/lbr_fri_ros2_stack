@@ -5,7 +5,7 @@
   <version>1.4.3</version>
   <description>ROS 2 hardware hardware_interface for KUKA LBR through Fast Robot Interface (FRI).</description>
   <maintainer email="martin.huber@kcl.ac.uk">mhubii</maintainer>
-  <license>MIT</license>
+  <license>Apache License 2.0</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
   <buildtool_depend>ament_cmake_python</buildtool_depend>

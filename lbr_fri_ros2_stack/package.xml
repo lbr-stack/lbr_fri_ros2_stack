@@ -5,7 +5,7 @@
   <version>1.4.3</version>
   <description>ROS 2 stack for KUKA LBRs.</description>
   <maintainer email="m.huber_1994@hotmail.de">mhubii</maintainer>
-  <license>MIT</license>
+  <license>Apache License 2.0</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 

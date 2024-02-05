@@ -5,7 +5,7 @@
   <version>1.4.3</version>
   <description>Python demos for the LBR ros2_control integration.</description>
   <maintainer email="martin.huber@kcl.ac.uk">mhubii</maintainer>
-  <license>MIT</license>
+  <license>Apache License 2.0</license>
 
   <exec_depend>control_msgs</exec_depend>
   <exec_depend>lbr_bringup</exec_depend>
