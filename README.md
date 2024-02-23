@@ -43,8 +43,8 @@ Full documentation available [here](https://lbr-fri-ros2-stack-doc.readthedocs.i
     colcon build --symlink-install --cmake-args -DFRI_CLIENT_VERSION=1.15 --no-warn-unused-cli # replace by your FRI client version
     ```
 
-    > [!NOTE]
-    > FRI client is fetched via CMake and must be available, refer [README](https://github.com/lbr-stack/fri?tab=readme-ov-file#contributing).
+> [!NOTE]
+> FRI client is fetched via CMake and must be available, refer [README](https://github.com/lbr-stack/fri?tab=readme-ov-file#contributing).
 
 4. Launch the simulation via
     ```shell
