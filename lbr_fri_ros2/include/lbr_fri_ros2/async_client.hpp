@@ -9,6 +9,7 @@
 #include "rclcpp/logging.hpp"
 
 #include "friLBRClient.h"
+#include "friVersion.h"
 
 #include "lbr_fri_ros2/command_interface.hpp"
 #include "lbr_fri_ros2/enum_maps.hpp"

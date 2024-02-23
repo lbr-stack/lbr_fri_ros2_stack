@@ -144,7 +144,12 @@ void AppComponent::connect_(const int &port_id, const char *const remote_host,
 
     // subscriptions
     switch (async_client_ptr_->get_state_interface().get_state().client_command_mode) {
+#if FRICLIENT_VERSION_MAJOR == 1
     case KUKA::FRI::EClientCommandMode::POSITION:
+#endif
+#if FRICLIENT_VERSION_MAJOR == 2
+    case KUKA::FRI::EClientCommandMode::JOINT_POSITION:
+#endif
       position_command_sub_ =
           app_node_ptr_->create_subscription<lbr_fri_msgs::msg::LBRPositionCommand>(
               "command/joint_position", 1,
@@ -169,9 +174,15 @@ void AppComponent::connect_(const int &port_id, const char *const remote_host,
 
 void AppComponent::on_position_command_(
     const lbr_fri_msgs::msg::LBRPositionCommand::SharedPtr lbr_position_command) {
-  if (!on_command_checks_(KUKA::FRI::EClientCommandMode::POSITION)) {
-    return;
-  }
+#if FRICLIENT_VERSION_MAJOR == 1
+  if (!on_command_checks_(KUKA::FRI::EClientCommandMode::POSITION))
+#endif
+#if FRICLIENT_VERSION_MAJOR == 2
+    if (!on_command_checks_(KUKA::FRI::EClientCommandMode::JOINT_POSITION))
+#endif
+    {
+      return;
+    }
 
   if (async_client_ptr_->get_state_interface().get_state().session_state ==
       KUKA::FRI::ESessionState::COMMANDING_ACTIVE) {
