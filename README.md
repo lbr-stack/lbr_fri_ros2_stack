@@ -31,7 +31,7 @@ Install ROS 2 development tools
 sudo apt install ros-dev-tools
 ```
 
-Create a workspace and build this stack
+Create a workspace, clone, and build this stack
 ```shell
 mkdir -p lbr-stack/src && cd lbr-stack
 wget https://raw.githubusercontent.com/lbr-stack/lbr_fri_ros2_stack/humble/lbr_fri_ros2_stack/repos.yaml -P src
