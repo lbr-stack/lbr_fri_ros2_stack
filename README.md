@@ -37,11 +37,11 @@ mkdir -p lbr-stack/src && cd lbr-stack
 wget https://raw.githubusercontent.com/lbr-stack/lbr_fri_ros2_stack/humble/lbr_fri_ros2_stack/repos.yaml -P src
 vcs import src < src/repos.yaml
 rosdep install --from-paths src --ignore-src -r -y
-colcon build --symlink-install --no-warn-unused-cli --cmake-args -DFRI_CLIENT_VERSION=1.15 # replace by your FRI version
+colcon build --symlink-install --cmake-args -DFRI_CLIENT_VERSION=1.15 --no-warn-unused-cli # replace by your FRI client version
 ```
 
 > [!NOTE]
-> FRI is fetched via CMake and must be available, refer [README](https://github.com/lbr-stack/fri?tab=readme-ov-file#contributing).
+> FRI client is fetched via CMake and must be available, refer [README](https://github.com/lbr-stack/fri?tab=readme-ov-file#contributing).
 
 Next, launch the simulation via
 ```shell
