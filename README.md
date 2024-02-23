@@ -26,15 +26,23 @@ ROS 2 packages for the KUKA LBR, including communication to the real robot via t
 Full documentation available [here](https://lbr-fri-ros2-stack-doc.readthedocs.io/en/humble/index.html).
 
 ## Quick Start
-Install [colcon](https://docs.ros.org/en/humble/Tutorials/Colcon-Tutorial.html#install-colcon), [rosdep](https://docs.ros.org/en/humble/Installation/Alternatives/Ubuntu-Install-Binary.html#installing-and-initializing-rosdep) and [vcstool](https://github.com/dirk-thomas/vcstool#how-to-install-vcstool). Build this repository
+Install ROS 2 development tools
+```shell
+sudo apt install ros-dev-tools
+```
 
+Create a workspace and build this stack
 ```shell
 mkdir -p lbr-stack/src && cd lbr-stack
 wget https://raw.githubusercontent.com/lbr-stack/lbr_fri_ros2_stack/humble/lbr_fri_ros2_stack/repos.yaml -P src
 vcs import src < src/repos.yaml
 rosdep install --from-paths src --ignore-src -r -y
-colcon build --symlink-install
+colcon build --symlink-install --no-warn-unused-cli --cmake-args -DFRI_CLIENT_VERSION=1.15 # replace by your FRI version
 ```
+
+> [!NOTE]
+> FRI is fetched via CMake and must be available, refer [README](https://github.com/lbr-stack/fri?tab=readme-ov-file#contributing).
+
 Next, launch the simulation via
 ```shell
 source install/setup.bash
