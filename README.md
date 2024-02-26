@@ -44,7 +44,7 @@ Full documentation available [here](https://lbr-fri-ros2-stack-doc.readthedocs.i
     ```
 
 > [!NOTE]
-> FRI client is fetched via CMake and must be available, refer [README](https://github.com/lbr-stack/fri?tab=readme-ov-file#contributing).
+> FRI client is added as external CMake project via [fri_vendor](https://github.com/lbr-stack/fri_vendor) and must be available as branch, refer [README](https://github.com/lbr-stack/fri?tab=readme-ov-file#contributing).
 
 4. Launch the simulation via
     ```shell
