@@ -26,24 +26,35 @@ ROS 2 packages for the KUKA LBR, including communication to the real robot via t
 Full documentation available [here](https://lbr-fri-ros2-stack-doc.readthedocs.io/en/humble/index.html).
 
 ## Quick Start
-Install [colcon](https://docs.ros.org/en/humble/Tutorials/Colcon-Tutorial.html#install-colcon), [rosdep](https://docs.ros.org/en/humble/Installation/Alternatives/Ubuntu-Install-Binary.html#installing-and-initializing-rosdep) and [vcstool](https://github.com/dirk-thomas/vcstool#how-to-install-vcstool). Build this repository
+1. Install ROS 2 development tools
+    ```shell
+    sudo apt install ros-dev-tools
+    ```
 
-```shell
-mkdir -p lbr-stack/src && cd lbr-stack
-wget https://raw.githubusercontent.com/lbr-stack/lbr_fri_ros2_stack/humble/lbr_fri_ros2_stack/repos.yaml -P src
-vcs import src < src/repos.yaml
-rosdep install --from-paths src --ignore-src -r -y
-colcon build --symlink-install
-```
-Next, launch the simulation via
-```shell
-source install/setup.bash
-ros2 launch lbr_bringup bringup.launch.py \
-    model:=iiwa7 # [iiwa7, iiwa14, med7, med14] \
-    sim:=true # [true, false] \
-    rviz:=true # [true, false] \
-    moveit:=true # [true, false]
-```
+2. Create a workspace, clone, and install dependencies
+    ```shell
+    mkdir -p lbr-stack/src && cd lbr-stack
+    vcs import src --input https://raw.githubusercontent.com/lbr-stack/lbr_fri_ros2_stack/humble/lbr_fri_ros2_stack/repos.yaml
+    rosdep install --from-paths src --ignore-src -r -y
+    ```
+
+3. Build
+    ```shell
+    colcon build --symlink-install --cmake-args -DFRI_CLIENT_VERSION=1.15 --no-warn-unused-cli # replace by your FRI client version
+    ```
+
+> [!NOTE]
+> FRI client is added as external CMake project via [fri_vendor](https://github.com/lbr-stack/fri_vendor) and must be available as branch, refer [README](https://github.com/lbr-stack/fri?tab=readme-ov-file#contributing).
+
+4. Launch the simulation via
+    ```shell
+    source install/setup.bash
+    ros2 launch lbr_bringup bringup.launch.py \
+        model:=iiwa7 # [iiwa7, iiwa14, med7, med14] \
+        sim:=true # [true, false] \
+        rviz:=true # [true, false] \
+        moveit:=true # [true, false]
+    ```
 
 Now, run the [demos](https://lbr-fri-ros2-stack-doc.readthedocs.io/en/humble/lbr_fri_ros2_stack/lbr_demos/doc/lbr_demos.html). To get started with the real robot, checkout the [Documentation](https://lbr-fri-ros2-stack-doc.readthedocs.io/en/humble/index.html) above.
 
