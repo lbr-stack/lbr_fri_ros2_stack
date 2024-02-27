@@ -35,7 +35,7 @@ Full documentation available [here](https://lbr-fri-ros2-stack-doc.readthedocs.i
     ```shell
     export FRI_CLIENT_VERSION=1.15
     mkdir -p lbr-stack/src && cd lbr-stack
-    vcs import src --input https://raw.githubusercontent.com/lbr-stack/lbr_fri_ros2_stack/humble/lbr_fri_ros2_stack/fri-${FRI_CLIENT_VERSION}-repos.yaml
+    vcs import src --input https://raw.githubusercontent.com/lbr-stack/lbr_fri_ros2_stack/humble/lbr_fri_ros2_stack/fri-${FRI_CLIENT_VERSION}.repos
     rosdep install --from-paths src --ignore-src -r -y
     ```
 
