@@ -300,14 +300,21 @@ hardware_interface::return_type SystemInterface::write(const rclcpp::Time & /*ti
   if (hw_session_state_ != KUKA::FRI::COMMANDING_ACTIVE) {
     return hardware_interface::return_type::OK;
   }
-  if (hw_client_command_mode_ == KUKA::FRI::EClientCommandMode::POSITION) {
-    if (std::any_of(hw_lbr_command_.joint_position.cbegin(), hw_lbr_command_.joint_position.cend(),
-                    [](const double &v) { return std::isnan(v); })) {
+#if FRICLIENT_VERSION_MAJOR == 1
+  if (hw_client_command_mode_ == KUKA::FRI::EClientCommandMode::POSITION)
+#endif
+#if FRICLIENT_VERSION_MAJOR == 2
+    if (hw_client_command_mode_ == KUKA::FRI::EClientCommandMode::JOINT_POSITION)
+#endif
+    {
+      if (std::any_of(hw_lbr_command_.joint_position.cbegin(),
+                      hw_lbr_command_.joint_position.cend(),
+                      [](const double &v) { return std::isnan(v); })) {
+        return hardware_interface::return_type::OK;
+      }
+      async_client_ptr_->get_command_interface().set_command_target(hw_lbr_command_);
       return hardware_interface::return_type::OK;
     }
-    async_client_ptr_->get_command_interface().set_command_target(hw_lbr_command_);
-    return hardware_interface::return_type::OK;
-  }
   if (hw_client_command_mode_ == KUKA::FRI::EClientCommandMode::TORQUE) {
     if (std::any_of(hw_lbr_command_.joint_position.cbegin(), hw_lbr_command_.joint_position.cend(),
                     [](const double &v) { return std::isnan(v); }) ||
@@ -319,8 +326,17 @@ hardware_interface::return_type SystemInterface::write(const rclcpp::Time & /*ti
     return hardware_interface::return_type::OK;
   }
   if (hw_client_command_mode_ == KUKA::FRI::EClientCommandMode::WRENCH) {
-    throw std::runtime_error("Wrench command mode currently not implemented");
+    throw std::runtime_error(
+        lbr_fri_ros2::EnumMaps::client_command_mode_map(hw_client_command_mode_) +
+        " command mode currently not implemented.");
   }
+#if FRICLIENT_VERSION_MAJOR == 2
+  if (hw_client_command_mode_ == KUKA::FRI::EClientCommandMode::CARTESIAN_POSE) {
+    throw std::runtime_error(
+        lbr_fri_ros2::EnumMaps::client_command_mode_map(hw_client_command_mode_) +
+        " command mode currently not implemented.");
+  }
+#endif
   return hardware_interface::return_type::ERROR;
 }
 

@@ -4,6 +4,7 @@
 #include <string>
 
 #include "friLBRClient.h"
+#include "friVersion.h"
 
 namespace lbr_fri_ros2 {
 struct ColorScheme {
@@ -56,8 +57,16 @@ struct EnumMaps {
     switch (client_command_mode) {
     case KUKA::FRI::EClientCommandMode::NO_COMMAND_MODE:
       return "NO_COMMAND_MODE";
+#if FRICLIENT_VERSION_MAJOR == 1
     case KUKA::FRI::EClientCommandMode::POSITION:
       return "POSITION";
+#endif
+#if FRICLIENT_VERSION_MAJOR == 2
+    case KUKA::FRI::EClientCommandMode::JOINT_POSITION:
+      return "JOINT_POSITION";
+    case KUKA::FRI::EClientCommandMode::CARTESIAN_POSE:
+      return "CARTESIAN_POSE";
+#endif
     case KUKA::FRI::EClientCommandMode::TORQUE:
       return "TORQUE";
     case KUKA::FRI::EClientCommandMode::WRENCH:

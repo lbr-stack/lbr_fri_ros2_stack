@@ -7,6 +7,7 @@
 #include "rclcpp/logging.hpp"
 
 #include "friLBRClient.h"
+#include "friVersion.h"
 
 #include "lbr_fri_msgs/msg/lbr_state.hpp"
 #include "lbr_fri_ros2/filters.hpp"

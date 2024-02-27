@@ -2,10 +2,10 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>lbr_fri_ros2_stack</name>
-  <version>1.4.2</version>
+  <version>1.4.3</version>
   <description>ROS 2 stack for KUKA LBRs.</description>
   <maintainer email="m.huber_1994@hotmail.de">mhubii</maintainer>
-  <license>MIT</license>
+  <license>Apache License 2.0</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 

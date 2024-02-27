@@ -11,6 +11,7 @@
 
 #include "friLBRClient.h"
 #include "friLBRState.h"
+#include "friVersion.h"
 
 #include "lbr_fri_msgs/msg/lbr_command.hpp"
 #include "lbr_fri_ros2/formatting.hpp"

@@ -4,7 +4,7 @@ package_name = "lbr_demos_ros2_control_python"
 
 setup(
     name=package_name,
-    version="1.4.2",
+    version="1.4.3",
     packages=[package_name],
     data_files=[
         ("share/ament_index/resource_index/packages", ["resource/" + package_name]),

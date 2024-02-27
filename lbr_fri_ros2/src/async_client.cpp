@@ -56,21 +56,40 @@ void AsyncClient::command() {
   }
 
   switch (robotState().getClientCommandMode()) {
+#if FRICLIENT_VERSION_MAJOR == 1
   case KUKA::FRI::EClientCommandMode::POSITION:
+#endif
+#if FRICLIENT_VERSION_MAJOR == 2
+  case KUKA::FRI::EClientCommandMode::JOINT_POSITION:
+#endif
+  {
     command_interface_.get_joint_position_command(robotCommand(), robotState());
     return;
-  case KUKA::FRI::EClientCommandMode::TORQUE:
+  }
+#if FRICLIENT_VERSION_MAJOR == 2
+  case KUKA::FRI::EClientCommandMode::CARTESIAN_POSE: {
+    std::string err =
+        EnumMaps::client_command_mode_map(KUKA::FRI::EClientCommandMode::CARTESIAN_POSE) +
+        " command mode not supported yet.";
+    RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME), err.c_str());
+    throw std::runtime_error(err);
+  }
+#endif
+  case KUKA::FRI::EClientCommandMode::TORQUE: {
     command_interface_.get_torque_command(robotCommand(), robotState());
     return;
-  case KUKA::FRI::EClientCommandMode::WRENCH:
+  }
+  case KUKA::FRI::EClientCommandMode::WRENCH: {
     command_interface_.get_wrench_command(robotCommand(), robotState());
     return;
-  default:
+  }
+  default: {
     std::string err =
         "Unsupported command mode '" + std::to_string(robotState().getClientCommandMode()) + "'";
     RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME),
                         ColorScheme::ERROR << err << ColorScheme::ENDC);
     throw std::runtime_error(err);
+  }
   }
 }
 } // end of namespace lbr_fri_ros2

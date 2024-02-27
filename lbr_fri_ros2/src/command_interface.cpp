@@ -11,12 +11,26 @@ CommandInterface::CommandInterface(const PIDParameters &pid_parameters,
 
 void CommandInterface::get_joint_position_command(fri_command_t_ref command,
                                                   const_fri_state_t_ref state) {
+#if FRICLIENT_VERSION_MAJOR == 1
   if (state.getClientCommandMode() != KUKA::FRI::EClientCommandMode::POSITION) {
-    std::string err = "Set joint position only allowed in position command mode.";
+    std::string err = "Set joint position only allowed in " +
+                      EnumMaps::client_command_mode_map(KUKA::FRI::EClientCommandMode::POSITION) +
+                      " command mode.";
     RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME),
                         ColorScheme::ERROR << err.c_str() << ColorScheme::ENDC);
     throw std::runtime_error(err);
   }
+#endif
+#if FRICLIENT_VERSION_MAJOR == 2
+  if (state.getClientCommandMode() != KUKA::FRI::EClientCommandMode::JOINT_POSITION) {
+    std::string err =
+        "Set joint position only allowed in " +
+        EnumMaps::client_command_mode_map(KUKA::FRI::EClientCommandMode::JOINT_POSITION) +
+        " command mode.";
+    RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME), err.c_str());
+    throw std::runtime_error(err);
+  }
+#endif
   if (!command_guard_) {
     std::string err = "Uninitialized command guard.";
     RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME),
