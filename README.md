@@ -47,11 +47,11 @@ Full documentation available [here](https://lbr-fri-ros2-stack-doc.readthedocs.i
 > FRI client is added as external CMake project via [fri_vendor](https://github.com/lbr-stack/fri_vendor) and must be available as branch, refer [README](https://github.com/lbr-stack/fri?tab=readme-ov-file#contributing).
 
 4. Copy the Dockerfile and the container scripts to the lbr-stack directory. Build and start the container. 
-```shell
-cp -r src/lbr_fri_ros2_stack/lbr_humble_docker/* .
-chmod +x container_build.sh 
-sudo ./container_build.sh
-```
+    ```shell
+    cp -r src/lbr_fri_ros2_stack/lbr_humble_docker/* .
+    chmod +x container_build.sh 
+    sudo ./container_build.sh
+    ```
 
 5. Launch the simulation via
     ```shell
