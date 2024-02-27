@@ -8,6 +8,8 @@
 #include "rclcpp/rclcpp.hpp"
 #include "urdf/model.h"
 
+#include "friVersion.h"
+
 #include "lbr_fri_msgs/msg/lbr_position_command.hpp"
 #include "lbr_fri_msgs/msg/lbr_state.hpp"
 #include "lbr_fri_msgs/msg/lbr_torque_command.hpp"
