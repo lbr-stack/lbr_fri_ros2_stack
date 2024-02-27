@@ -14,8 +14,8 @@
 
 #include "lbr_fri_msgs/msg/lbr_command.hpp"
 #include "lbr_fri_ros2/command_guard.hpp"
-#include "lbr_fri_ros2/enum_maps.hpp"
 #include "lbr_fri_ros2/filters.hpp"
+#include "lbr_fri_ros2/formatting.hpp"
 
 namespace lbr_fri_ros2 {
 class CommandInterface {
