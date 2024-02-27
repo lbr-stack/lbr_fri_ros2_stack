@@ -33,18 +33,19 @@ Full documentation available [here](https://lbr-fri-ros2-stack-doc.readthedocs.i
 
 2. Create a workspace, clone, and install dependencies
     ```shell
+    export FRI_CLIENT_VERSION=1.15
     mkdir -p lbr-stack/src && cd lbr-stack
-    vcs import src --input https://raw.githubusercontent.com/lbr-stack/lbr_fri_ros2_stack/humble/lbr_fri_ros2_stack/repos.yaml
+    vcs import src --input https://raw.githubusercontent.com/lbr-stack/lbr_fri_ros2_stack/humble/lbr_fri_ros2_stack/fri-${FRI_CLIENT_VERSION}-repos.yaml
     rosdep install --from-paths src --ignore-src -r -y
     ```
 
+> [!NOTE]
+> FRI client is cloned from [fri](https://github.com/lbr-stack/fri) and must be available as branch, refer [README](https://github.com/lbr-stack/fri?tab=readme-ov-file#contributing).
+
 3. Build
     ```shell
-    colcon build --symlink-install --cmake-args -DFRI_CLIENT_VERSION=1.15 --no-warn-unused-cli # replace by your FRI client version
+    colcon build --symlink-install
     ```
-
-> [!NOTE]
-> FRI client is added as external CMake project via [fri_vendor](https://github.com/lbr-stack/fri_vendor) and must be available as branch, refer [README](https://github.com/lbr-stack/fri?tab=readme-ov-file#contributing).
 
 4. Launch the simulation via
     ```shell
