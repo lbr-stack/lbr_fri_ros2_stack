@@ -48,7 +48,7 @@ Full documentation available [here](https://lbr-fri-ros2-stack-doc.readthedocs.i
 
 4. Copy the Dockerfile and the container scripts to the lbr-stack directory. Build and start the container. 
     ```shell
-    cp -r src/lbr_fri_ros2_stack/lbr_humble_docker/* .
+    cp -r src/lbr_fri_ros2_stack/docker/* .
     chmod +x container_build.sh 
     sudo ./container_build.sh
     ```
