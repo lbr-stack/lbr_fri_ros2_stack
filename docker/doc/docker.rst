@@ -22,3 +22,13 @@ To run the ``lbr_fri_ros2_stack`` in a Docker container, follow the instructions
     cp -r src/lbr_fri_ros2_stack/docker/* .
     chmod +x container_build.sh
     sudo ./container_build.sh 1.15 # replace by your FRI client version
+
+#. Inside the container, launch e.g. simulation via (might require re-launch after Gazebo launched first time)
+
+.. code-block:: bash
+
+    ros2 launch lbr_bringup bringup.launch.py \
+        model:=iiwa7 # [iiwa7, iiwa14, med7, med14] \
+        sim:=true # [true, false] \
+        rviz:=true # [true, false] \
+        moveit:=true # [true, false]
