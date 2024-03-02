@@ -8,7 +8,7 @@ To run the ``lbr_fri_ros2_stack`` in a Docker container, follow the instructions
 
     sudo apt install ros-dev-tools
 
-#. Create a workspace, clone, and install dependencies
+#. Create a workspace and clone
 
 .. code-block:: bash
 
