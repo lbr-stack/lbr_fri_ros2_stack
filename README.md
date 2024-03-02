@@ -56,7 +56,7 @@ Full documentation available [here](https://lbr-fri-ros2-stack-doc.readthedocs.i
         moveit:=true # [true, false]
     ```
 
-> [!NOTE]
+> [!TIP]
 > List all arguments for the launch file via `ros2 launch lbr_bringup bringup.launch.py -s`
 
 Now, run the [demos](https://lbr-fri-ros2-stack-doc.readthedocs.io/en/humble/lbr_fri_ros2_stack/lbr_demos/doc/lbr_demos.html). To get started with the real robot, checkout the [Documentation](https://lbr-fri-ros2-stack-doc.readthedocs.io/en/humble/index.html) above.
