@@ -35,7 +35,7 @@ Full documentation available [here](https://lbr-fri-ros2-stack-doc.readthedocs.i
     ```shell
     mkdir -p lbr-stack/src && cd lbr-stack
     vcs import src --input https://raw.githubusercontent.com/lbr-stack/lbr_fri_ros2_stack/humble/lbr_fri_ros2_stack/repos.yaml
-    rosdep install --from-paths src --ignore-src -r -y
+    rosdep install --from-paths src -i -r -y
     ```
 
 3. Build
@@ -46,14 +46,7 @@ Full documentation available [here](https://lbr-fri-ros2-stack-doc.readthedocs.i
 > [!NOTE]
 > FRI client is added as external CMake project via [fri_vendor](https://github.com/lbr-stack/fri_vendor) and must be available as branch, refer [README](https://github.com/lbr-stack/fri?tab=readme-ov-file#contributing).
 
-4. Copy the Dockerfile and the container scripts to the lbr-stack directory. Build and start the container. 
-    ```shell
-    cp -r src/lbr_fri_ros2_stack/docker/* .
-    chmod +x container_build.sh 
-    sudo ./container_build.sh
-    ```
-
-5. Launch the simulation via
+4. Launch the simulation via
     ```shell
     source install/setup.bash
     ros2 launch lbr_bringup bringup.launch.py \
