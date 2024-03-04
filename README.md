@@ -36,7 +36,7 @@ Full documentation available [here](https://lbr-fri-ros2-stack-doc.readthedocs.i
     export FRI_CLIENT_VERSION=1.15
     mkdir -p lbr-stack/src && cd lbr-stack
     vcs import src --input https://raw.githubusercontent.com/lbr-stack/lbr_fri_ros2_stack/humble/lbr_fri_ros2_stack/fri-${FRI_CLIENT_VERSION}.repos
-    rosdep install --from-paths src --ignore-src -r -y
+    rosdep install --from-paths src -i -r -y
     ```
 
 > [!NOTE]
@@ -56,6 +56,9 @@ Full documentation available [here](https://lbr-fri-ros2-stack-doc.readthedocs.i
         rviz:=true # [true, false] \
         moveit:=true # [true, false]
     ```
+
+> [!TIP]
+> List all arguments for the launch file via `ros2 launch lbr_bringup bringup.launch.py -s`
 
 Now, run the [demos](https://lbr-fri-ros2-stack-doc.readthedocs.io/en/humble/lbr_fri_ros2_stack/lbr_demos/doc/lbr_demos.html). To get started with the real robot, checkout the [Documentation](https://lbr-fri-ros2-stack-doc.readthedocs.io/en/humble/index.html) above.
 
