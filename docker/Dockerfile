@@ -5,7 +5,8 @@ SHELL ["/bin/bash", "-c"]
 
 ARG FRI_CLIENT_VERSION=1.15
 
-RUN apt update -y 
+RUN apt update
+RUN apt upgrade -y
 
 # create workspace
 RUN mkdir -p home/ros2_ws/src
