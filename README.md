@@ -25,7 +25,7 @@ ROS 2 packages for the KUKA LBR, including communication to the real robot via t
 </body>
 
 ## Documentation
-Full documentation available [here](https://lbr-fri-ros2-stack-doc.readthedocs.io/en/humble/index.html).
+Full documentation available [here](https://lbr-stack.readthedocs.io/en/latest/?badge=latest).
 
 ## Quick Start
 1. Install ROS 2 development tools
@@ -61,7 +61,7 @@ Full documentation available [here](https://lbr-fri-ros2-stack-doc.readthedocs.i
 > [!TIP]
 > List all arguments for the launch file via `ros2 launch lbr_bringup bringup.launch.py -s`
 
-Now, run the [demos](https://lbr-fri-ros2-stack-doc.readthedocs.io/en/humble/lbr_fri_ros2_stack/lbr_demos/doc/lbr_demos.html). To get started with the real robot, checkout the [Documentation](https://lbr-fri-ros2-stack-doc.readthedocs.io/en/humble/index.html) above.
+Now, run the [demos](https://lbr-fri-ros2-stack-doc.readthedocs.io/en/humble/lbr_fri_ros2_stack/lbr_demos/doc/lbr_demos.html). To get started with the real robot, checkout the [Documentation](https://lbr-stack.readthedocs.io/en/latest/?badge=latest) above.
 
 ## Citation
 If you enjoyed using this repository for your work, we would really appreciate ❤️ if you could cite it, as it helps us to continue offering support.
