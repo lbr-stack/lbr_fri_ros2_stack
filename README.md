@@ -16,10 +16,10 @@ ROS 2 packages for the KUKA LBR, including communication to the real robot via t
             <th align="left" width="25%">LBR Med14 R820</th>
         </tr>
         <tr>
-            <td align="center"><img src="lbr_fri_ros2_stack/doc/img/rviz/iiwa7_r800.png" alt="LBR IIWA7 R800"></td>
-            <td align="center"><img src="lbr_fri_ros2_stack/doc/img/rviz/iiwa14_r820.png" alt="LBR IIWA14 R820"></td>
-            <td align="center"><img src="lbr_fri_ros2_stack/doc/img/rviz/med7_r800.png" alt="LBR Med7 R800"></td>
-            <td align="center"><img src="lbr_fri_ros2_stack/doc/img/rviz/med14_r820.png" alt="LBR Med14 R820"></td>
+            <td align="center"><img src="https://raw.githubusercontent.com/lbr-stack/lbr_fri_ros2_stack/humble/lbr_fri_ros2_stack/doc/img/foxglove/iiwa7_r800.png" alt="LBR IIWA7 R800"></td>
+            <td align="center"><img src="https://raw.githubusercontent.com/lbr-stack/lbr_fri_ros2_stack/humble/lbr_fri_ros2_stack/doc/img/foxglove/iiwa14_r820.png" alt="LBR IIWA14 R820"></td>
+            <td align="center"><img src="https://raw.githubusercontent.com/lbr-stack/lbr_fri_ros2_stack/humble/lbr_fri_ros2_stack/doc/img/foxglove/med7_r800.png" alt="LBR Med7 R800"></td>
+            <td align="center"><img src="https://raw.githubusercontent.com/lbr-stack/lbr_fri_ros2_stack/humble/lbr_fri_ros2_stack/doc/img/foxglove/med14_r820.png" alt="LBR Med14 R820"></td>
         </tr>
     </table>
 </body>
@@ -29,11 +29,13 @@ Full documentation available [here](https://lbr-stack.readthedocs.io/en/latest/?
 
 ## Quick Start
 1. Install ROS 2 development tools
+
     ```shell
     sudo apt install ros-dev-tools
     ```
 
 2. Create a workspace, clone, and install dependencies
+
     ```shell
     mkdir -p lbr-stack/src && cd lbr-stack
     vcs import src --input https://raw.githubusercontent.com/lbr-stack/lbr_fri_ros2_stack/humble/lbr_fri_ros2_stack/repos.yaml
@@ -41,6 +43,7 @@ Full documentation available [here](https://lbr-stack.readthedocs.io/en/latest/?
     ```
 
 3. Build
+
     ```shell
     colcon build --symlink-install --cmake-args -DFRI_CLIENT_VERSION=1.15 --no-warn-unused-cli # replace by your FRI client version
     ```
@@ -49,6 +52,7 @@ Full documentation available [here](https://lbr-stack.readthedocs.io/en/latest/?
 > FRI client is added as external CMake project via [fri_vendor](https://github.com/lbr-stack/fri_vendor) and must be available as branch, refer [README](https://github.com/lbr-stack/fri?tab=readme-ov-file#contributing).
 
 4. Launch the simulation via
+
     ```shell
     source install/setup.bash
     ros2 launch lbr_bringup bringup.launch.py \

@@ -3,9 +3,12 @@ FROM ros:humble-ros-base-jammy
 # change default shell to bash
 SHELL ["/bin/bash", "-c"]
 
+# set environment variables
 ARG FRI_CLIENT_VERSION=1.15
 
-RUN apt update -y 
+# upgrade packages
+RUN apt-get update
+RUN apt-get upgrade -y
 
 # create workspace
 RUN mkdir -p home/ros2_ws/src
