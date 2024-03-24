@@ -8,20 +8,27 @@ AsyncClient::AsyncClient(const PIDParameters &pid_parameters,
                          const bool &open_loop)
     : command_interface_(pid_parameters, command_guard_parameters, command_guard_variant),
       state_interface_(state_interface_parameters), open_loop_(open_loop) {
-  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "Configuring client.");
-  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "Command guard variant: '%s'.",
-              command_guard_variant.c_str());
+  RCLCPP_INFO_STREAM(rclcpp::get_logger(LOGGER_NAME),
+                     ColorScheme::OKBLUE << "Configuring client" << ColorScheme::ENDC);
+  RCLCPP_INFO_STREAM(rclcpp::get_logger(LOGGER_NAME),
+                     "Command guard variant '" << command_guard_variant.c_str() << "'");
   command_interface_.log_info();
   state_interface_.log_info();
-  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "Open loop: '%s'.", open_loop_ ? "true" : "false");
-  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "Client configured.");
+  RCLCPP_INFO_STREAM(rclcpp::get_logger(LOGGER_NAME),
+                     "Open loop '" << (open_loop_ ? "true" : "false") << "'");
+  RCLCPP_INFO_STREAM(rclcpp::get_logger(LOGGER_NAME),
+                     ColorScheme::OKGREEN << "Client configured" << ColorScheme::ENDC);
 }
 
 void AsyncClient::onStateChange(KUKA::FRI::ESessionState old_state,
                                 KUKA::FRI::ESessionState new_state) {
-  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "LBR switched from '%s' to '%s'.",
-              EnumMaps::session_state_map(old_state).c_str(),
-              EnumMaps::session_state_map(new_state).c_str());
+  RCLCPP_INFO_STREAM(rclcpp::get_logger(LOGGER_NAME),
+                     "LBR switched from '"
+                         << ColorScheme::OKBLUE << ColorScheme::BOLD
+                         << EnumMaps::session_state_map(old_state).c_str() << ColorScheme::ENDC
+                         << "' to '" << ColorScheme::OKGREEN << ColorScheme::BOLD
+                         << EnumMaps::session_state_map(new_state).c_str() << ColorScheme::ENDC
+                         << "'");
   command_interface_.init_command(robotState());
 }
 
@@ -78,8 +85,9 @@ void AsyncClient::command() {
   }
   default: {
     std::string err =
-        "Unsupported command mode: " + std::to_string(robotState().getClientCommandMode()) + ".";
-    RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME), err.c_str());
+        "Unsupported command mode '" + std::to_string(robotState().getClientCommandMode()) + "'";
+    RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME),
+                        ColorScheme::ERROR << err << ColorScheme::ENDC);
     throw std::runtime_error(err);
   }
   }

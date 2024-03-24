@@ -20,8 +20,9 @@ def launch_setup(context: LaunchContext) -> List[LaunchDescriptionEntity]:
     ld = LaunchDescription()
 
     robot_description = LBRDescriptionMixin.param_robot_description(sim=True)
+    world_robot_tf = [0, 0, 0, 0, 0, 0]  # keep zero
     ld.add_action(GazeboMixin.include_gazebo())  # Gazebo has its own controller manager
-    spawn_entity = GazeboMixin.node_spawn_entity()
+    spawn_entity = GazeboMixin.node_spawn_entity(tf=world_robot_tf)
     ld.add_action(spawn_entity)
     joint_state_broadcaster = LBRROS2ControlMixin.node_controller_spawner(
         controller="joint_state_broadcaster"
@@ -53,7 +54,7 @@ def launch_setup(context: LaunchContext) -> List[LaunchDescriptionEntity]:
     robot_name = LaunchConfiguration("robot_name").perform(context)
     ld.add_action(
         LBRDescriptionMixin.node_static_tf(
-            tf=[0, 0, 0, 0, 0, 0],  # keep zero
+            tf=world_robot_tf,
             parent="world",
             child=PathJoinSubstitution(
                 [

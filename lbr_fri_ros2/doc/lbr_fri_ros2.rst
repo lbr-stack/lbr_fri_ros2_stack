@@ -1,5 +1,7 @@
 LBR FRI ROS 2
 =============
+TODO: massive re-write of this section, since architecture has changed.
+
 The ``lbr_fri_ros2`` package provides a ROS 2 interface for the KUKA LBRs. It is designed to run stand-alone **and** within ``ros2_control``.
 
 Quick Start

@@ -12,8 +12,8 @@
 #include "friVersion.h"
 
 #include "lbr_fri_ros2/command_interface.hpp"
-#include "lbr_fri_ros2/enum_maps.hpp"
 #include "lbr_fri_ros2/filters.hpp"
+#include "lbr_fri_ros2/formatting.hpp"
 #include "lbr_fri_ros2/state_interface.hpp"
 
 namespace lbr_fri_ros2 {

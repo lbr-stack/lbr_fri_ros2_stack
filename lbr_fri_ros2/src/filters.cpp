@@ -16,7 +16,7 @@ void ExponentialFilter::set_cutoff_frequency(const double &cutoff_frequency,
   sample_time_ = sample_time;
   alpha_ = compute_alpha_(cutoff_frequency, sample_time);
   if (!validate_alpha_(alpha_)) {
-    throw std::runtime_error("Alpha is not within [0, 1].");
+    throw std::runtime_error("Alpha is not within [0, 1]");
   }
 }
 

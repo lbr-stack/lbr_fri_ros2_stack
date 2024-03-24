@@ -20,9 +20,12 @@ def generate_launch_description() -> LaunchDescription:
     ld.add_action(LBRSystemInterface.arg_ctrl_cfg_pkg())
     ld.add_action(LBRSystemInterface.arg_ctrl_cfg())
     ld.add_action(LBRSystemInterface.arg_ctrl())
-    ros2_control_node = LBRSystemInterface.node_ros2_control(
-        robot_description=robot_description
+    robot_state_publisher = LBRSystemInterface.node_robot_state_publisher(
+        robot_description=robot_description,
+        use_sim_time=False,
     )
+    ld.add_action(robot_state_publisher)
+    ros2_control_node = LBRSystemInterface.node_ros2_control()
     ld.add_action(ros2_control_node)
     joint_state_broadcaster = LBRSystemInterface.node_controller_spawner(
         controller="joint_state_broadcaster"
@@ -48,9 +51,4 @@ def generate_launch_description() -> LaunchDescription:
         )
     )
     ld.add_action(controller_event_handler)
-    robot_state_publisher = LBRSystemInterface.node_robot_state_publisher(
-        robot_description=robot_description,
-        use_sim_time=False,
-    )
-    ld.add_action(robot_state_publisher)
     return ld

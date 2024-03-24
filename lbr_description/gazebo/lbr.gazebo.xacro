@@ -6,7 +6,11 @@
         <gazebo>
             <plugin name="gazebo_ros2_control" filename="libgazebo_ros2_control.so">
                 <parameters>$(find lbr_ros2_control)/config/lbr_controllers.yaml</parameters>
-                <robotNamespace>/${robot_name}</robotNamespace>
+                <ros>
+                    <namespace>/${robot_name}</namespace>
+                    <!-- remapping for controller manager inside Gazebo plugin -->
+                    <remapping>~/robot_description:=robot_description</remapping>
+                </ros>
             </plugin>
         </gazebo>
 

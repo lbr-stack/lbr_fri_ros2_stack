@@ -16,7 +16,8 @@ void CommandInterface::get_joint_position_command(fri_command_t_ref command,
     std::string err = "Set joint position only allowed in " +
                       EnumMaps::client_command_mode_map(KUKA::FRI::EClientCommandMode::POSITION) +
                       " command mode.";
-    RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME), err.c_str());
+    RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME),
+                        ColorScheme::ERROR << err.c_str() << ColorScheme::ENDC);
     throw std::runtime_error(err);
   }
 #endif
@@ -32,7 +33,8 @@ void CommandInterface::get_joint_position_command(fri_command_t_ref command,
 #endif
   if (!command_guard_) {
     std::string err = "Uninitialized command guard.";
-    RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME), err.c_str());
+    RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME),
+                        ColorScheme::ERROR << err.c_str() << ColorScheme::ENDC);
     throw std::runtime_error(err);
   }
 
@@ -48,7 +50,8 @@ void CommandInterface::get_joint_position_command(fri_command_t_ref command,
   // validate
   if (!command_guard_->is_valid_command(command_, state)) {
     std::string err = "Invalid command.";
-    RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME), err.c_str());
+    RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME),
+                        ColorScheme::ERROR << err.c_str() << ColorScheme::ENDC);
     throw std::runtime_error(err);
   }
 
@@ -59,12 +62,14 @@ void CommandInterface::get_joint_position_command(fri_command_t_ref command,
 void CommandInterface::get_torque_command(fri_command_t_ref command, const_fri_state_t_ref state) {
   if (state.getClientCommandMode() != KUKA::FRI::EClientCommandMode::TORQUE) {
     std::string err = "Set torque only allowed in torque command mode.";
-    RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME), err.c_str());
+    RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME),
+                        ColorScheme::ERROR << err.c_str() << ColorScheme::ENDC);
     throw std::runtime_error(err);
   }
   if (!command_guard_) {
     std::string err = "Uninitialized command guard.";
-    RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME), err.c_str());
+    RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME),
+                        ColorScheme::ERROR << err.c_str() << ColorScheme::ENDC);
     throw std::runtime_error(err);
   }
 
@@ -80,7 +85,7 @@ void CommandInterface::get_torque_command(fri_command_t_ref command, const_fri_s
 
   // validate
   if (!command_guard_->is_valid_command(command_, state)) {
-    throw std::runtime_error("Invalid command.");
+    throw std::runtime_error("Invalid command");
   }
 
   // write joint position and torque to output
@@ -113,7 +118,8 @@ void CommandInterface::get_wrench_command(fri_command_t_ref command, const_fri_s
   // validate
   if (!command_guard_->is_valid_command(command_, state)) {
     std::string err = "Invalid command.";
-    RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME), err.c_str());
+    RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME),
+                        ColorScheme::ERROR << err.c_str() << ColorScheme::ENDC);
     throw std::runtime_error(err);
   }
 

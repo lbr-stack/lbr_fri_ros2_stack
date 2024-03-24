@@ -10,6 +10,7 @@
   <buildtool_depend>ament_cmake</buildtool_depend>
 
   <exec_depend>lbr_bringup</exec_depend>
+  <exec_depend>lbr_demos</exec_depend>
   <exec_depend>lbr_description</exec_depend>
   <exec_depend>lbr_fri_msgs</exec_depend>
   <exec_depend>lbr_fri_ros2</exec_depend>

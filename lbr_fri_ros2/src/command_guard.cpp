@@ -37,7 +37,7 @@ bool CommandGuard::is_valid_command(const_idl_command_t_ref lbr_command,
     }
     return true;
   default:
-    RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME), "Invalid EClientCommandMode provided.");
+    RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME), "Invalid EClientCommandMode provided");
     return false;
   }
   return false;
@@ -60,9 +60,10 @@ bool CommandGuard::command_in_position_limits_(const_idl_command_t_ref lbr_comma
   for (std::size_t i = 0; i < lbr_command.joint_position.size(); ++i) {
     if (lbr_command.joint_position[i] < parameters_.min_position[i] ||
         lbr_command.joint_position[i] > parameters_.max_position[i]) {
-      RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME),
-                   "Position command not in limits for joint '%s'.",
-                   parameters_.joint_names[i].c_str());
+      RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME),
+                          ColorScheme::ERROR << "Position not in limits for joint '"
+                                             << parameters_.joint_names[i].c_str() << "'"
+                                             << ColorScheme::ENDC);
       return false;
     }
   }
@@ -75,8 +76,10 @@ bool CommandGuard::command_in_velocity_limits_(const_idl_command_t_ref lbr_comma
   for (std::size_t i = 0; i < lbr_command.joint_position[i]; ++i) {
     if (std::abs(lbr_command.joint_position[i] - lbr_state.getMeasuredJointPosition()[i]) / dt >
         parameters_.max_velocity[i]) {
-      RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME), "Velocity not in limits for joint '%s'.",
-                   parameters_.joint_names[i].c_str());
+      RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME),
+                          ColorScheme::ERROR << "Velocity not in limits for joint '"
+                                             << parameters_.joint_names[i].c_str() << "'"
+                                             << ColorScheme::ENDC);
       return false;
     }
   }
@@ -88,8 +91,10 @@ bool CommandGuard::command_in_torque_limits_(const_idl_command_t_ref lbr_command
   for (std::size_t i = 0; i < lbr_command.torque.size(); ++i) {
     if (std::abs(lbr_command.torque[i] + lbr_state.getExternalTorque()[i]) >
         parameters_.max_torque[i]) {
-      RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME), "Torque command not in limits for joint '%s'.",
-                   parameters_.joint_names[i].c_str());
+      RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME), ColorScheme::ERROR
+                                                               << "Torque not in limits for joint '"
+                                                               << parameters_.joint_names[i].c_str()
+                                                               << "'" << ColorScheme::ENDC);
       return false;
     }
   }
@@ -103,9 +108,10 @@ bool SafeStopCommandGuard::command_in_position_limits_(const_idl_command_t_ref l
             parameters_.min_position[i] + parameters_.max_velocity[i] * lbr_state.getSampleTime() ||
         lbr_command.joint_position[i] >
             parameters_.max_position[i] - parameters_.max_velocity[i] * lbr_state.getSampleTime()) {
-      RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME),
-                   "Position command not in limits for joint '%s'.",
-                   parameters_.joint_names[i].c_str());
+      RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME),
+                          ColorScheme::ERROR << "Position not in limits for joint '"
+                                             << parameters_.joint_names[i].c_str() << "'"
+                                             << ColorScheme::ENDC);
       return false;
     }
   }
@@ -123,7 +129,8 @@ command_guard_factory(const CommandGuardParameters &command_guard_parameters,
     return std::make_unique<SafeStopCommandGuard>(command_guard_parameters);
   }
   std::string err = "Invalid CommandGuard variant provided.";
-  RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME), err.c_str());
+  RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME),
+                      ColorScheme::ERROR << err.c_str() << ColorScheme::ENDC);
   throw std::runtime_error(err);
 }
 } // end of namespace lbr_fri_ros2

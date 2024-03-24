@@ -14,6 +14,7 @@
 #include "friVersion.h"
 
 #include "lbr_fri_msgs/msg/lbr_command.hpp"
+#include "lbr_fri_ros2/formatting.hpp"
 
 namespace lbr_fri_ros2 {
 struct CommandGuardParameters {

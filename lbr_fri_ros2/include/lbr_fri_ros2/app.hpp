@@ -13,6 +13,7 @@
 #include "friUdpConnection.h"
 
 #include "lbr_fri_ros2/async_client.hpp"
+#include "lbr_fri_ros2/formatting.hpp"
 
 namespace lbr_fri_ros2 {
 class App {
