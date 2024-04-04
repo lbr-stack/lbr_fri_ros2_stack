@@ -37,6 +37,7 @@ Full documentation available [here](https://lbr-stack.readthedocs.io/en/latest/?
 2. Create a workspace, clone, and install dependencies
 
     ```shell
+    source /opt/ros/humble/setup.bash
     mkdir -p lbr-stack/src && cd lbr-stack
     vcs import src --input https://raw.githubusercontent.com/lbr-stack/lbr_fri_ros2_stack/humble/lbr_fri_ros2_stack/repos.yaml
     rosdep install --from-paths src -i -r -y
