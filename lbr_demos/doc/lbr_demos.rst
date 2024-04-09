@@ -7,6 +7,8 @@ Demos for controlling the LBR through the Fast Robot Interface (FRI) from ROS 2.
 
 TODO: Differentiate demos through controllers
 TODO: indicate which demos run in simulation and which on the real robot
+TODO: Introduce controller concept
+
 
 LBR Demos FRI ROS 2
 -------------------
