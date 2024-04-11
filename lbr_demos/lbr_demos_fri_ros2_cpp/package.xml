@@ -12,6 +12,11 @@
   <depend>fri_vendor</depend>
   <depend>lbr_fri_msgs</depend>
   <depend>rclcpp</depend>
+  <depend>tf2_ros</depend>
+  <depend>urdf</depend>
+  <depend>sensor_msgs</depend>
+  <depend>orocos_kdl</depend>
+  <depend>kdl_parser</depend>
 
   <exec_depend>lbr_fri_ros2</exec_depend>
 
