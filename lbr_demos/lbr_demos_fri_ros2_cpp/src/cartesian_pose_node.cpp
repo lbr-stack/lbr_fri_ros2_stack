@@ -53,7 +53,7 @@ class CartesianPoseNode:public rclcpp::Node
     */
     void cartesian_pose_sub_callback(const geometry_msgs::msg::Pose& msg)
     {
-      if (current_robot_state_.session_state == KUKA::FRI::COMMANDING_ACTIVE) 
+      if(current_robot_state_.session_state == KUKA::FRI::COMMANDING_ACTIVE) 
       {
         unsigned int joint_number = chain_.getNrOfJoints(); // for kuka robot, 7 joints 
         KDL::JntArray current_joint_positions(joint_number);
@@ -217,14 +217,14 @@ class CartesianPoseNode:public rclcpp::Node
       //std::chrono::duration<double, std::milli> execution_time = end - start;
       //std::cout << "IK solver execution time: "<< execution_time.count()<< "ms"<<std::endl;
 
-      if (ik_result < 0) // if solving failed, 'ik_result' would be less than 0
+      if(ik_result < 0) // if solving failed, 'ik_result' would be less than 0
       {
         std::cerr << "Inverse kinematics failed." << std::endl;
       }
       else 
       {
         //std::cout << "Inverse kinematics solution:" << std::endl;
-        for (unsigned int i = 0; i < result_joint_positions.data.size(); i++) 
+        for(unsigned int i = 0; i < result_joint_positions.data.size(); i++) 
         {
           joint_position_command.joint_position[i] = result_joint_positions(i);
           //std::cout << "Joint " << i << ": "<<result_joint_positions(i) << std::endl;
