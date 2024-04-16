@@ -22,6 +22,27 @@ find_package(geometry_msgs REQUIRED)
 find_package(orocos_kdl REQUIRED)
 find_package(kdl_parser REQUIRED)
 
+# cartesian_pose_node
+add_executable(cartesian_pose_node
+  src/cartesian_pose_node.cpp
+)
+
+ament_target_dependencies(cartesian_pose_node
+  fri_vendor
+  lbr_fri_msgs
+  rclcpp
+  tf2_ros
+  urdf
+  sensor_msgs
+  orocos_kdl
+  kdl_parser
+  geometry_msgs
+)
+
+target_link_libraries(cartesian_pose_node
+  FRIClient::FRIClient
+)
+
 # cartesian_path_planning_node
 add_executable(cartesian_path_planning_node
   src/cartesian_path_planning_node.cpp
@@ -32,10 +53,7 @@ ament_target_dependencies(cartesian_path_planning_node
   lbr_fri_msgs
   rclcpp
   tf2_ros
-  urdf
   sensor_msgs
-  orocos_kdl
-  kdl_parser
   geometry_msgs
 )
 
@@ -89,6 +107,7 @@ target_link_libraries(wrench_sine_overlay_node
 )
 
 install(TARGETS
+  cartesian_pose_node
   cartesian_path_planning_node
   joint_sine_overlay_node
   torque_sine_overlay_node
