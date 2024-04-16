@@ -17,7 +17,7 @@ using std::placeholders::_1;
 class CartesianPoseNode:public rclcpp::Node
 {
   private:
-	rclcpp::Publisher<lbr_fri_msgs::msg::LBRPositionCommand>::SharedPtr joint_position_publisher_;
+    rclcpp::Publisher<lbr_fri_msgs::msg::LBRPositionCommand>::SharedPtr joint_position_publisher_;
     rclcpp::Subscription<lbr_fri_msgs::msg::LBRState>::SharedPtr joint_position_subscriber_;
     rclcpp::Publisher<geometry_msgs::msg::Pose>::SharedPtr cartesian_pose_publisher_;
     rclcpp::Subscription<geometry_msgs::msg::Pose>::SharedPtr cartesian_pose_subscriber_;
@@ -72,8 +72,8 @@ class CartesianPoseNode:public rclcpp::Node
     }
 
   public:
-	  CartesianPoseNode():Node("cartesian_pose_node")
-	  {
+    CartesianPoseNode():Node("cartesian_pose_node")
+    {
       this->declare_parameter<std::string>("robot_name", "iiwa7"); // default name "iiwa7"
 
       std::string robot_name;
@@ -121,7 +121,7 @@ class CartesianPoseNode:public rclcpp::Node
       cartesian_pose_subscriber_ = this->create_subscription<geometry_msgs::msg::Pose>(
           "/lbr/command/cartesian_pose", 10, 
           std::bind(&CartesianPoseNode::cartesian_pose_sub_callback, this, _1));
-	  }
+    }
 
     /**
      * @function: convert URDF file to a string
