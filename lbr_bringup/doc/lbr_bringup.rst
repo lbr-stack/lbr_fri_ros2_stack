@@ -34,7 +34,7 @@ The ``lbr_bringup`` works for the simulation and the real robot. Run:
 .. code:: bash
 
     ros2 launch lbr_bringup bringup.launch.py \
-        model:=iiwa7 # [iiwa7, iiwa14, med7, med14] \
+        model:=iiwa14 # [iiwa7, iiwa14, med7, med14] \
         sim:=true # [true, false] \
         rviz:=true # [true, false] \
         moveit:=true # [true, false]
@@ -66,7 +66,7 @@ Standalone launch is great for research. Only the the real robot is supported. I
 .. code:: bash
 
     ros2 launch lbr_fri_ros2 app.launch.py \
-        model:=iiwa7 # [iiwa7, iiwa14, med7, med14] \
+        model:=iiwa14 # [iiwa7, iiwa14, med7, med14] \
         robot_name:=lbr # any robot name
 
 This runs the :lbr_fri_ros2:`AppComponent <lbr_fri_ros2::AppComponent>`, which creates 2 topics, ``/robot_name/command`` for commands and ``/robot_name/state``. See :ref:`LBR Demos FRI ROS 2` for more examples and :ref:`LBR FRI ROS 2` for more documentation.

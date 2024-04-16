@@ -105,6 +105,31 @@ Visualization Manager:
           Alpha: 1
           Show Axes: false
           Show Trail: false
+	robotiq_85_base_link:
+	  Alpha: 1
+	  Show Axes: false
+	  Show Trail: false
+	  Value: true
+	robotiq_85_left_finger_link:
+	  Alpha: 1
+	  Show Axes: false
+	  Show Trail: false
+	  Value: true
+	robotiq_85_left_knuckle_link:
+	  Alpha: 1
+	  Show Axes: false
+	  Show Trail: false
+	  Value: true
+	robotiq_85_right_finger_link:
+	  Alpha: 1
+	  Show Axes: false
+	  Show Trail: false
+	  Value: true
+	robotiq_85_right_knuckle_link:
+	  Alpha: 1
+	  Show Axes: false
+	  Show Trail: false
+	  Value: true
         storz_straight_exoscope_hsi_link_0:
           Alpha: 1
           Show Axes: false

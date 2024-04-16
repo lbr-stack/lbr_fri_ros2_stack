@@ -60,7 +60,7 @@ class LBRDescriptionMixin:
         sim: Optional[Union[LaunchConfiguration, bool]] = None,
     ) -> Dict[str, str]:
         if model is None:
-            model = LaunchConfiguration("model", default="iiwa7")
+            model = LaunchConfiguration("model", default="iiwa14")
         if robot_name is None:
             robot_name = LaunchConfiguration("robot_name", default="lbr")
         if port_id is None:
@@ -95,7 +95,7 @@ class LBRDescriptionMixin:
         return robot_description
 
     @staticmethod
-    def arg_model(default_value: str = "iiwa7") -> DeclareLaunchArgument:
+    def arg_model(default_value: str = "iiwa14") -> DeclareLaunchArgument:
         return DeclareLaunchArgument(
             name="model",
             default_value=default_value,

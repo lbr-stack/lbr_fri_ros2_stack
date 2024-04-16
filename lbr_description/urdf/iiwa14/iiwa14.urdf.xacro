@@ -22,4 +22,8 @@
 
     <!-- iiwa -->
     <xacro:iiwa14 robot_name="$(arg robot_name)" port_id="$(arg port_id)" sim="$(arg sim)" />
+    
+    <!-- gripper -->
+    <xacro:include filename="$(find robotiq_description)/urdf/robotiq_2f_85_gripper.urdf.xacro" />
+
 </robot>
