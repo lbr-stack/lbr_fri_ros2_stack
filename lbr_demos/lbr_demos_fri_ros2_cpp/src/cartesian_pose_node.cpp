@@ -111,7 +111,7 @@ class CartesianPoseNode:public rclcpp::Node
         std::cout << "Get chain from tree successfully." << std::endl;
       }
 
-	    joint_position_publisher_ = this->create_publisher<lbr_fri_msgs::msg::LBRPositionCommand>(
+      joint_position_publisher_ = this->create_publisher<lbr_fri_msgs::msg::LBRPositionCommand>(
           "/lbr/command/joint_position", 10);
       joint_position_subscriber_ = this->create_subscription<lbr_fri_msgs::msg::LBRState>(
           "/lbr/state", 10, 
