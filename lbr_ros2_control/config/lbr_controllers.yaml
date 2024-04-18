@@ -29,13 +29,9 @@
     forward_lbr_torque_command_controller:
       type: lbr_ros2_control/ForwardLBRTorqueCommandController
       
-    robotiq_gripper_controller:
+    hand_controller:
       type: position_controllers/GripperActionController
       
-    robotiq_activation_controller:
-      type: robotiq_controllers/RobotiqActivationController    
-      
-
 /**/force_torque_broadcaster:
   ros__parameters:
     frame_id: lbr/link_ee # namespace: https://github.com/ros2/rviz/issues/1103
@@ -71,14 +67,11 @@
       - A7
     interface_name: position
     
-robotiq_gripper_controller:
+hand_controller:
   ros__parameters:
     default: true
     joint: robotiq_85_left_knuckle_joint
     use_effort_interface: true
     use_speed_interface: true
 
-robotiq_activation_controller:
-  ros__parameters:
-    default: true
     

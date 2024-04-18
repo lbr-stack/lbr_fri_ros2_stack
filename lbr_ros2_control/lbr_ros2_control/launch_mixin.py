@@ -34,6 +34,7 @@ class LBRROS2ControlMixin:
                 "forward_position_controller",
                 "forward_lbr_position_command_controller",
                 "forward_lbr_torque_command_controller",
+                "hand_controller",
             ],
         )
 

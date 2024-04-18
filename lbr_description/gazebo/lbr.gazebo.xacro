@@ -41,5 +41,23 @@
         <xacro:gazebo_link_reference name="link_6" />
         <xacro:gazebo_joint_reference name="A7" />
         <xacro:gazebo_link_reference name="link_7" />
+        
+        <xacro:gazebo_link_reference name="robotiq_85_left_inner_knuckle_link" />
+        <xacro:gazebo_joint_reference name="robotiq_85_left_inner_knuckle_joint" />
+        <xacro:gazebo_link_reference name="robotiq_85_left_knuckle_link" />
+        <xacro:gazebo_joint_reference name="robotiq_85_left_knuckle_joint" />
+        <xacro:gazebo_link_reference name="robotiq_85_left_finger_link" />
+        <xacro:gazebo_joint_reference name="robotiq_85_left_finger_joint" />
+        <xacro:gazebo_link_reference name="robotiq_85_left_finger_tip_link" />
+        <xacro:gazebo_joint_reference name="robotiq_85_left_finger_tip_joint" />        
+        
+        <xacro:gazebo_link_reference name="robotiq_85_right_inner_knuckle_link" />
+        <xacro:gazebo_joint_reference name="robotiq_85_right_inner_knuckle_joint" />
+        <xacro:gazebo_link_reference name="robotiq_85_right_knuckle_link" />
+        <xacro:gazebo_joint_reference name="robotiq_85_right_knuckle_joint" />
+        <xacro:gazebo_link_reference name="robotiq_85_right_finger_link" />
+        <xacro:gazebo_joint_reference name="robotiq_85_right_finger_joint" />
+        <xacro:gazebo_link_reference name="robotiq_85_right_finger_tip_link" />
+        <xacro:gazebo_joint_reference name="robotiq_85_right_finger_tip_joint" /> 
     </xacro:macro>
 </robot>
