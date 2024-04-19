@@ -3,7 +3,6 @@
 #include <fstream>
 #include <sstream>
 #include <string>
-#include <filesystem> // for getting current working directory
 #include "geometry_msgs/msg/pose.hpp" // for describing Cartesian Pose
 #include "kdl_parser/kdl_parser.hpp"
 #include "kdl/chainfksolverpos_recursive.hpp" // for forward kinematics
@@ -13,6 +12,7 @@
 #include "friClientIf.h"
 
 using std::placeholders::_1;
+using namespace std::chrono_literals;
 
 class CartesianPoseNode:public rclcpp::Node
 {
@@ -21,6 +21,8 @@ class CartesianPoseNode:public rclcpp::Node
     rclcpp::Subscription<lbr_fri_msgs::msg::LBRState>::SharedPtr joint_position_subscriber_;
     rclcpp::Publisher<geometry_msgs::msg::Pose>::SharedPtr cartesian_pose_publisher_;
     rclcpp::Subscription<geometry_msgs::msg::Pose>::SharedPtr cartesian_pose_subscriber_;
+
+    rclcpp::SyncParametersClient::SharedPtr parameter_client_;
 
     lbr_fri_msgs::msg::LBRState current_robot_state_; // robot state, including joint positions
     geometry_msgs::msg::Pose current_cartesian_position_; // current cartesian pose of robot
@@ -74,25 +76,21 @@ class CartesianPoseNode:public rclcpp::Node
   public:
     CartesianPoseNode():Node("cartesian_pose_node")
     {
-      this->declare_parameter<std::string>("robot_name", "iiwa7"); // default name "iiwa7"
+      /* "/lbr/app" is the name of Parameter Server node, in which robot URDF file stores.
+         The node whose name is "/lbr/app" appears after we run the command
+	 (ros2 launch lbr_fri_ros2 app.launch.py) in the terminal.
+      */
+      parameter_client_ = std::make_shared<rclcpp::SyncParametersClient>(this, "/lbr/app"); 
 
-      std::string robot_name;
-      this->get_parameter("robot_name", robot_name);
-
-      if(robot_name != "iiwa7" && robot_name != "iiwa14" && 
-         robot_name != "med7" && robot_name != "med14")
+      while(!parameter_client_->wait_for_service(1s))
       {
-        std::cerr << "Wrong robot name. " << std::endl;
+        if(!rclcpp::ok())
+        {
+          return;
+        }
+        RCLCPP_INFO(this->get_logger(), "this node has not connected with Parameter Server Node.");
       }
-
-      // get the path of urdf file 
-      std::filesystem::path current_working_directory = std::filesystem::current_path();
-      std::string urdf_file_path = current_working_directory.string() 
-                                   + "/src/lbr_fri_ros2_stack/lbr_description/urdf/" 
-                                   + robot_name + "/" 
-                                   + robot_name + ".urdf"; // path of your robot urdf file
-
-      std::string robot_description_string = readUrdfFile(urdf_file_path);
+      std::string robot_description_string = parameter_client_->get_parameter<std::string>("robot_description");
 
       KDL::Tree robot_tree;
       if(!kdl_parser::treeFromString(robot_description_string, robot_tree))
@@ -121,25 +119,6 @@ class CartesianPoseNode:public rclcpp::Node
       cartesian_pose_subscriber_ = this->create_subscription<geometry_msgs::msg::Pose>(
           "/lbr/command/cartesian_pose", 10, 
           std::bind(&CartesianPoseNode::cartesian_pose_sub_callback, this, _1));
-    }
-
-    /**
-     * @function: convert URDF file to a string
-     * @param urdf_file_path the path of URDF file
-     * @return string type of URDF file
-    */
-    std::string readUrdfFile(const std::string& urdf_file_path)
-    {
-      std::ifstream file_stream(urdf_file_path);
-      if(!file_stream) // if open this file failed, return null string
-      {
-        std::cerr << "Failed to open file at path:" << urdf_file_path << std::endl;
-        return "";
-      }
-
-      std::stringstream buffer;
-      buffer << file_stream.rdbuf();
-      return buffer.str();
     }
 
     /**
