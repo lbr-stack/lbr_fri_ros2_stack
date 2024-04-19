@@ -19,7 +19,7 @@ find_package(tf2_ros REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(urdf REQUIRED)
 find_package(geometry_msgs REQUIRED)
-find_package(orocos_kdl_vendor)
+find_package(orocos_kdl_vendor REQUIRED)
 find_package(kdl_parser REQUIRED)
 
 # cartesian_pose_node
