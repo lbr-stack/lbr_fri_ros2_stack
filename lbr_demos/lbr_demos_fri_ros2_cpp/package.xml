@@ -16,7 +16,7 @@
   <depend>urdf</depend>
   <depend>geometry_msgs</depend>
   <depend>sensor_msgs</depend>
-  <depend>orocos_kdl</depend>
+  <depend>orocos_kdl_vendor</depend>
   <depend>kdl_parser</depend>
 
   <exec_depend>lbr_fri_ros2</exec_depend>
