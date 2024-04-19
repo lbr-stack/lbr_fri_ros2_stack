@@ -19,7 +19,7 @@ find_package(tf2_ros REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(urdf REQUIRED)
 find_package(geometry_msgs REQUIRED)
-find_package(orocos_kdl REQUIRED)
+find_package(orocos_kdl_vendor)
 find_package(kdl_parser REQUIRED)
 
 # cartesian_pose_node
@@ -34,7 +34,7 @@ ament_target_dependencies(cartesian_pose_node
   tf2_ros
   urdf
   sensor_msgs
-  orocos_kdl
+  orocos_kdl_vendor
   kdl_parser
   geometry_msgs
 )
