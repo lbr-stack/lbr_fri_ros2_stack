@@ -14,50 +14,50 @@ class AdmittanceController(object):
         dq_gain: np.ndarray = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]),
         dx_gain: np.ndarray = np.array([1.0, 1.0, 1.0, 20.0, 40.0, 60.0]),
     ) -> None:
-        self.lbr_position_command_ = LBRPositionCommand()
+        self._lbr_position_command = LBRPositionCommand()
 
-        self.chain_ = kinpy.build_serial_chain_from_urdf(
+        self._chain = kinpy.build_serial_chain_from_urdf(
             data=robot_description,
             root_link_name=base_link,
             end_link_name=end_effector_link,
         )
 
-        self.dof_ = len(self.chain_.get_joint_parameter_names())
-        self.jacobian_ = np.zeros((6, self.dof_))
-        self.jacobian_inv_ = np.zeros((self.dof_, 6))
-        self.q = np.zeros(self.dof_)
-        self.dq_ = np.zeros(self.dof_)
-        self.tau_ext_ = np.zeros(6)
-        self.dq_gain_ = np.diag(dq_gain)
-        self.dx_gain_ = np.diag(dx_gain)
-        self.f_ext_ = np.zeros(6)
-        self.f_ext_th_ = f_ext_th
-        self.alpha_ = 0.99
+        self._dof = len(self._chain.get_joint_parameter_names())
+        self._jacobian = np.zeros((6, self._dof))
+        self._jacobian_inv = np.zeros((self._dof, 6))
+        self._q = np.zeros(self._dof)
+        self._dq = np.zeros(self._dof)
+        self._tau_ext = np.zeros(6)
+        self._dq_gain = np.diag(dq_gain)
+        self._dx_gain = np.diag(dx_gain)
+        self._f_ext = np.zeros(6)
+        self._f_ext_th = f_ext_th
+        self._alpha = 0.99
 
     def __call__(self, lbr_state: LBRState) -> LBRPositionCommand:
         self.q_ = np.array(lbr_state.measured_joint_position.tolist())
-        self.tau_ext_ = np.array(lbr_state.external_torque.tolist())
+        self._tau_ext = np.array(lbr_state.external_torque.tolist())
 
-        self.jacobian_ = self.chain_.jacobian(self.q_)
+        self._jacobian = self._chain.jacobian(self.q_)
 
-        self.jacobian_inv_ = np.linalg.pinv(self.jacobian_, rcond=0.1)
-        self.f_ext_ = self.jacobian_inv_.T @ self.tau_ext_
+        self._jacobian_inv = np.linalg.pinv(self._jacobian, rcond=0.1)
+        self._f_ext = self._jacobian_inv.T @ self._tau_ext
 
-        self.f_ext_ = np.where(
-            abs(self.f_ext_) > self.f_ext_th_,
-            self.dx_gain_ @ np.sign(self.f_ext_) * (abs(self.f_ext_) - self.f_ext_th_),
+        self._f_ext = np.where(
+            abs(self._f_ext) > self._f_ext_th,
+            self._dx_gain @ np.sign(self._f_ext) * (abs(self._f_ext) - self._f_ext_th),
             0.0,
         )
 
         # additional smoothing required in python
-        self.dq_ = (
-            self.alpha_ * self.dq_
-            + (1 - self.alpha_) * self.dq_gain_ @ self.jacobian_inv_ @ self.f_ext_
+        self._dq = (
+            self._alpha * self._dq
+            + (1 - self._alpha) * self._dq_gain @ self._jacobian_inv @ self._f_ext
         )
 
-        self.lbr_position_command_.joint_position = (
+        self._lbr_position_command.joint_position = (
             np.array(lbr_state.measured_joint_position.tolist())
-            + lbr_state.sample_time * self.dq_
+            + lbr_state.sample_time * self._dq
         ).data
 
-        return self.lbr_position_command_
+        return self._lbr_position_command

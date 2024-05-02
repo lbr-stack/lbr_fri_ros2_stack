@@ -11,12 +11,12 @@ class LBRJointTrajectoryExecutionerNode(Node):
         node_name: str,
     ) -> None:
         super().__init__(node_name=node_name)
-        self.joint_trajectory_action_client_ = ActionClient(
+        self._joint_trajectory_action_client = ActionClient(
             node=self,
             action_type=FollowJointTrajectory,
             action_name="/lbr/joint_trajectory_controller/follow_joint_trajectory",
         )
-        while not self.joint_trajectory_action_client_.wait_for_server(1):
+        while not self._joint_trajectory_action_client.wait_for_server(1):
             self.get_logger().info("Waiting for action server to become available...")
         self.get_logger().info("Action server available.")
 
@@ -40,7 +40,7 @@ class LBRJointTrajectoryExecutionerNode(Node):
         joint_trajectory_goal.trajectory.points.append(point)
 
         # send goal
-        goal_future = self.joint_trajectory_action_client_.send_goal_async(
+        goal_future = self._joint_trajectory_action_client.send_goal_async(
             joint_trajectory_goal
         )
         rclpy.spin_until_future_complete(self, goal_future)
