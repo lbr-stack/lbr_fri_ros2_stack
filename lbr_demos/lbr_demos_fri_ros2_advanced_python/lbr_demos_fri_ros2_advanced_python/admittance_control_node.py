@@ -8,7 +8,7 @@ from .admittance_controller import AdmittanceController
 
 
 class AdmittanceControlNode(Node):
-    def __init__(self, node_name="admittance_control_node") -> None:
+    def __init__(self, node_name: str = "admittance_control_node") -> None:
         super().__init__(node_name=node_name)
 
         # parameters
@@ -41,7 +41,7 @@ class AdmittanceControlNode(Node):
         lbr_command = self._controller(self._lbr_state)
         self._lbr_position_command_pub.publish(lbr_command)
 
-    def _smooth_lbr_state(self, lbr_state: LBRState, alpha: float):
+    def _smooth_lbr_state(self, lbr_state: LBRState, alpha: float) -> None:
         if not self._init:
             self._lbr_state = lbr_state
             self._init = True
@@ -58,7 +58,7 @@ class AdmittanceControlNode(Node):
         ).data
 
 
-def main(args=None):
+def main(args=None) -> None:
     rclpy.init(args=args)
     admittance_control_node = AdmittanceControlNode()
     rclpy.spin(admittance_control_node)
