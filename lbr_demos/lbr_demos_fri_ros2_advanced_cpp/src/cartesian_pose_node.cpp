@@ -1,13 +1,14 @@
 #include <string>
 
-#include "friClientIf.h"
 #include "geometry_msgs/msg/pose.hpp"
 #include "kdl/chainfksolverpos_recursive.hpp"
 #include "kdl/chainiksolverpos_lma.hpp"
 #include "kdl_parser/kdl_parser.hpp"
+#include "rclcpp/rclcpp.hpp"
+
+#include "friClientIf.h"
 #include "lbr_fri_msgs/msg/lbr_position_command.hpp"
 #include "lbr_fri_msgs/msg/lbr_state.hpp"
-#include "rclcpp/rclcpp.hpp"
 
 class CartesianPoseNode : public rclcpp::Node {
 protected:
@@ -77,15 +78,16 @@ public:
 
     KDL::Tree robot_tree;
     if (!kdl_parser::treeFromString(robot_description_string, robot_tree)) {
-      std::cout << "Failed to construct kdl tree." << std::endl;
+      RCLCPP_ERROR(this->get_logger(), "Failed to construct kdl tree.");
+      return;
     }
 
     std::string root_link = "link_0"; // adjust with your URDF‘s root link
     std::string tip_link = "link_ee"; // adjust with your URDF‘s tip link
     if (!robot_tree.getChain(root_link, tip_link, chain_)) {
-      std::cerr << "Failed to get chain from tree." << std::endl;
+      RCLCPP_ERROR(this->get_logger(), "Failed to get chain from tree.");
     } else {
-      std::cout << "Get chain from tree successfully." << std::endl;
+      RCLCPP_INFO(this->get_logger(), "Get chain from tree successfully.");
     }
 
     lbr_position_command_pub_ = this->create_publisher<lbr_fri_msgs::msg::LBRPositionCommand>(

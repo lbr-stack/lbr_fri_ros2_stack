@@ -25,7 +25,7 @@ private:
    * @function: callback function for Cartesian Pose Subscriber
    * @param msg Cartesian Pose of the robot
    */
-  void topic_callback(const geometry_msgs::msg::Pose &msg) {
+  void on_cartesian_pose(const geometry_msgs::msg::Pose &msg) {
     if (!is_init_) {
       initial_cartesian_pose_ = msg;
       is_init_ = true;
@@ -50,10 +50,10 @@ public:
     phase_ = 0.0;
 
     cartesian_pose_publisher_ =
-        this->create_publisher<geometry_msgs::msg::Pose>("/lbr/command/cartesian_pose", 10);
+        this->create_publisher<geometry_msgs::msg::Pose>("/lbr/command/cartesian_pose", 1);
     cartesian_pose_subscriber_ = this->create_subscription<geometry_msgs::msg::Pose>(
-        "/lbr/state/cartesian_pose", 10,
-        std::bind(&CartesianPosePublisherNode::topic_callback, this, _1));
+        "/lbr/state/cartesian_pose", 1,
+        std::bind(&CartesianPosePublisherNode::on_cartesian_pose, this, _1));
   }
 };
 
