@@ -1,6 +1,6 @@
 LBR Demos FRI ROS 2 Advanced Python
 ===================================
-Collection of advanced usage examples for the ``lbr_fri_ros2`` package through Python.
+Collection of advanced usage examples for the ``lbr_ros2_control`` package through Python.
 
 .. warning::
     Do always execute in ``T1`` mode first.
@@ -18,12 +18,32 @@ Admittance Controller
 
 .. code-block:: bash
 
-    ros2 launch lbr_fri_ros2 app.launch.py model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
+    ros2 launch lbr_bringup bringup.launch.py sim:=false ctrl:=forward_lbr_position_command_controller model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
 
 #. Run the `admittance_control_node <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_demos_fri_ros2_advanced_python/lbr_demos_fri_ros2_advanced_python/admittance_control_node.py>`_:
 
 .. code-block:: bash
 
-    ros2 launch lbr_demos_fri_ros2_advanced_python admittance_control_node.launch.py model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
+    ros2 run lbr_demos_fri_ros2_advanced_python admittance_control_node --ros-args -r __ns:=/lbr
+
+#. Now gently move the robot at the end-effector.
+
+Admittance Controller with Remote Center of Motion
+--------------------------------------------------
+#. .. dropdown:: Launch the ``LBRServer`` application on the ``KUKA smartPAD``
+
+    .. thumbnail:: ../../doc/img/applications_lbr_server.png
+
+#. Launch the robot driver:
+
+.. code-block:: bash
+
+    ros2 launch lbr_bringup bringup.launch.py sim:=false ctrl:=forward_lbr_position_command_controller model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
+
+#. Run the `admittance_rcm_control_node <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_demos_fri_ros2_advanced_python/lbr_demos_fri_ros2_advanced_python/admittance_rcm_control_node.py>`_:
+
+.. code-block:: bash
+
+    ros2 run lbr_demos_fri_ros2_advanced_python admittance_rcm_control_node --ros-args -r __ns:=/lbr
 
 #. Now gently move the robot at the end-effector.
