@@ -20,9 +20,12 @@ This demo implements a simple admittance controller.
 
 .. code-block:: bash
 
-    ros2 launch lbr_bringup bringup.launch.py sim:=false ctrl:=forward_lbr_position_command_controller model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
+    ros2 launch lbr_bringup bringup.launch.py \
+        sim:=false \
+        ctrl:=forward_lbr_position_command_controller \
+        model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
 
-#. Run the `admittance_control <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_demos_fri_ros2_advanced_python/lbr_demos_fri_ros2_advanced_python/admittance_control.py>`_ with remapping and parameter file:
+#. Run the `admittance_control <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_demos_fri_ros2_advanced_python/lbr_demos_fri_ros2_advanced_python/admittance_control_node.py>`_ with remapping and parameter file:
 
 .. code-block:: bash
 
@@ -44,9 +47,12 @@ This demo implements an admittance controller with a remote center of motion (RC
 
 .. code-block:: bash
 
-    ros2 launch lbr_bringup bringup.launch.py sim:=false ctrl:=forward_lbr_position_command_controller model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
+    ros2 launch lbr_bringup bringup.launch.py \
+        sim:=false \
+        ctrl:=forward_lbr_position_command_controller \
+        model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
 
-#. Run the `admittance_rcm_control <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_demos_fri_ros2_advanced_python/lbr_demos_fri_ros2_advanced_python/admittance_rcm_control.py>`_ with remapping and parameter file:
+#. Run the `admittance_rcm_control <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_demos_fri_ros2_advanced_python/lbr_demos_fri_ros2_advanced_python/admittance_rcm_control_node.py>`_ with remapping and parameter file:
 
 .. code-block:: bash
 

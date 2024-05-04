@@ -17,6 +17,7 @@ class LBRAdmittanceControlRCMNode(LBRBasePositionCommandNode):
         self.declare_parameter("f_ext_th", [4.0, 4.0, 4.0, 1.0, 1.0, 1.0])
         self.declare_parameter("dq_gain", [10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0])
         self.declare_parameter("dx_gain", [0.1, 0.1, 0.1, 0.1, 0.1, 0.1])
+        self.declare_parameter("exp_smooth", 0.95)
 
         self._f_ext_th = np.array(
             self.get_parameter("f_ext_th").get_parameter_value().double_array_value
@@ -28,7 +29,11 @@ class LBRAdmittanceControlRCMNode(LBRBasePositionCommandNode):
             self.get_parameter("dx_gain").get_parameter_value().double_array_value
         )
 
-        self._alpha = 0.95
+        self._exp_smooth = (
+            self.get_parameter("exp_smooth").get_parameter_value().double_value
+        )
+        if self._exp_smooth < 0.0 or self._exp_smooth > 1.0:
+            raise ValueError("Exponential smoothing factor must be in [0, 1].")
 
         self._dq = np.zeros(7)
         self._controller = AdmittanceRCMController(
@@ -57,7 +62,7 @@ class LBRAdmittanceControlRCMNode(LBRBasePositionCommandNode):
         ).flatten()
         dx = np.clip(dx, -1.0, 1.0)
         dq = Jinv @ dx
-        self._dq = self._alpha * self._dq + (1.0 - self._alpha) * dq
+        self._dq = self._exp_smooth * self._dq + (1.0 - self._exp_smooth) * dq
         return self._dq
 
     def _on_lbr_state(self, msg: LBRState) -> None:
