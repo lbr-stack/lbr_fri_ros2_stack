@@ -8,24 +8,32 @@ from .lbr_base_position_command_node import LBRBasePositionCommandNode
 
 
 class AdmittanceControlNode(LBRBasePositionCommandNode):
-    def __init__(self, node_name: str = "admittance_control_node") -> None:
+    def __init__(self, node_name: str = "admittance_control") -> None:
         super().__init__(node_name=node_name)
 
         # parameters
         self.declare_parameter("base_link", "link_0")
         self.declare_parameter("end_effector_link", "link_ee")
+        self.declare_parameter("f_ext_th", [2.0, 2.0, 2.0, 0.5, 0.5, 0.5])
+        self.declare_parameter("dq_gain", [10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0])
+        self.declare_parameter("dx_gain", [0.1, 0.1, 0.1, 0.1, 0.1, 0.1])
 
         self._init = False
         self._lbr_state = LBRState()
+        self._alpha = 0.95
 
         self._controller = AdmittanceController(
             robot_description=self._robot_description,
-            base_link=str(self.get_parameter("base_link").value),
-            end_effector_link=str(self.get_parameter("end_effector_link").value),
+            base_link=self.get_parameter("base_link")
+            .get_parameter_value()
+            .string_value,
+            end_effector_link=self.get_parameter("end_effector_link")
+            .get_parameter_value()
+            .string_value,
         )
 
     def _on_lbr_state(self, lbr_state: LBRState) -> None:
-        self._smooth_lbr_state(lbr_state, 0.95)
+        self._smooth_lbr_state(lbr_state, self._alpha)
 
         lbr_command = self._controller(self._lbr_state, self._dt)
         self._lbr_position_command_pub.publish(lbr_command)

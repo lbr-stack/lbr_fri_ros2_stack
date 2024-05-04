@@ -8,10 +8,12 @@ from .lbr_base_position_command_node import LBRBasePositionCommandNode
 
 
 class LBRAdmittanceControlRCMNode(LBRBasePositionCommandNode):
-    def __init__(self, node_name: str = "admittance_rcm_control_node") -> None:
+    def __init__(self, node_name: str = "admittance_rcm_control") -> None:
         super().__init__(node_name)
 
         # declare and get parameters
+        self.declare_parameter("base_link", "link_0")
+        self.declare_parameter("end_effector_link", "link_ee")
         self.declare_parameter("f_ext_th", [4.0, 4.0, 4.0, 1.0, 1.0, 1.0])
         self.declare_parameter("dq_gain", [10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0])
         self.declare_parameter("dx_gain", [0.1, 0.1, 0.1, 0.1, 0.1, 0.1])
@@ -29,7 +31,15 @@ class LBRAdmittanceControlRCMNode(LBRBasePositionCommandNode):
         self._alpha = 0.95
 
         self._dq = np.zeros(7)
-        self._controller = AdmittanceRCMController(self._robot_description)
+        self._controller = AdmittanceRCMController(
+            robot_description=self._robot_description,
+            base_link=self.get_parameter("base_link")
+            .get_parameter_value()
+            .string_value,
+            end_effector_link=self.get_parameter("end_effector_link")
+            .get_parameter_value()
+            .string_value,
+        )
 
     def _command(self, q) -> None:
         lbr_command = LBRPositionCommand()

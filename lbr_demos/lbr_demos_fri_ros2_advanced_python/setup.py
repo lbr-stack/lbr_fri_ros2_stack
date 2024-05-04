@@ -11,6 +11,7 @@ setup(
     data_files=[
         ("share/ament_index/resource_index/packages", ["resource/" + package_name]),
         ("share/" + package_name, ["package.xml"]),
+        ("share/" + package_name + "/config", glob.glob("config/*.yaml")),
         ("share/" + package_name + "/launch", glob.glob("launch/*.py")),
     ],
     install_requires=["setuptools"],
@@ -22,8 +23,8 @@ setup(
     tests_require=["pytest"],
     entry_points={
         "console_scripts": [
-            "admittance_control_node = lbr_demos_fri_ros2_advanced_python.admittance_control_node:main",
-            "admittance_rcm_control_node = lbr_demos_fri_ros2_advanced_python.admittance_rcm_control_node:main",
+            "admittance_control = lbr_demos_fri_ros2_advanced_python.admittance_control_node:main",
+            "admittance_rcm_control = lbr_demos_fri_ros2_advanced_python.admittance_rcm_control_node:main",
         ],
     },
 )

@@ -9,8 +9,6 @@ class AdmittanceRCMController:
         base_link: str = "link_0",
         end_effector_link: str = "link_ee",
     ):
-        self._solver_dur = None
-
         self._robot = optas.RobotModel(
             urdf_string=robot_description, time_derivs=[0, 1]
         )
