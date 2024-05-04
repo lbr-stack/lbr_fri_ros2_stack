@@ -37,7 +37,7 @@ class LBRAdmittanceControlRCMNode(LBRBasePositionCommandNode):
         self._lbr_position_command_pub.publish(lbr_command)
 
     def _admittance(self, tau_ext, qc) -> None:
-        J = self._controller.jacobian(qc)
+        J = self._controller.jacobian_func(qc)
         Jinv = np.linalg.pinv(J, rcond=0.1)
         f_ext = Jinv.T @ tau_ext
         dx = np.where(

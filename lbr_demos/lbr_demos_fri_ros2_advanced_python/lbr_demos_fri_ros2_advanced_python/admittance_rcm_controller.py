@@ -11,26 +11,26 @@ class AdmittanceRCMController:
     ):
         self._solver_dur = None
 
-        robot = optas.RobotModel(urdf_string=robot_description, time_derivs=[0, 1])
-        self._robot = robot
+        self._robot = optas.RobotModel(
+            urdf_string=robot_description, time_derivs=[0, 1]
+        )
 
-        self.jacobian = self._robot.get_link_geometric_jacobian_function(
+        self.jacobian_func = self._robot.get_link_geometric_jacobian_function(
             link=end_effector_link, base_link=base_link, numpy_output=True
         )
 
         T = 2
-        builder = optas.OptimizationBuilder(T, robots=[robot])
-        name = robot.get_name()
-        self._name = name
+        builder = optas.OptimizationBuilder(T, robots=[self._robot])
+        self._name = self._robot.get_name()
 
         rcm = builder.add_parameter("rcm", 3)
 
-        q0 = builder.get_model_state(name, 0, time_deriv=0)
-        qF = builder.get_model_state(name, 1, time_deriv=0)
-        qd = builder.get_model_state(name, 0, time_deriv=1)
+        q0 = builder.get_model_state(self._name, 0, time_deriv=0)
+        qF = builder.get_model_state(self._name, 1, time_deriv=0)
+        qd = builder.get_model_state(self._name, 0, time_deriv=1)
 
-        qc = builder.add_parameter("qc", robot.ndof)
-        qd_goal = builder.add_parameter("qd_goal", robot.ndof)
+        qc = builder.add_parameter("qc", self._robot.ndof)
+        qd_goal = builder.add_parameter("qd_goal", self._robot.ndof)
 
         _q = optas.SX.sym("q", self._robot.ndof)
         _rcm = optas.SX.sym("rcm", 3)
@@ -49,12 +49,12 @@ class AdmittanceRCMController:
         builder.add_equality_constraint("qinit", q0, qc)
         builder.add_equality_constraint("dynamics", q0 + qd, qF)
 
-        self._eff_transform = robot.get_global_link_transform_function(
+        self._eff_transform = self._robot.get_global_link_transform_function(
             end_effector_link
         )
 
-        q = cs.SX.sym("q", robot.ndof)
-        p = robot.get_global_link_position(end_effector_link, q)
+        q = cs.SX.sym("q", self._robot.ndof)
+        p = self._robot.get_global_link_position(end_effector_link, q)
         self._xpos = cs.Function("xpos", [q], [p[0]])
 
         self._solver = optas.ScipyMinimizeSolver(builder.build()).setup("SLSQP")

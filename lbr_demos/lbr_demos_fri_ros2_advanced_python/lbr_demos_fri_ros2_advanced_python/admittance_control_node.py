@@ -1,6 +1,5 @@
 import numpy as np
 import rclpy
-from rclpy.node import Node
 
 from lbr_fri_msgs.msg import LBRState
 
@@ -28,7 +27,7 @@ class AdmittanceControlNode(LBRBasePositionCommandNode):
     def _on_lbr_state(self, lbr_state: LBRState) -> None:
         self._smooth_lbr_state(lbr_state, 0.95)
 
-        lbr_command = self._controller(self._lbr_state)
+        lbr_command = self._controller(self._lbr_state, self._dt)
         self._lbr_position_command_pub.publish(lbr_command)
 
     def _smooth_lbr_state(self, lbr_state: LBRState, alpha: float) -> None:

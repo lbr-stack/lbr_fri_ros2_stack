@@ -1,5 +1,5 @@
-import kinpy
 import numpy as np
+import optas
 
 from lbr_fri_msgs.msg import LBRPositionCommand, LBRState
 
@@ -16,13 +16,13 @@ class AdmittanceController(object):
     ) -> None:
         self._lbr_position_command = LBRPositionCommand()
 
-        self._chain = kinpy.build_serial_chain_from_urdf(
-            data=robot_description,
-            root_link_name=base_link,
-            end_link_name=end_effector_link,
+        self._robot = optas.RobotModel(urdf_string=robot_description)
+
+        self._jacobian_func = self._robot.get_link_geometric_jacobian_function(
+            link=end_effector_link, base_link=base_link, numpy_output=True
         )
 
-        self._dof = len(self._chain.get_joint_parameter_names())
+        self._dof = self._robot.ndof
         self._jacobian = np.zeros((6, self._dof))
         self._jacobian_inv = np.zeros((self._dof, 6))
         self._q = np.zeros(self._dof)
@@ -32,14 +32,13 @@ class AdmittanceController(object):
         self._dx_gain = np.diag(dx_gain)
         self._f_ext = np.zeros(6)
         self._f_ext_th = f_ext_th
-        self._alpha = 0.99
+        self._alpha = 0.95
 
-    def __call__(self, lbr_state: LBRState) -> LBRPositionCommand:
-        self.q_ = np.array(lbr_state.measured_joint_position.tolist())
+    def __call__(self, lbr_state: LBRState, dt: float) -> LBRPositionCommand:
+        self._q = np.array(lbr_state.measured_joint_position.tolist())
         self._tau_ext = np.array(lbr_state.external_torque.tolist())
 
-        self._jacobian = self._chain.jacobian(self.q_)
-
+        self._jacobian = self._jacobian_func(self._q)
         self._jacobian_inv = np.linalg.pinv(self._jacobian, rcond=0.1)
         self._f_ext = self._jacobian_inv.T @ self._tau_ext
 
@@ -56,8 +55,7 @@ class AdmittanceController(object):
         )
 
         self._lbr_position_command.joint_position = (
-            np.array(lbr_state.measured_joint_position.tolist())
-            + lbr_state.sample_time * self._dq
+            np.array(lbr_state.measured_joint_position.tolist()) + dt * self._dq
         ).data
 
         return self._lbr_position_command
