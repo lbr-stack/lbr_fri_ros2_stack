@@ -51,7 +51,8 @@ rclcpp_components_register_node(admittance_control_component
 
 # pose planning node
 add_library(pose_planning_component
-  src/pose_planning_node.cpp
+  SHARED
+    src/pose_planning_node.cpp
 )
 
 target_include_directories(pose_planning_component

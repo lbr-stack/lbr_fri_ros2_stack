@@ -32,3 +32,35 @@ Admittance Controller
         --params-file `ros2 pkg prefix lbr_demos_fri_ros2_advanced_cpp`/share/lbr_demos_fri_ros2_advanced_cpp/config/admittance_control.yaml
 
 #. Now gently move the robot at the end-effector.
+
+Pose Controller
+---------------
+This demo uses ``KDL`` to calculate forward kinematics and inverse
+kinematics to move the robot's end-effector along the z-axis in Cartesian space.
+
+#. .. dropdown:: Launch the ``LBRServer`` application on the ``KUKA smartPAD``
+
+    .. thumbnail:: ../../doc/img/applications_lbr_server.png
+
+#. Launch the robot driver:
+
+.. code-block:: bash
+
+    ros2 launch lbr_bringup bringup.launch.py \
+        sim:=false \
+        ctrl:=forward_lbr_position_command_controller \
+        model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
+
+#. Launch the pose control
+
+.. code-block:: bash
+    
+    ros2 run lbr_demos_fri_ros2_advanced_cpp pose_control --ros-args \
+        -r __ns:=/lbr
+
+#. Launch the path planning
+
+.. code-block:: bash
+    
+    ros2 run lbr_demos_fri_ros2_advanced_cpp pose_planning --ros-args \
+        -r __ns:=/lbr

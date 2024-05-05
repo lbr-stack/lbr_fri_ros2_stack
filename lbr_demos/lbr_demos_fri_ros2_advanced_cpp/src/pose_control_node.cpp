@@ -53,8 +53,8 @@ protected:
   void on_lbr_state_(const lbr_fri_msgs::msg::LBRState::SharedPtr lbr_state) override {
     current_lbr_state_ = *lbr_state;
 
-    double joint_position[7];
-    for (int i = 0; i < 7; i++) {
+    double joint_position[KUKA::FRI::LBRState::NUMBER_OF_JOINTS];
+    for (int i = 0; i < KUKA::FRI::LBRState::NUMBER_OF_JOINTS; i++) {
       joint_position[i] = current_lbr_state_.measured_joint_position[i];
     }
     current_pose_ = compute_fk_(joint_position);
