@@ -7,7 +7,7 @@
 #include "admittance_controller.hpp"
 #include "lbr_base_position_command_node.hpp"
 
-namespace lbr_fri_ros2 {
+namespace lbr_demos {
 class AdmittanceControlNode : public LBRBasePositionCommandNode {
 public:
   AdmittanceControlNode(const rclcpp::NodeOptions &options)
@@ -66,8 +66,7 @@ protected:
 
   std::unique_ptr<AdmittanceController> admittance_controller_;
 };
-} // end of namespace lbr_fri_ros2
+} // end of namespace lbr_demos
 
 #include "rclcpp_components/register_node_macro.hpp"
-
-RCLCPP_COMPONENTS_REGISTER_NODE(lbr_fri_ros2::AdmittanceControlNode)
+RCLCPP_COMPONENTS_REGISTER_NODE(lbr_demos::AdmittanceControlNode)

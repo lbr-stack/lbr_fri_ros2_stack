@@ -9,8 +9,7 @@
 #include "lbr_fri_msgs/msg/lbr_position_command.hpp"
 #include "lbr_fri_msgs/msg/lbr_state.hpp"
 
-namespace lbr_fri_ros2 {
-
+namespace lbr_demos {
 class LBRBasePositionCommandNode : public rclcpp::Node {
 public:
   LBRBasePositionCommandNode(const std::string &node_name, const rclcpp::NodeOptions &options)
@@ -30,8 +29,6 @@ public:
         std::bind(&LBRBasePositionCommandNode::on_lbr_state_, this, std::placeholders::_1));
   }
 
-  virtual void on_lbr_state_(const lbr_fri_msgs::msg::LBRState::SharedPtr lbr_state) = 0;
-
 protected:
   rclcpp::Publisher<lbr_fri_msgs::msg::LBRPositionCommand>::SharedPtr lbr_position_command_pub_;
   rclcpp::Subscription<lbr_fri_msgs::msg::LBRState>::SharedPtr lbr_state_sub_;
@@ -41,6 +38,8 @@ protected:
   double dt_;
 
 protected:
+  virtual void on_lbr_state_(const lbr_fri_msgs::msg::LBRState::SharedPtr lbr_state) = 0;
+
   rclcpp::Parameter retrieve_parameter_(const std::string &remote_node_name,
                                         const std::string &parameter_name) {
     rclcpp::AsyncParametersClient robot_description_client(this, remote_node_name);
@@ -64,5 +63,5 @@ protected:
     return future.get()[0];
   }
 };
-} // end of namespace lbr_fri_ros2
+} // end of namespace lbr_demos
 #endif // LBR_DEMOS_FRI_ROS2_ADVANCED_CPP__LBR_BASE_POSITION_COMMAND_NODE_HPP_

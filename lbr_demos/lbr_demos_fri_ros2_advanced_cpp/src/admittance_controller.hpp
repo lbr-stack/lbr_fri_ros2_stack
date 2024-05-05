@@ -16,7 +16,7 @@
 #include "lbr_fri_msgs/msg/lbr_state.hpp"
 #include "lbr_fri_ros2/pinv.hpp"
 
-namespace lbr_fri_ros2 {
+namespace lbr_demos {
 class AdmittanceController {
   using joint_vector_t = Eigen::Vector<double, KUKA::FRI::LBRState::NUMBER_OF_JOINTS>;
   using cartesian_vector_t = Eigen::Vector<double, 6>;
@@ -50,7 +50,7 @@ public:
 
     jacobian_solver_->JntToJac(q_, jacobian_);
 
-    jacobian_inv_ = pinv(jacobian_.data);
+    jacobian_inv_ = lbr_fri_ros2::pinv(jacobian_.data);
     f_ext_ = jacobian_inv_.transpose() * tau_ext_;
 
     for (int i = 0; i < 6; i++) {
@@ -85,5 +85,5 @@ protected:
   cartesian_vector_t f_ext_;
   cartesian_vector_t f_ext_th_;
 };
-} // end of namespace lbr_fri_ros2
+} // end of namespace lbr_demos
 #endif // LBR_DEMOS_FRI_ROS2_ADVANCED_CPP__ADMITTANCE_CONTROLLER_HPP_
