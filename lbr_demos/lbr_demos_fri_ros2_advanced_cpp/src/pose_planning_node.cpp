@@ -43,8 +43,6 @@ protected:
 
       pose_pub_->publish(cartesian_pose_command);
     }
-
-    return;
   }
 };
 } // namespace lbr_demos

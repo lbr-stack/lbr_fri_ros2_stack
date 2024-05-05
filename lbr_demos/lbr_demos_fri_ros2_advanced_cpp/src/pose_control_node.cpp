@@ -59,8 +59,6 @@ protected:
     }
     current_pose_ = compute_fk_(joint_position);
     pose_pub_->publish(current_pose_);
-
-    return;
   }
 
   void on_pose_(const geometry_msgs::msg::Pose &msg) {
