@@ -9,13 +9,10 @@ from moveit_msgs.msg import (
     MotionPlanRequest,
     MotionSequenceItem,
     OrientationConstraint,
-    PlanningScene,
     PositionConstraint,
-    RobotState,
 )
 from rclpy.action import ActionClient
 from rclpy.node import Node
-from sensor_msgs.msg import JointState
 from shape_msgs.msg import SolidPrimitive
 from std_msgs.msg import Header
 
@@ -23,11 +20,6 @@ from std_msgs.msg import Header
 class SequencedMotion(Node):
     def __init__(self):
         super().__init__("sequenced_motion")
-        self._planning_scene_sub = self.create_subscription(
-            PlanningScene, "/lbr/monitored_planning_scene", self._on_planning_scene, 1
-        )
-        self._robot_state = None
-
         self._action_client = ActionClient(
             self, MoveGroupSequence, "/lbr/sequence_move_group"
         )
@@ -37,9 +29,6 @@ class SequencedMotion(Node):
         self._base = "link_0"
         self._end_effector = "link_ee"
         self._move_group_name = "arm"
-
-    def _on_planning_scene(self, msg: PlanningScene) -> None:
-        self._robot_state = msg.robot_state
 
     def _build_motion_plan_request(self, target_pose: Pose) -> MotionPlanRequest:
         req = MotionPlanRequest()
@@ -84,15 +73,14 @@ class SequencedMotion(Node):
 
     def execute_sequence(self, target_poses: List[Pose]) -> None:
         goal = MoveGroupSequence.Goal()
-        for idx, target_pose in enumerate(target_poses):
+        for target_pose in target_poses:
             goal.request.items.append(
                 MotionSequenceItem(
-                    blend_radius=(
-                        0.05 if idx != len(target_poses) - 1 else 0.0
-                    ),  # last radius must be 0
+                    blend_radius=(0.1),
                     req=self._build_motion_plan_request(target_pose),
                 )
             )
+        goal.request.items[-1].blend_radius = 0.0  # last radius must be 0
         future = self._action_client.send_goal_async(goal)
         rclpy.spin_until_future_complete(self, future)
 
