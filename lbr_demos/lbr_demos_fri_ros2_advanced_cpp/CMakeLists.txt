@@ -13,6 +13,7 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(fri_vendor REQUIRED)
 find_package(FRIClient REQUIRED)
+find_package(geometry_msgs REQUIRED)
 find_package(kdl_parser REQUIRED)
 find_package(lbr_fri_ros2 REQUIRED)
 find_package(lbr_fri_msgs REQUIRED)
@@ -30,8 +31,7 @@ target_include_directories(admittance_control_component
   PRIVATE src
 )
 
-ament_target_dependencies(
-  admittance_control_component
+ament_target_dependencies(admittance_control_component
   kdl_parser
   lbr_fri_ros2
   lbr_fri_msgs
@@ -45,19 +45,70 @@ target_link_libraries(admittance_control_component
 )
 
 rclcpp_components_register_node(admittance_control_component
-  PLUGIN lbr_fri_ros2::AdmittanceControlNode
-  EXECUTABLE admittance_control_node
+  PLUGIN lbr_demos::AdmittanceControlNode
+  EXECUTABLE admittance_control
 )
 
+# pose planning node
+add_library(pose_planning_component
+  SHARED
+    src/pose_planning_node.cpp
+)
+
+target_include_directories(pose_planning_component
+  PRIVATE src
+)
+
+ament_target_dependencies(pose_planning_component
+  geometry_msgs
+  rclcpp
+  rclcpp_components
+)
+
+rclcpp_components_register_node(pose_planning_component
+  PLUGIN lbr_demos::PosePlanningNode
+  EXECUTABLE pose_planning
+)
+
+# pose contol node
+add_library(pose_control_component
+  SHARED
+    src/pose_control_node.cpp
+)
+
+target_include_directories(pose_control_component
+  PRIVATE src
+)
+
+ament_target_dependencies(pose_control_component
+  fri_vendor
+  geometry_msgs
+  kdl_parser
+  lbr_fri_msgs
+  orocos_kdl_vendor
+  rclcpp
+  rclcpp_components
+)
+
+target_link_libraries(pose_control_component
+  FRIClient::FRIClient
+)
+
+rclcpp_components_register_node(pose_control_component
+  PLUGIN lbr_demos::PoseControlNode
+  EXECUTABLE pose_control
+)
+
+# install
 install(
-  TARGETS admittance_control_component
+  TARGETS admittance_control_component pose_planning_component pose_control_component
   LIBRARY DESTINATION lib
-  RUNTIME DESTINATION lib/lbr_demos_fri_ros2_advanced_cpp
+  RUNTIME DESTINATION lib/${PROJECT_NAME}
 )
 
 install(
-  DIRECTORY config launch
-  DESTINATION share/lbr_demos_fri_ros2_advanced_cpp
+  DIRECTORY config
+  DESTINATION share/${PROJECT_NAME}
 )
 
 ament_package()
