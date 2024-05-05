@@ -56,7 +56,7 @@ install(
 )
 
 install(
-  DIRECTORY config launch
+  DIRECTORY config
   DESTINATION share/lbr_demos_fri_ros2_advanced_cpp
 )
 
