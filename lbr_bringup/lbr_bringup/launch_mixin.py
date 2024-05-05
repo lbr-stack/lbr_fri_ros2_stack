@@ -67,7 +67,10 @@ class LBRMoveGroupMixin:
                     f"urdf/{robot_name}/{robot_name}.urdf.xacro",
                 ),
             )
-            .planning_pipelines(default_planning_pipeline="ompl", pipelines=["ompl"])
+            .planning_pipelines(
+                default_planning_pipeline="ompl",
+                pipelines=["pilz_industrial_motion_planner", "ompl"],
+            )
         )
 
     @staticmethod
@@ -78,9 +81,7 @@ class LBRMoveGroupMixin:
                 "allow_trajectory_execution"
             ),
             # Note: Wrapping the following values is necessary so that the parameter value can be the empty string
-            "capabilities": ParameterValue(
-                LaunchConfiguration("capabilities"), value_type=str
-            ),
+            "capabilities": "pilz_industrial_motion_planner/MoveGroupSequenceAction pilz_industrial_motion_planner/MoveGroupSequenceService",
             "disable_capabilities": ParameterValue(
                 LaunchConfiguration("disable_capabilities"), value_type=str
             ),
