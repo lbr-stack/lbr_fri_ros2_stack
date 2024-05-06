@@ -39,8 +39,8 @@ class SequencedMotion(Node):
         req.allowed_planning_time = 10.0
         req.group_name = self._move_group_name
         req.max_acceleration_scaling_factor = 0.1
-        req.max_velocity_scaling_factor = 0.01
-        req.num_planning_attempts = 100
+        req.max_velocity_scaling_factor = 0.1
+        req.num_planning_attempts = 1000
 
         # goal constraints
         req.goal_constraints.append(
@@ -89,8 +89,10 @@ def main() -> None:
     rclpy.init()
     sequenced_motion = SequencedMotion()
     target_poses = [
-        Pose(position=Point(x=0.0, y=0.0, z=1.0), orientation=Quaternion(w=1.0)),
-        Pose(position=Point(x=0.2, y=0.2, z=0.8), orientation=Quaternion(w=1.0)),
+        Pose(
+            position=Point(x=-0.06, y=-0.32, z=1.0), orientation=Quaternion(w=1.0)
+        ),  # add poses as needed
+        Pose(position=Point(x=0.38, y=-0.33, z=1.0), orientation=Quaternion(w=1.0)),
     ]
     sequenced_motion.execute_sequence(target_poses=target_poses)
     rclpy.shutdown()
