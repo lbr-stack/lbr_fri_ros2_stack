@@ -16,7 +16,7 @@ public:
       : Node(node_name, options) {
     // retrieve parameters
     robot_description_ =
-        this->retrieve_parameter_("controller_manager", "robot_description").as_string();
+        this->retrieve_parameter_("robot_state_publisher", "robot_description").as_string();
     update_rate_ = this->retrieve_parameter_("controller_manager", "update_rate").as_int();
     dt_ = 1.0 / static_cast<double>(update_rate_);
 

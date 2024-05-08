@@ -21,7 +21,7 @@ class LBRBasePositionCommandNode(Node):
 
         # retrieve parameters
         self._robot_description = self._retrieve_parameter(
-            "controller_manager/get_parameters", "robot_description"
+            "robot_state_publisher/get_parameters", "robot_description"
         ).string_value
         self._update_rate = self._retrieve_parameter(
             "controller_manager/get_parameters", "update_rate"
