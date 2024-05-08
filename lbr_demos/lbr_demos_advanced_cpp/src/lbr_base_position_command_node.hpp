@@ -42,8 +42,8 @@ protected:
 
   rclcpp::Parameter retrieve_parameter_(const std::string &remote_node_name,
                                         const std::string &parameter_name) {
-    rclcpp::AsyncParametersClient robot_description_client(this, remote_node_name);
-    while (!robot_description_client.wait_for_service(std::chrono::seconds(1))) {
+    rclcpp::AsyncParametersClient parameter_client(this, remote_node_name);
+    while (!parameter_client.wait_for_service(std::chrono::seconds(1))) {
       if (!rclcpp::ok()) {
         std::string err = "Interrupted while waiting for the service. Exiting.";
         RCLCPP_ERROR(this->get_logger(), err.c_str());
@@ -51,7 +51,7 @@ protected:
       }
       RCLCPP_INFO(this->get_logger(), "Wating for '%s' service...", remote_node_name.c_str());
     }
-    auto future = robot_description_client.get_parameters({parameter_name});
+    auto future = parameter_client.get_parameters({parameter_name});
     if (rclcpp::spin_until_future_complete(this->get_node_base_interface(), future) !=
         rclcpp::FutureReturnCode::SUCCESS) {
       std::string err = "Failed to retrieve '" + parameter_name + "'.";

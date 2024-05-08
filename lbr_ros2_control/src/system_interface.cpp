@@ -124,6 +124,10 @@ SystemInterface::on_init(const hardware_interface::HardwareInfo &system_info) {
     return controller_interface::CallbackReturn::ERROR;
   }
 
+  if (!verify_gpios_()) {
+    return controller_interface::CallbackReturn::ERROR;
+  }
+
   return controller_interface::CallbackReturn::SUCCESS;
 }
 
@@ -197,6 +201,14 @@ std::vector<hardware_interface::CommandInterface> SystemInterface::export_comman
     command_interfaces.emplace_back(info_.joints[i].name, hardware_interface::HW_IF_EFFORT,
                                     &hw_lbr_command_.torque[i]);
   }
+
+  // Cartesian impedance control command interfaces
+  command_interfaces.emplace_back(HW_IF_WRENCH, HW_IF_FORCE_X, &hw_lbr_command_.wrench[0]);
+  command_interfaces.emplace_back(HW_IF_WRENCH, HW_IF_FORCE_Y, &hw_lbr_command_.wrench[1]);
+  command_interfaces.emplace_back(HW_IF_WRENCH, HW_IF_FORCE_Z, &hw_lbr_command_.wrench[2]);
+  command_interfaces.emplace_back(HW_IF_WRENCH, HW_IF_TORQUE_X, &hw_lbr_command_.wrench[3]);
+  command_interfaces.emplace_back(HW_IF_WRENCH, HW_IF_TORQUE_Y, &hw_lbr_command_.wrench[4]);
+  command_interfaces.emplace_back(HW_IF_WRENCH, HW_IF_TORQUE_Z, &hw_lbr_command_.wrench[5]);
   return command_interfaces;
 }
 
@@ -326,9 +338,14 @@ hardware_interface::return_type SystemInterface::write(const rclcpp::Time & /*ti
     return hardware_interface::return_type::OK;
   }
   if (hw_client_command_mode_ == KUKA::FRI::EClientCommandMode::WRENCH) {
-    throw std::runtime_error(
-        lbr_fri_ros2::EnumMaps::client_command_mode_map(hw_client_command_mode_) +
-        " command mode currently not implemented.");
+    if (std::any_of(hw_lbr_command_.wrench.cbegin(), hw_lbr_command_.wrench.cend(),
+                    [](const double &v) { return std::isnan(v); }) ||
+        std::any_of(hw_lbr_command_.joint_position.cbegin(), hw_lbr_command_.joint_position.cend(),
+                    [](const double &v) { return std::isnan(v); })) {
+      return hardware_interface::return_type::OK;
+    }
+    async_client_ptr_->get_command_interface().set_command_target(hw_lbr_command_);
+    return hardware_interface::return_type::OK;
   }
 #if FRICLIENT_VERSION_MAJOR == 2
   if (hw_client_command_mode_ == KUKA::FRI::EClientCommandMode::CARTESIAN_POSE) {
@@ -479,9 +496,9 @@ bool SystemInterface::verify_auxiliary_sensor_() {
     RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME),
                         lbr_fri_ros2::ColorScheme::ERROR
                             << "Sensor '" << auxiliary_sensor.name.c_str()
-                            << "' received invalid number of state interfaces."
-                            << " Received '" << auxiliary_sensor.state_interfaces.size()
-                            << "', expected '" << static_cast<int>(AUXILIARY_SENSOR_SIZE) << "'"
+                            << "' received invalid number of state interfaces." << " Received '"
+                            << auxiliary_sensor.state_interfaces.size() << "', expected '"
+                            << static_cast<int>(AUXILIARY_SENSOR_SIZE) << "'"
                             << lbr_fri_ros2::ColorScheme::ENDC);
     return false;
   }
@@ -529,6 +546,27 @@ bool SystemInterface::verify_estimated_ft_sensor_() {
                               << lbr_fri_ros2::ColorScheme::ENDC);
       return false;
     }
+  }
+  return true;
+}
+
+bool SystemInterface::verify_gpios_() {
+  if (info_.gpios.size() != GPIO_SIZE) {
+    RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME),
+                        lbr_fri_ros2::ColorScheme::ERROR
+                            << "Expected '" << static_cast<int>(GPIO_SIZE) << "' GPIOs, got '"
+                            << info_.gpios.size() << "'" << lbr_fri_ros2::ColorScheme::ENDC);
+    return false;
+  }
+  if (info_.gpios[0].command_interfaces.size() != hw_lbr_command_.wrench.size()) {
+    RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME),
+                        lbr_fri_ros2::ColorScheme::ERROR
+                            << "GPIO '" << info_.gpios[0].name.c_str()
+                            << "' received invalid number of command interfaces. Received '"
+                            << info_.gpios[0].command_interfaces.size() << "', expected '"
+                            << hw_lbr_command_.wrench.size() << "'"
+                            << lbr_fri_ros2::ColorScheme::ENDC);
+    return false;
   }
   return true;
 }

@@ -1,5 +1,5 @@
-#ifndef LBR_ROS2_CONTROL__FORWARD_TORQUE_COMMAND_CONTROLLER_HPP_
-#define LBR_ROS2_CONTROL__FORWARD_TORQUE_COMMAND_CONTROLLER_HPP_
+#ifndef LBR_ROS2_CONTROL__LBR_TORQUE_COMMAND_CONTROLLER_HPP_
+#define LBR_ROS2_CONTROL__LBR_TORQUE_COMMAND_CONTROLLER_HPP_
 
 #include <array>
 #include <functional>
@@ -19,9 +19,9 @@
 #include "lbr_fri_msgs/msg/lbr_torque_command.hpp"
 
 namespace lbr_ros2_control {
-class ForwardLBRTorqueCommandController : public controller_interface::ControllerInterface {
+class LBRTorqueCommandController : public controller_interface::ControllerInterface {
 public:
-  ForwardLBRTorqueCommandController();
+  LBRTorqueCommandController();
 
   controller_interface::InterfaceConfiguration command_interface_configuration() const override;
 
@@ -57,4 +57,4 @@ protected:
       lbr_torque_command_subscription_ptr_;
 };
 } // end of namespace lbr_ros2_control
-#endif // LBR_ROS2_CONTROL__FORWARD_TORQUE_COMMAND_CONTROLLER_HPP_
+#endif // LBR_ROS2_CONTROL__LBR_TORQUE_COMMAND_CONTROLLER_HPP_

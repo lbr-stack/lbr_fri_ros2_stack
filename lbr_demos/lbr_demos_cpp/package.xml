@@ -3,7 +3,7 @@
 <package format="3">
   <name>lbr_demos_cpp</name>
   <version>1.4.3</version>
-  <description>C++ demos for the lbr_fri_ros2.</description>
+  <description>C++ demos for lbr_ros2_control.</description>
   <maintainer email="m.huber_1994@hotmail.de">mhubii</maintainer>
   <license>Apache License 2.0</license>
 
@@ -12,6 +12,7 @@
   <depend>control_msgs</depend>
   <depend>fri_vendor</depend>
   <depend>lbr_fri_msgs</depend>
+  <depend>lbr_fri_ros2</depend>
   <depend>rclcpp</depend>
   <depend>rclcpp_action</depend>
   <depend>trajectory_msgs</depend>

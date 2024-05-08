@@ -3,7 +3,7 @@
 <package format="3">
   <name>lbr_demos_advanced_py</name>
   <version>1.4.3</version>
-  <description>Advanced Python demos for the lbr_fri_ros2.</description>
+  <description>Advanced Python demos for the lbr_ros2_control.</description>
   <maintainer email="m.huber_1994@hotmail.de">mhubii</maintainer>
   <license>Apache License 2.0</license>
 

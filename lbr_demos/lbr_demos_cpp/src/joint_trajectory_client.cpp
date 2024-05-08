@@ -10,13 +10,13 @@
 #include "rclcpp_action/rclcpp_action.hpp"
 #include "trajectory_msgs/msg/joint_trajectory_point.hpp"
 
-class LBRJointTrajectoryExecutionerNode : public rclcpp::Node {
+class JointTrajectoryClient : public rclcpp::Node {
 public:
-  LBRJointTrajectoryExecutionerNode(const std::string &node_name) : Node(node_name) {
+  JointTrajectoryClient(const std::string &node_name) : Node(node_name) {
 
     joint_trajectory_action_client_ =
         rclcpp_action::create_client<control_msgs::action::FollowJointTrajectory>(
-            this, "/lbr/joint_trajectory_controller/follow_joint_trajectory");
+            this, "joint_trajectory_controller/follow_joint_trajectory");
 
     while (!joint_trajectory_action_client_->wait_for_action_server(std::chrono::seconds(1))) {
       RCLCPP_INFO(this->get_logger(), "Waiting for action server to become available...");
@@ -73,12 +73,11 @@ protected:
 
 int main(int argc, char **argv) {
   rclcpp::init(argc, argv);
-  auto joint_trajectory_executioner_node =
-      std::make_shared<LBRJointTrajectoryExecutionerNode>("joint_trajectory_executioner_node");
+  auto joint_trajectory_client = std::make_shared<JointTrajectoryClient>("joint_trajectory_client");
 
   // rotate odd joints
-  RCLCPP_INFO(joint_trajectory_executioner_node->get_logger(), "Rotating odd joints.");
-  joint_trajectory_executioner_node->execute({
+  RCLCPP_INFO(joint_trajectory_client->get_logger(), "Rotating odd joints.");
+  joint_trajectory_client->execute({
       1.0,
       0.0,
       1.0,
@@ -89,8 +88,8 @@ int main(int argc, char **argv) {
   });
 
   // move to zero position
-  RCLCPP_INFO(joint_trajectory_executioner_node->get_logger(), "Moving to zero position.");
-  joint_trajectory_executioner_node->execute({
+  RCLCPP_INFO(joint_trajectory_client->get_logger(), "Moving to zero position.");
+  joint_trajectory_client->execute({
       0.0,
       0.0,
       0.0,

@@ -87,7 +87,8 @@
                     <state_interface name="tracking_performance" />
                 </sensor>
 
-                <sensor name="estimated_ft_sensor">
+                <sensor
+                    name="estimated_ft_sensor">
                     <param name="chain_root">${chain_root}</param>
                     <param name="chain_tip">${chain_tip}</param>
                     <param name="damping">${damping}</param>
@@ -104,6 +105,17 @@
                     <state_interface name="torque.y" />
                     <state_interface name="torque.z" />
                 </sensor>
+
+                <!-- FRI Cartesian impedance control mode -->
+                <gpio
+                    name="wrench">
+                    <command_interface name="force.x" />
+                    <command_interface name="force.y" />
+                    <command_interface name="force.z" />
+                    <command_interface name="torque.x" />
+                    <command_interface name="torque.y" />
+                    <command_interface name="torque.z" />
+                </gpio>
             </xacro:unless>
 
             <!-- define joints and command/state interfaces for each joint -->

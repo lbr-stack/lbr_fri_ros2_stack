@@ -16,18 +16,18 @@ class TorqueSineOverlayNode(Node):
         self._phase = 0.0
         self._lbr_torque_command = LBRTorqueCommand()
 
-        # create publisher to /lbr/command/torque
+        # create publisher to command/torque
         self._lbr_torque_command_pub = self.create_publisher(
-            LBRTorqueCommand, "/lbr/command/torque", 1
+            LBRTorqueCommand, "command/torque", 1
         )
 
-        # create subscription to /lbr_state
+        # create subscription to state
         self._lbr_state_sub = self.create_subscription(
-            LBRState, "/lbr/state", self._on_lbr_state, 1
+            LBRState, "state", self._on_lbr_state, 1
         )
 
     def _on_lbr_state(self, lbr_state: LBRState) -> None:
-        self._lbr_torque_command.joint_position = lbr_state.ipo_joint_position
+        self._lbr_torque_command.joint_position = lbr_state.measured_joint_position
 
         if lbr_state.session_state == 4:  # KUKA::FRI::COMMANDING_ACTIVE == 4
             # overlay torque sine wave on 4th joint

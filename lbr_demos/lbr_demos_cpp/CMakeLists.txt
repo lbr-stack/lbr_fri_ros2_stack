@@ -15,31 +15,33 @@ find_package(control_msgs REQUIRED)
 find_package(fri_vendor REQUIRED)
 find_package(FRIClient REQUIRED)
 find_package(lbr_fri_msgs REQUIRED)
+find_package(lbr_fri_ros2 REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_action REQUIRED)
 find_package(trajectory_msgs REQUIRED)
 
 # joint sine overlay
-add_executable(joint_sine_overlay_node
-  src/joint_sine_overlay_node.cpp
+add_executable(joint_sine_overlay
+  src/joint_sine_overlay.cpp
 )
 
-ament_target_dependencies(joint_sine_overlay_node
+ament_target_dependencies(joint_sine_overlay
   fri_vendor
   lbr_fri_msgs
+  lbr_fri_ros2
   rclcpp
 )
 
-target_link_libraries(joint_sine_overlay_node
+target_link_libraries(joint_sine_overlay
   FRIClient::FRIClient
 )
 
 # joint trajectory executioner
-add_executable(joint_trajectory_executioner_node
-  src/joint_trajectory_executioner_node.cpp
+add_executable(joint_trajectory_client
+  src/joint_trajectory_client.cpp
 )
 
-ament_target_dependencies(joint_trajectory_executioner_node
+ament_target_dependencies(joint_trajectory_client
   control_msgs
   fri_vendor
   rclcpp
@@ -47,51 +49,48 @@ ament_target_dependencies(joint_trajectory_executioner_node
   trajectory_msgs
 )
 
-target_link_libraries(joint_trajectory_executioner_node
+target_link_libraries(joint_trajectory_client
   FRIClient::FRIClient
 )
 
 # torque sine overlay
-add_executable(torque_sine_overlay_node
-  src/torque_sine_overlay_node.cpp
+add_executable(torque_sine_overlay
+  src/torque_sine_overlay.cpp
 )
 
-ament_target_dependencies(torque_sine_overlay_node
+ament_target_dependencies(torque_sine_overlay
   fri_vendor
   lbr_fri_msgs
+  lbr_fri_ros2
   rclcpp
 )
 
-target_link_libraries(torque_sine_overlay_node
+target_link_libraries(torque_sine_overlay
   FRIClient::FRIClient
 )
 
 # wrench sine overlay
-add_executable(wrench_sine_overlay_node
-  src/wrench_sine_overlay_node.cpp
+add_executable(wrench_sine_overlay
+  src/wrench_sine_overlay.cpp
 )
 
-ament_target_dependencies(wrench_sine_overlay_node
+ament_target_dependencies(wrench_sine_overlay
   fri_vendor
   lbr_fri_msgs
+  lbr_fri_ros2
   rclcpp
 )
 
-target_link_libraries(wrench_sine_overlay_node
+target_link_libraries(wrench_sine_overlay
   FRIClient::FRIClient
 )
 
 install(TARGETS
-  joint_sine_overlay_node
-  joint_trajectory_executioner_node
-  torque_sine_overlay_node
-  wrench_sine_overlay_node
+  joint_sine_overlay
+  joint_trajectory_client
+  torque_sine_overlay
+  wrench_sine_overlay
   DESTINATION lib/${PROJECT_NAME}
-)
-
-install(DIRECTORY
-  launch
-  DESTINATION share/${PROJECT_NAME}
 )
 
 ament_package()

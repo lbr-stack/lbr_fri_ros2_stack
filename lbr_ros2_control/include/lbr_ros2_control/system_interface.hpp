@@ -67,6 +67,7 @@ protected:
   static constexpr uint8_t LBR_FRI_SENSORS = 2;
   static constexpr uint8_t AUXILIARY_SENSOR_SIZE = 12;
   static constexpr uint8_t ESTIMATED_FT_SENSOR_SIZE = 6;
+  static constexpr uint8_t GPIO_SIZE = 1;
 
 public:
   SystemInterface() = default;
@@ -101,6 +102,7 @@ protected:
   bool verify_sensors_();
   bool verify_auxiliary_sensor_();
   bool verify_estimated_ft_sensor_();
+  bool verify_gpios_();
 
   // monitor end of commanding active
   bool exit_commanding_active_(const KUKA::FRI::ESessionState &previous_session_state,

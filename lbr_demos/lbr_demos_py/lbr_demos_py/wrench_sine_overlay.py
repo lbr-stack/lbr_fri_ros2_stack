@@ -16,18 +16,18 @@ class WrenchSineOverlayNode(Node):
         self._phase_x, self._phase_y = 0.0, 0.0
         self._lbr_wrench_command = LBRWrenchCommand()
 
-        # create publisher to /lbr/command/wrench
+        # create publisher to command/wrench
         self._lbr_wrench_command_pub = self.create_publisher(
-            LBRWrenchCommand, "/lbr/command/wrench", 1
+            LBRWrenchCommand, "command/wrench", 1
         )
 
-        # create subscription to /lbr_state
+        # create subscription to state
         self._lbr_state_sub = self.create_subscription(
-            LBRState, "/lbr/state", self._on_lbr_state, 1
+            LBRState, "state", self._on_lbr_state, 1
         )
 
     def _on_lbr_state(self, lbr_state: LBRState) -> None:
-        self._lbr_wrench_command.joint_position = lbr_state.ipo_joint_position
+        self._lbr_wrench_command.joint_position = lbr_state.measured_joint_position
 
         if lbr_state.session_state == 4:  # KUKA::FRI::COMMANDING_ACTIVE == 4
             # overlay wrench sine wave on x / y direction

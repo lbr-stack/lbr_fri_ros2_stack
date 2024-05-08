@@ -16,20 +16,20 @@ class JointSineOverlayNode(Node):
         self._phase = 0.0
         self._lbr_position_command = LBRPositionCommand()
 
-        # create publisher to /lbr/command/joint_position
+        # create publisher to command/joint_position
         self._lbr_position_command_pub = self.create_publisher(
             LBRPositionCommand,
-            "/lbr/command/joint_position",
+            "command/joint_position",
             1,
         )
 
-        # create subscription to /lbr_state
+        # create subscription to state
         self._lbr_state_sub_ = self.create_subscription(
-            LBRState, "/lbr/state", self._on_lbr_state, 1
+            LBRState, "state", self._on_lbr_state, 1
         )
 
     def _on_lbr_state(self, lbr_state: LBRState) -> None:
-        self._lbr_position_command.joint_position = lbr_state.ipo_joint_position
+        self._lbr_position_command.joint_position = lbr_state.measured_joint_position
 
         if lbr_state.session_state == 4:  # KUKA::FRI::COMMANDING_ACTIVE == 4
             # overlay sine wave on 4th joint

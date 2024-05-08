@@ -1,5 +1,5 @@
-LBR Demos FRI ROS 2 Advanced Python
-===================================
+LBR Demos Advanced Python
+=========================
 Collection of advanced usage examples for the ``lbr_ros2_control`` package through Python.
 
 .. warning::
@@ -22,7 +22,7 @@ This demo implements a simple admittance controller.
 
     ros2 launch lbr_bringup bringup.launch.py \
         sim:=false \
-        ctrl:=forward_lbr_position_command_controller \
+        ctrl:=lbr_position_command_controller \
         model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
 
 #. Run the `admittance_control <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_demos_advanced_py/lbr_demos_advanced_py/admittance_control_node.py>`_ with remapping and parameter file:
@@ -49,7 +49,7 @@ This demo implements an admittance controller with a remote center of motion (RC
 
     ros2 launch lbr_bringup bringup.launch.py \
         sim:=false \
-        ctrl:=forward_lbr_position_command_controller \
+        ctrl:=lbr_position_command_controller \
         model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
 
 #. Run the `admittance_rcm_control <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_demos_advanced_py/lbr_demos_advanced_py/admittance_rcm_control_node.py>`_ with remapping and parameter file:

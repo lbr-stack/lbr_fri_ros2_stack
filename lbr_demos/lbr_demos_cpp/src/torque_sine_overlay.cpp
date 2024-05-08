@@ -3,29 +3,34 @@
 #include <memory>
 #include <string>
 
+#include "rclcpp/rclcpp.hpp"
+
 // include fri for session state
 #include "friClientIf.h"
-
-#include "rclcpp/rclcpp.hpp"
 
 // include lbr_fri_msgs
 #include "lbr_fri_msgs/msg/lbr_state.hpp"
 #include "lbr_fri_msgs/msg/lbr_torque_command.hpp"
+#include "lbr_fri_ros2/utils.hpp"
 
-class TorqueSineOverlayNode : public rclcpp::Node {
+class TorqueSineOverlay {
   static constexpr double amplitude_ = 15.;  // Nm
   static constexpr double frequency_ = 0.25; // Hz
 
 public:
-  TorqueSineOverlayNode(const std::string &node_name) : Node(node_name), phase_(0.) {
-    // create publisher to /lbr/command/torque
+  TorqueSineOverlay(const rclcpp::Node::SharedPtr node) : node_(node), phase_(0.) {
+    // create publisher to command/torque
     lbr_torque_command_pub_ =
-        this->create_publisher<lbr_fri_msgs::msg::LBRTorqueCommand>("/lbr/command/torque", 1);
+        node_->create_publisher<lbr_fri_msgs::msg::LBRTorqueCommand>("command/torque", 1);
 
-    // create subscription to /lbr/state
-    lbr_state_sub_ = this->create_subscription<lbr_fri_msgs::msg::LBRState>(
-        "/lbr/state", 1,
-        std::bind(&TorqueSineOverlayNode::on_lbr_state_, this, std::placeholders::_1));
+    // create subscription to state
+    lbr_state_sub_ = node_->create_subscription<lbr_fri_msgs::msg::LBRState>(
+        "state", 1, std::bind(&TorqueSineOverlay::on_lbr_state_, this, std::placeholders::_1));
+
+    // get control rate from controller_manager
+    auto update_rate =
+        lbr_fri_ros2::retrieve_paramter(node_, "controller_manager", "update_rate").as_int();
+    dt_ = 1.0 / static_cast<double>(update_rate);
   };
 
 protected:
@@ -35,7 +40,7 @@ protected:
     if (lbr_state->session_state == KUKA::FRI::COMMANDING_ACTIVE) {
       // overlay torque sine wave on 4th joint
       lbr_torque_command_.torque[3] = amplitude_ * sin(phase_);
-      phase_ += 2 * M_PI * frequency_ * lbr_state->sample_time;
+      phase_ += 2 * M_PI * frequency_ * dt_;
 
       lbr_torque_command_pub_->publish(lbr_torque_command_);
     } else {
@@ -44,17 +49,20 @@ protected:
     }
   };
 
+protected:
+  rclcpp::Node::SharedPtr node_;
+  double dt_;
   double phase_;
-
   rclcpp::Publisher<lbr_fri_msgs::msg::LBRTorqueCommand>::SharedPtr lbr_torque_command_pub_;
   rclcpp::Subscription<lbr_fri_msgs::msg::LBRState>::SharedPtr lbr_state_sub_;
-
   lbr_fri_msgs::msg::LBRTorqueCommand lbr_torque_command_;
 };
 
 int main(int argc, char **argv) {
   rclcpp::init(argc, argv);
-  rclcpp::spin(std::make_shared<TorqueSineOverlayNode>("torque_sine_overlay_node"));
+  auto node = std::make_shared<rclcpp::Node>("torque_sine_overlay");
+  TorqueSineOverlay torque_sine_overlay(node);
+  rclcpp::spin(node);
   rclcpp::shutdown();
   return 0;
 };
