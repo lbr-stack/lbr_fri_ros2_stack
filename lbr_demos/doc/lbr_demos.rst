@@ -21,10 +21,10 @@ LBR Demos FRI ROS 2
 .. toctree::
     :titlesonly:
 
-    LBR Demos FRI ROS 2 C++ <../lbr_demos_fri_ros2_cpp/doc/lbr_demos_fri_ros2_cpp.rst>
-    LBR Demos FRI ROS 2 Python <../lbr_demos_fri_ros2_python/doc/lbr_demos_fri_ros2_python.rst>
-    LBR Demos FRI ROS 2 Advanced C++ <../lbr_demos_fri_ros2_advanced_cpp/doc/lbr_demos_fri_ros2_advanced_cpp.rst>
-    LBR Demos FRI ROS 2 Advanced Python <../lbr_demos_fri_ros2_advanced_python/doc/lbr_demos_fri_ros2_advanced_python.rst>
+    LBR Demos FRI ROS 2 C++ <../lbr_demos_cpp/doc/lbr_demos_cpp.rst>
+    LBR Demos FRI ROS 2 Python <../lbr_demos_py/doc/lbr_demos_py.rst>
+    LBR Demos FRI ROS 2 Advanced C++ <../lbr_demos_advanced_cpp/doc/lbr_demos_advanced_cpp.rst>
+    LBR Demos FRI ROS 2 Advanced Python <../lbr_demos_advanced_py/doc/lbr_demos_advanced_py.rst>
 
 LBR ROS 2 Control Demos
 -----------------------
