@@ -11,7 +11,6 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
-find_package(fri_vendor REQUIRED)
 find_package(FRIClient REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(kdl_parser REQUIRED)
@@ -81,7 +80,6 @@ target_include_directories(pose_control_component
 )
 
 ament_target_dependencies(pose_control_component
-  fri_vendor
   geometry_msgs
   kdl_parser
   lbr_fri_msgs

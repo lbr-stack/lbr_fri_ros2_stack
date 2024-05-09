@@ -10,7 +10,7 @@
   <buildtool_depend>ament_cmake</buildtool_depend>
   <buildtool_depend>ament_cmake_python</buildtool_depend>
 
-  <depend>fri_vendor</depend>
+  <depend>FRIClient</depend>
   <depend>lbr_fri_msgs</depend>
   <depend>lbr_fri_ros2</depend>
   <depend>pluginlib</depend>

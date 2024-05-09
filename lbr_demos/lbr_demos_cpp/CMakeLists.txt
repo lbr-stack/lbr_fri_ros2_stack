@@ -12,7 +12,6 @@ endif()
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(control_msgs REQUIRED)
-find_package(fri_vendor REQUIRED)
 find_package(FRIClient REQUIRED)
 find_package(lbr_fri_msgs REQUIRED)
 find_package(lbr_fri_ros2 REQUIRED)
@@ -27,7 +26,6 @@ add_executable(joint_sine_overlay
 )
 
 ament_target_dependencies(joint_sine_overlay
-  fri_vendor
   lbr_fri_msgs
   lbr_fri_ros2
   rclcpp
@@ -44,7 +42,6 @@ add_executable(joint_trajectory_client
 
 ament_target_dependencies(joint_trajectory_client
   control_msgs
-  fri_vendor
   rclcpp
   rclcpp_action
   sensor_msgs
@@ -61,7 +58,6 @@ add_executable(torque_sine_overlay
 )
 
 ament_target_dependencies(torque_sine_overlay
-  fri_vendor
   lbr_fri_msgs
   lbr_fri_ros2
   rclcpp
@@ -77,7 +73,6 @@ add_executable(wrench_sine_overlay
 )
 
 ament_target_dependencies(wrench_sine_overlay
-  fri_vendor
   lbr_fri_msgs
   lbr_fri_ros2
   rclcpp

@@ -17,7 +17,6 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(ament_cmake_python REQUIRED)
 find_package(controller_interface REQUIRED)
-find_package(fri_vendor REQUIRED)
 find_package(FRIClient REQUIRED)
 find_package(hardware_interface REQUIRED)
 find_package(lbr_fri_msgs REQUIRED)
@@ -52,7 +51,6 @@ target_include_directories(
 ament_target_dependencies(
   ${PROJECT_NAME}
   controller_interface
-  fri_vendor
   hardware_interface
   lbr_fri_msgs
   lbr_fri_ros2
@@ -76,7 +74,6 @@ ament_export_targets(
 
 ament_export_dependencies(
   controller_interface
-  fri_vendor
   FRIClient
   hardware_interface
   lbr_fri_msgs

@@ -9,18 +9,16 @@
   <license>Apache License 2.0</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
-  <buildtool_depend>ament_cmake_python</buildtool_depend>
   <buildtool_depend>eigen3_cmake_module</buildtool_depend>
 
   <build_depend>eigen</build_depend>
 
   <depend>control_toolbox</depend>
-  <depend>fri_vendor</depend>
+  <depend>FRIClient</depend>
   <depend>kdl_parser</depend>
   <depend>lbr_fri_msgs</depend>
   <depend>orocos_kdl_vendor</depend>
   <depend>rclcpp</depend>
-  <depend>rclcpp_components</depend>
   <depend>realtime_tools</depend>
   <depend>urdf</depend>
 

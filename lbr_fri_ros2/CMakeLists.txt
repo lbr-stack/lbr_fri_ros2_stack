@@ -11,17 +11,14 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
-find_package(ament_cmake_python REQUIRED)
 find_package(control_toolbox REQUIRED)
 find_package(eigen3_cmake_module REQUIRED)
 find_package(Eigen3)
-find_package(fri_vendor REQUIRED)
 find_package(FRIClient REQUIRED)
 find_package(kdl_parser REQUIRED)
 find_package(lbr_fri_msgs REQUIRED)
 find_package(orocos_kdl_vendor REQUIRED)
 find_package(rclcpp REQUIRED)
-find_package(rclcpp_components REQUIRED)
 find_package(realtime_tools REQUIRED)
 find_package(urdf REQUIRED)
 
@@ -62,7 +59,6 @@ ament_export_dependencies(
   control_toolbox
   eigen3_cmake_module
   Eigen3
-  fri_vendor
   FRIClient
   kdl_parser
   lbr_fri_msgs
@@ -81,49 +77,5 @@ install(
   EXPORT lbr_fri_ros2_export
   LIBRARY DESTINATION lib
 )
-
-install(
-  DIRECTORY launch
-  DESTINATION share/lbr_fri_ros2
-)
-
-# app_component
-add_library(app_component
-  SHARED
-    src/app_component.cpp
-)
-
-target_include_directories(app_component
-  PRIVATE src
-)
-
-ament_target_dependencies(app_component
-  rclcpp
-  urdf
-  rclcpp_components
-)
-
-target_link_libraries(app_component
-  lbr_fri_ros2
-)
-
-rclcpp_components_register_node(app_component
-  PLUGIN lbr_fri_ros2::AppComponent
-  EXECUTABLE app
-)
-
-install(
-  TARGETS app_component
-  LIBRARY DESTINATION lib
-  RUNTIME DESTINATION lib/lbr_fri_ros2
-)
-
-install(
-  DIRECTORY config launch
-  DESTINATION share/lbr_fri_ros2
-)
-
-# Launch mixins
-ament_python_install_package(${PROJECT_NAME})
 
 ament_package()
