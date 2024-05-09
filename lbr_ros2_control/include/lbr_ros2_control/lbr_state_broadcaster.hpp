@@ -16,6 +16,7 @@
 
 #include "friClientIf.h"
 #include "friLBRState.h"
+#include "friVersion.h"
 
 #include "lbr_fri_msgs/msg/lbr_state.hpp"
 #include "lbr_ros2_control/system_interface_type_values.hpp"
