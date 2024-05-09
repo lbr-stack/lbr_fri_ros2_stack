@@ -260,6 +260,20 @@ controller_interface::CallbackReturn SystemInterface::on_activate(const rclcpp_l
   RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "Sample time %.3f s / %.1f Hz",
               async_client_ptr_->get_state_interface().get_state().sample_time,
               1. / async_client_ptr_->get_state_interface().get_state().sample_time);
+  while (!(async_client_ptr_->get_state_interface().get_state().session_state >=
+           KUKA::FRI::ESessionState::COMMANDING_WAIT)) {
+    RCLCPP_INFO_STREAM(
+        rclcpp::get_logger(LOGGER_NAME),
+        "Awaiting '" << lbr_fri_ros2::ColorScheme::BOLD << lbr_fri_ros2::ColorScheme::OKBLUE
+                     << lbr_fri_ros2::EnumMaps::session_state_map(
+                            KUKA::FRI::ESessionState::COMMANDING_WAIT)
+                     << lbr_fri_ros2::ColorScheme::ENDC << "' state. Current state '"
+                     << lbr_fri_ros2::ColorScheme::BOLD << lbr_fri_ros2::ColorScheme::OKBLUE
+                     << lbr_fri_ros2::EnumMaps::session_state_map(
+                            async_client_ptr_->get_state_interface().get_state().session_state)
+                     << lbr_fri_ros2::ColorScheme::ENDC << "'.");
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+  }
   return controller_interface::CallbackReturn::SUCCESS;
 }
 
@@ -274,7 +288,7 @@ hardware_interface::return_type SystemInterface::read(const rclcpp::Time & /*tim
                                                       const rclcpp::Duration &period) {
   hw_lbr_state_ = async_client_ptr_->get_state_interface().get_state();
 
-  if (period.seconds() - hw_lbr_state_.sample_time * 0.1 > hw_lbr_state_.sample_time) {
+  if (period.seconds() - hw_lbr_state_.sample_time * 0.2 > hw_lbr_state_.sample_time) {
     RCLCPP_WARN_STREAM(rclcpp::get_logger(LOGGER_NAME),
                        lbr_fri_ros2::ColorScheme::WARNING
                            << "Increase update_rate parameter for controller_manager to "
