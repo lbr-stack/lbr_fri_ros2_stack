@@ -271,8 +271,16 @@ SystemInterface::on_deactivate(const rclcpp_lifecycle::State &) {
 }
 
 hardware_interface::return_type SystemInterface::read(const rclcpp::Time & /*time*/,
-                                                      const rclcpp::Duration & /*period*/) {
+                                                      const rclcpp::Duration &period) {
   hw_lbr_state_ = async_client_ptr_->get_state_interface().get_state();
+
+  if (period.seconds() - hw_lbr_state_.sample_time * 0.1 > hw_lbr_state_.sample_time) {
+    RCLCPP_WARN_STREAM(rclcpp::get_logger(LOGGER_NAME),
+                       lbr_fri_ros2::ColorScheme::WARNING
+                           << "Increase update_rate parameter for controller_manager to "
+                           << std::to_string(static_cast<int>(1. / hw_lbr_state_.sample_time))
+                           << " Hz or more" << lbr_fri_ros2::ColorScheme::ENDC);
+  }
 
   // exit once robot exits COMMANDING_ACTIVE (for safety)
   if (exit_commanding_active_(static_cast<KUKA::FRI::ESessionState>(hw_session_state_),
