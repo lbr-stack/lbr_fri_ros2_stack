@@ -261,7 +261,8 @@ controller_interface::CallbackReturn SystemInterface::on_activate(const rclcpp_l
               async_client_ptr_->get_state_interface().get_state().sample_time,
               1. / async_client_ptr_->get_state_interface().get_state().sample_time);
   while (!(async_client_ptr_->get_state_interface().get_state().session_state >=
-           KUKA::FRI::ESessionState::COMMANDING_WAIT)) {
+           KUKA::FRI::ESessionState::COMMANDING_WAIT) &&
+         rclcpp::ok()) {
     RCLCPP_INFO_STREAM(
         rclcpp::get_logger(LOGGER_NAME),
         "Awaiting '" << lbr_fri_ros2::ColorScheme::BOLD << lbr_fri_ros2::ColorScheme::OKBLUE
@@ -273,6 +274,9 @@ controller_interface::CallbackReturn SystemInterface::on_activate(const rclcpp_l
                             async_client_ptr_->get_state_interface().get_state().session_state)
                      << lbr_fri_ros2::ColorScheme::ENDC << "'.");
     std::this_thread::sleep_for(std::chrono::seconds(1));
+  }
+  if (!rclcpp::ok()) {
+    return controller_interface::CallbackReturn::ERROR;
   }
   return controller_interface::CallbackReturn::SUCCESS;
 }
