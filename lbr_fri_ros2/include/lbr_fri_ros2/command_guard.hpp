@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <array>
 #include <cmath>
+#include <cstring>
 #include <string>
 
 #include "rclcpp/logger.hpp"
@@ -47,7 +48,7 @@ public:
   CommandGuard() = default;
   CommandGuard(const CommandGuardParameters &command_guard_parameters);
   virtual bool is_valid_command(const_idl_command_t_ref lbr_command,
-                                const_fri_state_t_ref lbr_state) const;
+                                const_fri_state_t_ref lbr_state);
 
   void log_info() const;
 
@@ -55,11 +56,13 @@ protected:
   virtual bool command_in_position_limits_(const_idl_command_t_ref lbr_command,
                                            const_fri_state_t_ref /*lbr_state*/) const;
   virtual bool command_in_velocity_limits_(const_idl_command_t_ref lbr_command,
-                                           const_fri_state_t_ref lbr_state) const;
+                                           const_fri_state_t_ref lbr_state);
   virtual bool command_in_torque_limits_(const_idl_command_t_ref lbr_command,
                                          const_fri_state_t_ref lbr_state) const;
 
   CommandGuardParameters parameters_;
+  bool prev_measured_joint_position_init_;
+  jnt_array_t prev_measured_joint_position_;
 };
 
 class SafeStopCommandGuard : public CommandGuard {

@@ -5,7 +5,7 @@ CommandGuard::CommandGuard(const CommandGuardParameters &command_guard_parameter
     : parameters_(command_guard_parameters){};
 
 bool CommandGuard::is_valid_command(const_idl_command_t_ref lbr_command,
-                                    const_fri_state_t_ref lbr_state) const {
+                                    const_fri_state_t_ref lbr_state) {
   switch (lbr_state.getClientCommandMode()) {
   case KUKA::FRI::EClientCommandMode::NO_COMMAND_MODE:
     return false;
@@ -15,6 +15,8 @@ bool CommandGuard::is_valid_command(const_idl_command_t_ref lbr_command,
 #if FRICLIENT_VERSION_MAJOR == 2
   case KUKA::FRI::EClientCommandMode::JOINT_POSITION:
 #endif
+  case KUKA::FRI::EClientCommandMode::TORQUE:
+  case KUKA::FRI::EClientCommandMode::WRENCH:
     if (!command_in_position_limits_(lbr_command, lbr_state)) {
       return false;
     }
@@ -26,16 +28,6 @@ bool CommandGuard::is_valid_command(const_idl_command_t_ref lbr_command,
   case KUKA::FRI::EClientCommandMode::CARTESIAN_POSE:
     return false;
 #endif
-  case KUKA::FRI::EClientCommandMode::WRENCH:
-    if (!command_in_position_limits_(lbr_command, lbr_state)) {
-      return false;
-    }
-    return true;
-  case KUKA::FRI::EClientCommandMode::TORQUE:
-    if (!command_in_position_limits_(lbr_command, lbr_state)) {
-      return false;
-    }
-    return true;
   default:
     RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME), "Invalid EClientCommandMode provided");
     return false;
@@ -71,10 +63,16 @@ bool CommandGuard::command_in_position_limits_(const_idl_command_t_ref lbr_comma
 }
 
 bool CommandGuard::command_in_velocity_limits_(const_idl_command_t_ref lbr_command,
-                                               const_fri_state_t_ref lbr_state) const {
+                                               const_fri_state_t_ref lbr_state) {
   const double &dt = lbr_state.getSampleTime();
+  if (!prev_measured_joint_position_init_) {
+    prev_measured_joint_position_init_ = true;
+    std::memcpy(prev_measured_joint_position_.data(), lbr_state.getMeasuredJointPosition(),
+                sizeof(double) * KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
+    return true;
+  }
   for (std::size_t i = 0; i < lbr_command.joint_position[i]; ++i) {
-    if (std::abs(lbr_command.joint_position[i] - lbr_state.getMeasuredJointPosition()[i]) / dt >
+    if (std::abs(prev_measured_joint_position_[i] - lbr_state.getMeasuredJointPosition()[i]) / dt >
         parameters_.max_velocity[i]) {
       RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME),
                           ColorScheme::ERROR << "Velocity not in limits for joint '"
@@ -83,6 +81,8 @@ bool CommandGuard::command_in_velocity_limits_(const_idl_command_t_ref lbr_comma
       return false;
     }
   }
+  std::memcpy(prev_measured_joint_position_.data(), lbr_state.getMeasuredJointPosition(),
+              sizeof(double) * KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
   return true;
 }
 
