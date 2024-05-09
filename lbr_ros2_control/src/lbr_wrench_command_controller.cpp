@@ -11,12 +11,12 @@ LBRWrenchCommandController::command_interface_configuration() const {
   for (const auto &joint_name : joint_names_) {
     interface_configuration.names.push_back(joint_name + "/" + hardware_interface::HW_IF_POSITION);
   }
-  interface_configuration.names.push_back(std::string(HW_IF_WRENCH) + "/" + HW_IF_FORCE_X);
-  interface_configuration.names.push_back(std::string(HW_IF_WRENCH) + "/" + HW_IF_FORCE_Y);
-  interface_configuration.names.push_back(std::string(HW_IF_WRENCH) + "/" + HW_IF_FORCE_Z);
-  interface_configuration.names.push_back(std::string(HW_IF_WRENCH) + "/" + HW_IF_TORQUE_X);
-  interface_configuration.names.push_back(std::string(HW_IF_WRENCH) + "/" + HW_IF_TORQUE_Y);
-  interface_configuration.names.push_back(std::string(HW_IF_WRENCH) + "/" + HW_IF_TORQUE_Z);
+  interface_configuration.names.push_back(std::string(HW_IF_WRENCH_PREFIX) + "/" + HW_IF_FORCE_X);
+  interface_configuration.names.push_back(std::string(HW_IF_WRENCH_PREFIX) + "/" + HW_IF_FORCE_Y);
+  interface_configuration.names.push_back(std::string(HW_IF_WRENCH_PREFIX) + "/" + HW_IF_FORCE_Z);
+  interface_configuration.names.push_back(std::string(HW_IF_WRENCH_PREFIX) + "/" + HW_IF_TORQUE_X);
+  interface_configuration.names.push_back(std::string(HW_IF_WRENCH_PREFIX) + "/" + HW_IF_TORQUE_Y);
+  interface_configuration.names.push_back(std::string(HW_IF_WRENCH_PREFIX) + "/" + HW_IF_TORQUE_Z);
   return interface_configuration;
 }
 
@@ -83,7 +83,7 @@ bool LBRWrenchCommandController::reference_command_interfaces_() {
     if (command_interface.get_interface_name() == hardware_interface::HW_IF_POSITION) {
       joint_position_command_interfaces_.emplace_back(std::ref(command_interface));
     }
-    if (command_interface.get_prefix_name() == HW_IF_WRENCH) {
+    if (command_interface.get_prefix_name() == HW_IF_WRENCH_PREFIX) {
       wrench_command_interfaces_.emplace_back(std::ref(command_interface));
     }
   }

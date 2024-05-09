@@ -203,12 +203,13 @@ std::vector<hardware_interface::CommandInterface> SystemInterface::export_comman
   }
 
   // Cartesian impedance control command interfaces
-  command_interfaces.emplace_back(HW_IF_WRENCH, HW_IF_FORCE_X, &hw_lbr_command_.wrench[0]);
-  command_interfaces.emplace_back(HW_IF_WRENCH, HW_IF_FORCE_Y, &hw_lbr_command_.wrench[1]);
-  command_interfaces.emplace_back(HW_IF_WRENCH, HW_IF_FORCE_Z, &hw_lbr_command_.wrench[2]);
-  command_interfaces.emplace_back(HW_IF_WRENCH, HW_IF_TORQUE_X, &hw_lbr_command_.wrench[3]);
-  command_interfaces.emplace_back(HW_IF_WRENCH, HW_IF_TORQUE_Y, &hw_lbr_command_.wrench[4]);
-  command_interfaces.emplace_back(HW_IF_WRENCH, HW_IF_TORQUE_Z, &hw_lbr_command_.wrench[5]);
+  const auto &wrench = info_.gpios[0];
+  command_interfaces.emplace_back(wrench.name, HW_IF_FORCE_X, &hw_lbr_command_.wrench[0]);
+  command_interfaces.emplace_back(wrench.name, HW_IF_FORCE_Y, &hw_lbr_command_.wrench[1]);
+  command_interfaces.emplace_back(wrench.name, HW_IF_FORCE_Z, &hw_lbr_command_.wrench[2]);
+  command_interfaces.emplace_back(wrench.name, HW_IF_TORQUE_X, &hw_lbr_command_.wrench[3]);
+  command_interfaces.emplace_back(wrench.name, HW_IF_TORQUE_Y, &hw_lbr_command_.wrench[4]);
+  command_interfaces.emplace_back(wrench.name, HW_IF_TORQUE_Z, &hw_lbr_command_.wrench[5]);
   return command_interfaces;
 }
 
@@ -492,6 +493,14 @@ bool SystemInterface::verify_sensors_() {
 bool SystemInterface::verify_auxiliary_sensor_() {
   // check all interfaces are defined in config/lbr_system_interface.xacro
   const auto &auxiliary_sensor = info_.sensors[0];
+  if (auxiliary_sensor.name != HW_IF_AUXILIARY_PREFIX) {
+    RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME),
+                        lbr_fri_ros2::ColorScheme::ERROR
+                            << "Sensor '" << auxiliary_sensor.name.c_str()
+                            << "' received invalid name. Expected '" << HW_IF_AUXILIARY_PREFIX
+                            << "'" << lbr_fri_ros2::ColorScheme::ENDC);
+    return false;
+  }
   if (auxiliary_sensor.state_interfaces.size() != AUXILIARY_SENSOR_SIZE) {
     RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME),
                         lbr_fri_ros2::ColorScheme::ERROR
@@ -525,6 +534,14 @@ bool SystemInterface::verify_auxiliary_sensor_() {
 
 bool SystemInterface::verify_estimated_ft_sensor_() {
   const auto &estimated_ft_sensor = info_.sensors[1];
+  if (estimated_ft_sensor.name != HW_IF_ESTIMATED_FT_PREFIX) {
+    RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME),
+                        lbr_fri_ros2::ColorScheme::ERROR
+                            << "Sensor '" << estimated_ft_sensor.name.c_str()
+                            << "' received invalid name. Expected '" << HW_IF_ESTIMATED_FT_PREFIX
+                            << "'" << lbr_fri_ros2::ColorScheme::ENDC);
+    return false;
+  }
   if (estimated_ft_sensor.state_interfaces.size() != ESTIMATED_FT_SENSOR_SIZE) {
     RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME),
                         lbr_fri_ros2::ColorScheme::ERROR
@@ -556,6 +573,14 @@ bool SystemInterface::verify_gpios_() {
                         lbr_fri_ros2::ColorScheme::ERROR
                             << "Expected '" << static_cast<int>(GPIO_SIZE) << "' GPIOs, got '"
                             << info_.gpios.size() << "'" << lbr_fri_ros2::ColorScheme::ENDC);
+    return false;
+  }
+  if (info_.gpios[0].name != HW_IF_WRENCH_PREFIX) {
+    RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME),
+                        lbr_fri_ros2::ColorScheme::ERROR << "GPIO '" << info_.gpios[0].name.c_str()
+                                                         << "' received invalid name. Expected '"
+                                                         << HW_IF_WRENCH_PREFIX << "'"
+                                                         << lbr_fri_ros2::ColorScheme::ENDC);
     return false;
   }
   if (info_.gpios[0].command_interfaces.size() != hw_lbr_command_.wrench.size()) {
