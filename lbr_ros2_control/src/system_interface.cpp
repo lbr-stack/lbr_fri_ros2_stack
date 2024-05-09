@@ -138,8 +138,10 @@ std::vector<hardware_interface::StateInterface> SystemInterface::export_state_in
     state_interfaces.emplace_back(info_.joints[i].name, hardware_interface::HW_IF_POSITION,
                                   &hw_lbr_state_.measured_joint_position[i]);
 
+#if FRICLIENT_VERSION_MAJOR == 1
     state_interfaces.emplace_back(info_.joints[i].name, HW_IF_COMMANDED_JOINT_POSITION,
                                   &hw_lbr_state_.commanded_joint_position[i]);
+#endif
 
     state_interfaces.emplace_back(info_.joints[i].name, hardware_interface::HW_IF_EFFORT,
                                   &hw_lbr_state_.measured_torque[i]);
@@ -393,7 +395,9 @@ void SystemInterface::nan_command_interfaces_() {
 void SystemInterface::nan_state_interfaces_() {
   // state interfaces of type double
   hw_lbr_state_.measured_joint_position.fill(std::numeric_limits<double>::quiet_NaN());
+#if FRICLIENT_VERSION_MAJOR == 1
   hw_lbr_state_.commanded_joint_position.fill(std::numeric_limits<double>::quiet_NaN());
+#endif
   hw_lbr_state_.measured_torque.fill(std::numeric_limits<double>::quiet_NaN());
   hw_lbr_state_.commanded_torque.fill(std::numeric_limits<double>::quiet_NaN());
   hw_lbr_state_.external_torque.fill(std::numeric_limits<double>::quiet_NaN());
