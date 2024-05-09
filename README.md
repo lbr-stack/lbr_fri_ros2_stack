@@ -1,6 +1,6 @@
 # lbr_fri_ros2_stack
 ![Build status](https://github.com/lbr-stack/lbr_fri_ros2_stack/actions/workflows/build.yml/badge.svg?branch=humble) ![GitHub](https://img.shields.io/github/license/lbr-stack/lbr_fri_ros2_stack) 
-[![Documentation Status](https://readthedocs.org/projects/lbr-fri-ros2-stack-doc/badge/?version=humble)](https://lbr-fri-ros2-stack-doc.readthedocs.io/en/humble/?badge=humble)
+[![Documentation Status](https://readthedocs.org/projects/lbr-stack/badge/?version=latest)](https://lbr-stack.readthedocs.io/en/latest/?badge=latest)
 [![status](https://joss.theoj.org/papers/c43c82bed833c02503dd47f2637192ef/status.svg)](https://joss.theoj.org/papers/c43c82bed833c02503dd47f2637192ef)
 
 ROS 2 packages for the KUKA LBR, including communication to the real robot via the Fast Robot Interface ([FRI](https://github.com/lbr-stack/fri)) and [Gazebo](http://gazebosim.org/) simulation support. Included are the `iiwa7`, `iiwa14`, `med7`, and `med14`.
@@ -14,24 +14,26 @@ ROS 2 packages for the KUKA LBR, including communication to the real robot via t
             <th align="left" width="25%">LBR Med14 R820</th>
         </tr>
         <tr>
-            <td align="center"><img src="lbr_fri_ros2_stack/doc/img/foxglove/iiwa7_r800.png" alt="LBR IIWA7 R800"></td>
-            <td align="center"><img src="lbr_fri_ros2_stack/doc/img/foxglove/iiwa14_r820.png" alt="LBR IIWA14 R820"></td>
-            <td align="center"><img src="lbr_fri_ros2_stack/doc/img/foxglove/med7_r800.png" alt="LBR Med7 R800"></td>
-            <td align="center"><img src="lbr_fri_ros2_stack/doc/img/foxglove/med14_r820.png" alt="LBR Med14 R820"></td>
+            <td align="center"><img src="https://raw.githubusercontent.com/lbr-stack/lbr_fri_ros2_stack/humble/lbr_fri_ros2_stack/doc/img/foxglove/iiwa7_r800.png" alt="LBR IIWA7 R800"></td>
+            <td align="center"><img src="https://raw.githubusercontent.com/lbr-stack/lbr_fri_ros2_stack/humble/lbr_fri_ros2_stack/doc/img/foxglove/iiwa14_r820.png" alt="LBR IIWA14 R820"></td>
+            <td align="center"><img src="https://raw.githubusercontent.com/lbr-stack/lbr_fri_ros2_stack/humble/lbr_fri_ros2_stack/doc/img/foxglove/med7_r800.png" alt="LBR Med7 R800"></td>
+            <td align="center"><img src="https://raw.githubusercontent.com/lbr-stack/lbr_fri_ros2_stack/humble/lbr_fri_ros2_stack/doc/img/foxglove/med14_r820.png" alt="LBR Med14 R820"></td>
         </tr>
     </table>
 </body>
 
 ## Documentation
-Full documentation available [here](https://lbr-fri-ros2-stack-doc.readthedocs.io/en/humble/index.html).
+Full documentation available [here](https://lbr-stack.readthedocs.io/en/latest).
 
 ## Quick Start
 1. Install ROS 2 development tools
+
     ```shell
     sudo apt install ros-dev-tools
     ```
 
 2. Create a workspace, clone, and install dependencies
+
     ```shell
     export FRI_CLIENT_VERSION=1.15
     mkdir -p lbr-stack/src && cd lbr-stack
@@ -43,11 +45,13 @@ Full documentation available [here](https://lbr-fri-ros2-stack-doc.readthedocs.i
 > FRI client is cloned from [fri](https://github.com/lbr-stack/fri) and must be available as branch, refer [README](https://github.com/lbr-stack/fri?tab=readme-ov-file#contributing).
 
 3. Build
+
     ```shell
     colcon build --symlink-install
     ```
 
 4. Launch the simulation via
+
     ```shell
     source install/setup.bash
     ros2 launch lbr_bringup bringup.launch.py \
@@ -60,7 +64,7 @@ Full documentation available [here](https://lbr-fri-ros2-stack-doc.readthedocs.i
 > [!TIP]
 > List all arguments for the launch file via `ros2 launch lbr_bringup bringup.launch.py -s`
 
-Now, run the [demos](https://lbr-fri-ros2-stack-doc.readthedocs.io/en/humble/lbr_fri_ros2_stack/lbr_demos/doc/lbr_demos.html). To get started with the real robot, checkout the [Documentation](https://lbr-fri-ros2-stack-doc.readthedocs.io/en/humble/index.html) above.
+Now, run the [demos](https://lbr-fri-ros2-stack-doc.readthedocs.io/en/humble/lbr_fri_ros2_stack/lbr_demos/doc/lbr_demos.html). To get started with the real robot, checkout the [Documentation](https://lbr-stack.readthedocs.io/en/latest) above.
 
 ## Citation
 If you enjoyed using this repository for your work, we would really appreciate ❤️ if you could cite it, as it helps us to continue offering support.
@@ -77,10 +81,18 @@ If you enjoyed using this repository for your work, we would really appreciate �
 ```
 
 ## Acknowledgements
-<img src="https://medicalengineering.org.uk/wp-content/themes/aalto-child/_assets/images/medicalengineering-logo.svg" alt="wellcome" height="45" width="65" align="left">
+### Open Source Contributors
+We would like to acknowledge all open source contributors 🚀
 
-This work was supported by core and project funding from the Wellcome/EPSRC [WT203148/Z/16/Z; NS/A000049/1; WT101957; NS/A000027/1]. 
+[![lbr_fri_ros2_stack contributors](https://contrib.rocks/image?repo=lbr-stack/lbr_fri_ros2_stack&max=20)](https://github.com/lbr-stack/lbr_fri_ros2_stack/graphs/contributors)
 
-<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/Flag_of_Europe.svg/1920px-Flag_of_Europe.svg.png" alt="eu_flag" height="45" width="65" align="left" >
+### Organizations and Grants
+We would further like to acknowledge following supporters:
 
-This project has received funding from the European Union's Horizon 2020 research and innovation programme under grant agreement No 101016985 (FAROS project).
+| Logo | Notes |
+|:--:|:---|
+| <img src="https://medicalengineering.org.uk/wp-content/themes/aalto-child/_assets/images/medicalengineering-logo.svg" alt="wellcome" width="150" align="left">  | This work was supported by core and project funding from the Wellcome/EPSRC [WT203148/Z/16/Z; NS/A000049/1; WT101957; NS/A000027/1]. |
+| <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/Flag_of_Europe.svg/1920px-Flag_of_Europe.svg.png" alt="eu_flag" width="150" align="left"> | This project has received funding from the European Union's Horizon 2020 research and innovation programme under grant agreement No 101016985 (FAROS project). |
+| <img src="https://rvim.online/author/avatar_hu8970a6942005977dc117387facf47a75_62303_270x270_fill_lanczos_center_2.png" alt="RViMLab" width="150" align="left"> | Built at [RViMLab](https://rvim.online/). |
+| <img src="https://avatars.githubusercontent.com/u/75276868?s=200&v=4" alt="King's College London" width="150" align="left"> | Built at [CAI4CAI](https://cai4cai.ml/). |
+| <img src="https://upload.wikimedia.org/wikipedia/commons/1/14/King%27s_College_London_logo.svg" alt="King's College London" width="150" align="left"> | Built at [King's College London](https://www.kcl.ac.uk/). |

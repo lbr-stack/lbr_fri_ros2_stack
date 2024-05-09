@@ -16,7 +16,7 @@
 #include "lbr_fri_msgs/msg/lbr_state.hpp"
 #include "lbr_fri_ros2/pinv.hpp"
 
-namespace lbr_fri_ros2 {
+namespace lbr_demos {
 class AdmittanceController {
   using joint_vector_t = Eigen::Vector<double, KUKA::FRI::LBRState::NUMBER_OF_JOINTS>;
   using cartesian_vector_t = Eigen::Vector<double, 6>;
@@ -26,8 +26,8 @@ public:
                        const std::string &base_link = "link_0",
                        const std::string &end_effector_link = "link_ee",
                        const std::vector<double> &f_ext_th = {2., 2., 2., 0.5, 0.5, 0.5},
-                       const std::vector<double> &dq_gains = {0.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8},
-                       const std::vector<double> &dx_gains = {4.0, 4.0, 4.0, 40., 40., 40.})
+                       const std::vector<double> &dq_gains = {20., 20., 20., 20., 20., 20., 20.},
+                       const std::vector<double> &dx_gains = {0.1, 0.1, 0.1, 0.1, 0.1, 0.1})
       : dq_gains_(dq_gains.data()), dx_gains_(dx_gains.data()), f_ext_th_(f_ext_th.data()) {
     if (!kdl_parser::treeFromString(robot_description, tree_)) {
       throw std::runtime_error("Failed to construct kdl tree from robot description.");
@@ -41,8 +41,8 @@ public:
     q_.resize(chain_.getNrOfJoints());
   };
 
-  const lbr_fri_msgs::msg::LBRPositionCommand &
-  update(const lbr_fri_msgs::msg::LBRState &lbr_state) {
+  const lbr_fri_msgs::msg::LBRPositionCommand &update(const lbr_fri_msgs::msg::LBRState &lbr_state,
+                                                      const double &dt) {
     std::memcpy(q_.data.data(), lbr_state.measured_joint_position.data(),
                 sizeof(double) * KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
     std::memcpy(tau_ext_.data(), lbr_state.external_torque.data(),
@@ -50,7 +50,7 @@ public:
 
     jacobian_solver_->JntToJac(q_, jacobian_);
 
-    jacobian_inv_ = pinv(jacobian_.data);
+    jacobian_inv_ = lbr_fri_ros2::pinv(jacobian_.data);
     f_ext_ = jacobian_inv_.transpose() * tau_ext_;
 
     for (int i = 0; i < 6; i++) {
@@ -64,8 +64,7 @@ public:
     dq_ = dq_gains_.asDiagonal() * jacobian_inv_ * f_ext_;
 
     for (int i = 0; i < 7; i++) {
-      lbr_position_command_.joint_position[i] =
-          lbr_state.measured_joint_position[i] + dq_[i] * lbr_state.sample_time;
+      lbr_position_command_.joint_position[i] = lbr_state.measured_joint_position[i] + dq_[i] * dt;
     }
 
     return lbr_position_command_;
@@ -86,5 +85,5 @@ protected:
   cartesian_vector_t f_ext_;
   cartesian_vector_t f_ext_th_;
 };
-} // end of namespace lbr_fri_ros2
+} // end of namespace lbr_demos
 #endif // LBR_DEMOS_FRI_ROS2_ADVANCED_CPP__ADMITTANCE_CONTROLLER_HPP_
