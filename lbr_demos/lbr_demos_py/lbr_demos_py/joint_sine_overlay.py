@@ -37,8 +37,8 @@ class JointSineOverlayNode(Node):
     def _on_lbr_state(self, lbr_state: LBRState) -> None:
         if self._lbr_state is None:
             self._lbr_state = lbr_state
-        self._lbr_position_command.joint_position = (
-            deepcopy(self._lbr_state.measured_joint_position)
+        self._lbr_position_command.joint_position = deepcopy(
+            self._lbr_state.measured_joint_position
         )
 
         if lbr_state.session_state == 4:  # KUKA::FRI::COMMANDING_ACTIVE == 4
