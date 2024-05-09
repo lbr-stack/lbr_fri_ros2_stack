@@ -35,7 +35,11 @@ public:
 
 protected:
   void on_lbr_state_(const lbr_fri_msgs::msg::LBRState::SharedPtr lbr_state) {
-    lbr_position_command_.joint_position = lbr_state->ipo_joint_position;
+    if (!lbr_state_init_) {
+      lbr_state_ = *lbr_state;
+      lbr_state_init_ = true;
+    }
+    lbr_position_command_.joint_position = lbr_state_.measured_joint_position;
 
     if (lbr_state->session_state == KUKA::FRI::COMMANDING_ACTIVE) {
       // overlay sine wave on 4th joint
@@ -55,6 +59,8 @@ protected:
   double phase_;
   rclcpp::Publisher<lbr_fri_msgs::msg::LBRPositionCommand>::SharedPtr lbr_position_command_pub_;
   rclcpp::Subscription<lbr_fri_msgs::msg::LBRState>::SharedPtr lbr_state_sub_;
+  bool lbr_state_init_ = false;
+  lbr_fri_msgs::msg::LBRState lbr_state_;
   lbr_fri_msgs::msg::LBRPositionCommand lbr_position_command_;
 };
 

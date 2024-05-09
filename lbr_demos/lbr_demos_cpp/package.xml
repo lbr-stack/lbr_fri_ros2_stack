@@ -15,6 +15,7 @@
   <depend>lbr_fri_ros2</depend>
   <depend>rclcpp</depend>
   <depend>rclcpp_action</depend>
+  <depend>sensor_msgs</depend>
   <depend>trajectory_msgs</depend>
 
   <exec_depend>lbr_bringup</exec_depend>

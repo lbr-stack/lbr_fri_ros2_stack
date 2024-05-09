@@ -37,7 +37,11 @@ public:
 
 protected:
   void on_lbr_state_(const lbr_fri_msgs::msg::LBRState::SharedPtr lbr_state) {
-    lbr_wrench_command_.joint_position = lbr_state->ipo_joint_position;
+    if (!lbr_state_init_) {
+      lbr_state_ = *lbr_state;
+      lbr_state_init_ = true;
+    }
+    lbr_wrench_command_.joint_position = lbr_state_.measured_joint_position;
 
     if (lbr_state->session_state == KUKA::FRI::COMMANDING_ACTIVE) {
       // overlay wrench sine wave on x / y direction
@@ -60,6 +64,8 @@ protected:
   double phase_x_, phase_y_;
   rclcpp::Publisher<lbr_fri_msgs::msg::LBRWrenchCommand>::SharedPtr lbr_wrench_command_pub_;
   rclcpp::Subscription<lbr_fri_msgs::msg::LBRState>::SharedPtr lbr_state_sub_;
+  bool lbr_state_init_ = false;
+  lbr_fri_msgs::msg::LBRState lbr_state_;
   lbr_fri_msgs::msg::LBRWrenchCommand lbr_wrench_command_;
 };
 

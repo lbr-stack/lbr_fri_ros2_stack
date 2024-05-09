@@ -18,6 +18,7 @@ find_package(lbr_fri_msgs REQUIRED)
 find_package(lbr_fri_ros2 REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_action REQUIRED)
+find_package(sensor_msgs REQUIRED)
 find_package(trajectory_msgs REQUIRED)
 
 # joint sine overlay
@@ -36,7 +37,7 @@ target_link_libraries(joint_sine_overlay
   FRIClient::FRIClient
 )
 
-# joint trajectory executioner
+# joint trajectory client
 add_executable(joint_trajectory_client
   src/joint_trajectory_client.cpp
 )
@@ -46,6 +47,7 @@ ament_target_dependencies(joint_trajectory_client
   fri_vendor
   rclcpp
   rclcpp_action
+  sensor_msgs
   trajectory_msgs
 )
 

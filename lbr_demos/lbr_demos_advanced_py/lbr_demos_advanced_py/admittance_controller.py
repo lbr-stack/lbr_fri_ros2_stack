@@ -11,8 +11,8 @@ class AdmittanceController(object):
         base_link: str = "link_0",
         end_effector_link: str = "link_ee",
         f_ext_th: np.ndarray = np.array([2.0, 2.0, 2.0, 0.5, 0.5, 0.5]),
-        dq_gain: np.ndarray = np.array([10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0]),
-        dx_gain: np.ndarray = np.array([0.1, 0.1, 0.1, 0.1, 0.1, 0.1]),
+        dq_gains: np.ndarray = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]),
+        dx_gains: np.ndarray = np.array([0.1, 0.1, 0.1, 0.1, 0.1, 0.1]),
     ) -> None:
         self._lbr_position_command = LBRPositionCommand()
 
@@ -28,8 +28,8 @@ class AdmittanceController(object):
         self._q = np.zeros(self._dof)
         self._dq = np.zeros(self._dof)
         self._tau_ext = np.zeros(6)
-        self._dq_gain = np.diag(dq_gain)
-        self._dx_gain = np.diag(dx_gain)
+        self._dq_gains = np.diag(dq_gains)
+        self._dx_gains = np.diag(dx_gains)
         self._f_ext = np.zeros(6)
         self._f_ext_th = f_ext_th
         self._alpha = 0.95
@@ -44,14 +44,14 @@ class AdmittanceController(object):
 
         dx = np.where(
             abs(self._f_ext) > self._f_ext_th,
-            self._dx_gain @ np.sign(self._f_ext) * (abs(self._f_ext) - self._f_ext_th),
+            self._dx_gains @ np.sign(self._f_ext) * (abs(self._f_ext) - self._f_ext_th),
             0.0,
         )
 
         # additional smoothing required in python
         self._dq = (
             self._alpha * self._dq
-            + (1 - self._alpha) * self._dq_gain @ self._jacobian_inv @ dx
+            + (1 - self._alpha) * self._dq_gains @ self._jacobian_inv @ dx
         )
 
         self._lbr_position_command.joint_position = (

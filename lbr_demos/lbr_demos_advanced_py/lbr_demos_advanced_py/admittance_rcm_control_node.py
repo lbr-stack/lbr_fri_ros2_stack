@@ -15,18 +15,18 @@ class LBRAdmittanceControlRCMNode(LBRBasePositionCommandNode):
         self.declare_parameter("base_link", "link_0")
         self.declare_parameter("end_effector_link", "link_ee")
         self.declare_parameter("f_ext_th", [4.0, 4.0, 4.0, 1.0, 1.0, 1.0])
-        self.declare_parameter("dq_gain", [10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0])
-        self.declare_parameter("dx_gain", [0.1, 0.1, 0.1, 0.1, 0.1, 0.1])
+        self.declare_parameter("dq_gains", [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
+        self.declare_parameter("dx_gains", [0.1, 0.1, 0.1, 0.1, 0.1, 0.1])
         self.declare_parameter("exp_smooth", 0.95)
 
         self._f_ext_th = np.array(
             self.get_parameter("f_ext_th").get_parameter_value().double_array_value
         )
-        self._dq_gain = np.diag(
-            self.get_parameter("dq_gain").get_parameter_value().double_array_value
+        self._dq_gains = np.diag(
+            self.get_parameter("dq_gains").get_parameter_value().double_array_value
         )
-        self._dx_gain = np.diag(
-            self.get_parameter("dx_gain").get_parameter_value().double_array_value
+        self._dx_gains = np.diag(
+            self.get_parameter("dx_gains").get_parameter_value().double_array_value
         )
 
         self._exp_smooth = (
@@ -46,6 +46,24 @@ class LBRAdmittanceControlRCMNode(LBRBasePositionCommandNode):
             .string_value,
         )
 
+        # log parameters to terminal
+        self._log_parameters()
+
+    def _log_parameters(self) -> None:
+        self.get_logger().info("*** Paramters:")
+        self.get_logger().info(
+            f"*   base_link: {self.get_parameter('base_link').value}"
+        )
+        self.get_logger().info(
+            f"*   end_effector_link: {self.get_parameter('end_effector_link').value}"
+        )
+        self.get_logger().info(f"*   f_ext_th: {self.get_parameter('f_ext_th').value}")
+        self.get_logger().info(f"*   dq_gains: {self.get_parameter('dq_gains').value}")
+        self.get_logger().info(f"*   dx_gains: {self.get_parameter('dx_gains').value}")
+        self.get_logger().info(
+            f"*   exp_smooth: {self.get_parameter('exp_smooth').value}"
+        )
+
     def _command(self, q) -> None:
         lbr_command = LBRPositionCommand()
         lbr_command.joint_position = q
@@ -57,7 +75,7 @@ class LBRAdmittanceControlRCMNode(LBRBasePositionCommandNode):
         f_ext = Jinv.T @ tau_ext
         dx = np.where(
             abs(f_ext) > self._f_ext_th,
-            self._dx_gain @ np.sign(f_ext) * (abs(f_ext) - self._f_ext_th),
+            self._dx_gains @ np.sign(f_ext) * (abs(f_ext) - self._f_ext_th),
             0.0,
         ).flatten()
         dx = np.clip(dx, -1.0, 1.0)
@@ -76,10 +94,12 @@ class LBRAdmittanceControlRCMNode(LBRBasePositionCommandNode):
         if self._controller.solve():
             qc = np.array(msg.measured_joint_position)
             dq = self._controller.get_qd_target()
-            qn = qc + self._dt * self._dq_gain @ dq
+            qn = qc + self._dt * self._dq_gains @ dq
             self._command(qn.tolist())
         else:
             self.get_logger().error("Solver failed!")
+            qn = np.array(msg.measured_joint_position)
+            self._command(qn.tolist())
 
 
 def main(args=None) -> None:

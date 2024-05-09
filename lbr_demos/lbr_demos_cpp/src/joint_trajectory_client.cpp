@@ -19,6 +19,11 @@ public:
             this, "joint_trajectory_controller/follow_joint_trajectory");
 
     while (!joint_trajectory_action_client_->wait_for_action_server(std::chrono::seconds(1))) {
+      if (!rclcpp::ok()) {
+        RCLCPP_ERROR(this->get_logger(),
+                     "Interrupted while waiting for the action server. Exiting.");
+        return;
+      }
       RCLCPP_INFO(this->get_logger(), "Waiting for action server to become available...");
     }
     RCLCPP_INFO(this->get_logger(), "Action server available.");

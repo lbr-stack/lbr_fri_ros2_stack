@@ -15,8 +15,8 @@ class AdmittanceControlNode(LBRBasePositionCommandNode):
         self.declare_parameter("base_link", "link_0")
         self.declare_parameter("end_effector_link", "link_ee")
         self.declare_parameter("f_ext_th", [2.0, 2.0, 2.0, 0.5, 0.5, 0.5])
-        self.declare_parameter("dq_gain", [10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0])
-        self.declare_parameter("dx_gain", [0.1, 0.1, 0.1, 0.1, 0.1, 0.1])
+        self.declare_parameter("dq_gains", [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
+        self.declare_parameter("dx_gains", [0.1, 0.1, 0.1, 0.1, 0.1, 0.1])
         self.declare_parameter("exp_smooth", 0.95)
 
         self._init = False
@@ -35,6 +35,24 @@ class AdmittanceControlNode(LBRBasePositionCommandNode):
             end_effector_link=self.get_parameter("end_effector_link")
             .get_parameter_value()
             .string_value,
+        )
+
+        # log parameters to terminal
+        self._log_parameters()
+
+    def _log_parameters(self) -> None:
+        self.get_logger().info("*** Paramters:")
+        self.get_logger().info(
+            f"*   base_link: {self.get_parameter('base_link').value}"
+        )
+        self.get_logger().info(
+            f"*   end_effector_link: {self.get_parameter('end_effector_link').value}"
+        )
+        self.get_logger().info(f"*   f_ext_th: {self.get_parameter('f_ext_th').value}")
+        self.get_logger().info(f"*   dq_gains: {self.get_parameter('dq_gains').value}")
+        self.get_logger().info(f"*   dx_gains: {self.get_parameter('dx_gains').value}")
+        self.get_logger().info(
+            f"*   exp_smooth: {self.get_parameter('exp_smooth').value}"
         )
 
     def _on_lbr_state(self, lbr_state: LBRState) -> None:

@@ -21,7 +21,7 @@
         port_id:=^|30200
         remote_host:=^|INADDR_ANY
         rt_prio:=^|80
-        pid_p:=^|1.0
+        pid_p:=^|10.0
         pid_i:=^|0.0
         pid_d:=^|0.0
         pid_i_max:=^|0.0
