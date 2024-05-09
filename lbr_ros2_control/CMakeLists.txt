@@ -15,7 +15,6 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 find_package(ament_cmake REQUIRED)
-find_package(ament_cmake_python REQUIRED)
 find_package(controller_interface REQUIRED)
 find_package(FRIClient REQUIRED)
 find_package(hardware_interface REQUIRED)
@@ -97,11 +96,8 @@ install(
 )
 
 install(
-  DIRECTORY config launch
+  DIRECTORY config
   DESTINATION share/${PROJECT_NAME}
 )
-
-# Launch mixins
-ament_python_install_package(${PROJECT_NAME})
 
 ament_package()

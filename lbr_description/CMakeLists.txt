@@ -8,18 +8,14 @@ endif()
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(ament_cmake_pytest REQUIRED)
-find_package(ament_cmake_python REQUIRED)
 
 # install
 install(
-  DIRECTORY config gazebo launch meshes urdf
+  DIRECTORY config gazebo meshes urdf
   DESTINATION share/${PROJECT_NAME}
 )
 
 ament_environment_hooks("${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}.dsv")
-
-# Launch mixins
-ament_python_install_package(${PROJECT_NAME})
 
 if(BUILD_TESTING)
   ament_add_pytest_test(test_urdf ${CMAKE_CURRENT_SOURCE_DIR}/test/test_urdf.py)

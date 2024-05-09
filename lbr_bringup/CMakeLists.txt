@@ -7,6 +7,7 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
+find_package(ament_cmake_python REQUIRED)
 
 install(
   DIRECTORY config launch
@@ -14,6 +15,6 @@ install(
 )
 
 # Launch mixins
-ament_python_install_package(${PROJECT_NAME})
+ament_python_install_package(launch_mixins)
 
 ament_package()

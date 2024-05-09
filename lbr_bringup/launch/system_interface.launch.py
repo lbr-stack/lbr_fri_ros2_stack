@@ -2,9 +2,8 @@ from launch import LaunchDescription
 from launch.actions import RegisterEventHandler
 from launch.event_handlers import OnProcessStart
 from launch.substitutions import LaunchConfiguration
-
-from lbr_description import LBRDescriptionMixin
-from lbr_ros2_control import LBRROS2ControlMixin
+from launch_mixins.lbr_description import LBRDescriptionMixin
+from launch_mixins.lbr_ros2_control import LBRROS2ControlMixin
 
 
 class LBRSystemInterface(LBRDescriptionMixin, LBRROS2ControlMixin):

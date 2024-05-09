@@ -10,10 +10,9 @@ from launch.substitutions import (
     NotSubstitution,
     PathJoinSubstitution,
 )
-
-from lbr_bringup import LBRMoveGroupMixin
-from lbr_description import GazeboMixin, LBRDescriptionMixin, RVizMixin
-from lbr_ros2_control import LBRROS2ControlMixin
+from launch_mixins.lbr_bringup import LBRMoveGroupMixin
+from launch_mixins.lbr_description import GazeboMixin, LBRDescriptionMixin, RVizMixin
+from launch_mixins.lbr_ros2_control import LBRROS2ControlMixin
 
 
 def launch_setup(context: LaunchContext) -> List[LaunchDescriptionEntity]:
