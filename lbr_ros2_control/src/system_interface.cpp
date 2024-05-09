@@ -292,6 +292,10 @@ SystemInterface::on_deactivate(const rclcpp_lifecycle::State &) {
 
 hardware_interface::return_type SystemInterface::read(const rclcpp::Time & /*time*/,
                                                       const rclcpp::Duration &period) {
+  if (!async_client_ptr_->get_state_interface().is_initialized()) {
+    return hardware_interface::return_type::OK;
+  }
+
   hw_lbr_state_ = async_client_ptr_->get_state_interface().get_state();
 
   if (period.seconds() - hw_lbr_state_.sample_time * 0.2 > hw_lbr_state_.sample_time) {
