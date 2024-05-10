@@ -135,7 +135,12 @@ protected:
 };
 
 TEST_F(TestCommandInterfaces, TestPositionCommandInterface) {
+#if FRICLIENT_VERSION_MAJOR == 1
   set_up(KUKA::FRI::EClientCommandMode::POSITION);
+#endif
+#if FRICLIENT_VERSION_MAJOR == 2
+  set_up(KUKA::FRI::EClientCommandMode::JOINT_POSITION);
+#endif
   test_simple();
 }
 
