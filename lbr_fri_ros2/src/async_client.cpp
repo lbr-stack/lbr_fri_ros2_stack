@@ -18,10 +18,17 @@ AsyncClient::AsyncClient(const KUKA::FRI::EClientCommandMode &client_command_mod
   RCLCPP_INFO_STREAM(rclcpp::get_logger(LOGGER_NAME),
                      "Command guard variant '" << command_guard_variant.c_str() << "'");
   switch (client_command_mode) {
+#if FRICLIENT_VERSION_MAJOR == 1
   case KUKA::FRI::EClientCommandMode::POSITION:
+#endif
+#if FRICLIENT_VERSION_MAJOR == 2
+  case KUKA::FRI::EClientCommandMode::JOINT_POSITION:
+#endif
+  {
     command_interface_ptr_ = std::make_shared<PositionCommandInterface>(
         pid_parameters, command_guard_parameters, command_guard_variant);
     break;
+  }
   case KUKA::FRI::EClientCommandMode::TORQUE:
     command_interface_ptr_ = std::make_shared<TorqueCommandInterface>(
         pid_parameters, command_guard_parameters, command_guard_variant);
