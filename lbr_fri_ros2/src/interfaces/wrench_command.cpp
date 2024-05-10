@@ -9,9 +9,10 @@ WrenchCommandInterface::WrenchCommandInterface(
 void WrenchCommandInterface::buffered_command_to_fri(fri_command_t_ref command,
                                                      const_fri_state_t_ref state) {
   if (state.getClientCommandMode() != KUKA::FRI::EClientCommandMode::WRENCH) {
-    std::string err = "Expected robot in " +
+    std::string err = "Expected robot in '" +
                       EnumMaps::client_command_mode_map(KUKA::FRI::EClientCommandMode::WRENCH) +
-                      " command mode.";
+                      "' command mode got '" +
+                      EnumMaps::client_command_mode_map(state.getClientCommandMode()) + "'";
     RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME()), err.c_str());
     throw std::runtime_error(err);
   }

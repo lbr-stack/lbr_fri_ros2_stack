@@ -10,9 +10,10 @@ void PositionCommandInterface::buffered_command_to_fri(fri_command_t_ref command
                                                        const_fri_state_t_ref state) {
 #if FRICLIENT_VERSION_MAJOR == 1
   if (state.getClientCommandMode() != KUKA::FRI::EClientCommandMode::POSITION) {
-    std::string err = "Expected robot in " +
+    std::string err = "Expected robot in '" +
                       EnumMaps::client_command_mode_map(KUKA::FRI::EClientCommandMode::POSITION) +
-                      " command mode.";
+                      "' command mode got '" +
+                      EnumMaps::client_command_mode_map(state.getClientCommandMode()) + "'";
     RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME()),
                         ColorScheme::ERROR << err.c_str() << ColorScheme::ENDC);
     throw std::runtime_error(err);

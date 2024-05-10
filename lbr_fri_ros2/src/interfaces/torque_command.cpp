@@ -9,9 +9,10 @@ TorqueCommandInterface::TorqueCommandInterface(
 void TorqueCommandInterface::buffered_command_to_fri(fri_command_t_ref command,
                                                      const_fri_state_t_ref state) {
   if (state.getClientCommandMode() != KUKA::FRI::EClientCommandMode::TORQUE) {
-    std::string err = "Expected robot in " +
+    std::string err = "Expected robot in '" +
                       EnumMaps::client_command_mode_map(KUKA::FRI::EClientCommandMode::TORQUE) +
-                      " command mode.";
+                      "' command mode got '" +
+                      EnumMaps::client_command_mode_map(state.getClientCommandMode()) + "'";
     RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME()),
                         ColorScheme::ERROR << err.c_str() << ColorScheme::ENDC);
     throw std::runtime_error(err);

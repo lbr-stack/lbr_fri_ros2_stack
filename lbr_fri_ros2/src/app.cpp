@@ -104,7 +104,7 @@ void App::run_async(int rt_prio) {
     running_ = true;
     bool success = true;
     while (rclcpp::ok() && success && !should_stop_) {
-      success = app_ptr_->step();
+      success = app_ptr_->step(); // stuck if never connected
       if (async_client_ptr_->robotState().getSessionState() == KUKA::FRI::ESessionState::IDLE) {
         RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "LBR in session state idle, exiting");
         break;

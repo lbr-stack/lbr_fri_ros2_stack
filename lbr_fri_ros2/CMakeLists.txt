@@ -86,6 +86,16 @@ if(BUILD_TESTING)
 
   ament_add_gtest(test_command_interfaces test/test_command_interfaces.cpp)
   target_link_libraries(test_command_interfaces lbr_fri_ros2)
+
+  # some examples of how to use the interfaces
+  add_executable(test_position_command test/test_position_command.cpp)
+  target_link_libraries(test_position_command lbr_fri_ros2)
+
+  add_executable(test_torque_command test/test_torque_command.cpp)
+  target_link_libraries(test_torque_command lbr_fri_ros2)
+
+  add_executable(test_wrench_command test/test_wrench_command.cpp)
+  target_link_libraries(test_wrench_command lbr_fri_ros2)
 endif()
 
 ament_package()
