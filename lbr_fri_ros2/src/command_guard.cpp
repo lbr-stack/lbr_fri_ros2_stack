@@ -6,33 +6,13 @@ CommandGuard::CommandGuard(const CommandGuardParameters &command_guard_parameter
 
 bool CommandGuard::is_valid_command(const_idl_command_t_ref lbr_command,
                                     const_fri_state_t_ref lbr_state) {
-  switch (lbr_state.getClientCommandMode()) {
-  case KUKA::FRI::EClientCommandMode::NO_COMMAND_MODE:
-    return false;
-#if FRICLIENT_VERSION_MAJOR == 1
-  case KUKA::FRI::EClientCommandMode::POSITION:
-#endif
-#if FRICLIENT_VERSION_MAJOR == 2
-  case KUKA::FRI::EClientCommandMode::JOINT_POSITION:
-#endif
-  case KUKA::FRI::EClientCommandMode::TORQUE:
-  case KUKA::FRI::EClientCommandMode::WRENCH:
-    if (!command_in_position_limits_(lbr_command, lbr_state)) {
-      return false;
-    }
-    if (!command_in_velocity_limits_(lbr_command, lbr_state)) {
-      return false;
-    }
-    return true;
-#if FRICLIENT_VERSION_MAJOR == 2
-  case KUKA::FRI::EClientCommandMode::CARTESIAN_POSE:
-    return false;
-#endif
-  default:
-    RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME), "Invalid EClientCommandMode provided");
+  if (!command_in_position_limits_(lbr_command, lbr_state)) {
     return false;
   }
-  return false;
+  if (!command_in_velocity_limits_(lbr_command, lbr_state)) {
+    return false;
+  }
+  return true;
 }
 
 void CommandGuard::log_info() const {

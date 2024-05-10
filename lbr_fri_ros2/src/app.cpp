@@ -10,7 +10,7 @@ App::App(const std::shared_ptr<AsyncClient> async_client_ptr)
 }
 
 App::~App() {
-  stop_run();
+  request_stop();
   close_udp_socket();
 }
 
@@ -46,6 +46,10 @@ bool App::close_udp_socket() {
                         ColorScheme::ERROR << "Connection not configured" << ColorScheme::ENDC);
     return false;
   }
+  while (running_) {
+    RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "Waiting for run thread termination");
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+  }
   RCLCPP_INFO_STREAM(rclcpp::get_logger(LOGGER_NAME),
                      ColorScheme::OKBLUE << "Closing UDP socket" << ColorScheme::ENDC);
   if (!connection_ptr_->isOpen()) {
@@ -58,7 +62,7 @@ bool App::close_udp_socket() {
   return true;
 }
 
-void App::run(int rt_prio) {
+void App::run_async(int rt_prio) {
   if (!async_client_ptr_) {
     RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME),
                         ColorScheme::ERROR << "AsyncClient not configured" << ColorScheme::ENDC);
@@ -100,20 +104,20 @@ void App::run(int rt_prio) {
     running_ = true;
     bool success = true;
     while (rclcpp::ok() && success && !should_stop_) {
-      success = app_ptr_->step(); // TODO: blocks until robot heartbeat, stuck if port id mismatches
+      success = app_ptr_->step();
       if (async_client_ptr_->robotState().getSessionState() == KUKA::FRI::ESessionState::IDLE) {
         RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "LBR in session state idle, exiting");
         break;
       }
     }
-    async_client_ptr_->get_state_interface().uninitialize();
+    async_client_ptr_->get_state_interface()->uninitialize();
     running_ = false;
     RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "Exiting run thread");
   });
   run_thread_.detach();
 }
 
-void App::stop_run() {
+void App::request_stop() {
   RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "Requesting run thread stop");
   should_stop_ = true;
 }

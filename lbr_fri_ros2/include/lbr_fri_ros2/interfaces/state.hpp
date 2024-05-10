@@ -1,5 +1,5 @@
-#ifndef LBR_FRI_ROS2__STATE_INTERFACE_HPP_
-#define LBR_FRI_ROS2__STATE_INTERFACE_HPP_
+#ifndef LBR_FRI_ROS2__INTERFACES__STATE_HPP_
+#define LBR_FRI_ROS2__INTERFACES__STATE_HPP_
 #include <atomic>
 #include <string>
 
@@ -56,4 +56,4 @@ protected:
   JointExponentialFilterArray external_torque_filter_, measured_torque_filter_;
 };
 } // end of namespace lbr_fri_ros2
-#endif // LBR_FRI_ROS2__STATE_INTERFACE_HPP_
+#endif // LBR_FRI_ROS2__INTERFACES__STATE_HPP_

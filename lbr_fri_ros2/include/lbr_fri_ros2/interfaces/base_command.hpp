@@ -1,5 +1,5 @@
-#ifndef LBR_FRI_ROS2__COMMAND_INTERFACE_HPP_
-#define LBR_FRI_ROS2__COMMAND_INTERFACE_HPP_
+#ifndef LBR_FRI_ROS2__INTERACES__COMMAND_HPP_
+#define LBR_FRI_ROS2__INTERACES__COMMAND_HPP_
 
 #include <chrono>
 #include <memory>
@@ -18,9 +18,9 @@
 #include "lbr_fri_ros2/formatting.hpp"
 
 namespace lbr_fri_ros2 {
-class CommandInterface {
+class BaseCommandInterface {
 protected:
-  static constexpr char LOGGER_NAME[] = "lbr_fri_ros2::CommandInterface";
+  virtual std::string LOGGER_NAME() const = 0;
 
   // ROS IDL types
   using idl_command_t = lbr_fri_msgs::msg::LBRCommand;
@@ -33,17 +33,15 @@ protected:
   using const_fri_state_t_ref = const fri_state_t &;
 
 public:
-  CommandInterface() = delete;
-  CommandInterface(const PIDParameters &pid_parameters,
-                   const CommandGuardParameters &command_guard_parameters,
-                   const std::string &command_guard_variant = "default");
+  BaseCommandInterface() = delete;
+  BaseCommandInterface(const PIDParameters &pid_parameters,
+                       const CommandGuardParameters &command_guard_parameters,
+                       const std::string &command_guard_variant = "default");
 
-  void get_joint_position_command(fri_command_t_ref command, const_fri_state_t_ref state);
-  void get_torque_command(fri_command_t_ref command, const_fri_state_t_ref state);
-  void get_wrench_command(fri_command_t_ref command, const_fri_state_t_ref state);
-
+  virtual void buffered_command_to_fri(fri_command_t_ref command, const_fri_state_t_ref state) = 0;
+  inline void buffer_command_target(const_idl_command_t_ref command) { command_target_ = command; }
   void init_command(const_fri_state_t_ref state);
-  inline void set_command_target(const_idl_command_t_ref command) { command_target_ = command; }
+
   inline const_idl_command_t_ref get_command() const { return command_; }
   inline const_idl_command_t_ref get_command_target() const { return command_target_; }
 
@@ -56,4 +54,4 @@ protected:
   idl_command_t command_, command_target_;
 };
 } // namespace lbr_fri_ros2
-#endif // LBR_FRI_ROS2__COMMAND_INTERFACE_HPP_
+#endif // LBR_FRI_ROS2__INTERACES__COMMAND_HPP_

@@ -1,19 +1,46 @@
 #include "lbr_fri_ros2/async_client.hpp"
 
 namespace lbr_fri_ros2 {
-AsyncClient::AsyncClient(const PIDParameters &pid_parameters,
+AsyncClient::AsyncClient(const KUKA::FRI::EClientCommandMode &client_command_mode,
+                         const PIDParameters &pid_parameters,
                          const CommandGuardParameters &command_guard_parameters,
                          const std::string &command_guard_variant,
                          const StateInterfaceParameters &state_interface_parameters,
                          const bool &open_loop)
-    : command_interface_(pid_parameters, command_guard_parameters, command_guard_variant),
-      state_interface_(state_interface_parameters), open_loop_(open_loop) {
+    : open_loop_(open_loop) {
   RCLCPP_INFO_STREAM(rclcpp::get_logger(LOGGER_NAME),
                      ColorScheme::OKBLUE << "Configuring client" << ColorScheme::ENDC);
+
+  // create command interface
+  RCLCPP_INFO_STREAM(rclcpp::get_logger(LOGGER_NAME),
+                     "Client command mode: '"
+                         << EnumMaps::client_command_mode_map(client_command_mode).c_str() << "'");
   RCLCPP_INFO_STREAM(rclcpp::get_logger(LOGGER_NAME),
                      "Command guard variant '" << command_guard_variant.c_str() << "'");
-  command_interface_.log_info();
-  state_interface_.log_info();
+  switch (client_command_mode) {
+  case KUKA::FRI::EClientCommandMode::POSITION:
+    command_interface_ptr_ = std::make_shared<PositionCommandInterface>(
+        pid_parameters, command_guard_parameters, command_guard_variant);
+    break;
+  case KUKA::FRI::EClientCommandMode::TORQUE:
+    command_interface_ptr_ = std::make_shared<TorqueCommandInterface>(
+        pid_parameters, command_guard_parameters, command_guard_variant);
+    break;
+  case KUKA::FRI::EClientCommandMode::WRENCH:
+    command_interface_ptr_ = std::make_shared<WrenchCommandInterface>(
+        pid_parameters, command_guard_parameters, command_guard_variant);
+    break;
+  default:
+    std::string err = "Unsupported client command mode.";
+    RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME),
+                        ColorScheme::ERROR << err.c_str() << ColorScheme::ENDC);
+    throw std::runtime_error(err);
+  }
+  command_interface_ptr_->log_info();
+
+  // create state interface
+  state_interface_ptr_ = std::make_shared<StateInterface>(state_interface_parameters);
+  state_interface_ptr_->log_info();
   RCLCPP_INFO_STREAM(rclcpp::get_logger(LOGGER_NAME),
                      "Open loop '" << (open_loop_ ? "true" : "false") << "'");
   RCLCPP_INFO_STREAM(rclcpp::get_logger(LOGGER_NAME),
@@ -29,67 +56,26 @@ void AsyncClient::onStateChange(KUKA::FRI::ESessionState old_state,
                          << "' to '" << ColorScheme::OKGREEN << ColorScheme::BOLD
                          << EnumMaps::session_state_map(new_state).c_str() << ColorScheme::ENDC
                          << "'");
-  command_interface_.init_command(robotState());
+
+  // initialize command
+  command_interface_ptr_->init_command(robotState());
 }
 
-void AsyncClient::monitor() { state_interface_.set_state(robotState()); };
+void AsyncClient::monitor() { state_interface_ptr_->set_state(robotState()); };
 
 void AsyncClient::waitForCommand() {
   KUKA::FRI::LBRClient::waitForCommand();
-  state_interface_.set_state(robotState());
-
-  if (robotState().getClientCommandMode() == KUKA::FRI::EClientCommandMode::TORQUE) {
-    command_interface_.get_torque_command(robotCommand(), robotState());
-  }
-
-  if (robotState().getClientCommandMode() == KUKA::FRI::EClientCommandMode::WRENCH) {
-    command_interface_.get_wrench_command(robotCommand(), robotState());
-  }
+  state_interface_ptr_->set_state(robotState());
+  command_interface_ptr_->buffered_command_to_fri(robotCommand(), robotState());
 }
 
 void AsyncClient::command() {
   if (open_loop_) {
-    state_interface_.set_state_open_loop(robotState(),
-                                         command_interface_.get_command().joint_position);
+    state_interface_ptr_->set_state_open_loop(robotState(),
+                                              command_interface_ptr_->get_command().joint_position);
   } else {
-    state_interface_.set_state(robotState());
+    state_interface_ptr_->set_state(robotState());
   }
-
-  switch (robotState().getClientCommandMode()) {
-#if FRICLIENT_VERSION_MAJOR == 1
-  case KUKA::FRI::EClientCommandMode::POSITION:
-#endif
-#if FRICLIENT_VERSION_MAJOR == 2
-  case KUKA::FRI::EClientCommandMode::JOINT_POSITION:
-#endif
-  {
-    command_interface_.get_joint_position_command(robotCommand(), robotState());
-    return;
-  }
-#if FRICLIENT_VERSION_MAJOR == 2
-  case KUKA::FRI::EClientCommandMode::CARTESIAN_POSE: {
-    std::string err =
-        EnumMaps::client_command_mode_map(KUKA::FRI::EClientCommandMode::CARTESIAN_POSE) +
-        " command mode not supported yet.";
-    RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME), err.c_str());
-    throw std::runtime_error(err);
-  }
-#endif
-  case KUKA::FRI::EClientCommandMode::TORQUE: {
-    command_interface_.get_torque_command(robotCommand(), robotState());
-    return;
-  }
-  case KUKA::FRI::EClientCommandMode::WRENCH: {
-    command_interface_.get_wrench_command(robotCommand(), robotState());
-    return;
-  }
-  default: {
-    std::string err =
-        "Unsupported command mode '" + std::to_string(robotState().getClientCommandMode()) + "'";
-    RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME),
-                        ColorScheme::ERROR << err << ColorScheme::ENDC);
-    throw std::runtime_error(err);
-  }
-  }
+  command_interface_ptr_->buffered_command_to_fri(robotCommand(), robotState());
 }
 } // end of namespace lbr_fri_ros2

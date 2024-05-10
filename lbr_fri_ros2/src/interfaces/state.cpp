@@ -1,4 +1,4 @@
-#include "lbr_fri_ros2/state_interface.hpp"
+#include "lbr_fri_ros2/interfaces/state.hpp"
 
 namespace lbr_fri_ros2 {
 StateInterface::StateInterface(const StateInterfaceParameters &state_interface_parameters)

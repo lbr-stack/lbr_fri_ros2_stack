@@ -25,13 +25,16 @@ find_package(urdf REQUIRED)
 # lbr_fri_ros2
 add_library(lbr_fri_ros2
   SHARED
+    src/interfaces/base_command.cpp
+    src/interfaces/position_command.cpp
+    src/interfaces/state.cpp
+    src/interfaces/torque_command.cpp
+    src/interfaces/wrench_command.cpp
     src/app.cpp
     src/async_client.cpp
     src/command_guard.cpp
-    src/command_interface.cpp
     src/filters.cpp
     src/ft_estimator.cpp
-    src/state_interface.cpp
 )
 
 target_include_directories(lbr_fri_ros2
@@ -77,5 +80,12 @@ install(
   EXPORT lbr_fri_ros2_export
   LIBRARY DESTINATION lib
 )
+
+if(BUILD_TESTING)
+  find_package(ament_cmake_gtest REQUIRED)
+
+  ament_add_gtest(test_command_interfaces test/test_command_interfaces.cpp)
+  target_link_libraries(test_command_interfaces lbr_fri_ros2)
+endif()
 
 ament_package()
