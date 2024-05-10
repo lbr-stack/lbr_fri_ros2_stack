@@ -16,6 +16,12 @@ void WrenchCommandInterface::buffered_command_to_fri(fri_command_t_ref command,
     RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME()), err.c_str());
     throw std::runtime_error(err);
   }
+  if (std::any_of(command_target_.joint_position.cbegin(), command_target_.joint_position.cend(),
+                  [](const double &v) { return std::isnan(v); }) ||
+      std::any_of(command_target_.wrench.cbegin(), command_target_.wrench.cend(),
+                  [](const double &v) { return std::isnan(v); })) {
+    this->init_command();
+  }
   if (!command_guard_) {
     std::string err = "Uninitialized command guard.";
     RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME()), err.c_str());

@@ -12,6 +12,27 @@ SystemInterface::on_init(const hardware_interface::HardwareInfo &system_info) {
   }
 
   // parameters_ from config/lbr_system_interface.xacro
+  std::string client_command_mode = system_info.hardware_parameters.at("client_command_mode");
+  if (client_command_mode == "position") {
+#if FRICLIENT_VERSION_MAJOR == 1
+    parameters_.client_command_mode = KUKA::FRI::EClientCommandMode::POSITION;
+#endif
+#if FRICLIENT_VERSION_MAJOR == 2
+    parameters_.client_command_mode = KUKA::FRI::EClientCommandMode::JOINT_POSITION;
+#endif
+  } else if (client_command_mode == "torque") {
+    parameters_.client_command_mode = KUKA::FRI::EClientCommandMode::TORQUE;
+  } else if (client_command_mode == "wrench") {
+    parameters_.client_command_mode = KUKA::FRI::EClientCommandMode::WRENCH;
+  } else {
+    RCLCPP_ERROR_STREAM(
+        rclcpp::get_logger(LOGGER_NAME),
+        lbr_fri_ros2::ColorScheme::ERROR
+            << "Expected client_command_mode 'position', 'torque' or 'wrench', got '"
+            << lbr_fri_ros2::ColorScheme::BOLD << parameters_.client_command_mode << "'"
+            << lbr_fri_ros2::ColorScheme::ENDC);
+    return controller_interface::CallbackReturn::ERROR;
+  }
   parameters_.port_id = std::stoul(info_.hardware_parameters["port_id"]);
   if (parameters_.port_id < 30200 || parameters_.port_id > 30209) {
     RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME),
@@ -72,8 +93,8 @@ SystemInterface::on_init(const hardware_interface::HardwareInfo &system_info) {
 
   try {
     async_client_ptr_ = std::make_shared<lbr_fri_ros2::AsyncClient>(
-        pid_parameters, command_guard_parameters, parameters_.command_guard_variant,
-        state_interface_parameters, parameters_.open_loop);
+        parameters_.client_command_mode, pid_parameters, command_guard_parameters,
+        parameters_.command_guard_variant, state_interface_parameters, parameters_.open_loop);
     app_ptr_ = std::make_unique<lbr_fri_ros2::App>(async_client_ptr_);
   } catch (const std::exception &e) {
     RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME),
@@ -231,9 +252,9 @@ controller_interface::CallbackReturn SystemInterface::on_activate(const rclcpp_l
   if (!app_ptr_->open_udp_socket(parameters_.port_id, parameters_.remote_host)) {
     return controller_interface::CallbackReturn::ERROR;
   }
-  app_ptr_->run(parameters_.rt_prio);
+  app_ptr_->run_async(parameters_.rt_prio);
   int attempt = 0;
-  while (!async_client_ptr_->get_state_interface().is_initialized() && rclcpp::ok()) {
+  while (!async_client_ptr_->get_state_interface()->is_initialized() && rclcpp::ok()) {
     RCLCPP_INFO_STREAM(
         rclcpp::get_logger(LOGGER_NAME),
         "Awaiting robot heartbeat. Attempt "
@@ -246,7 +267,7 @@ controller_interface::CallbackReturn SystemInterface::on_activate(const rclcpp_l
     std::this_thread::sleep_for(std::chrono::seconds(1));
   }
   if (!async_client_ptr_->get_state_interface()
-           .is_initialized()) { // check connection should rclcpp::ok() fail
+           ->is_initialized()) { // check connection should rclcpp::ok() fail
     RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "Failed to connect");
     return controller_interface::CallbackReturn::ERROR;
   }
@@ -256,13 +277,13 @@ controller_interface::CallbackReturn SystemInterface::on_activate(const rclcpp_l
   RCLCPP_INFO_STREAM(rclcpp::get_logger(LOGGER_NAME),
                      "Control mode '"
                          << lbr_fri_ros2::EnumMaps::control_mode_map(
-                                async_client_ptr_->get_state_interface().get_state().control_mode)
+                                async_client_ptr_->get_state_interface()->get_state().control_mode)
                                 .c_str()
                          << "'");
   RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "Sample time %.3f s / %.1f Hz",
-              async_client_ptr_->get_state_interface().get_state().sample_time,
-              1. / async_client_ptr_->get_state_interface().get_state().sample_time);
-  while (!(async_client_ptr_->get_state_interface().get_state().session_state >=
+              async_client_ptr_->get_state_interface()->get_state().sample_time,
+              1. / async_client_ptr_->get_state_interface()->get_state().sample_time);
+  while (!(async_client_ptr_->get_state_interface()->get_state().session_state >=
            KUKA::FRI::ESessionState::COMMANDING_WAIT) &&
          rclcpp::ok()) {
     RCLCPP_INFO_STREAM(
@@ -273,7 +294,7 @@ controller_interface::CallbackReturn SystemInterface::on_activate(const rclcpp_l
                      << lbr_fri_ros2::ColorScheme::ENDC << "' state. Current state '"
                      << lbr_fri_ros2::ColorScheme::BOLD << lbr_fri_ros2::ColorScheme::OKBLUE
                      << lbr_fri_ros2::EnumMaps::session_state_map(
-                            async_client_ptr_->get_state_interface().get_state().session_state)
+                            async_client_ptr_->get_state_interface()->get_state().session_state)
                      << lbr_fri_ros2::ColorScheme::ENDC << "'.");
     std::this_thread::sleep_for(std::chrono::seconds(1));
   }
@@ -285,18 +306,18 @@ controller_interface::CallbackReturn SystemInterface::on_activate(const rclcpp_l
 
 controller_interface::CallbackReturn
 SystemInterface::on_deactivate(const rclcpp_lifecycle::State &) {
-  app_ptr_->stop_run();
+  app_ptr_->request_stop();
   app_ptr_->close_udp_socket();
   return controller_interface::CallbackReturn::SUCCESS;
 }
 
 hardware_interface::return_type SystemInterface::read(const rclcpp::Time & /*time*/,
                                                       const rclcpp::Duration &period) {
-  if (!async_client_ptr_->get_state_interface().is_initialized()) {
+  if (!async_client_ptr_->get_state_interface()->is_initialized()) {
     return hardware_interface::return_type::OK;
   }
 
-  hw_lbr_state_ = async_client_ptr_->get_state_interface().get_state();
+  hw_lbr_state_ = async_client_ptr_->get_state_interface()->get_state();
 
   if (period.seconds() - hw_lbr_state_.sample_time * 0.2 > hw_lbr_state_.sample_time) {
     RCLCPP_WARN_STREAM(rclcpp::get_logger(LOGGER_NAME),
@@ -313,7 +334,7 @@ hardware_interface::return_type SystemInterface::read(const rclcpp::Time & /*tim
                         lbr_fri_ros2::ColorScheme::ERROR
                             << "LBR left COMMANDING_ACTIVE. Please re-run lbr_bringup"
                             << lbr_fri_ros2::ColorScheme::ENDC);
-    app_ptr_->stop_run();
+    app_ptr_->request_stop();
     app_ptr_->close_udp_socket();
     return hardware_interface::return_type::ERROR;
   }
@@ -345,49 +366,8 @@ hardware_interface::return_type SystemInterface::write(const rclcpp::Time & /*ti
   if (hw_session_state_ != KUKA::FRI::COMMANDING_ACTIVE) {
     return hardware_interface::return_type::OK;
   }
-#if FRICLIENT_VERSION_MAJOR == 1
-  if (hw_client_command_mode_ == KUKA::FRI::EClientCommandMode::POSITION)
-#endif
-#if FRICLIENT_VERSION_MAJOR == 2
-    if (hw_client_command_mode_ == KUKA::FRI::EClientCommandMode::JOINT_POSITION)
-#endif
-    {
-      if (std::any_of(hw_lbr_command_.joint_position.cbegin(),
-                      hw_lbr_command_.joint_position.cend(),
-                      [](const double &v) { return std::isnan(v); })) {
-        return hardware_interface::return_type::OK;
-      }
-      async_client_ptr_->get_command_interface().set_command_target(hw_lbr_command_);
-      return hardware_interface::return_type::OK;
-    }
-  if (hw_client_command_mode_ == KUKA::FRI::EClientCommandMode::TORQUE) {
-    if (std::any_of(hw_lbr_command_.joint_position.cbegin(), hw_lbr_command_.joint_position.cend(),
-                    [](const double &v) { return std::isnan(v); }) ||
-        std::any_of(hw_lbr_command_.torque.cbegin(), hw_lbr_command_.torque.cend(),
-                    [](const double &v) { return std::isnan(v); })) {
-      return hardware_interface::return_type::OK;
-    }
-    async_client_ptr_->get_command_interface().set_command_target(hw_lbr_command_);
-    return hardware_interface::return_type::OK;
-  }
-  if (hw_client_command_mode_ == KUKA::FRI::EClientCommandMode::WRENCH) {
-    if (std::any_of(hw_lbr_command_.wrench.cbegin(), hw_lbr_command_.wrench.cend(),
-                    [](const double &v) { return std::isnan(v); }) ||
-        std::any_of(hw_lbr_command_.joint_position.cbegin(), hw_lbr_command_.joint_position.cend(),
-                    [](const double &v) { return std::isnan(v); })) {
-      return hardware_interface::return_type::OK;
-    }
-    async_client_ptr_->get_command_interface().set_command_target(hw_lbr_command_);
-    return hardware_interface::return_type::OK;
-  }
-#if FRICLIENT_VERSION_MAJOR == 2
-  if (hw_client_command_mode_ == KUKA::FRI::EClientCommandMode::CARTESIAN_POSE) {
-    throw std::runtime_error(
-        lbr_fri_ros2::EnumMaps::client_command_mode_map(hw_client_command_mode_) +
-        " command mode currently not implemented.");
-  }
-#endif
-  return hardware_interface::return_type::ERROR;
+  async_client_ptr_->get_command_interface()->buffer_command_target(hw_lbr_command_);
+  return hardware_interface::return_type::OK;
 }
 
 void SystemInterface::nan_command_interfaces_() {

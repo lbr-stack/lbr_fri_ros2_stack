@@ -29,6 +29,10 @@ void PositionCommandInterface::buffered_command_to_fri(fri_command_t_ref command
     throw std::runtime_error(err);
   }
 #endif
+  if (std::any_of(command_target_.joint_position.cbegin(), command_target_.joint_position.cend(),
+                  [](const double &v) { return std::isnan(v); })) {
+    this->init_command();
+  }
   if (!command_guard_) {
     std::string err = "Uninitialized command guard.";
     RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME()),

@@ -17,6 +17,7 @@
         A6_velocity_limit
         A7_velocity_limit
         max_torque
+        client_command_mode:=^|position
         sim:=^|true
         port_id:=^|30200
         remote_host:=^|INADDR_ANY
@@ -50,6 +51,7 @@
             <xacro:unless value="${sim}">
                 <hardware>
                     <plugin>lbr_ros2_control::SystemInterface</plugin>
+                    <param name="client_command_mode">${client_command_mode}</param>
                     <param name="port_id">${port_id}</param>
                     <param name="remote_host">${remote_host}</param>
                     <param name="rt_prio">${rt_prio}</param>

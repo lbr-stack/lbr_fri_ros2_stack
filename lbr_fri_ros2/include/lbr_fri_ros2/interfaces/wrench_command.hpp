@@ -1,6 +1,8 @@
 #ifndef LBR_FRI_ROS2__INTERFACES__WRENCH_COMMAND_HPP_
 #define LBR_FRI_ROS2__INTERFACES__WRENCH_COMMAND_HPP_
 
+#include <algorithm>
+
 #include "lbr_fri_ros2/interfaces/base_command.hpp"
 
 namespace lbr_fri_ros2 {

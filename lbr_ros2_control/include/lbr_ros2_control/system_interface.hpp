@@ -26,11 +26,12 @@
 #include "lbr_fri_ros2/filters.hpp"
 #include "lbr_fri_ros2/formatting.hpp"
 #include "lbr_fri_ros2/ft_estimator.hpp"
-#include "lbr_fri_ros2/state_interface.hpp"
+#include "lbr_fri_ros2/interfaces/state.hpp"
 #include "lbr_ros2_control/system_interface_type_values.hpp"
 
 namespace lbr_ros2_control {
 struct SystemInterfaceParameters {
+  KUKA::FRI::EClientCommandMode client_command_mode{KUKA::FRI::EClientCommandMode::POSITION};
   int32_t port_id{30200};
   const char *remote_host{nullptr};
   int32_t rt_prio{80};
