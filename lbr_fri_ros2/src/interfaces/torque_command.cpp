@@ -21,7 +21,7 @@ void TorqueCommandInterface::buffered_command_to_fri(fri_command_t_ref command,
                   [](const double &v) { return std::isnan(v); }) ||
       std::any_of(command_target_.torque.cbegin(), command_target_.torque.cend(),
                   [](const double &v) { return std::isnan(v); })) {
-    this->init_command();
+    this->init_command(state);
   }
   if (!command_guard_) {
     std::string err = "Uninitialized command guard.";
