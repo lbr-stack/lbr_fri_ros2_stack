@@ -21,17 +21,17 @@ void CommandGuard::log_info() const {
     RCLCPP_INFO(
         rclcpp::get_logger(LOGGER_NAME),
         "*   Joint %s limits: Position: [%.1f, %.1f] deg, velocity: %.1f deg/s, torque: %.1f Nm",
-        parameters_.joint_names[i].c_str(), parameters_.min_position[i] * (180. / M_PI),
-        parameters_.max_position[i] * (180. / M_PI), parameters_.max_velocity[i] * (180. / M_PI),
-        parameters_.max_torque[i]);
+        parameters_.joint_names[i].c_str(), parameters_.min_positions[i] * (180. / M_PI),
+        parameters_.max_positions[i] * (180. / M_PI), parameters_.max_velocities[i] * (180. / M_PI),
+        parameters_.max_torques[i]);
   }
 }
 
 bool CommandGuard::command_in_position_limits_(const_idl_command_t_ref lbr_command,
                                                const_fri_state_t_ref /*lbr_state*/) const {
   for (std::size_t i = 0; i < lbr_command.joint_position.size(); ++i) {
-    if (lbr_command.joint_position[i] < parameters_.min_position[i] ||
-        lbr_command.joint_position[i] > parameters_.max_position[i]) {
+    if (lbr_command.joint_position[i] < parameters_.min_positions[i] ||
+        lbr_command.joint_position[i] > parameters_.max_positions[i]) {
       RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME),
                           ColorScheme::ERROR << "Position not in limits for joint '"
                                              << parameters_.joint_names[i].c_str() << "'"
@@ -53,7 +53,7 @@ bool CommandGuard::command_in_velocity_limits_(const_idl_command_t_ref lbr_comma
   }
   for (std::size_t i = 0; i < lbr_command.joint_position[i]; ++i) {
     if (std::abs(prev_measured_joint_position_[i] - lbr_state.getMeasuredJointPosition()[i]) / dt >
-        parameters_.max_velocity[i]) {
+        parameters_.max_velocities[i]) {
       RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME),
                           ColorScheme::ERROR << "Velocity not in limits for joint '"
                                              << parameters_.joint_names[i].c_str() << "'"
@@ -70,7 +70,7 @@ bool CommandGuard::command_in_torque_limits_(const_idl_command_t_ref lbr_command
                                              const_fri_state_t_ref lbr_state) const {
   for (std::size_t i = 0; i < lbr_command.torque.size(); ++i) {
     if (std::abs(lbr_command.torque[i] + lbr_state.getExternalTorque()[i]) >
-        parameters_.max_torque[i]) {
+        parameters_.max_torques[i]) {
       RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME), ColorScheme::ERROR
                                                                << "Torque not in limits for joint '"
                                                                << parameters_.joint_names[i].c_str()
@@ -85,9 +85,11 @@ bool SafeStopCommandGuard::command_in_position_limits_(const_idl_command_t_ref l
                                                        const_fri_state_t_ref lbr_state) const {
   for (std::size_t i = 0; i < lbr_command.joint_position.size(); ++i) {
     if (lbr_command.joint_position[i] <
-            parameters_.min_position[i] + parameters_.max_velocity[i] * lbr_state.getSampleTime() ||
+            parameters_.min_positions[i] +
+                parameters_.max_velocities[i] * lbr_state.getSampleTime() ||
         lbr_command.joint_position[i] >
-            parameters_.max_position[i] - parameters_.max_velocity[i] * lbr_state.getSampleTime()) {
+            parameters_.max_positions[i] -
+                parameters_.max_velocities[i] * lbr_state.getSampleTime()) {
       RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME),
                           ColorScheme::ERROR << "Position not in limits for joint '"
                                              << parameters_.joint_names[i].c_str() << "'"

@@ -23,11 +23,11 @@ struct CommandGuardParameters {
   using jnt_array_t = std::array<double, KUKA::FRI::LBRState::NUMBER_OF_JOINTS>;
   using jnt_name_array_t = std::array<std::string, KUKA::FRI::LBRState::NUMBER_OF_JOINTS>;
 
-  jnt_name_array_t joint_names;                         /**< Joint names.*/
-  jnt_array_t min_position{0., 0., 0., 0., 0., 0., 0.}; /**< Minimum joint position [rad].*/
-  jnt_array_t max_position{0., 0., 0., 0., 0., 0., 0.}; /**< Maximum joint position [rad].*/
-  jnt_array_t max_velocity{0., 0., 0., 0., 0., 0., 0.}; /**< Maximum joint velocity [rad/s].*/
-  jnt_array_t max_torque{0., 0., 0., 0., 0., 0., 0.};   /**< Maximum joint torque [Nm].*/
+  jnt_name_array_t joint_names;                           /**< Joint names.*/
+  jnt_array_t min_positions{0., 0., 0., 0., 0., 0., 0.};  /**< Minimum joint positions [rad].*/
+  jnt_array_t max_positions{0., 0., 0., 0., 0., 0., 0.};  /**< Maximum joint positions [rad].*/
+  jnt_array_t max_velocities{0., 0., 0., 0., 0., 0., 0.}; /**< Maximum joint velocities [rad/s].*/
+  jnt_array_t max_torques{0., 0., 0., 0., 0., 0., 0.};    /**< Maximum joint torque [Nm].*/
 };
 
 class CommandGuard {

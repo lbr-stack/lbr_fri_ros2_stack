@@ -12,58 +12,9 @@ SystemInterface::on_init(const hardware_interface::HardwareInfo &system_info) {
   }
 
   // parameters_ from config/lbr_system_interface.xacro
-  std::string client_command_mode = system_info.hardware_parameters.at("client_command_mode");
-  if (client_command_mode == "position") {
-#if FRICLIENT_VERSION_MAJOR == 1
-    parameters_.client_command_mode = KUKA::FRI::EClientCommandMode::POSITION;
-#endif
-#if FRICLIENT_VERSION_MAJOR == 2
-    parameters_.client_command_mode = KUKA::FRI::EClientCommandMode::JOINT_POSITION;
-#endif
-  } else if (client_command_mode == "torque") {
-    parameters_.client_command_mode = KUKA::FRI::EClientCommandMode::TORQUE;
-  } else if (client_command_mode == "wrench") {
-    parameters_.client_command_mode = KUKA::FRI::EClientCommandMode::WRENCH;
-  } else {
-    RCLCPP_ERROR_STREAM(
-        rclcpp::get_logger(LOGGER_NAME),
-        lbr_fri_ros2::ColorScheme::ERROR
-            << "Expected client_command_mode 'position', 'torque' or 'wrench', got '"
-            << lbr_fri_ros2::ColorScheme::BOLD << parameters_.client_command_mode << "'"
-            << lbr_fri_ros2::ColorScheme::ENDC);
+  if (!parse_parameters_(system_info)) {
     return controller_interface::CallbackReturn::ERROR;
   }
-  parameters_.port_id = std::stoul(info_.hardware_parameters["port_id"]);
-  if (parameters_.port_id < 30200 || parameters_.port_id > 30209) {
-    RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME),
-                        lbr_fri_ros2::ColorScheme::ERROR
-                            << "Expected port_id in [30200, 30209], got '"
-                            << lbr_fri_ros2::ColorScheme::BOLD << parameters_.port_id << "'"
-                            << lbr_fri_ros2::ColorScheme::ENDC);
-    return controller_interface::CallbackReturn::ERROR;
-  }
-  info_.hardware_parameters["remote_host"] == "INADDR_ANY"
-      ? parameters_.remote_host = NULL
-      : parameters_.remote_host = info_.hardware_parameters["remote_host"].c_str();
-  parameters_.rt_prio = std::stoul(info_.hardware_parameters["rt_prio"]);
-  std::transform(info_.hardware_parameters["open_loop"].begin(),
-                 info_.hardware_parameters["open_loop"].end(),
-                 info_.hardware_parameters["open_loop"].begin(), ::tolower);
-  parameters_.open_loop = info_.hardware_parameters["open_loop"] == "true";
-  std::transform(info_.hardware_parameters["pid_antiwindup"].begin(),
-                 info_.hardware_parameters["pid_antiwindup"].end(),
-                 info_.hardware_parameters["pid_antiwindup"].begin(), ::tolower);
-  parameters_.pid_p = std::stod(info_.hardware_parameters["pid_p"]);
-  parameters_.pid_i = std::stod(info_.hardware_parameters["pid_i"]);
-  parameters_.pid_d = std::stod(info_.hardware_parameters["pid_d"]);
-  parameters_.pid_i_max = std::stod(info_.hardware_parameters["pid_i_max"]);
-  parameters_.pid_i_min = std::stod(info_.hardware_parameters["pid_i_min"]);
-  parameters_.pid_antiwindup = info_.hardware_parameters["pid_antiwindup"] == "true";
-  parameters_.command_guard_variant = system_info.hardware_parameters.at("command_guard_variant");
-  parameters_.external_torque_cutoff_frequency =
-      std::stod(info_.hardware_parameters["external_torque_cutoff_frequency"]);
-  parameters_.measured_torque_cutoff_frequency =
-      std::stod(info_.hardware_parameters["measured_torque_cutoff_frequency"]);
 
   // setup driver
   lbr_fri_ros2::PIDParameters pid_parameters;
@@ -77,13 +28,13 @@ SystemInterface::on_init(const hardware_interface::HardwareInfo &system_info) {
   pid_parameters.antiwindup = parameters_.pid_antiwindup;
   for (std::size_t idx = 0; idx < system_info.joints.size(); ++idx) {
     command_guard_parameters.joint_names[idx] = system_info.joints[idx].name;
-    command_guard_parameters.max_position[idx] =
+    command_guard_parameters.max_positions[idx] =
         std::stod(system_info.joints[idx].parameters.at("max_position"));
-    command_guard_parameters.min_position[idx] =
+    command_guard_parameters.min_positions[idx] =
         std::stod(system_info.joints[idx].parameters.at("min_position"));
-    command_guard_parameters.max_velocity[idx] =
+    command_guard_parameters.max_velocities[idx] =
         std::stod(system_info.joints[idx].parameters.at("max_velocity"));
-    command_guard_parameters.max_torque[idx] =
+    command_guard_parameters.max_torques[idx] =
         std::stod(system_info.joints[idx].parameters.at("max_torque"));
   }
   state_interface_parameters.external_torque_cutoff_frequency =
@@ -368,6 +319,70 @@ hardware_interface::return_type SystemInterface::write(const rclcpp::Time & /*ti
   }
   async_client_ptr_->get_command_interface()->buffer_command_target(hw_lbr_command_);
   return hardware_interface::return_type::OK;
+}
+
+bool SystemInterface::parse_parameters_(const hardware_interface::HardwareInfo &system_info) {
+  try {
+    std::string client_command_mode = system_info.hardware_parameters.at("client_command_mode");
+    if (client_command_mode == "position") {
+#if FRICLIENT_VERSION_MAJOR == 1
+      parameters_.client_command_mode = KUKA::FRI::EClientCommandMode::POSITION;
+#endif
+#if FRICLIENT_VERSION_MAJOR == 2
+      parameters_.client_command_mode = KUKA::FRI::EClientCommandMode::JOINT_POSITION;
+#endif
+    } else if (client_command_mode == "torque") {
+      parameters_.client_command_mode = KUKA::FRI::EClientCommandMode::TORQUE;
+    } else if (client_command_mode == "wrench") {
+      parameters_.client_command_mode = KUKA::FRI::EClientCommandMode::WRENCH;
+    } else {
+      RCLCPP_ERROR_STREAM(
+          rclcpp::get_logger(LOGGER_NAME),
+          lbr_fri_ros2::ColorScheme::ERROR
+              << "Expected client_command_mode 'position', 'torque' or 'wrench', got '"
+              << lbr_fri_ros2::ColorScheme::BOLD << parameters_.client_command_mode << "'"
+              << lbr_fri_ros2::ColorScheme::ENDC);
+      return false;
+    }
+    parameters_.port_id = std::stoul(info_.hardware_parameters["port_id"]);
+    if (parameters_.port_id < 30200 || parameters_.port_id > 30209) {
+      RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME),
+                          lbr_fri_ros2::ColorScheme::ERROR
+                              << "Expected port_id in [30200, 30209], got '"
+                              << lbr_fri_ros2::ColorScheme::BOLD << parameters_.port_id << "'"
+                              << lbr_fri_ros2::ColorScheme::ENDC);
+      return false;
+    }
+    info_.hardware_parameters["remote_host"] == "INADDR_ANY"
+        ? parameters_.remote_host = NULL
+        : parameters_.remote_host = info_.hardware_parameters["remote_host"].c_str();
+    parameters_.rt_prio = std::stoul(info_.hardware_parameters["rt_prio"]);
+    std::transform(info_.hardware_parameters["open_loop"].begin(),
+                   info_.hardware_parameters["open_loop"].end(),
+                   info_.hardware_parameters["open_loop"].begin(), ::tolower);
+    parameters_.open_loop = info_.hardware_parameters["open_loop"] == "true";
+    std::transform(info_.hardware_parameters["pid_antiwindup"].begin(),
+                   info_.hardware_parameters["pid_antiwindup"].end(),
+                   info_.hardware_parameters["pid_antiwindup"].begin(), ::tolower);
+    parameters_.pid_p = std::stod(info_.hardware_parameters["pid_p"]);
+    parameters_.pid_i = std::stod(info_.hardware_parameters["pid_i"]);
+    parameters_.pid_d = std::stod(info_.hardware_parameters["pid_d"]);
+    parameters_.pid_i_max = std::stod(info_.hardware_parameters["pid_i_max"]);
+    parameters_.pid_i_min = std::stod(info_.hardware_parameters["pid_i_min"]);
+    parameters_.pid_antiwindup = info_.hardware_parameters["pid_antiwindup"] == "true";
+    parameters_.command_guard_variant = system_info.hardware_parameters.at("command_guard_variant");
+    parameters_.external_torque_cutoff_frequency =
+        std::stod(info_.hardware_parameters["external_torque_cutoff_frequency"]);
+    parameters_.measured_torque_cutoff_frequency =
+        std::stod(info_.hardware_parameters["measured_torque_cutoff_frequency"]);
+  } catch (const std::out_of_range &e) {
+    RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME),
+                        lbr_fri_ros2::ColorScheme::ERROR
+                            << "Failed to parse hardware parameters with: " << e.what()
+                            << lbr_fri_ros2::ColorScheme::ENDC);
+    return false;
+  }
+  return true;
 }
 
 void SystemInterface::nan_command_interfaces_() {

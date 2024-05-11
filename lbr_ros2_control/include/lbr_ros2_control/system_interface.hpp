@@ -100,6 +100,7 @@ public:
 
 protected:
   // setup
+  bool parse_parameters_(const hardware_interface::HardwareInfo &info);
   void nan_command_interfaces_();
   void nan_state_interfaces_();
   bool verify_number_of_joints_();

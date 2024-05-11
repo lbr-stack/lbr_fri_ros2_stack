@@ -7,8 +7,10 @@
     <xacro:include filename="$(find lbr_description)/urdf/iiwa7/iiwa7_description.urdf.xacro" />
 
     <xacro:arg name="robot_name" default="lbr" />
-    <xacro:arg name="port_id" default="30200" />
     <xacro:arg name="sim" default="true" />
+    <xacro:arg
+        name="system_parameters_path"
+        default="$(find lbr_ros2_control)/config/lbr_system_parameters.yaml" />
 
     <!-- fixed to world, see http://classic.gazebosim.org/tutorials?tut=ros_urdf&cat=connect_ros -->
     <link name="world" />
@@ -21,5 +23,8 @@
     </joint>
 
     <!-- iiwa -->
-    <xacro:iiwa7 robot_name="$(arg robot_name)" port_id="$(arg port_id)" sim="$(arg sim)" />
+    <xacro:iiwa7
+        robot_name="$(arg robot_name)"
+        sim="$(arg sim)"
+        system_parameters_path="$(arg system_parameters_path)" />
 </robot>

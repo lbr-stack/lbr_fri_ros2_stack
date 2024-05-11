@@ -1,34 +1,34 @@
 <?xml version="1.0"?>
 
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
-
-    <!-- some constants -->
-    <xacro:property name="PI" value="3.1415926535897931" />
-    <xacro:property name="joint_damping" value="10.0" />
-    <xacro:property name="joint_friction" value="0.1" />
-    <xacro:property name="A1_position_limit" value="170" />
-    <xacro:property name="A2_position_limit" value="120" />
-    <xacro:property name="A3_position_limit" value="170" />
-    <xacro:property name="A4_position_limit" value="120" />
-    <xacro:property name="A5_position_limit" value="170" />
-    <xacro:property name="A6_position_limit" value="120" />
-    <xacro:property name="A7_position_limit" value="175" />
-    <xacro:property name="A1_velocity_limit" value="98" />
-    <xacro:property name="A2_velocity_limit" value="98" />
-    <xacro:property name="A3_velocity_limit" value="100" />
-    <xacro:property name="A4_velocity_limit" value="130" />
-    <xacro:property name="A5_velocity_limit" value="140" />
-    <xacro:property name="A6_velocity_limit" value="180" />
-    <xacro:property name="A7_velocity_limit" value="180" />
-    <xacro:property name="effort_limit" value="200" />
-
-    <!-- includes -->
-    <xacro:include filename="$(find lbr_description)/gazebo/lbr.gazebo.xacro" />
-    <xacro:include filename="$(find lbr_ros2_control)/config/lbr_system_interface.xacro" />
-
     <!-- robot as extracted via https://github.com/syuntoku14/fusion2urdf -->
     <xacro:macro name="iiwa7"
-        params="robot_name:=^|lbr port_id:=^|30200 sim:=^|true">
+        params="robot_name:=^|lbr sim:=^=true system_parameters_path:=^|'$(find lbr_ros2_control)/config/lbr_system_parameters.yaml'">
+
+        <!-- includes -->
+        <xacro:include filename="$(find lbr_description)/gazebo/lbr_gazebo.xacro" />
+        <xacro:include filename="$(find lbr_ros2_control)/config/lbr_system_interface.xacro" />
+
+        <!-- joint limits via yaml -->
+        <xacro:property name="joint_limits_path"
+            value="$(find lbr_description)/urdf/iiwa7/joint_limits.yaml" />
+        <xacro:property name="joint_limits" value="${xacro.load_yaml(joint_limits_path)}" />
+
+        <!-- system parameters via yaml -->
+        <xacro:property name="system_parameters"
+            value="${xacro.load_yaml(system_parameters_path)}" />
+
+        <!-- constants -->
+        <xacro:property name="PI" value="3.1415926535897931" />
+        <xacro:property name="joint_damping" value="10.0" />
+        <xacro:property name="joint_friction" value="0.1" />
+
+        <!-- macros for simulation and real hardware -->
+        <xacro:lbr_gazebo robot_name="${robot_name}" />
+        <xacro:lbr_system_interface
+            sim="${sim}"
+            joint_limits="${joint_limits}"
+            system_parameters="${system_parameters}" />
 
         <link name="link_0">
             <inertial>
@@ -56,9 +56,11 @@
             <parent link="link_0" />
             <child link="link_1" />
             <axis xyz="0.0 0.0 1.0" />
-            <limit effort="${effort_limit}" lower="${-A1_position_limit * PI / 180}"
-                upper="${A1_position_limit * PI / 180}"
-                velocity="${A1_velocity_limit * PI / 180}" />
+            <limit
+                effort="${joint_limits['A1']['effort']}"
+                lower="${joint_limits['A1']['lower'] * PI / 180}"
+                upper="${joint_limits['A1']['upper'] * PI / 180}"
+                velocity="${joint_limits['A1']['velocity'] * PI / 180}" />
             <dynamics damping="${joint_damping}" friction="${joint_friction}" />
         </joint>
 
@@ -88,9 +90,11 @@
             <parent link="link_1" />
             <child link="link_2" />
             <axis xyz="0.0 1.0 0.0" />
-            <limit effort="${effort_limit}" lower="${-A2_position_limit * PI / 180}"
-                upper="${A2_position_limit * PI / 180}"
-                velocity="${A2_velocity_limit * PI / 180}" />
+            <limit
+                effort="${joint_limits['A2']['effort']}"
+                lower="${joint_limits['A2']['lower'] * PI / 180}"
+                upper="${joint_limits['A2']['upper'] * PI / 180}"
+                velocity="${joint_limits['A2']['velocity'] * PI / 180}" />
             <dynamics damping="${joint_damping}" friction="${joint_friction}" />
         </joint>
 
@@ -120,9 +124,11 @@
             <parent link="link_2" />
             <child link="link_3" />
             <axis xyz="0.0 0.0 1.0" />
-            <limit effort="${effort_limit}" lower="${-A3_position_limit * PI / 180}"
-                upper="${A3_position_limit * PI / 180}"
-                velocity="${A3_velocity_limit * PI / 180}" />
+            <limit
+                effort="${joint_limits['A3']['effort']}"
+                lower="${joint_limits['A3']['lower'] * PI / 180}"
+                upper="${joint_limits['A3']['upper'] * PI / 180}"
+                velocity="${joint_limits['A3']['velocity'] * PI / 180}" />
             <dynamics damping="${joint_damping}" friction="${joint_friction}" />
         </joint>
 
@@ -152,9 +158,11 @@
             <parent link="link_3" />
             <child link="link_4" />
             <axis xyz="0.0 -1.0 0.0" />
-            <limit effort="${effort_limit}" lower="${-A4_position_limit * PI / 180}"
-                upper="${A4_position_limit * PI / 180}"
-                velocity="${A4_velocity_limit * PI / 180}" />
+            <limit
+                effort="${joint_limits['A4']['effort']}"
+                lower="${joint_limits['A4']['lower'] * PI / 180}"
+                upper="${joint_limits['A4']['upper'] * PI / 180}"
+                velocity="${joint_limits['A4']['velocity'] * PI / 180}" />
             <dynamics damping="${joint_damping}" friction="${joint_friction}" />
         </joint>
 
@@ -184,9 +192,11 @@
             <parent link="link_4" />
             <child link="link_5" />
             <axis xyz="0.0 0.0 1.0" />
-            <limit effort="${effort_limit}" lower="${-A5_position_limit * PI / 180}"
-                upper="${A5_position_limit * PI / 180}"
-                velocity="${A5_velocity_limit * PI / 180}" />
+            <limit
+                effort="${joint_limits['A5']['effort']}"
+                lower="${joint_limits['A5']['lower'] * PI / 180}"
+                upper="${joint_limits['A5']['upper'] * PI / 180}"
+                velocity="${joint_limits['A5']['velocity'] * PI / 180}" />
             <dynamics damping="${joint_damping}" friction="${joint_friction}" />
         </joint>
 
@@ -216,9 +226,11 @@
             <parent link="link_5" />
             <child link="link_6" />
             <axis xyz="0.0 1.0 0.0" />
-            <limit effort="${effort_limit}" lower="${-A6_position_limit * PI / 180}"
-                upper="${A6_position_limit * PI / 180}"
-                velocity="${A6_velocity_limit * PI / 180}" />
+            <limit
+                effort="${joint_limits['A6']['effort']}"
+                lower="${joint_limits['A6']['lower'] * PI / 180}"
+                upper="${joint_limits['A6']['upper'] * PI / 180}"
+                velocity="${joint_limits['A6']['velocity'] * PI / 180}" />
             <dynamics damping="${joint_damping}" friction="${joint_friction}" />
         </joint>
 
@@ -249,9 +261,11 @@
             <parent link="link_6" />
             <child link="link_7" />
             <axis xyz="0.0 0.0 1.0" />
-            <limit effort="${effort_limit}" lower="${-A7_position_limit * PI / 180}"
-                upper="${A7_position_limit * PI / 180}"
-                velocity="${A7_velocity_limit * PI / 180}" />
+            <limit
+                effort="${joint_limits['A7']['effort']}"
+                lower="${joint_limits['A7']['lower'] * PI / 180}"
+                upper="${joint_limits['A7']['upper'] * PI / 180}"
+                velocity="${joint_limits['A7']['velocity'] * PI / 180}" />
             <dynamics damping="${joint_damping}" friction="${joint_friction}" />
         </joint>
 
@@ -283,26 +297,5 @@
 
         <link name="link_ee">
         </link>
-
-        <xacro:lbr_gazebo robot_name="${robot_name}" />
-        <!-- TODO: move modes to args, decouple urdf/gazebo/controls -->
-        <xacro:lbr_system_interface
-            A1_position_limit="${A1_position_limit * PI / 180}"
-            A2_position_limit="${A2_position_limit * PI / 180}"
-            A3_position_limit="${A3_position_limit * PI / 180}"
-            A4_position_limit="${A4_position_limit * PI / 180}"
-            A5_position_limit="${A5_position_limit * PI / 180}"
-            A6_position_limit="${A6_position_limit * PI / 180}"
-            A7_position_limit="${A7_position_limit * PI / 180}"
-            A1_velocity_limit="${A1_velocity_limit * PI / 180}"
-            A2_velocity_limit="${A2_velocity_limit * PI / 180}"
-            A3_velocity_limit="${A3_velocity_limit * PI / 180}"
-            A4_velocity_limit="${A4_velocity_limit * PI / 180}"
-            A5_velocity_limit="${A5_velocity_limit * PI / 180}"
-            A6_velocity_limit="${A6_velocity_limit * PI / 180}"
-            A7_velocity_limit="${A7_velocity_limit * PI / 180}"
-            max_torque="${effort_limit}"
-            sim="${sim}" remote_host="INADDR_ANY" port_id="${port_id}" />
-
     </xacro:macro>
 </robot>
