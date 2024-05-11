@@ -3,9 +3,6 @@ FROM ros:humble-ros-base-jammy
 # change default shell to bash
 SHELL ["/bin/bash", "-c"]
 
-# set environment variables
-ARG FRI_CLIENT_VERSION=1.15
-
 # upgrade packages
 RUN apt-get update
 RUN apt-get upgrade -y
@@ -19,7 +16,7 @@ RUN rosdep install -i --from-paths src --rosdistro ${ROS_DISTRO} -y
 
 # "--symlink-install" allows the code in the locally mounted volume ./src to be adjusted without rebuilding
 RUN source /opt/ros/${ROS_DISTRO}/setup.bash && \
-    colcon build --symlink-install --cmake-args -DFRI_CLIENT_VERSION=${FRI_CLIENT_VERSION} --no-warn-unused-cli
+    colcon build --symlink-install
 
 # source the workspace
 RUN echo "source /opt/ros/${ROS_DISTRO}/setup.bash" >> ~/.bashrc
