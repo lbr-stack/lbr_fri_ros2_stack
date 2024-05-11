@@ -20,7 +20,7 @@ This procedure applies to all LBRs: ``iiwa7``, ``iiwa14``, ``med7``, and ``med14
 
     ros2 launch moveit_setup_assistant setup_assistant.launch.py
 
-#. .. dropdown:: ``Load Files``: E.g. ``lbr_fri_ros2_stack_ws/install/lbr_description/share/lbr_description/urdf/iiwa7/iiwa7.urdf.xacro``
+#. .. dropdown:: ``Load Files``: E.g. ``lbr_fri_ros2_stack_ws/install/lbr_description/share/lbr_description/urdf/iiwa7/iiwa7.xacro``
 
     .. thumbnail:: img/00_start_screen.png
 

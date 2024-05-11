@@ -64,7 +64,7 @@ class LBRMoveGroupMixin:
             .robot_description(
                 os.path.join(
                     get_package_share_directory("lbr_description"),
-                    f"urdf/{robot_name}/{robot_name}.urdf.xacro",
+                    f"urdf/{robot_name}/{robot_name}.xacro",
                 ),
             )
             .planning_pipelines(default_planning_pipeline="ompl", pipelines=["ompl"])

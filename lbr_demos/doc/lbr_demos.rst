@@ -8,8 +8,8 @@ Contolling the LBR through ROS 2 control.
 .. warning::
     On the real robot, do always execute in ``T1`` mode first.
 
-Basic Demos
------------
+Demos
+-----
 .. toctree::
     :titlesonly:
 
@@ -23,3 +23,7 @@ Advanced Demos
 
     LBR Demos Advanced C++ <../lbr_demos_advanced_cpp/doc/lbr_demos_advanced_cpp.rst>
     LBR Demos Advanced Python <../lbr_demos_advanced_py/doc/lbr_demos_advanced_py.rst>
+
+MoveIt 2 Demos
+--------------
+TODO

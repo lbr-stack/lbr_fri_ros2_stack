@@ -85,7 +85,7 @@ class LBRDescriptionMixin:
                             model,
                         ]
                     ),
-                    ".urdf.xacro",
+                    ".xacro",
                     " robot_name:=",
                     robot_name,
                     " port_id:=",

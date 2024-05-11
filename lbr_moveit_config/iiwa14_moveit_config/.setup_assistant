@@ -1,7 +1,7 @@
 moveit_setup_assistant_config:
   urdf:
     package: lbr_description
-    relative_path: urdf/iiwa14/iiwa14.urdf.xacro
+    relative_path: urdf/iiwa14/iiwa14.xacro
   srdf:
     relative_path: config/iiwa14.srdf
   package_settings:

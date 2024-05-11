@@ -32,7 +32,7 @@ def setup_xml_and_reference(kuka_id: str) -> Tuple[str, LBRSpecification]:
         get_package_share_directory("lbr_description"),
         "urdf",
         lbr_specification.name,
-        f"{lbr_specification.name}.urdf.xacro",
+        f"{lbr_specification.name}.xacro",
     )
 
     xml = xacro.process(path)

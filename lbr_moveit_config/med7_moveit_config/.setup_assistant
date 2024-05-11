@@ -1,7 +1,7 @@
 moveit_setup_assistant_config:
   urdf:
     package: lbr_description
-    relative_path: urdf/med7/med7.urdf.xacro
+    relative_path: urdf/med7/med7.xacro
   srdf:
     relative_path: config/med7.srdf
   package_settings:

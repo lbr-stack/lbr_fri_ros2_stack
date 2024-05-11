@@ -1,6 +1,6 @@
 LBR Demos C++
 =============
- add table of contents TODO with sim / real matrix
+add table of contents TODO with sim / real matrix
 
 .. warning::
     Do always execute in ``T1`` mode first.
@@ -10,6 +10,13 @@ Joint Sine Overlay
 #. .. dropdown:: Launch the ``LBRJointSineOverlay`` application on the ``KUKA smartPAD``
 
     .. thumbnail:: ../../doc/img/applications_joint_sine_overlay.png
+
+#. Select
+
+    - ``FRI send period``: ``10 ms``
+    - ``IP address``: ``your configuration``
+    - ``FRI control mode``: ``POSITION_CONTROL``
+    - ``FRI client command mode``: ``POSITION``
 
 #. Run the robot driver:
 
@@ -60,6 +67,7 @@ Real Robot
     - ``IP address``: ``your configuration``
     - ``FRI control mode``: ``POSITION_CONTROL`` or ``JOINT_IMPEDANCE_CONTROL``
     - ``FRI client command mode``: ``POSITION``
+
 #. Proceed with steps 1 and 2 from `Simulation`_ but with ``sim:=false``.
 
 Torque Sine Overlay
@@ -67,6 +75,13 @@ Torque Sine Overlay
 #. .. dropdown:: Launch the ``LBRTorqueSineOverlay`` application on the ``KUKA smartPAD``
 
     .. thumbnail:: ../../doc/img/applications_torque_sine_overlay.png
+
+#. Select
+
+    - ``FRI send period``: ``2 ms``
+    - ``IP address``: ``your configuration``
+    - ``FRI control mode``: ``JOINT_IMPEDANCE_CONTROL``
+    - ``FRI client command mode``: ``TORQUE``
 
 #. Run the robot driver:
 
@@ -92,6 +107,13 @@ Wrench Sine Overlay
 #. .. dropdown:: Launch the ``LBRWrenchSineOverlay`` application on the ``KUKA smartPAD``
 
     .. thumbnail:: ../../doc/img/applications_wrench_sine_overlay.png
+
+#. Select
+
+    - ``FRI send period``: ``2 ms``
+    - ``IP address``: ``your configuration``
+    - ``FRI control mode``: ``CARTESIAN_IMPEDANCE_CONTROL``
+    - ``FRI client command mode``: ``WRENCH``
 
 #. Run the robot driver:
 

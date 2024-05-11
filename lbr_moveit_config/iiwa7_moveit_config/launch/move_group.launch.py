@@ -11,7 +11,7 @@ def generate_launch_description():
         .robot_description(
             os.path.join(
                 get_package_share_directory("lbr_description"),
-                "urdf/iiwa7/iiwa7.urdf.xacro",
+                "urdf/iiwa7/iiwa7.xacro",
             )
         )
         .to_moveit_configs()
