@@ -25,16 +25,16 @@ int main() {
   pid_params.p = 10.0;
 
   cmd_guard_params.joint_names = {"A1", "A2", "A3", "A4", "A5", "A6", "A7"};
-  cmd_guard_params.max_position = {170. * M_PI / 180., 120. * M_PI / 180., 170. * M_PI / 180.,
-                                   120. * M_PI / 180., 170. * M_PI / 180., 120. * M_PI / 180.,
-                                   175. * M_PI / 180.};
-  cmd_guard_params.min_position = {-170. * M_PI / 180., -120. * M_PI / 180., -170. * M_PI / 180.,
-                                   -120. * M_PI / 180., -170. * M_PI / 180., -120. * M_PI / 180.,
-                                   -175. * M_PI / 180.};
-  cmd_guard_params.max_velocity = {98. * M_PI / 180.,  98. * M_PI / 180.,  100. * M_PI / 180.,
-                                   130. * M_PI / 180., 140. * M_PI / 180., 180. * M_PI / 180.,
-                                   180. * M_PI / 180.};
-  cmd_guard_params.max_torque = {
+  cmd_guard_params.max_positions = {170. * M_PI / 180., 120. * M_PI / 180., 170. * M_PI / 180.,
+                                    120. * M_PI / 180., 170. * M_PI / 180., 120. * M_PI / 180.,
+                                    175. * M_PI / 180.};
+  cmd_guard_params.min_positions = {-170. * M_PI / 180., -120. * M_PI / 180., -170. * M_PI / 180.,
+                                    -120. * M_PI / 180., -170. * M_PI / 180., -120. * M_PI / 180.,
+                                    -175. * M_PI / 180.};
+  cmd_guard_params.max_velocities = {98. * M_PI / 180.,  98. * M_PI / 180.,  100. * M_PI / 180.,
+                                     130. * M_PI / 180., 140. * M_PI / 180., 180. * M_PI / 180.,
+                                     180. * M_PI / 180.};
+  cmd_guard_params.max_torques = {
       200., 200., 200., 200., 200., 200., 200.,
   };
 
