@@ -65,7 +65,8 @@ void AsyncClient::onStateChange(KUKA::FRI::ESessionState old_state,
                          << "'");
 
   // initialize command
-  command_interface_ptr_->init_command(robotState());
+  state_interface_ptr_->set_state(robotState());
+  command_interface_ptr_->init_command(state_interface_ptr_->get_state());
 }
 
 void AsyncClient::monitor() { state_interface_ptr_->set_state(robotState()); };
@@ -73,7 +74,9 @@ void AsyncClient::monitor() { state_interface_ptr_->set_state(robotState()); };
 void AsyncClient::waitForCommand() {
   KUKA::FRI::LBRClient::waitForCommand();
   state_interface_ptr_->set_state(robotState());
-  command_interface_ptr_->buffered_command_to_fri(robotCommand(), robotState());
+  command_interface_ptr_->init_command(state_interface_ptr_->get_state());
+  command_interface_ptr_->buffered_command_to_fri(robotCommand(),
+                                                  state_interface_ptr_->get_state());
 }
 
 void AsyncClient::command() {
@@ -83,6 +86,9 @@ void AsyncClient::command() {
   } else {
     state_interface_ptr_->set_state(robotState());
   }
-  command_interface_ptr_->buffered_command_to_fri(robotCommand(), robotState());
+  command_interface_ptr_->buffered_command_to_fri(
+      robotCommand(),
+      state_interface_ptr_->get_state()); // current state accessed via state interface (allows for
+                                          // open loop and is statically sized)
 }
 } // end of namespace lbr_fri_ros2

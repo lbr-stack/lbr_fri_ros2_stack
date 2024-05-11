@@ -9,9 +9,8 @@ BaseCommandInterface::BaseCommandInterface(const PIDParameters &pid_parameters,
   command_guard_ = command_guard_factory(command_guard_parameters, command_guard_variant);
 };
 
-void BaseCommandInterface::init_command(const_fri_state_t_ref state) {
-  std::memcpy(command_target_.joint_position.data(), state.getMeasuredJointPosition(),
-              sizeof(double) * KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
+void BaseCommandInterface::init_command(const_idl_state_t_ref state) {
+  command_target_.joint_position = state.measured_joint_position;
   command_target_.torque.fill(0.);
   command_target_.wrench.fill(0.);
   command_ = command_target_;

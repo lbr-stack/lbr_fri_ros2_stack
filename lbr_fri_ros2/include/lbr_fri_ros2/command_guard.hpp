@@ -15,6 +15,7 @@
 #include "friVersion.h"
 
 #include "lbr_fri_idl/msg/lbr_command.hpp"
+#include "lbr_fri_idl/msg/lbr_state.hpp"
 #include "lbr_fri_ros2/formatting.hpp"
 
 namespace lbr_fri_ros2 {
@@ -37,28 +38,26 @@ protected:
   // ROS IDL types
   using idl_command_t = lbr_fri_idl::msg::LBRCommand;
   using const_idl_command_t_ref = const idl_command_t &;
+  using idl_state_t = lbr_fri_idl::msg::LBRState;
+  using const_idl_state_t_ref = const idl_state_t &;
   using jnt_array_t = idl_command_t::_joint_position_type;
   using const_jnt_array_t_ref = const jnt_array_t &;
-
-  // FRI types
-  using fri_state_t = KUKA::FRI::LBRState;
-  using const_fri_state_t_ref = const fri_state_t &;
 
 public:
   CommandGuard() = default;
   CommandGuard(const CommandGuardParameters &command_guard_parameters);
   virtual bool is_valid_command(const_idl_command_t_ref lbr_command,
-                                const_fri_state_t_ref lbr_state);
+                                const_idl_state_t_ref lbr_state);
 
   void log_info() const;
 
 protected:
   virtual bool command_in_position_limits_(const_idl_command_t_ref lbr_command,
-                                           const_fri_state_t_ref /*lbr_state*/) const;
+                                           const_idl_state_t_ref /*lbr_state*/) const;
   virtual bool command_in_velocity_limits_(const_idl_command_t_ref lbr_command,
-                                           const_fri_state_t_ref lbr_state);
+                                           const_idl_state_t_ref lbr_state);
   virtual bool command_in_torque_limits_(const_idl_command_t_ref lbr_command,
-                                         const_fri_state_t_ref lbr_state) const;
+                                         const_idl_state_t_ref lbr_state) const;
 
   CommandGuardParameters parameters_;
   bool prev_measured_joint_position_init_;
@@ -72,7 +71,7 @@ public:
 
 protected:
   virtual bool command_in_position_limits_(const_idl_command_t_ref lbr_command,
-                                           const_fri_state_t_ref lbr_state) const override;
+                                           const_idl_state_t_ref lbr_state) const override;
 };
 
 std::unique_ptr<CommandGuard>

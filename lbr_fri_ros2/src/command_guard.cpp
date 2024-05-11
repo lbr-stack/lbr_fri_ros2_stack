@@ -5,7 +5,7 @@ CommandGuard::CommandGuard(const CommandGuardParameters &command_guard_parameter
     : parameters_(command_guard_parameters){};
 
 bool CommandGuard::is_valid_command(const_idl_command_t_ref lbr_command,
-                                    const_fri_state_t_ref lbr_state) {
+                                    const_idl_state_t_ref lbr_state) {
   if (!command_in_position_limits_(lbr_command, lbr_state)) {
     return false;
   }
@@ -28,7 +28,7 @@ void CommandGuard::log_info() const {
 }
 
 bool CommandGuard::command_in_position_limits_(const_idl_command_t_ref lbr_command,
-                                               const_fri_state_t_ref /*lbr_state*/) const {
+                                               const_idl_state_t_ref /*lbr_state*/) const {
   for (std::size_t i = 0; i < lbr_command.joint_position.size(); ++i) {
     if (lbr_command.joint_position[i] < parameters_.min_positions[i] ||
         lbr_command.joint_position[i] > parameters_.max_positions[i]) {
@@ -43,16 +43,15 @@ bool CommandGuard::command_in_position_limits_(const_idl_command_t_ref lbr_comma
 }
 
 bool CommandGuard::command_in_velocity_limits_(const_idl_command_t_ref lbr_command,
-                                               const_fri_state_t_ref lbr_state) {
-  const double &dt = lbr_state.getSampleTime();
+                                               const_idl_state_t_ref lbr_state) {
+  const double &dt = lbr_state.sample_time;
   if (!prev_measured_joint_position_init_) {
     prev_measured_joint_position_init_ = true;
-    std::memcpy(prev_measured_joint_position_.data(), lbr_state.getMeasuredJointPosition(),
-                sizeof(double) * KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
+    prev_measured_joint_position_ = lbr_state.measured_joint_position;
     return true;
   }
   for (std::size_t i = 0; i < lbr_command.joint_position[i]; ++i) {
-    if (std::abs(prev_measured_joint_position_[i] - lbr_state.getMeasuredJointPosition()[i]) / dt >
+    if (std::abs(prev_measured_joint_position_[i] - lbr_state.measured_joint_position[i]) / dt >
         parameters_.max_velocities[i]) {
       RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME),
                           ColorScheme::ERROR << "Velocity not in limits for joint '"
@@ -61,15 +60,14 @@ bool CommandGuard::command_in_velocity_limits_(const_idl_command_t_ref lbr_comma
       return false;
     }
   }
-  std::memcpy(prev_measured_joint_position_.data(), lbr_state.getMeasuredJointPosition(),
-              sizeof(double) * KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
+  prev_measured_joint_position_ = lbr_state.measured_joint_position;
   return true;
 }
 
 bool CommandGuard::command_in_torque_limits_(const_idl_command_t_ref lbr_command,
-                                             const_fri_state_t_ref lbr_state) const {
+                                             const_idl_state_t_ref lbr_state) const {
   for (std::size_t i = 0; i < lbr_command.torque.size(); ++i) {
-    if (std::abs(lbr_command.torque[i] + lbr_state.getExternalTorque()[i]) >
+    if (std::abs(lbr_command.torque[i] + lbr_state.external_torque[i]) >
         parameters_.max_torques[i]) {
       RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME), ColorScheme::ERROR
                                                                << "Torque not in limits for joint '"
@@ -82,14 +80,12 @@ bool CommandGuard::command_in_torque_limits_(const_idl_command_t_ref lbr_command
 }
 
 bool SafeStopCommandGuard::command_in_position_limits_(const_idl_command_t_ref lbr_command,
-                                                       const_fri_state_t_ref lbr_state) const {
+                                                       const_idl_state_t_ref lbr_state) const {
   for (std::size_t i = 0; i < lbr_command.joint_position.size(); ++i) {
     if (lbr_command.joint_position[i] <
-            parameters_.min_positions[i] +
-                parameters_.max_velocities[i] * lbr_state.getSampleTime() ||
+            parameters_.min_positions[i] + parameters_.max_velocities[i] * lbr_state.sample_time ||
         lbr_command.joint_position[i] >
-            parameters_.max_positions[i] -
-                parameters_.max_velocities[i] * lbr_state.getSampleTime()) {
+            parameters_.max_positions[i] - parameters_.max_velocities[i] * lbr_state.sample_time) {
       RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME),
                           ColorScheme::ERROR << "Position not in limits for joint '"
                                              << parameters_.joint_names[i].c_str() << "'"

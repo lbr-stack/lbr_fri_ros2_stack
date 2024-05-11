@@ -11,6 +11,7 @@
 #include "lbr_fri_idl/msg/lbr_command.hpp"
 #include "lbr_fri_ros2/interfaces/base_command.hpp"
 #include "lbr_fri_ros2/interfaces/position_command.hpp"
+#include "lbr_fri_ros2/interfaces/state.hpp"
 #include "lbr_fri_ros2/interfaces/torque_command.hpp"
 #include "lbr_fri_ros2/interfaces/wrench_command.hpp"
 
@@ -19,6 +20,9 @@ public:
   TestCommandInterfaces() : random_engine_(std::random_device{}()) {
     pid_params_ = lbr_fri_ros2::PIDParameters();
     cmd_guard_params_ = lbr_fri_ros2::CommandGuardParameters();
+    state_interface_params_ = lbr_fri_ros2::StateInterfaceParameters();
+
+    state_interface_ = std::make_shared<lbr_fri_ros2::StateInterface>(state_interface_params_);
 
     // pseudo application
     udp_connection_ = std::make_unique<KUKA::FRI::UdpConnection>();
@@ -87,7 +91,9 @@ protected:
     command_interface_->buffer_command_target(idl_command_target);
 
     // initialize commands to state
-    command_interface_->init_command(lbr_client_->robotState());
+    state_interface_->set_state(lbr_client_->robotState());
+    command_interface_->init_command(
+        state_interface_->get_state()); // get state from state interface
 
     // expect command target is state now (zero initialized here)
     for (std::size_t i = 0; i < idl_command_target.joint_position.size(); ++i) {
@@ -113,7 +119,7 @@ protected:
       idl_command_target = random_idl_command();
       command_interface_->buffer_command_target(idl_command_target);
       command_interface_->buffered_command_to_fri(lbr_client_->robotCommand(),
-                                                  lbr_client_->robotState());
+                                                  state_interface_->get_state());
     } catch (const std::exception &) {
       invalid_mode_triggered = true;
     }
@@ -125,7 +131,9 @@ protected:
 
   lbr_fri_ros2::PIDParameters pid_params_;
   lbr_fri_ros2::CommandGuardParameters cmd_guard_params_;
+  lbr_fri_ros2::StateInterfaceParameters state_interface_params_;
 
+  std::shared_ptr<lbr_fri_ros2::StateInterface> state_interface_;
   std::shared_ptr<lbr_fri_ros2::BaseCommandInterface> command_interface_;
 
   // pseudo application

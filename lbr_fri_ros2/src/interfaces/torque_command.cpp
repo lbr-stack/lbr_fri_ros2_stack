@@ -7,12 +7,12 @@ TorqueCommandInterface::TorqueCommandInterface(
     : BaseCommandInterface(pid_parameters, command_guard_parameters, command_guard_variant) {}
 
 void TorqueCommandInterface::buffered_command_to_fri(fri_command_t_ref command,
-                                                     const_fri_state_t_ref state) {
-  if (state.getClientCommandMode() != KUKA::FRI::EClientCommandMode::TORQUE) {
+                                                     const_idl_state_t_ref state) {
+  if (state.client_command_mode != KUKA::FRI::EClientCommandMode::TORQUE) {
     std::string err = "Expected robot in '" +
                       EnumMaps::client_command_mode_map(KUKA::FRI::EClientCommandMode::TORQUE) +
                       "' command mode got '" +
-                      EnumMaps::client_command_mode_map(state.getClientCommandMode()) + "'";
+                      EnumMaps::client_command_mode_map(state.client_command_mode) + "'";
     RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME()),
                         ColorScheme::ERROR << err.c_str() << ColorScheme::ENDC);
     throw std::runtime_error(err);
@@ -32,19 +32,21 @@ void TorqueCommandInterface::buffered_command_to_fri(fri_command_t_ref command,
 
   // PID
   if (!joint_position_pid_.is_initialized()) {
-    joint_position_pid_.initialize(pid_parameters_, state.getSampleTime());
+    joint_position_pid_.initialize(pid_parameters_, state.sample_time);
   }
   joint_position_pid_.compute(
-      command_target_.joint_position, state.getMeasuredJointPosition(),
-      std::chrono::nanoseconds(static_cast<int64_t>(state.getSampleTime() * 1.e9)),
+      command_target_.joint_position, state.measured_joint_position,
+      std::chrono::nanoseconds(static_cast<int64_t>(state.sample_time * 1.e9)),
       command_.joint_position);
   command_.torque = command_target_.torque;
 
   // validate
   if (!command_guard_->is_valid_command(command_, state)) {
-    throw std::runtime_error("Invalid command");
+    std::string err = "Invalid command.";
+    RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME()),
+                        ColorScheme::ERROR << err.c_str() << ColorScheme::ENDC);
+    throw std::runtime_error(err);
   }
-
   // write joint position and torque to output
   command.setJointPosition(command_.joint_position.data());
   command.setTorque(command_.torque.data());

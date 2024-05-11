@@ -7,12 +7,12 @@ WrenchCommandInterface::WrenchCommandInterface(
     : BaseCommandInterface(pid_parameters, command_guard_parameters, command_guard_variant) {}
 
 void WrenchCommandInterface::buffered_command_to_fri(fri_command_t_ref command,
-                                                     const_fri_state_t_ref state) {
-  if (state.getClientCommandMode() != KUKA::FRI::EClientCommandMode::WRENCH) {
+                                                     const_idl_state_t_ref state) {
+  if (state.client_command_mode != KUKA::FRI::EClientCommandMode::WRENCH) {
     std::string err = "Expected robot in '" +
                       EnumMaps::client_command_mode_map(KUKA::FRI::EClientCommandMode::WRENCH) +
                       "' command mode got '" +
-                      EnumMaps::client_command_mode_map(state.getClientCommandMode()) + "'";
+                      EnumMaps::client_command_mode_map(state.client_command_mode) + "'";
     RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME()), err.c_str());
     throw std::runtime_error(err);
   }
@@ -30,11 +30,11 @@ void WrenchCommandInterface::buffered_command_to_fri(fri_command_t_ref command,
 
   // PID
   if (!joint_position_pid_.is_initialized()) {
-    joint_position_pid_.initialize(pid_parameters_, state.getSampleTime());
+    joint_position_pid_.initialize(pid_parameters_, state.sample_time);
   }
   joint_position_pid_.compute(
-      command_target_.joint_position, state.getMeasuredJointPosition(),
-      std::chrono::nanoseconds(static_cast<int64_t>(state.getSampleTime() * 1.e9)),
+      command_target_.joint_position, state.measured_joint_position,
+      std::chrono::nanoseconds(static_cast<int64_t>(state.sample_time * 1.e9)),
       command_.joint_position);
   command_.wrench = command_target_.wrench;
 
