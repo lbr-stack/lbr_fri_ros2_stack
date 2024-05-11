@@ -31,7 +31,12 @@
 
 namespace lbr_ros2_control {
 struct SystemInterfaceParameters {
+#if FRICLIENT_VERSION_MAJOR == 1
   KUKA::FRI::EClientCommandMode client_command_mode{KUKA::FRI::EClientCommandMode::POSITION};
+#endif
+#if FRICLIENT_VERSION_MAJOR == 2
+  KUKA::FRI::EClientCommandMode client_command_mode{KUKA::FRI::EClientCommandMode::JOINT_POSITION};
+#endif
   int32_t port_id{30200};
   const char *remote_host{nullptr};
   int32_t rt_prio{80};
