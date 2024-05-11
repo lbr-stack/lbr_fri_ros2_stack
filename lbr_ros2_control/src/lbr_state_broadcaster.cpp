@@ -16,10 +16,10 @@ LBRStateBroadcaster::state_interface_configuration() const {
 controller_interface::CallbackReturn LBRStateBroadcaster::on_init() {
   try {
     state_publisher_ptr_ =
-        this->get_node()->create_publisher<lbr_fri_msgs::msg::LBRState>("state", 1);
+        this->get_node()->create_publisher<lbr_fri_idl::msg::LBRState>("state", 1);
 
     rt_state_publisher_ptr_ =
-        std::make_shared<realtime_tools::RealtimePublisher<lbr_fri_msgs::msg::LBRState>>(
+        std::make_shared<realtime_tools::RealtimePublisher<lbr_fri_idl::msg::LBRState>>(
             state_publisher_ptr_);
     if (joint_names_.size() != KUKA::FRI::LBRState::NUMBER_OF_JOINTS) {
       RCLCPP_ERROR(

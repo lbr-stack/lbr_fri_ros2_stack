@@ -8,7 +8,7 @@
 #include "friUdpConnection.h"
 #include "friVersion.h"
 
-#include "lbr_fri_msgs/msg/lbr_command.hpp"
+#include "lbr_fri_idl/msg/lbr_command.hpp"
 #include "lbr_fri_ros2/interfaces/base_command.hpp"
 #include "lbr_fri_ros2/interfaces/position_command.hpp"
 #include "lbr_fri_ros2/interfaces/torque_command.hpp"
@@ -53,8 +53,8 @@ public:
     }
   }
 
-  lbr_fri_msgs::msg::LBRCommand random_idl_command() {
-    lbr_fri_msgs::msg::LBRCommand idl_command;
+  lbr_fri_idl::msg::LBRCommand random_idl_command() {
+    lbr_fri_idl::msg::LBRCommand idl_command;
     for (auto &joint_position : idl_command.joint_position) {
       joint_position = uniform_real_dist_(random_engine_);
     }

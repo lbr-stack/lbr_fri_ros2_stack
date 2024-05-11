@@ -18,7 +18,7 @@
 #include "friLBRState.h"
 #include "friVersion.h"
 
-#include "lbr_fri_msgs/msg/lbr_state.hpp"
+#include "lbr_fri_idl/msg/lbr_state.hpp"
 #include "lbr_ros2_control/system_interface_type_values.hpp"
 
 namespace lbr_ros2_control {
@@ -52,8 +52,8 @@ protected:
       "A1", "A2", "A3", "A4", "A5", "A6", "A7"};
   std::unordered_map<std::string, std::unordered_map<std::string, double>> state_interface_map_;
 
-  rclcpp::Publisher<lbr_fri_msgs::msg::LBRState>::SharedPtr state_publisher_ptr_;
-  std::shared_ptr<realtime_tools::RealtimePublisher<lbr_fri_msgs::msg::LBRState>>
+  rclcpp::Publisher<lbr_fri_idl::msg::LBRState>::SharedPtr state_publisher_ptr_;
+  std::shared_ptr<realtime_tools::RealtimePublisher<lbr_fri_idl::msg::LBRState>>
       rt_state_publisher_ptr_;
 };
 } // end of namespace lbr_ros2_control

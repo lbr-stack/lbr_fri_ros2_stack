@@ -60,7 +60,7 @@ int main() {
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
   }
 
-  lbr_fri_msgs::msg::LBRCommand command;
+  lbr_fri_idl::msg::LBRCommand command;
   while (rclcpp::ok()) {
     // read state
     auto state = client->get_state_interface()->get_state();

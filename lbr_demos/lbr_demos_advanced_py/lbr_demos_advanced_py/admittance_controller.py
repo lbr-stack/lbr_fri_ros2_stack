@@ -1,7 +1,7 @@
 import numpy as np
 import optas
 
-from lbr_fri_msgs.msg import LBRPositionCommand, LBRState
+from lbr_fri_idl.msg import LBRPositionCommand, LBRState
 
 
 class AdmittanceController(object):

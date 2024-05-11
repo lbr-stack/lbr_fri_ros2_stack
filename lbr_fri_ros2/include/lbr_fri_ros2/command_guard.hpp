@@ -14,7 +14,7 @@
 #include "friLBRState.h"
 #include "friVersion.h"
 
-#include "lbr_fri_msgs/msg/lbr_command.hpp"
+#include "lbr_fri_idl/msg/lbr_command.hpp"
 #include "lbr_fri_ros2/formatting.hpp"
 
 namespace lbr_fri_ros2 {
@@ -35,7 +35,7 @@ protected:
   static constexpr char LOGGER_NAME[] = "lbr_fri_ros2::CommandGuard";
 
   // ROS IDL types
-  using idl_command_t = lbr_fri_msgs::msg::LBRCommand;
+  using idl_command_t = lbr_fri_idl::msg::LBRCommand;
   using const_idl_command_t_ref = const idl_command_t &;
   using jnt_array_t = idl_command_t::_joint_position_type;
   using const_jnt_array_t_ref = const jnt_array_t &;

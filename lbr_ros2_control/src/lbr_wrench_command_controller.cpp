@@ -29,8 +29,8 @@ LBRWrenchCommandController::state_interface_configuration() const {
 controller_interface::CallbackReturn LBRWrenchCommandController::on_init() {
   try {
     lbr_wrench_command_subscription_ptr_ =
-        this->get_node()->create_subscription<lbr_fri_msgs::msg::LBRWrenchCommand>(
-            "command/wrench", 1, [this](const lbr_fri_msgs::msg::LBRWrenchCommand::SharedPtr msg) {
+        this->get_node()->create_subscription<lbr_fri_idl::msg::LBRWrenchCommand>(
+            "command/wrench", 1, [this](const lbr_fri_idl::msg::LBRWrenchCommand::SharedPtr msg) {
               rt_lbr_wrench_command_ptr_.writeFromNonRT(msg);
             });
   } catch (const std::exception &e) {

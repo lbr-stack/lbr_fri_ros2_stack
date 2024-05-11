@@ -12,7 +12,7 @@
 #include "friLBRClient.h"
 #include "friVersion.h"
 
-#include "lbr_fri_msgs/msg/lbr_command.hpp"
+#include "lbr_fri_idl/msg/lbr_command.hpp"
 #include "lbr_fri_ros2/command_guard.hpp"
 #include "lbr_fri_ros2/filters.hpp"
 #include "lbr_fri_ros2/formatting.hpp"
@@ -23,7 +23,7 @@ protected:
   virtual std::string LOGGER_NAME() const = 0;
 
   // ROS IDL types
-  using idl_command_t = lbr_fri_msgs::msg::LBRCommand;
+  using idl_command_t = lbr_fri_idl::msg::LBRCommand;
   using const_idl_command_t_ref = const idl_command_t &;
 
   // FRI types

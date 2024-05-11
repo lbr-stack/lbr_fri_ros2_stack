@@ -23,9 +23,9 @@ LBRPositionCommandController::state_interface_configuration() const {
 controller_interface::CallbackReturn LBRPositionCommandController::on_init() {
   try {
     lbr_position_command_subscription_ptr_ =
-        this->get_node()->create_subscription<lbr_fri_msgs::msg::LBRPositionCommand>(
+        this->get_node()->create_subscription<lbr_fri_idl::msg::LBRPositionCommand>(
             "command/joint_position", 1,
-            [this](const lbr_fri_msgs::msg::LBRPositionCommand::SharedPtr msg) {
+            [this](const lbr_fri_idl::msg::LBRPositionCommand::SharedPtr msg) {
               rt_lbr_position_command_ptr_.writeFromNonRT(msg);
             });
   } catch (const std::exception &e) {

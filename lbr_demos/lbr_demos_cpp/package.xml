@@ -11,7 +11,7 @@
 
   <depend>control_msgs</depend>
   <depend>FRIClient</depend>
-  <depend>lbr_fri_msgs</depend>
+  <depend>lbr_fri_idl</depend>
   <depend>lbr_fri_ros2</depend>
   <depend>rclcpp</depend>
   <depend>rclcpp_action</depend>

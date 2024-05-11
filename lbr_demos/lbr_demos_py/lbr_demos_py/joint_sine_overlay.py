@@ -5,8 +5,8 @@ import rclpy
 from rcl_interfaces.srv import GetParameters
 from rclpy.node import Node
 
-# import lbr_fri_msgs
-from lbr_fri_msgs.msg import LBRPositionCommand, LBRState
+# import lbr_fri_idl
+from lbr_fri_idl.msg import LBRPositionCommand, LBRState
 
 
 class JointSineOverlayNode(Node):

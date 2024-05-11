@@ -9,7 +9,7 @@
 #include "friLBRClient.h"
 #include "friVersion.h"
 
-#include "lbr_fri_msgs/msg/lbr_state.hpp"
+#include "lbr_fri_idl/msg/lbr_state.hpp"
 #include "lbr_fri_ros2/filters.hpp"
 
 namespace lbr_fri_ros2 {
@@ -23,7 +23,7 @@ protected:
   static constexpr char LOGGER_NAME[] = "lbr_fri_ros2::StateInterface";
 
   // ROS IDL types
-  using idl_state_t = lbr_fri_msgs::msg::LBRState;
+  using idl_state_t = lbr_fri_idl::msg::LBRState;
   using const_idl_state_t_ref = const idl_state_t &;
   using idl_joint_pos_t = idl_state_t::_measured_joint_position_type;
   using const_idl_joint_pos_t_ref = const idl_joint_pos_t &;

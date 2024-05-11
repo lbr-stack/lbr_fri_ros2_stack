@@ -1,7 +1,7 @@
 import numpy as np
 import rclpy
 
-from lbr_fri_msgs.msg import LBRPositionCommand, LBRState
+from lbr_fri_idl.msg import LBRPositionCommand, LBRState
 
 from .admittance_rcm_controller import AdmittanceRCMController
 from .lbr_base_position_command_node import LBRBasePositionCommandNode

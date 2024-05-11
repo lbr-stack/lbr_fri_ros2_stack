@@ -6,8 +6,8 @@
 
 #include "rclcpp/rclcpp.hpp"
 
-#include "lbr_fri_msgs/msg/lbr_position_command.hpp"
-#include "lbr_fri_msgs/msg/lbr_state.hpp"
+#include "lbr_fri_idl/msg/lbr_position_command.hpp"
+#include "lbr_fri_idl/msg/lbr_state.hpp"
 
 namespace lbr_demos {
 class LBRBasePositionCommandNode : public rclcpp::Node {
@@ -22,23 +22,23 @@ public:
 
     // publishers and subscribers
     lbr_position_command_pub_ =
-        create_publisher<lbr_fri_msgs::msg::LBRPositionCommand>("command/joint_position", 1);
+        create_publisher<lbr_fri_idl::msg::LBRPositionCommand>("command/joint_position", 1);
 
-    lbr_state_sub_ = create_subscription<lbr_fri_msgs::msg::LBRState>(
+    lbr_state_sub_ = create_subscription<lbr_fri_idl::msg::LBRState>(
         "state", 1,
         std::bind(&LBRBasePositionCommandNode::on_lbr_state_, this, std::placeholders::_1));
   }
 
 protected:
-  rclcpp::Publisher<lbr_fri_msgs::msg::LBRPositionCommand>::SharedPtr lbr_position_command_pub_;
-  rclcpp::Subscription<lbr_fri_msgs::msg::LBRState>::SharedPtr lbr_state_sub_;
+  rclcpp::Publisher<lbr_fri_idl::msg::LBRPositionCommand>::SharedPtr lbr_position_command_pub_;
+  rclcpp::Subscription<lbr_fri_idl::msg::LBRState>::SharedPtr lbr_state_sub_;
 
   std::string robot_description_;
   int64_t update_rate_;
   double dt_;
 
 protected:
-  virtual void on_lbr_state_(const lbr_fri_msgs::msg::LBRState::SharedPtr lbr_state) = 0;
+  virtual void on_lbr_state_(const lbr_fri_idl::msg::LBRState::SharedPtr lbr_state) = 0;
 
   rclcpp::Parameter retrieve_parameter_(const std::string &remote_node_name,
                                         const std::string &parameter_name) {

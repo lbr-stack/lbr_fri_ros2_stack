@@ -3,9 +3,9 @@ repositories:
     type: git
     url: https://github.com/lbr-stack/fri
     version: fri-1.11
-  lbr_fri_msgs:
+  lbr_fri_idl:
     type: git
-    url: https://github.com/lbr-stack/lbr_fri_msgs
+    url: https://github.com/lbr-stack/lbr_fri_idl
     version: fri-1
   lbr_fri_ros2_stack:
     type: git

@@ -8,7 +8,7 @@
 
 #include "friClientIf.h"
 #include "friLBRState.h"
-#include "lbr_fri_msgs/msg/lbr_state.hpp"
+#include "lbr_fri_idl/msg/lbr_state.hpp"
 
 #include "lbr_base_position_command_node.hpp"
 
@@ -18,8 +18,8 @@ protected:
   rclcpp::Publisher<geometry_msgs::msg::Pose>::SharedPtr pose_pub_;
   rclcpp::Subscription<geometry_msgs::msg::Pose>::SharedPtr pose_sub_;
 
-  lbr_fri_msgs::msg::LBRState current_lbr_state_; // robot state, including joint positions
-  geometry_msgs::msg::Pose current_pose_;         // current pose of robot
+  lbr_fri_idl::msg::LBRState current_lbr_state_; // robot state, including joint positions
+  geometry_msgs::msg::Pose current_pose_;        // current pose of robot
 
   KDL::Chain chain_; // robot kinematics chain exetracted from robot URDF file
 
@@ -50,7 +50,7 @@ public:
   }
 
 protected:
-  void on_lbr_state_(const lbr_fri_msgs::msg::LBRState::SharedPtr lbr_state) override {
+  void on_lbr_state_(const lbr_fri_idl::msg::LBRState::SharedPtr lbr_state) override {
     current_lbr_state_ = *lbr_state;
 
     double joint_position[KUKA::FRI::LBRState::NUMBER_OF_JOINTS];
@@ -69,7 +69,7 @@ protected:
         current_joint_positions(i) = current_lbr_state_.measured_joint_position[i];
       }
 
-      lbr_fri_msgs::msg::LBRPositionCommand joint_position_command =
+      lbr_fri_idl::msg::LBRPositionCommand joint_position_command =
           compute_ik_(msg, current_joint_positions);
       lbr_position_command_pub_->publish(joint_position_command);
     }
@@ -106,11 +106,11 @@ protected:
     return pose;
   }
 
-  lbr_fri_msgs::msg::LBRPositionCommand compute_ik_(const geometry_msgs::msg::Pose &desired_pose,
-                                                    KDL::JntArray &current_joint_positions) {
+  lbr_fri_idl::msg::LBRPositionCommand compute_ik_(const geometry_msgs::msg::Pose &desired_pose,
+                                                   KDL::JntArray &current_joint_positions) {
     KDL::ChainIkSolverPos_LMA ik_solver(chain_);
     KDL::JntArray result_joint_positions = KDL::JntArray(chain_.getNrOfJoints());
-    lbr_fri_msgs::msg::LBRPositionCommand joint_position_command;
+    lbr_fri_idl::msg::LBRPositionCommand joint_position_command;
 
     // transfer data type 'geometry::msg::Pose' to be 'KDL::Frame'
     KDL::Vector position(desired_pose.position.x, desired_pose.position.y, desired_pose.position.z);

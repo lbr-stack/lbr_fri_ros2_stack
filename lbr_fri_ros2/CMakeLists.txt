@@ -16,7 +16,7 @@ find_package(eigen3_cmake_module REQUIRED)
 find_package(Eigen3)
 find_package(FRIClient REQUIRED)
 find_package(kdl_parser REQUIRED)
-find_package(lbr_fri_msgs REQUIRED)
+find_package(lbr_fri_idl REQUIRED)
 find_package(orocos_kdl_vendor REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(realtime_tools REQUIRED)
@@ -47,7 +47,7 @@ ament_target_dependencies(lbr_fri_ros2
   control_toolbox
   Eigen3
   kdl_parser
-  lbr_fri_msgs
+  lbr_fri_idl
   orocos_kdl_vendor
   rclcpp
   realtime_tools
@@ -64,7 +64,7 @@ ament_export_dependencies(
   Eigen3
   FRIClient
   kdl_parser
-  lbr_fri_msgs
+  lbr_fri_idl
   orocos_kdl_vendor
   rclcpp
   realtime_tools

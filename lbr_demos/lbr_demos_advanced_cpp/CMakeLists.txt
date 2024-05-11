@@ -14,8 +14,8 @@ find_package(ament_cmake REQUIRED)
 find_package(FRIClient REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(kdl_parser REQUIRED)
+find_package(lbr_fri_idl REQUIRED)
 find_package(lbr_fri_ros2 REQUIRED)
-find_package(lbr_fri_msgs REQUIRED)
 find_package(orocos_kdl_vendor REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_components REQUIRED)
@@ -32,8 +32,8 @@ target_include_directories(admittance_control_component
 
 ament_target_dependencies(admittance_control_component
   kdl_parser
+  lbr_fri_idl
   lbr_fri_ros2
-  lbr_fri_msgs
   orocos_kdl_vendor
   rclcpp
   rclcpp_components
@@ -82,7 +82,7 @@ target_include_directories(pose_control_component
 ament_target_dependencies(pose_control_component
   geometry_msgs
   kdl_parser
-  lbr_fri_msgs
+  lbr_fri_idl
   orocos_kdl_vendor
   rclcpp
   rclcpp_components

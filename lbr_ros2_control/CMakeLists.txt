@@ -18,7 +18,7 @@ find_package(ament_cmake REQUIRED)
 find_package(controller_interface REQUIRED)
 find_package(FRIClient REQUIRED)
 find_package(hardware_interface REQUIRED)
-find_package(lbr_fri_msgs REQUIRED)
+find_package(lbr_fri_idl REQUIRED)
 find_package(lbr_fri_ros2 REQUIRED)
 find_package(kinematics_interface REQUIRED)
 find_package(pluginlib REQUIRED)
@@ -51,7 +51,7 @@ ament_target_dependencies(
   ${PROJECT_NAME}
   controller_interface
   hardware_interface
-  lbr_fri_msgs
+  lbr_fri_idl
   lbr_fri_ros2
   pluginlib
   rclcpp
@@ -75,7 +75,7 @@ ament_export_dependencies(
   controller_interface
   FRIClient
   hardware_interface
-  lbr_fri_msgs
+  lbr_fri_idl
   lbr_fri_ros2
   pluginlib
   rclcpp

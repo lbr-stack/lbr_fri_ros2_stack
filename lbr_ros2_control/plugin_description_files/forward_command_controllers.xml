@@ -5,7 +5,7 @@
         type="lbr_ros2_control::LBRPositionCommandController"
         base_class_type="controller_interface::ControllerInterface">
         <description>Forward command controller for LBRPositionCommand message, see
-            lbr_fri_msgs/msg/LBRPositionCommand.msg.</description>
+            lbr_fri_idl/msg/LBRPositionCommand.msg.</description>
     </class>
 
     <!-- LBR forward torque command controller plugin -->
@@ -13,7 +13,7 @@
         type="lbr_ros2_control::LBRTorqueCommandController"
         base_class_type="controller_interface::ControllerInterface">
         <description>Forward command controller for LBRTorqueCommand message, see
-            lbr_fri_msgs/msg/LBRTorqueCommand.msg.</description>
+            lbr_fri_idl/msg/LBRTorqueCommand.msg.</description>
     </class>
 
     <!-- LBR forward wrench command controller plugin -->
@@ -21,6 +21,6 @@
         type="lbr_ros2_control::LBRWrenchCommandController"
         base_class_type="controller_interface::ControllerInterface">
         <description>Forward command controller for LBRWrenchCommand message, see
-            lbr_fri_msgs/msg/LBRWrenchCommand.msg.</description>
+            lbr_fri_idl/msg/LBRWrenchCommand.msg.</description>
     </class>
 </library>

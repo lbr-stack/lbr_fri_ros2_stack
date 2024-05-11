@@ -14,7 +14,7 @@
 
 #include "friLBRState.h"
 
-#include "lbr_fri_msgs/msg/lbr_position_command.hpp"
+#include "lbr_fri_idl/msg/lbr_position_command.hpp"
 
 namespace lbr_ros2_control {
 class LBRPositionCommandController : public controller_interface::ControllerInterface {
@@ -43,9 +43,9 @@ protected:
   std::array<std::string, KUKA::FRI::LBRState::NUMBER_OF_JOINTS> joint_names_ = {
       "A1", "A2", "A3", "A4", "A5", "A6", "A7"};
 
-  realtime_tools::RealtimeBuffer<lbr_fri_msgs::msg::LBRPositionCommand::SharedPtr>
+  realtime_tools::RealtimeBuffer<lbr_fri_idl::msg::LBRPositionCommand::SharedPtr>
       rt_lbr_position_command_ptr_;
-  rclcpp::Subscription<lbr_fri_msgs::msg::LBRPositionCommand>::SharedPtr
+  rclcpp::Subscription<lbr_fri_idl::msg::LBRPositionCommand>::SharedPtr
       lbr_position_command_subscription_ptr_;
 };
 } // end of namespace lbr_ros2_control

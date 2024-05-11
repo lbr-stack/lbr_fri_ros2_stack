@@ -8,9 +8,9 @@
 // include fri for session state
 #include "friClientIf.h"
 
-// include lbr_fri_msgs
-#include "lbr_fri_msgs/msg/lbr_position_command.hpp"
-#include "lbr_fri_msgs/msg/lbr_state.hpp"
+// include lbr_fri_idl
+#include "lbr_fri_idl/msg/lbr_position_command.hpp"
+#include "lbr_fri_idl/msg/lbr_state.hpp"
 #include "lbr_fri_ros2/utils.hpp"
 
 class JointSineOverlay {
@@ -21,10 +21,10 @@ public:
   JointSineOverlay(const rclcpp::Node::SharedPtr node) : node_(node), phase_(0.) {
     // create publisher to command/joint_position
     lbr_position_command_pub_ =
-        node_->create_publisher<lbr_fri_msgs::msg::LBRPositionCommand>("command/joint_position", 1);
+        node_->create_publisher<lbr_fri_idl::msg::LBRPositionCommand>("command/joint_position", 1);
 
     // create subscription to state
-    lbr_state_sub_ = node_->create_subscription<lbr_fri_msgs::msg::LBRState>(
+    lbr_state_sub_ = node_->create_subscription<lbr_fri_idl::msg::LBRState>(
         "state", 1, std::bind(&JointSineOverlay::on_lbr_state_, this, std::placeholders::_1));
 
     // get control rate from controller_manager
@@ -34,7 +34,7 @@ public:
   };
 
 protected:
-  void on_lbr_state_(const lbr_fri_msgs::msg::LBRState::SharedPtr lbr_state) {
+  void on_lbr_state_(const lbr_fri_idl::msg::LBRState::SharedPtr lbr_state) {
     if (!lbr_state_init_) {
       lbr_state_ = *lbr_state;
       lbr_state_init_ = true;
@@ -57,11 +57,11 @@ protected:
   rclcpp::Node::SharedPtr node_;
   double dt_;
   double phase_;
-  rclcpp::Publisher<lbr_fri_msgs::msg::LBRPositionCommand>::SharedPtr lbr_position_command_pub_;
-  rclcpp::Subscription<lbr_fri_msgs::msg::LBRState>::SharedPtr lbr_state_sub_;
+  rclcpp::Publisher<lbr_fri_idl::msg::LBRPositionCommand>::SharedPtr lbr_position_command_pub_;
+  rclcpp::Subscription<lbr_fri_idl::msg::LBRState>::SharedPtr lbr_state_sub_;
   bool lbr_state_init_ = false;
-  lbr_fri_msgs::msg::LBRState lbr_state_;
-  lbr_fri_msgs::msg::LBRPositionCommand lbr_position_command_;
+  lbr_fri_idl::msg::LBRState lbr_state_;
+  lbr_fri_idl::msg::LBRPositionCommand lbr_position_command_;
 };
 
 int main(int argc, char **argv) {

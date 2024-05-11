@@ -13,7 +13,7 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(control_msgs REQUIRED)
 find_package(FRIClient REQUIRED)
-find_package(lbr_fri_msgs REQUIRED)
+find_package(lbr_fri_idl REQUIRED)
 find_package(lbr_fri_ros2 REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_action REQUIRED)
@@ -26,7 +26,7 @@ add_executable(joint_sine_overlay
 )
 
 ament_target_dependencies(joint_sine_overlay
-  lbr_fri_msgs
+  lbr_fri_idl
   lbr_fri_ros2
   rclcpp
 )
@@ -58,7 +58,7 @@ add_executable(torque_sine_overlay
 )
 
 ament_target_dependencies(torque_sine_overlay
-  lbr_fri_msgs
+  lbr_fri_idl
   lbr_fri_ros2
   rclcpp
 )
@@ -73,7 +73,7 @@ add_executable(wrench_sine_overlay
 )
 
 ament_target_dependencies(wrench_sine_overlay
-  lbr_fri_msgs
+  lbr_fri_idl
   lbr_fri_ros2
   rclcpp
 )

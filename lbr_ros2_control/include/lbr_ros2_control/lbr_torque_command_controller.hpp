@@ -16,7 +16,7 @@
 
 #include "friLBRState.h"
 
-#include "lbr_fri_msgs/msg/lbr_torque_command.hpp"
+#include "lbr_fri_idl/msg/lbr_torque_command.hpp"
 
 namespace lbr_ros2_control {
 class LBRTorqueCommandController : public controller_interface::ControllerInterface {
@@ -51,9 +51,9 @@ protected:
   std::vector<std::reference_wrapper<hardware_interface::LoanedCommandInterface>>
       joint_position_command_interfaces_, torque_command_interfaces_;
 
-  realtime_tools::RealtimeBuffer<lbr_fri_msgs::msg::LBRTorqueCommand::SharedPtr>
+  realtime_tools::RealtimeBuffer<lbr_fri_idl::msg::LBRTorqueCommand::SharedPtr>
       rt_lbr_torque_command_ptr_;
-  rclcpp::Subscription<lbr_fri_msgs::msg::LBRTorqueCommand>::SharedPtr
+  rclcpp::Subscription<lbr_fri_idl::msg::LBRTorqueCommand>::SharedPtr
       lbr_torque_command_subscription_ptr_;
 };
 } // end of namespace lbr_ros2_control

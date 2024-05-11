@@ -24,8 +24,8 @@ LBRTorqueCommandController::state_interface_configuration() const {
 controller_interface::CallbackReturn LBRTorqueCommandController::on_init() {
   try {
     lbr_torque_command_subscription_ptr_ =
-        this->get_node()->create_subscription<lbr_fri_msgs::msg::LBRTorqueCommand>(
-            "command/torque", 1, [this](const lbr_fri_msgs::msg::LBRTorqueCommand::SharedPtr msg) {
+        this->get_node()->create_subscription<lbr_fri_idl::msg::LBRTorqueCommand>(
+            "command/torque", 1, [this](const lbr_fri_idl::msg::LBRTorqueCommand::SharedPtr msg) {
               rt_lbr_torque_command_ptr_.writeFromNonRT(msg);
             });
   } catch (const std::exception &e) {

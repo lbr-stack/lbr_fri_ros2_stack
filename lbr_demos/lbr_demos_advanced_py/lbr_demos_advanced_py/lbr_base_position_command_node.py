@@ -4,7 +4,7 @@ from rcl_interfaces.msg import ParameterValue
 from rcl_interfaces.srv import GetParameters
 from rclpy.node import Node
 
-from lbr_fri_msgs.msg import LBRPositionCommand, LBRState
+from lbr_fri_idl.msg import LBRPositionCommand, LBRState
 
 
 class LBRBasePositionCommandNode(Node):

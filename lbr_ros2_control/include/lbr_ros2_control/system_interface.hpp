@@ -18,8 +18,8 @@
 #include "friLBRState.h"
 #include "friVersion.h"
 
-#include "lbr_fri_msgs/msg/lbr_command.hpp"
-#include "lbr_fri_msgs/msg/lbr_state.hpp"
+#include "lbr_fri_idl/msg/lbr_command.hpp"
+#include "lbr_fri_idl/msg/lbr_state.hpp"
 #include "lbr_fri_ros2/app.hpp"
 #include "lbr_fri_ros2/async_client.hpp"
 #include "lbr_fri_ros2/command_guard.hpp"
@@ -125,7 +125,7 @@ protected:
   // exposed state interfaces (ideally these are taken from async_client_ptr_ but
   // ros2_control ReadOnlyHandle does not allow for const pointers, refer
   // https://github.com/ros-controls/ros2_control/issues/1196)
-  lbr_fri_msgs::msg::LBRState hw_lbr_state_;
+  lbr_fri_idl::msg::LBRState hw_lbr_state_;
 
   // exposed state interfaces that require casting
   double hw_session_state_;
@@ -140,10 +140,10 @@ protected:
   double hw_time_stamp_nano_sec_;
 
   // additional velocity state interface
-  lbr_fri_msgs::msg::LBRState::_measured_joint_position_type last_hw_measured_joint_position_;
+  lbr_fri_idl::msg::LBRState::_measured_joint_position_type last_hw_measured_joint_position_;
   double last_hw_time_stamp_sec_;
   double last_hw_time_stamp_nano_sec_;
-  lbr_fri_msgs::msg::LBRState::_measured_joint_position_type hw_velocity_;
+  lbr_fri_idl::msg::LBRState::_measured_joint_position_type hw_velocity_;
 
   // compute velocity for state interface
   double time_stamps_to_sec_(const double &sec, const double &nano_sec) const;
@@ -156,7 +156,7 @@ protected:
   std::unique_ptr<lbr_fri_ros2::FTEstimator> ft_estimator_ptr_;
 
   // exposed command interfaces
-  lbr_fri_msgs::msg::LBRCommand hw_lbr_command_;
+  lbr_fri_idl::msg::LBRCommand hw_lbr_command_;
 };
 } // end of namespace lbr_ros2_control
 #endif // LBR_ROS2_CONTROL__SYSTEM_INTERFACE_HPP_

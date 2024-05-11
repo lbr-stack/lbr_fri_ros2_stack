@@ -2,7 +2,7 @@
 
 #include "rclcpp/rclcpp.hpp"
 
-#include "lbr_fri_msgs/msg/lbr_state.hpp"
+#include "lbr_fri_idl/msg/lbr_state.hpp"
 
 #include "admittance_controller.hpp"
 #include "lbr_base_position_command_node.hpp"
@@ -54,7 +54,7 @@ protected:
                 dx_gains[1], dx_gains[2], dx_gains[3], dx_gains[4], dx_gains[5]);
   }
 
-  void on_lbr_state_(const lbr_fri_msgs::msg::LBRState::SharedPtr lbr_state) override {
+  void on_lbr_state_(const lbr_fri_idl::msg::LBRState::SharedPtr lbr_state) override {
     if (!lbr_state) {
       return;
     }
@@ -65,7 +65,7 @@ protected:
     lbr_position_command_pub_->publish(lbr_command);
   };
 
-  void smooth_lbr_state_(const lbr_fri_msgs::msg::LBRState::SharedPtr lbr_state) {
+  void smooth_lbr_state_(const lbr_fri_idl::msg::LBRState::SharedPtr lbr_state) {
     if (!init_) {
       lbr_state_ = *lbr_state;
       init_ = true;
@@ -83,7 +83,7 @@ protected:
 
   double exp_smooth_;
   bool init_{false};
-  lbr_fri_msgs::msg::LBRState lbr_state_;
+  lbr_fri_idl::msg::LBRState lbr_state_;
 
   std::unique_ptr<AdmittanceController> admittance_controller_;
 };

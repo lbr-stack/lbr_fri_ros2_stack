@@ -16,7 +16,7 @@
 
 #include "friLBRState.h"
 
-#include "lbr_fri_msgs/msg/lbr_wrench_command.hpp"
+#include "lbr_fri_idl/msg/lbr_wrench_command.hpp"
 #include "lbr_ros2_control/system_interface_type_values.hpp"
 
 namespace lbr_ros2_control {
@@ -54,9 +54,9 @@ protected:
   std::vector<std::reference_wrapper<hardware_interface::LoanedCommandInterface>>
       joint_position_command_interfaces_, wrench_command_interfaces_;
 
-  realtime_tools::RealtimeBuffer<lbr_fri_msgs::msg::LBRWrenchCommand::SharedPtr>
+  realtime_tools::RealtimeBuffer<lbr_fri_idl::msg::LBRWrenchCommand::SharedPtr>
       rt_lbr_wrench_command_ptr_;
-  rclcpp::Subscription<lbr_fri_msgs::msg::LBRWrenchCommand>::SharedPtr
+  rclcpp::Subscription<lbr_fri_idl::msg::LBRWrenchCommand>::SharedPtr
       lbr_wrench_command_subscription_ptr_;
 };
 } // end of namespace lbr_ros2_control
