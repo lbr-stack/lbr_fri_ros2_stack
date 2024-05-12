@@ -11,43 +11,6 @@ lbr_fri_ros2
 
 The ``lbr_fri_ros2`` package adds :lbr_fri_ros2:`AsyncClient <lbr_fri_ros2::AsyncClient>`.
 
-Quick Start
------------
-.. warning::
-    Do always execute in ``T1`` mode first.
-
-.. note::
-    Make sure you followed the install instructions in :doc:`Hardware Setup <../../lbr_fri_ros2_stack/doc/hardware_setup>`.
-
-#. .. dropdown:: Launch the ``LBRServer`` application on the ``KUKA smartPAD``
-
-    .. thumbnail:: ../../lbr_demos/doc/img/applications_lbr_server.png
-
-#. Run the :lbr_fri_ros2:`App <lbr_fri_ros2::App>` node via `app.launch.py <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_fri_ros2/launch/app.launch.py>`_:
-
-.. code-block:: bash
-
-    ros2 launch lbr_fri_ros2 app.launch.py model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
-
-This launch file does 2 things:
-
-    - Loads the ``robot_description`` (to read joint limits)
-    - Runs the :lbr_fri_ros2:`AppComponent <lbr_fri_ros2::AppComponent>`, which has an instance of :lbr_fri_ros2:`App <lbr_fri_ros2::App>` to
-        
-        - Create services to connect to / disconnect from the robot
-        - Publish robot states to ``/lbr/state`` via :lbr_fri_ros2:`Client <lbr_fri_ros2::Client>`
-        - Read robot commands from ``/lbr/command`` via :lbr_fri_ros2:`Client <lbr_fri_ros2::Client>`
-
-The topic names change with the robot's name. When running
-
-.. code-block:: bash
-
-    ros2 launch lbr_fri_ros2 app.launch.py robot_name:=lbr_1 model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
-
-Commands / states will be published to ``/lbr_1/state`` / ``/lbr_1/command``.
-
-See :ref:`LBR Demos` for more examples.
-
 Software Architecture
 ---------------------
 An overview of the software architecture is shown :ref:`below <target to software architecture figure>`:
