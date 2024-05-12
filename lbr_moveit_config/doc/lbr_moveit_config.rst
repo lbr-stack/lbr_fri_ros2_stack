@@ -1,4 +1,4 @@
-LBR MoveIt Config
+lbr_moveit_config
 =================
 Documentation for generating (:ref:`Generate MoveIt Configuration`) and updating (:ref:`Update MoveIt Configuration`) the ``MoveIt 2`` configurations for the LBRs. For full documentation see `MoveIt Documentation <https://moveit.picknik.ai/main/index.html>`_.
 
@@ -98,8 +98,8 @@ Update MoveIt Configuration
 
 #. Run the setup assistant for the existing configuration.
 
-.. code-block:: bash
+    .. code-block:: bash
 
-    ros2 launch iiwa7_moveit_config  setup_assistant.launch.py # [iiwa7, iiwa14, med7, med14]
+        ros2 launch iiwa7_moveit_config  setup_assistant.launch.py # [iiwa7, iiwa14, med7, med14]
 
 #. Update and save the configurations, similar to :ref:`Generate MoveIt Configuration`.

@@ -1,5 +1,5 @@
-LBR FRI ROS 2
-=============
+lbr_fri_ros2
+============
 TODO: massive re-write of this section, since architecture has changed.
 
 The ``lbr_fri_ros2`` package provides a ROS 2 interface for the KUKA LBRs. It is designed to run stand-alone **and** within ``ros2_control``.
@@ -10,7 +10,7 @@ Quick Start
     Do always execute in ``T1`` mode first.
 
 .. note::
-    Make sure you followed the install instructions in :ref:`Robot Setup`.
+    Make sure you followed the install instructions in :doc:`Hardware Setup <../../lbr_fri_ros2_stack/doc/hardware_setup>`.
 
 #. .. dropdown:: Launch the ``LBRServer`` application on the ``KUKA smartPAD``
 

@@ -1,4 +1,4 @@
-LBR Demos Advanced C++
+lbr_demos_advanced_cpp
 ======================
 Collection of advanced usage examples for the ``lbr_fri_ros2`` package through C++.
 
@@ -16,20 +16,20 @@ Admittance Controller
 
 #. Launch the robot driver:
 
-.. code-block:: bash
+    .. code-block:: bash
 
-    ros2 launch lbr_bringup bringup.launch.py \
-        sim:=false \
-        ctrl:=lbr_position_command_controller \
-        model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
+        ros2 launch lbr_bringup bringup.launch.py \
+            sim:=false \
+            ctrl:=lbr_position_command_controller \
+            model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
 
-#. Launch the `admittance_control <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_demos_advanced_cpp/src/admittance_control_node.cpp>`_:
+#. Launch the `admittance_control <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_demos_advanced_cpp/src/admittance_control_node.    cpp>`_:
 
-.. code-block:: bash
-
-    ros2 run lbr_demos_advanced_cpp admittance_control --ros-args \
-        -r __ns:=/lbr \
-        --params-file `ros2 pkg prefix lbr_demos_advanced_cpp`/share/lbr_demos_advanced_cpp/config/admittance_control.yaml
+    .. code-block:: bash    
+    
+        ros2 run lbr_demos_a    dvanced_cpp admittance_control --ros-args \
+            -r __ns:=/lbr \
+            --params-file `ros2 pkg prefix lbr_demos_advanced_cpp`/share/lbr_demos_advanced_cpp/config/admittance_control.yaml
 
 #. Now gently move the robot at the end-effector.
 
@@ -44,23 +44,23 @@ kinematics to move the robot's end-effector along the z-axis in Cartesian space.
 
 #. Launch the robot driver:
 
-.. code-block:: bash
+    .. code-block:: bash
 
-    ros2 launch lbr_bringup bringup.launch.py \
-        sim:=false \
-        ctrl:=lbr_position_command_controller \
-        model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
+        ros2 launch lbr_bringup bringup.launch.py \
+            sim:=false \
+            ctrl:=lbr_position_command_controller \
+            model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
 
 #. Launch the pose control
 
-.. code-block:: bash
+    .. code-block:: bash
     
-    ros2 run lbr_demos_advanced_cpp pose_control --ros-args \
-        -r __ns:=/lbr
+        ros2 run lbr_demos_advanced_cpp pose_control --ros-args \
+            -r __ns:=/lbr
 
 #. Launch the path planning
 
-.. code-block:: bash
+    .. code-block:: bash
     
-    ros2 run lbr_demos_advanced_cpp pose_planning --ros-args \
-        -r __ns:=/lbr
+        ros2 run lbr_demos_advanced_cpp pose_planning --ros-args \
+            -r __ns:=/lbr

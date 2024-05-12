@@ -1,5 +1,5 @@
-LBR Demos Advanced Python
-=========================
+lbr_demos_advanced_py
+=====================
 Collection of advanced usage examples for the ``lbr_ros2_control`` package through Python.
 
 .. warning::
@@ -18,20 +18,20 @@ This demo implements a simple admittance controller.
 
 #. Launch the robot driver:
 
-.. code-block:: bash
+    .. code-block:: bash
 
-    ros2 launch lbr_bringup bringup.launch.py \
-        sim:=false \
-        ctrl:=lbr_position_command_controller \
-        model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
+        ros2 launch lbr_bringup bringup.launch.py \
+            sim:=false \
+            ctrl:=lbr_position_command_controller \
+            model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
 
 #. Run the `admittance_control <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_demos_advanced_py/lbr_demos_advanced_py/admittance_control_node.py>`_ with remapping and parameter file:
 
-.. code-block:: bash
+    .. code-block:: bash
 
-    ros2 run lbr_demos_advanced_py admittance_control --ros-args \
-        -r __ns:=/lbr \
-        --params-file `ros2 pkg prefix lbr_demos_advanced_py`/share/lbr_demos_advanced_py/config/admittance_control.yaml
+        ros2 run lbr_demos_advanced_py admittance_control --ros-args \
+            -r __ns:=/lbr \
+            --params-file `ros2 pkg prefix lbr_demos_advanced_py`/share/lbr_demos_advanced_py/config/admittance_control.yaml
 
 #. Now gently move the robot at the end-effector.
 
@@ -45,19 +45,19 @@ This demo implements an admittance controller with a remote center of motion (RC
 
 #. Launch the robot driver:
 
-.. code-block:: bash
+    .. code-block:: bash
 
-    ros2 launch lbr_bringup bringup.launch.py \
-        sim:=false \
-        ctrl:=lbr_position_command_controller \
-        model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
+        ros2 launch lbr_bringup bringup.launch.py \
+            sim:=false \
+            ctrl:=lbr_position_command_controller \
+            model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
 
 #. Run the `admittance_rcm_control <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_demos_advanced_py/lbr_demos_advanced_py/admittance_rcm_control_node.py>`_ with remapping and parameter file:
 
-.. code-block:: bash
+    .. code-block:: bash
 
-    ros2 run lbr_demos_advanced_py admittance_rcm_control --ros-args \
-        -r __ns:=/lbr \
-        --params-file `ros2 pkg prefix lbr_demos_advanced_py`/share/lbr_demos_advanced_py/config/admittance_rcm_control.yaml
+        ros2 run lbr_demos_advanced_py admittance_rcm_control --ros-args \
+            -r __ns:=/lbr \
+            --params-file `ros2 pkg prefix lbr_demos_advanced_py`/share/lbr_demos_advanced_py/config/admittance_rcm_control.yaml
 
 #. Now gently move the robot at the end-effector.

@@ -1,8 +1,3 @@
-Robot Setup
-===========
-.. note::
-    Please also refer to :ref:`Additional Resources`.
-
 Verify Connection to the Robot
 ------------------------------
 #. Turn on the robot (enable green power switch on the robot controller).

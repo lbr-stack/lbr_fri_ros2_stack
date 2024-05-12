@@ -1,4 +1,4 @@
-LBR Bringup
+lbr_bringup
 ===========
 The ``lbr_bringup`` works for the simulation and the real robot. Run:
 
@@ -29,7 +29,7 @@ Select
 Users may also refer to :ref:`Software Architecture` for a better understanding of the underlying ``lbr_fri_ros2`` package.
 
 .. note::
-    For the real robot, make sure you have followed :ref:`Robot Setup` first.
+    For the real robot, make sure you have followed :doc:`Hardware Setup <../../lbr_fri_ros2_stack/doc/hardware_setup>` first.
 
 .. warning::
     On the real robot, do always execute in ``T1`` mode first.

@@ -1,4 +1,4 @@
-Docker
+docker
 ======
 To run the ``lbr_fri_ros2_stack`` in a Docker container, follow the instructions below.
 
