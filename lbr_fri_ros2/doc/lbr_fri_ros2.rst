@@ -52,9 +52,9 @@ Software Architecture
 ---------------------
 An overview of the software architecture is shown :ref:`below <target to software architecture figure>`:
 
-.. .. _target to software architecture figure:
-.. .. thumbnail:: img/lbr_fri_ros2.drawio.svg
-..     :alt: lbr_fri_ros2
+.. _target to software architecture figure:
+.. thumbnail:: img/lbr_fri_ros2.drawio.svg
+    :alt: lbr_fri_ros2
 
 Design Principles
 ~~~~~~~~~~~~~~~~~
