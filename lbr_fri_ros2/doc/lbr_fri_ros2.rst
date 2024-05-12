@@ -1,8 +1,15 @@
 lbr_fri_ros2
 ============
-TODO: massive re-write of this section, since architecture has changed.
+.. note::
+    
+    Users will interface the hardware through :ref:`lbr_ros2_control`. Documentation for ``lbr_fri_ros2`` is intended for developers.
 
-The ``lbr_fri_ros2`` package provides a ROS 2 interface for the KUKA LBRs. It is designed to run stand-alone **and** within ``ros2_control``.
+.. toctree::
+   :caption: API Reference
+
+   ../../../docs/doxygen/lbr_fri_ros2/html/annotated_classes
+
+The ``lbr_fri_ros2`` package adds :lbr_fri_ros2:`AsyncClient <lbr_fri_ros2::AsyncClient>`.
 
 Quick Start
 -----------
