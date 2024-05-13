@@ -27,7 +27,7 @@ Admittance Controller
 
     .. code-block:: bash    
     
-        ros2 run lbr_demos_a    dvanced_cpp admittance_control --ros-args \
+        ros2 run lbr_demos_advanced_cpp admittance_control --ros-args \
             -r __ns:=/lbr \
             --params-file `ros2 pkg prefix lbr_demos_advanced_cpp`/share/lbr_demos_advanced_cpp/config/admittance_control.yaml
 

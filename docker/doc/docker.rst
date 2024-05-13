@@ -22,7 +22,7 @@ To run the ``lbr_fri_ros2_stack`` in a Docker container, follow the instructions
 
     cp -r src/lbr_fri_ros2_stack/docker/* .
     chmod +x container_build.sh
-    sudo ./container_build.sh 1.15 # replace by your FRI client version
+    sudo ./container_build.sh
 
 #. Inside the container, launch e.g. simulation via (might require re-launch after Gazebo launched first time)
 

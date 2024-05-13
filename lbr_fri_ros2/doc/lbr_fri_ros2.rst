@@ -16,9 +16,9 @@ The ``lbr_fri_ros2`` package extends the FRI with:
 #. :lbr_fri_ros2:`AsyncClient <lbr_fri_ros2::AsyncClient>` for asynchronous communication to the hardware
 #. :lbr_fri_ros2:`App <lbr_fri_ros2::App>` for running the :lbr_fri_ros2:`AsyncClient <lbr_fri_ros2::AsyncClient>` asynchronously
 
-An overview of the software architecture is shown :ref:`below <software architecture figure>`:
+The software architecture is shown :ref:`below <lbr_fri_ros2 software architecture figure>` (click to expand):
 
-.. _software architecture figure:
+.. _lbr_fri_ros2 software architecture figure:
 .. thumbnail:: img/lbr_fri_ros2_v1.5.0.svg
     :alt: lbr_fri_ros2
 
