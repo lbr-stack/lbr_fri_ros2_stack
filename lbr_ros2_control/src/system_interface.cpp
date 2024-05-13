@@ -205,7 +205,7 @@ controller_interface::CallbackReturn SystemInterface::on_activate(const rclcpp_l
   }
   app_ptr_->run_async(parameters_.rt_prio);
   int attempt = 0;
-  while (!async_client_ptr_->get_state_interface()->is_initialized() && rclcpp::ok()) {
+  while (!async_client_ptr_->get_state_interface()->is_initialized()) {
     RCLCPP_INFO_STREAM(
         rclcpp::get_logger(LOGGER_NAME),
         "Awaiting robot heartbeat. Attempt "
@@ -215,12 +215,10 @@ controller_interface::CallbackReturn SystemInterface::on_activate(const rclcpp_l
             << lbr_fri_ros2::ColorScheme::ENDC << "', port_id '"
             << lbr_fri_ros2::ColorScheme::OKBLUE << lbr_fri_ros2::ColorScheme::BOLD
             << parameters_.port_id << "'" << lbr_fri_ros2::ColorScheme::ENDC);
+    if (!rclcpp::ok()) {
+      return controller_interface::CallbackReturn::ERROR;
+    }
     std::this_thread::sleep_for(std::chrono::seconds(1));
-  }
-  if (!async_client_ptr_->get_state_interface()
-           ->is_initialized()) { // check connection should rclcpp::ok() fail
-    RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "Failed to connect");
-    return controller_interface::CallbackReturn::ERROR;
   }
   RCLCPP_INFO_STREAM(rclcpp::get_logger(LOGGER_NAME), lbr_fri_ros2::ColorScheme::OKGREEN
                                                           << "Robot connected"
@@ -235,8 +233,7 @@ controller_interface::CallbackReturn SystemInterface::on_activate(const rclcpp_l
               async_client_ptr_->get_state_interface()->get_state().sample_time,
               1. / async_client_ptr_->get_state_interface()->get_state().sample_time);
   while (!(async_client_ptr_->get_state_interface()->get_state().session_state >=
-           KUKA::FRI::ESessionState::COMMANDING_WAIT) &&
-         rclcpp::ok()) {
+           KUKA::FRI::ESessionState::COMMANDING_WAIT)) {
     RCLCPP_INFO_STREAM(
         rclcpp::get_logger(LOGGER_NAME),
         "Awaiting '" << lbr_fri_ros2::ColorScheme::BOLD << lbr_fri_ros2::ColorScheme::OKBLUE
@@ -247,10 +244,10 @@ controller_interface::CallbackReturn SystemInterface::on_activate(const rclcpp_l
                      << lbr_fri_ros2::EnumMaps::session_state_map(
                             async_client_ptr_->get_state_interface()->get_state().session_state)
                      << lbr_fri_ros2::ColorScheme::ENDC << "'.");
+    if (!rclcpp::ok()) {
+      return controller_interface::CallbackReturn::ERROR;
+    }
     std::this_thread::sleep_for(std::chrono::seconds(1));
-  }
-  if (!rclcpp::ok()) {
-    return controller_interface::CallbackReturn::ERROR;
   }
   return controller_interface::CallbackReturn::SUCCESS;
 }
