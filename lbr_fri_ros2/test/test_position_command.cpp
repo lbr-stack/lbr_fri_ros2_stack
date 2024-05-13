@@ -22,7 +22,7 @@ int main() {
 
   // 1. read this info!!!! from robot description
 
-  pid_params.p = 10.0;
+  pid_params.p = 1.0;
 
   cmd_guard_params.joint_names = {"A1", "A2", "A3", "A4", "A5", "A6", "A7"};
   cmd_guard_params.max_positions = {170. * M_PI / 180., 120. * M_PI / 180., 170. * M_PI / 180.,
@@ -61,31 +61,36 @@ int main() {
   }
 
   lbr_fri_idl::msg::LBRCommand command;
+  lbr_fri_idl::msg::LBRState state;
+  bool state_initialized = false;
   while (rclcpp::ok()) {
     // read state
-    auto state = client->get_state_interface()->get_state();
-    RCLCPP_INFO(node->get_logger(), "Measured joint position: %f %f %f %f %f %f %f",
-                state.measured_joint_position[0], state.measured_joint_position[1],
-                state.measured_joint_position[2], state.measured_joint_position[3],
-                state.measured_joint_position[4], state.measured_joint_position[5],
-                state.measured_joint_position[6]);
+    if (!state_initialized) {
+      state = client->get_state_interface()->get_state();
+      state_initialized = true;
+    }
+    // RCLCPP_INFO(node->get_logger(), "Measured joint position: %f %f %f %f %f %f %f",
+    //             state.measured_joint_position[0], state.measured_joint_position[1],
+    //             state.measured_joint_position[2], state.measured_joint_position[3],
+    //             state.measured_joint_position[4], state.measured_joint_position[5],
+    //             state.measured_joint_position[6]);
 
-    // set command
-    command.joint_position = state.measured_joint_position;
-    command.joint_position[6] += 0.001;
-    client->get_command_interface()->buffer_command_target(command);
+    // // set command
+    // command.joint_position = state.measured_joint_position;
+    // command.joint_position[6] += 0.001;
+    // client->get_command_interface()->buffer_command_target(command);
 
-    // 3. test the interfaced for safe interaction
+    // // 3. test the interfaced for safe interaction
 
-    auto command_target = client->get_command_interface()->get_command_target();
-    command_target.joint_position[6] += 0.001; // must not change internal value!
-    command_target = client->get_command_interface()->get_command_target();
+    // auto command_target = client->get_command_interface()->get_command_target();
+    // command_target.joint_position[6] += 0.001; // must not change internal value!
+    // command_target = client->get_command_interface()->get_command_target();
 
-    RCLCPP_INFO(node->get_logger(), "Command joint position: %f %f %f %f %f %f %f",
-                command_target.joint_position[0], command_target.joint_position[1],
-                command_target.joint_position[2], command_target.joint_position[3],
-                command_target.joint_position[4], command_target.joint_position[5],
-                command_target.joint_position[6]);
+    // RCLCPP_INFO(node->get_logger(), "Command joint position: %f %f %f %f %f %f %f",
+    //             command_target.joint_position[0], command_target.joint_position[1],
+    //             command_target.joint_position[2], command_target.joint_position[3],
+    //             command_target.joint_position[4], command_target.joint_position[5],
+    //             command_target.joint_position[6]);
 
     // spin
     rclcpp::spin_some(node);
