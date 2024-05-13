@@ -5,42 +5,14 @@ CommandGuard::CommandGuard(const CommandGuardParameters &command_guard_parameter
     : parameters_(command_guard_parameters){};
 
 bool CommandGuard::is_valid_command(const_idl_command_t_ref lbr_command,
-                                    const_fri_state_t_ref lbr_state) const {
-  switch (lbr_state.getClientCommandMode()) {
-  case KUKA::FRI::EClientCommandMode::NO_COMMAND_MODE:
-    return false;
-#if FRICLIENT_VERSION_MAJOR == 1
-  case KUKA::FRI::EClientCommandMode::POSITION:
-#endif
-#if FRICLIENT_VERSION_MAJOR == 2
-  case KUKA::FRI::EClientCommandMode::JOINT_POSITION:
-#endif
-    if (!command_in_position_limits_(lbr_command, lbr_state)) {
-      return false;
-    }
-    if (!command_in_velocity_limits_(lbr_command, lbr_state)) {
-      return false;
-    }
-    return true;
-#if FRICLIENT_VERSION_MAJOR == 2
-  case KUKA::FRI::EClientCommandMode::CARTESIAN_POSE:
-    return false;
-#endif
-  case KUKA::FRI::EClientCommandMode::WRENCH:
-    if (!command_in_position_limits_(lbr_command, lbr_state)) {
-      return false;
-    }
-    return true;
-  case KUKA::FRI::EClientCommandMode::TORQUE:
-    if (!command_in_position_limits_(lbr_command, lbr_state)) {
-      return false;
-    }
-    return true;
-  default:
-    RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME), "Invalid EClientCommandMode provided.");
+                                    const_idl_state_t_ref lbr_state) {
+  if (!command_in_position_limits_(lbr_command, lbr_state)) {
     return false;
   }
-  return false;
+  if (!command_in_velocity_limits_(lbr_command, lbr_state)) {
+    return false;
+  }
+  return true;
 }
 
 void CommandGuard::log_info() const {
@@ -49,20 +21,21 @@ void CommandGuard::log_info() const {
     RCLCPP_INFO(
         rclcpp::get_logger(LOGGER_NAME),
         "*   Joint %s limits: Position: [%.1f, %.1f] deg, velocity: %.1f deg/s, torque: %.1f Nm",
-        parameters_.joint_names[i].c_str(), parameters_.min_position[i] * (180. / M_PI),
-        parameters_.max_position[i] * (180. / M_PI), parameters_.max_velocity[i] * (180. / M_PI),
-        parameters_.max_torque[i]);
+        parameters_.joint_names[i].c_str(), parameters_.min_positions[i] * (180. / M_PI),
+        parameters_.max_positions[i] * (180. / M_PI), parameters_.max_velocities[i] * (180. / M_PI),
+        parameters_.max_torques[i]);
   }
 }
 
 bool CommandGuard::command_in_position_limits_(const_idl_command_t_ref lbr_command,
-                                               const_fri_state_t_ref /*lbr_state*/) const {
+                                               const_idl_state_t_ref /*lbr_state*/) const {
   for (std::size_t i = 0; i < lbr_command.joint_position.size(); ++i) {
-    if (lbr_command.joint_position[i] < parameters_.min_position[i] ||
-        lbr_command.joint_position[i] > parameters_.max_position[i]) {
-      RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME),
-                   "Position command not in limits for joint '%s'.",
-                   parameters_.joint_names[i].c_str());
+    if (lbr_command.joint_position[i] < parameters_.min_positions[i] ||
+        lbr_command.joint_position[i] > parameters_.max_positions[i]) {
+      RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME),
+                          ColorScheme::ERROR << "Position not in limits for joint '"
+                                             << parameters_.joint_names[i].c_str() << "'"
+                                             << ColorScheme::ENDC);
       return false;
     }
   }
@@ -70,26 +43,36 @@ bool CommandGuard::command_in_position_limits_(const_idl_command_t_ref lbr_comma
 }
 
 bool CommandGuard::command_in_velocity_limits_(const_idl_command_t_ref lbr_command,
-                                               const_fri_state_t_ref lbr_state) const {
-  const double &dt = lbr_state.getSampleTime();
+                                               const_idl_state_t_ref lbr_state) {
+  const double &dt = lbr_state.sample_time;
+  if (!prev_measured_joint_position_init_) {
+    prev_measured_joint_position_init_ = true;
+    prev_measured_joint_position_ = lbr_state.measured_joint_position;
+    return true;
+  }
   for (std::size_t i = 0; i < lbr_command.joint_position[i]; ++i) {
-    if (std::abs(lbr_command.joint_position[i] - lbr_state.getMeasuredJointPosition()[i]) / dt >
-        parameters_.max_velocity[i]) {
-      RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME), "Velocity not in limits for joint '%s'.",
-                   parameters_.joint_names[i].c_str());
+    if (std::abs(prev_measured_joint_position_[i] - lbr_state.measured_joint_position[i]) / dt >
+        parameters_.max_velocities[i]) {
+      RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME),
+                          ColorScheme::ERROR << "Velocity not in limits for joint '"
+                                             << parameters_.joint_names[i].c_str() << "'"
+                                             << ColorScheme::ENDC);
       return false;
     }
   }
+  prev_measured_joint_position_ = lbr_state.measured_joint_position;
   return true;
 }
 
 bool CommandGuard::command_in_torque_limits_(const_idl_command_t_ref lbr_command,
-                                             const_fri_state_t_ref lbr_state) const {
+                                             const_idl_state_t_ref lbr_state) const {
   for (std::size_t i = 0; i < lbr_command.torque.size(); ++i) {
-    if (std::abs(lbr_command.torque[i] + lbr_state.getExternalTorque()[i]) >
-        parameters_.max_torque[i]) {
-      RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME), "Torque command not in limits for joint '%s'.",
-                   parameters_.joint_names[i].c_str());
+    if (std::abs(lbr_command.torque[i] + lbr_state.external_torque[i]) >
+        parameters_.max_torques[i]) {
+      RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME), ColorScheme::ERROR
+                                                               << "Torque not in limits for joint '"
+                                                               << parameters_.joint_names[i].c_str()
+                                                               << "'" << ColorScheme::ENDC);
       return false;
     }
   }
@@ -97,15 +80,16 @@ bool CommandGuard::command_in_torque_limits_(const_idl_command_t_ref lbr_command
 }
 
 bool SafeStopCommandGuard::command_in_position_limits_(const_idl_command_t_ref lbr_command,
-                                                       const_fri_state_t_ref lbr_state) const {
+                                                       const_idl_state_t_ref lbr_state) const {
   for (std::size_t i = 0; i < lbr_command.joint_position.size(); ++i) {
     if (lbr_command.joint_position[i] <
-            parameters_.min_position[i] + parameters_.max_velocity[i] * lbr_state.getSampleTime() ||
+            parameters_.min_positions[i] + parameters_.max_velocities[i] * lbr_state.sample_time ||
         lbr_command.joint_position[i] >
-            parameters_.max_position[i] - parameters_.max_velocity[i] * lbr_state.getSampleTime()) {
-      RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME),
-                   "Position command not in limits for joint '%s'.",
-                   parameters_.joint_names[i].c_str());
+            parameters_.max_positions[i] - parameters_.max_velocities[i] * lbr_state.sample_time) {
+      RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME),
+                          ColorScheme::ERROR << "Position not in limits for joint '"
+                                             << parameters_.joint_names[i].c_str() << "'"
+                                             << ColorScheme::ENDC);
       return false;
     }
   }
@@ -123,7 +107,8 @@ command_guard_factory(const CommandGuardParameters &command_guard_parameters,
     return std::make_unique<SafeStopCommandGuard>(command_guard_parameters);
   }
   std::string err = "Invalid CommandGuard variant provided.";
-  RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME), err.c_str());
+  RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME),
+                      ColorScheme::ERROR << err.c_str() << ColorScheme::ENDC);
   throw std::runtime_error(err);
 }
 } // end of namespace lbr_fri_ros2

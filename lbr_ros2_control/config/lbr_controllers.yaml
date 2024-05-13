@@ -23,11 +23,14 @@
       type: position_controllers/JointGroupPositionController
 
     # LBR ROS 2 control controllers
-    forward_lbr_position_command_controller:
-      type: lbr_ros2_control/ForwardLBRPositionCommandController
+    lbr_position_command_controller:
+      type: lbr_ros2_control/LBRPositionCommandController
 
-    forward_lbr_torque_command_controller:
-      type: lbr_ros2_control/ForwardLBRTorqueCommandController
+    lbr_torque_command_controller:
+      type: lbr_ros2_control/LBRTorqueCommandController
+
+    lbr_wrench_command_controller:
+      type: lbr_ros2_control/LBRWrenchCommandController
 
 /**/force_torque_broadcaster:
   ros__parameters:

@@ -1,12 +1,12 @@
 moveit_setup_assistant_config:
   urdf:
     package: lbr_description
-    relative_path: urdf/iiwa7/iiwa7.urdf.xacro
+    relative_path: urdf/iiwa7/iiwa7.xacro
   srdf:
     relative_path: config/iiwa7.srdf
   package_settings:
     author_name: mhubii
-    author_email: martin.huber@kcl.ac.uk
+    author_email: m.huber_1994@hotmail.de
     generated_timestamp: 1690638243
   control_xacro:
     command:

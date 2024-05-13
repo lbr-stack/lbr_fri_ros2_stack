@@ -4,7 +4,7 @@
   <name>lbr_bringup</name>
   <version>1.4.3</version>
   <description>LBR launch files.</description>
-  <maintainer email="martin.huber@kcl.ac.uk">mhubii</maintainer>
+  <maintainer email="m.huber_1994@hotmail.de">mhubii</maintainer>
   <license>Apache License 2.0</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>

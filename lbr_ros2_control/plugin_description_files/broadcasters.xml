@@ -3,6 +3,6 @@
     <!-- LBR state broadcaster plugin -->
     <class name="lbr_ros2_control/LBRStateBroadcaster" type="lbr_ros2_control::LBRStateBroadcaster"
         base_class_type="controller_interface::ControllerInterface">
-        <description>Broadcaster for LBRState messages, see lbr_fri_msgs/msg/LBRState.msg.</description>
+        <description>Broadcaster for LBRState messages, see lbr_fri_idl/msg/LBRState.msg.</description>
     </class>
 </library>

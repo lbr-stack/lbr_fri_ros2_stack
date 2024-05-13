@@ -11,7 +11,7 @@
 
 #include "friLBRClient.h"
 
-#include "lbr_fri_msgs/msg/lbr_state.hpp"
+#include "lbr_fri_idl/msg/lbr_state.hpp"
 
 namespace lbr_fri_ros2 {
 class ExponentialFilter {

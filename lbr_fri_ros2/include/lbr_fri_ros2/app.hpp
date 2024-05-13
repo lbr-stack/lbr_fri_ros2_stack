@@ -13,6 +13,7 @@
 #include "friUdpConnection.h"
 
 #include "lbr_fri_ros2/async_client.hpp"
+#include "lbr_fri_ros2/formatting.hpp"
 
 namespace lbr_fri_ros2 {
 class App {
@@ -25,8 +26,8 @@ public:
 
   bool open_udp_socket(const int &port_id = 30200, const char *const remote_host = NULL);
   bool close_udp_socket();
-  void run(int rt_prio = 80);
-  void stop_run();
+  void run_async(int rt_prio = 80);
+  void request_stop();
 
 protected:
   bool valid_port_(const int &port_id);

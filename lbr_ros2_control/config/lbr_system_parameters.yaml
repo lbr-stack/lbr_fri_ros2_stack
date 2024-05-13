@@ -1,0 +1,26 @@
+hardware:
+  client_command_mode: position
+  port_id: 30200
+  remote_host: INADDR_ANY
+  rt_prio: 80
+  pid_p: 10.0
+  pid_i: 0.0
+  pid_d: 0.0
+  pid_i_max: 0.0
+  pid_i_min: 0.0
+  pid_antiwindup: false
+  command_guard_variant: default
+  external_torque_cutoff_frequency: 10
+  measured_torque_cutoff_frequency: 10
+  open_loop: true
+
+estimated_ft_sensor:
+  chain_root: link_0
+  chain_tip: link_ee
+  damping: 0.2
+  force_x_th: 2.0
+  force_y_th: 2.0
+  force_z_th: 2.0
+  torque_x_th: 0.5
+  torque_y_th: 0.5
+  torque_z_th: 0.5

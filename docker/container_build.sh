@@ -3,7 +3,7 @@ xhost +
 
 docker rm lbr_stack_container
 
-docker build --build-arg FRI_CLIENT_VERSION=$1 -t lbr_stack_container .
+docker build -t lbr_stack_container .
 
 docker run -it \
 	--network host \

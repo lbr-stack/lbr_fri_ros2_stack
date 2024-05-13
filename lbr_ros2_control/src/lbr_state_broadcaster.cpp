@@ -16,10 +16,10 @@ LBRStateBroadcaster::state_interface_configuration() const {
 controller_interface::CallbackReturn LBRStateBroadcaster::on_init() {
   try {
     state_publisher_ptr_ =
-        this->get_node()->create_publisher<lbr_fri_msgs::msg::LBRState>("state", 1);
+        this->get_node()->create_publisher<lbr_fri_idl::msg::LBRState>("state", 1);
 
     rt_state_publisher_ptr_ =
-        std::make_shared<realtime_tools::RealtimePublisher<lbr_fri_msgs::msg::LBRState>>(
+        std::make_shared<realtime_tools::RealtimePublisher<lbr_fri_idl::msg::LBRState>>(
             state_publisher_ptr_);
     if (joint_names_.size() != KUKA::FRI::LBRState::NUMBER_OF_JOINTS) {
       RCLCPP_ERROR(
@@ -49,36 +49,38 @@ controller_interface::return_type LBRStateBroadcaster::update(const rclcpp::Time
   }
   if (rt_state_publisher_ptr_->trylock()) {
     // FRI related states
-    rt_state_publisher_ptr_->msg_.client_command_mode =
-        static_cast<int8_t>(state_interface_map_["auxiliary_sensor"][HW_IF_CLIENT_COMMAND_MODE]);
+    rt_state_publisher_ptr_->msg_.client_command_mode = static_cast<int8_t>(
+        state_interface_map_[HW_IF_AUXILIARY_PREFIX][HW_IF_CLIENT_COMMAND_MODE]);
     rt_state_publisher_ptr_->msg_.connection_quality =
-        static_cast<int8_t>(state_interface_map_["auxiliary_sensor"][HW_IF_CONNECTION_QUALITY]);
+        static_cast<int8_t>(state_interface_map_[HW_IF_AUXILIARY_PREFIX][HW_IF_CONNECTION_QUALITY]);
     rt_state_publisher_ptr_->msg_.control_mode =
-        static_cast<int8_t>(state_interface_map_["auxiliary_sensor"][HW_IF_CONTROL_MODE]);
+        static_cast<int8_t>(state_interface_map_[HW_IF_AUXILIARY_PREFIX][HW_IF_CONTROL_MODE]);
     rt_state_publisher_ptr_->msg_.drive_state =
-        static_cast<int8_t>(state_interface_map_["auxiliary_sensor"][HW_IF_DRIVE_STATE]);
+        static_cast<int8_t>(state_interface_map_[HW_IF_AUXILIARY_PREFIX][HW_IF_DRIVE_STATE]);
     rt_state_publisher_ptr_->msg_.operation_mode =
-        static_cast<int8_t>(state_interface_map_["auxiliary_sensor"][HW_IF_OPERATION_MODE]);
+        static_cast<int8_t>(state_interface_map_[HW_IF_AUXILIARY_PREFIX][HW_IF_OPERATION_MODE]);
     rt_state_publisher_ptr_->msg_.overlay_type =
-        static_cast<int8_t>(state_interface_map_["auxiliary_sensor"][HW_IF_OVERLAY_TYPE]);
+        static_cast<int8_t>(state_interface_map_[HW_IF_AUXILIARY_PREFIX][HW_IF_OVERLAY_TYPE]);
     rt_state_publisher_ptr_->msg_.safety_state =
-        static_cast<int8_t>(state_interface_map_["auxiliary_sensor"][HW_IF_SAFETY_STATE]);
+        static_cast<int8_t>(state_interface_map_[HW_IF_AUXILIARY_PREFIX][HW_IF_SAFETY_STATE]);
     rt_state_publisher_ptr_->msg_.sample_time =
-        state_interface_map_["auxiliary_sensor"][HW_IF_SAMPLE_TIME];
+        state_interface_map_[HW_IF_AUXILIARY_PREFIX][HW_IF_SAMPLE_TIME];
     rt_state_publisher_ptr_->msg_.session_state =
-        static_cast<int8_t>(state_interface_map_["auxiliary_sensor"][HW_IF_SESSION_STATE]);
-    rt_state_publisher_ptr_->msg_.time_stamp_nano_sec =
-        static_cast<uint32_t>(state_interface_map_["auxiliary_sensor"][HW_IF_TIME_STAMP_NANO_SEC]);
+        static_cast<int8_t>(state_interface_map_[HW_IF_AUXILIARY_PREFIX][HW_IF_SESSION_STATE]);
+    rt_state_publisher_ptr_->msg_.time_stamp_nano_sec = static_cast<uint32_t>(
+        state_interface_map_[HW_IF_AUXILIARY_PREFIX][HW_IF_TIME_STAMP_NANO_SEC]);
     rt_state_publisher_ptr_->msg_.time_stamp_sec =
-        static_cast<uint32_t>(state_interface_map_["auxiliary_sensor"][HW_IF_TIME_STAMP_SEC]);
+        static_cast<uint32_t>(state_interface_map_[HW_IF_AUXILIARY_PREFIX][HW_IF_TIME_STAMP_SEC]);
     rt_state_publisher_ptr_->msg_.tracking_performance =
-        state_interface_map_["auxiliary_sensor"][HW_IF_TRACKING_PERFORMANCE];
+        state_interface_map_[HW_IF_AUXILIARY_PREFIX][HW_IF_TRACKING_PERFORMANCE];
 
     // joint related states
     std::for_each(joint_names_.begin(), joint_names_.end(),
                   [&, idx = 0](const std::string &joint_name) mutable {
+#if FRICLIENT_VERSION_MAJOR == 1
                     rt_state_publisher_ptr_->msg_.commanded_joint_position[idx] =
                         state_interface_map_[joint_name][HW_IF_COMMANDED_JOINT_POSITION];
+#endif
                     rt_state_publisher_ptr_->msg_.commanded_torque[idx] =
                         state_interface_map_[joint_name][HW_IF_COMMANDED_TORQUE];
                     rt_state_publisher_ptr_->msg_.external_torque[idx] =
@@ -131,8 +133,10 @@ void LBRStateBroadcaster::init_state_interface_map_() {
 
 void LBRStateBroadcaster::init_state_msg_() {
   rt_state_publisher_ptr_->msg_.client_command_mode = std::numeric_limits<int8_t>::quiet_NaN();
+#if FRICLIENT_VERSION_MAJOR == 1
   rt_state_publisher_ptr_->msg_.commanded_joint_position.fill(
       std::numeric_limits<double>::quiet_NaN());
+#endif
   rt_state_publisher_ptr_->msg_.commanded_torque.fill(std::numeric_limits<double>::quiet_NaN());
   rt_state_publisher_ptr_->msg_.connection_quality = std::numeric_limits<int8_t>::quiet_NaN();
   rt_state_publisher_ptr_->msg_.control_mode = std::numeric_limits<int8_t>::quiet_NaN();

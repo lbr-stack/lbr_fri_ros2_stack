@@ -18,19 +18,25 @@
 #include "friLBRState.h"
 #include "friVersion.h"
 
-#include "lbr_fri_msgs/msg/lbr_command.hpp"
-#include "lbr_fri_msgs/msg/lbr_state.hpp"
+#include "lbr_fri_idl/msg/lbr_command.hpp"
+#include "lbr_fri_idl/msg/lbr_state.hpp"
 #include "lbr_fri_ros2/app.hpp"
 #include "lbr_fri_ros2/async_client.hpp"
 #include "lbr_fri_ros2/command_guard.hpp"
-#include "lbr_fri_ros2/enum_maps.hpp"
 #include "lbr_fri_ros2/filters.hpp"
+#include "lbr_fri_ros2/formatting.hpp"
 #include "lbr_fri_ros2/ft_estimator.hpp"
-#include "lbr_fri_ros2/state_interface.hpp"
+#include "lbr_fri_ros2/interfaces/state.hpp"
 #include "lbr_ros2_control/system_interface_type_values.hpp"
 
 namespace lbr_ros2_control {
 struct SystemInterfaceParameters {
+#if FRICLIENT_VERSION_MAJOR == 1
+  KUKA::FRI::EClientCommandMode client_command_mode{KUKA::FRI::EClientCommandMode::POSITION};
+#endif
+#if FRICLIENT_VERSION_MAJOR == 2
+  KUKA::FRI::EClientCommandMode client_command_mode{KUKA::FRI::EClientCommandMode::JOINT_POSITION};
+#endif
   int32_t port_id{30200};
   const char *remote_host{nullptr};
   int32_t rt_prio{80};
@@ -67,6 +73,7 @@ protected:
   static constexpr uint8_t LBR_FRI_SENSORS = 2;
   static constexpr uint8_t AUXILIARY_SENSOR_SIZE = 12;
   static constexpr uint8_t ESTIMATED_FT_SENSOR_SIZE = 6;
+  static constexpr uint8_t GPIO_SIZE = 1;
 
 public:
   SystemInterface() = default;
@@ -93,6 +100,7 @@ public:
 
 protected:
   // setup
+  bool parse_parameters_(const hardware_interface::HardwareInfo &info);
   void nan_command_interfaces_();
   void nan_state_interfaces_();
   bool verify_number_of_joints_();
@@ -101,6 +109,7 @@ protected:
   bool verify_sensors_();
   bool verify_auxiliary_sensor_();
   bool verify_estimated_ft_sensor_();
+  bool verify_gpios_();
 
   // monitor end of commanding active
   bool exit_commanding_active_(const KUKA::FRI::ESessionState &previous_session_state,
@@ -117,7 +126,7 @@ protected:
   // exposed state interfaces (ideally these are taken from async_client_ptr_ but
   // ros2_control ReadOnlyHandle does not allow for const pointers, refer
   // https://github.com/ros-controls/ros2_control/issues/1196)
-  lbr_fri_msgs::msg::LBRState hw_lbr_state_;
+  lbr_fri_idl::msg::LBRState hw_lbr_state_;
 
   // exposed state interfaces that require casting
   double hw_session_state_;
@@ -132,10 +141,10 @@ protected:
   double hw_time_stamp_nano_sec_;
 
   // additional velocity state interface
-  lbr_fri_msgs::msg::LBRState::_measured_joint_position_type last_hw_measured_joint_position_;
+  lbr_fri_idl::msg::LBRState::_measured_joint_position_type last_hw_measured_joint_position_;
   double last_hw_time_stamp_sec_;
   double last_hw_time_stamp_nano_sec_;
-  lbr_fri_msgs::msg::LBRState::_measured_joint_position_type hw_velocity_;
+  lbr_fri_idl::msg::LBRState::_measured_joint_position_type hw_velocity_;
 
   // compute velocity for state interface
   double time_stamps_to_sec_(const double &sec, const double &nano_sec) const;
@@ -148,7 +157,7 @@ protected:
   std::unique_ptr<lbr_fri_ros2::FTEstimator> ft_estimator_ptr_;
 
   // exposed command interfaces
-  lbr_fri_msgs::msg::LBRCommand hw_lbr_command_;
+  lbr_fri_idl::msg::LBRCommand hw_lbr_command_;
 };
 } // end of namespace lbr_ros2_control
 #endif // LBR_ROS2_CONTROL__SYSTEM_INTERFACE_HPP_

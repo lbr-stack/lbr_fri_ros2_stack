@@ -17,16 +17,16 @@
 
 #include "friLBRState.h"
 
-#include "lbr_fri_msgs/msg/lbr_state.hpp"
+#include "lbr_fri_idl/msg/lbr_state.hpp"
 #include "lbr_fri_ros2/pinv.hpp"
 
 namespace lbr_fri_ros2 {
 class FTEstimator {
 protected:
   static constexpr char LOGGER_NAME[] = "lbr_fri_ros2::FTEstimator";
-  using jnt_pos_array_t = lbr_fri_msgs::msg::LBRState::_measured_joint_position_type;
+  using jnt_pos_array_t = lbr_fri_idl::msg::LBRState::_measured_joint_position_type;
   using const_jnt_pos_array_t_ref = const jnt_pos_array_t &;
-  using ext_tau_array_t = lbr_fri_msgs::msg::LBRState::_external_torque_type;
+  using ext_tau_array_t = lbr_fri_idl::msg::LBRState::_external_torque_type;
   using const_ext_tau_array_t_ref = const ext_tau_array_t &;
 
 public:

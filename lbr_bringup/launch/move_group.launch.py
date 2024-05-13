@@ -3,9 +3,8 @@ from typing import List
 from launch import LaunchContext, LaunchDescription, LaunchDescriptionEntity
 from launch.actions import OpaqueFunction
 from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
-
-from lbr_bringup import LBRMoveGroupMixin
-from lbr_description import LBRDescriptionMixin, RVizMixin
+from launch_mixins.lbr_bringup import LBRMoveGroupMixin
+from launch_mixins.lbr_description import LBRDescriptionMixin, RVizMixin
 
 
 def launch_setup(context: LaunchContext) -> List[LaunchDescriptionEntity]:

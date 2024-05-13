@@ -4,12 +4,11 @@
   <name>lbr_description</name>
   <version>1.4.3</version>
   <description>KUKA LBR description files</description>
-  <maintainer email="martin.huber@kcl.ac.uk">mhubii</maintainer>
+  <maintainer email="m.huber_1994@hotmail.de">mhubii</maintainer>
   <license>Apache License 2.0</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
   <buildtool_depend>ament_cmake_pytest</buildtool_depend>
-  <buildtool_depend>ament_cmake_python</buildtool_depend>
 
   <exec_depend>gazebo_ros2_control</exec_depend>
   <exec_depend>joint_state_publisher_gui</exec_depend>

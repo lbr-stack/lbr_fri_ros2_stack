@@ -5,7 +5,7 @@ on:
     branches:
       - humble
   schedule:
-    - cron: '0 0 * * 0'
+    - cron: "0 0 * * 0"
 
 # ros 2 ci: https://github.com/marketplace/actions/ros-2-ci-action
 # doc: https://ubuntu.com/blog/ros-2-ci-with-github-actions
@@ -15,10 +15,11 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
+        fri_version: [1.11, 1.14, 1.15, 1.16, 2.5]
     steps:
       - uses: ros-tooling/setup-ros@v0.7
       - uses: ros-tooling/action-ros-ci@v0.2
         with:
           package-name: lbr_fri_ros2_stack
           target-ros2-distro: humble
-          vcs-repo-file-url: https://raw.githubusercontent.com/lbr-stack/lbr_fri_ros2_stack/humble/lbr_fri_ros2_stack/repos.yaml
+          vcs-repo-file-url: https://raw.githubusercontent.com/lbr-stack/lbr_fri_ros2_stack/dev-humble-launch/lbr_fri_ros2_stack/repos-fri-${{ matrix.fri_version }}.yaml

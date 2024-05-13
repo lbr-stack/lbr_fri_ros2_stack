@@ -11,30 +11,30 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
-find_package(ament_cmake_python REQUIRED)
 find_package(control_toolbox REQUIRED)
 find_package(eigen3_cmake_module REQUIRED)
 find_package(Eigen3)
-find_package(fri_vendor REQUIRED)
 find_package(FRIClient REQUIRED)
 find_package(kdl_parser REQUIRED)
-find_package(lbr_fri_msgs REQUIRED)
+find_package(lbr_fri_idl REQUIRED)
 find_package(orocos_kdl_vendor REQUIRED)
 find_package(rclcpp REQUIRED)
-find_package(rclcpp_components REQUIRED)
 find_package(realtime_tools REQUIRED)
 find_package(urdf REQUIRED)
 
 # lbr_fri_ros2
 add_library(lbr_fri_ros2
   SHARED
+    src/interfaces/base_command.cpp
+    src/interfaces/position_command.cpp
+    src/interfaces/state.cpp
+    src/interfaces/torque_command.cpp
+    src/interfaces/wrench_command.cpp
     src/app.cpp
     src/async_client.cpp
     src/command_guard.cpp
-    src/command_interface.cpp
     src/filters.cpp
     src/ft_estimator.cpp
-    src/state_interface.cpp
 )
 
 target_include_directories(lbr_fri_ros2
@@ -47,7 +47,7 @@ ament_target_dependencies(lbr_fri_ros2
   control_toolbox
   Eigen3
   kdl_parser
-  lbr_fri_msgs
+  lbr_fri_idl
   orocos_kdl_vendor
   rclcpp
   realtime_tools
@@ -62,10 +62,9 @@ ament_export_dependencies(
   control_toolbox
   eigen3_cmake_module
   Eigen3
-  fri_vendor
   FRIClient
   kdl_parser
-  lbr_fri_msgs
+  lbr_fri_idl
   orocos_kdl_vendor
   rclcpp
   realtime_tools
@@ -82,48 +81,21 @@ install(
   LIBRARY DESTINATION lib
 )
 
-install(
-  DIRECTORY launch
-  DESTINATION share/lbr_fri_ros2
-)
+if(BUILD_TESTING)
+  find_package(ament_cmake_gtest REQUIRED)
 
-# app_component
-add_library(app_component
-  SHARED
-    src/app_component.cpp
-)
+  ament_add_gtest(test_command_interfaces test/test_command_interfaces.cpp)
+  target_link_libraries(test_command_interfaces lbr_fri_ros2)
 
-target_include_directories(app_component
-  PRIVATE src
-)
+  # # some examples of how to use the interfaces
+  # add_executable(test_position_command test/test_position_command.cpp)
+  # target_link_libraries(test_position_command lbr_fri_ros2)
 
-ament_target_dependencies(app_component
-  rclcpp
-  urdf
-  rclcpp_components
-)
+  # add_executable(test_torque_command test/test_torque_command.cpp)
+  # target_link_libraries(test_torque_command lbr_fri_ros2)
 
-target_link_libraries(app_component
-  lbr_fri_ros2
-)
-
-rclcpp_components_register_node(app_component
-  PLUGIN lbr_fri_ros2::AppComponent
-  EXECUTABLE app
-)
-
-install(
-  TARGETS app_component
-  LIBRARY DESTINATION lib
-  RUNTIME DESTINATION lib/lbr_fri_ros2
-)
-
-install(
-  DIRECTORY config launch
-  DESTINATION share/lbr_fri_ros2
-)
-
-# Launch mixins
-ament_python_install_package(${PROJECT_NAME})
+  # add_executable(test_wrench_command test/test_wrench_command.cpp)
+  # target_link_libraries(test_wrench_command lbr_fri_ros2)
+endif()
 
 ament_package()
