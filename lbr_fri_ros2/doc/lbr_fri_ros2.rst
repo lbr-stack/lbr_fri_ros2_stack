@@ -19,7 +19,7 @@ The ``lbr_fri_ros2`` package extends the FRI with:
 The software architecture is shown :ref:`below <lbr_fri_ros2 software architecture figure>` (click to expand):
 
 .. _lbr_fri_ros2 software architecture figure:
-.. thumbnail:: img/lbr_fri_ros2_v1.5.0.svg
+.. thumbnail:: img/lbr_fri_ros2_v2.0.0.svg
     :alt: lbr_fri_ros2
 
 The :ref:`lbr_ros2_control` package can be considered a **User** in the above figure. It builds on top of the ``lbr_fri_ros2`` package to provide a ROS 2 interface to the hardware.
