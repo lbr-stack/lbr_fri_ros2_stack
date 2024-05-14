@@ -50,7 +50,7 @@ bool CommandGuard::command_in_velocity_limits_(const_idl_command_t_ref lbr_comma
     prev_measured_joint_position_ = lbr_state.measured_joint_position;
     return true;
   }
-  for (std::size_t i = 0; i < lbr_command.joint_position[i]; ++i) {
+  for (std::size_t i = 0; i < lbr_command.joint_position.size(); ++i) {
     if (std::abs(prev_measured_joint_position_[i] - lbr_state.measured_joint_position[i]) / dt >
         parameters_.max_velocities[i]) {
       RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME),
