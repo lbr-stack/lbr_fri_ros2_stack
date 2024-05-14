@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <library path="lbr_ros2_control">
     <!-- LBR forward position command controller plugin -->
-    <class name="lbr_ros2_control/LBRPositionCommandController"
-        type="lbr_ros2_control::LBRPositionCommandController"
+    <class name="lbr_ros2_control/LBRJointPositionCommandController"
+        type="lbr_ros2_control::LBRJointPositionCommandController"
         base_class_type="controller_interface::ControllerInterface">
         <description>Forward command controller for LBRPositionCommand message, see
             lbr_fri_idl/msg/LBRPositionCommand.msg.</description>

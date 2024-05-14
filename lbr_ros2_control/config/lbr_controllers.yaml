@@ -23,8 +23,8 @@
       type: position_controllers/JointGroupPositionController
 
     # LBR ROS 2 control controllers
-    lbr_position_command_controller:
-      type: lbr_ros2_control/LBRPositionCommandController
+    lbr_joint_position_command_controller:
+      type: lbr_ros2_control/LBRJointPositionCommandController
 
     lbr_torque_command_controller:
       type: lbr_ros2_control/LBRTorqueCommandController

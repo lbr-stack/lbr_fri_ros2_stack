@@ -1,5 +1,5 @@
-#ifndef LBR_ROS2_CONTROL__LBR_POSITION_COMMAND_CONTROLLER_HPP_
-#define LBR_ROS2_CONTROL__LBR_POSITION_COMMAND_CONTROLLER_HPP_
+#ifndef LBR_ROS2_CONTROL__LBR_JOINT_POSITION_COMMAND_CONTROLLER_HPP_
+#define LBR_ROS2_CONTROL__LBR_JOINT_POSITION_COMMAND_CONTROLLER_HPP_
 
 #include <algorithm>
 #include <array>
@@ -17,9 +17,9 @@
 #include "lbr_fri_idl/msg/lbr_position_command.hpp"
 
 namespace lbr_ros2_control {
-class LBRPositionCommandController : public controller_interface::ControllerInterface {
+class LBRJointPositionCommandController : public controller_interface::ControllerInterface {
 public:
-  LBRPositionCommandController();
+  LBRJointPositionCommandController();
 
   controller_interface::InterfaceConfiguration command_interface_configuration() const override;
 
@@ -49,4 +49,4 @@ protected:
       lbr_position_command_subscription_ptr_;
 };
 } // end of namespace lbr_ros2_control
-#endif // LBR_ROS2_CONTROL__LBR_POSITION_COMMAND_CONTROLLER_HPP_
+#endif // LBR_ROS2_CONTROL__LBR_JOINT_POSITION_COMMAND_CONTROLLER_HPP_
