@@ -20,10 +20,10 @@ Admittance Controller
 
         ros2 launch lbr_bringup bringup.launch.py \
             sim:=false \
-            ctrl:=lbr_position_command_controller \
+            ctrl:=lbr_joint_position_command_controller \
             model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
 
-#. Launch the `admittance_control <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_demos_advanced_cpp/src/admittance_control_node.    cpp>`_:
+#. Launch the `admittance_control <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_demos_advanced_cpp/src/admittance_control_node.cpp>`_:octicon:`link-external`:
 
     .. code-block:: bash    
     
@@ -48,7 +48,7 @@ kinematics to move the robot's end-effector along the z-axis in Cartesian space.
 
         ros2 launch lbr_bringup bringup.launch.py \
             sim:=false \
-            ctrl:=lbr_position_command_controller \
+            ctrl:=lbr_joint_position_command_controller \
             model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
 
 #. Launch the pose control

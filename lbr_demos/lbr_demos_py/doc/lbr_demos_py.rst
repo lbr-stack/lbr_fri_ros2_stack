@@ -14,13 +14,13 @@ Joint Sine Overlay
 
     .. thumbnail:: ../../doc/img/applications_joint_sine_overlay.png
 
-#. Launch the `joint_sine_overlay.launch.py <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_demos_py/launch/joint_sine_overlay.launch.py>`_ launch file:
+#. Launch the `joint_sine_overlay.launch.py <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_demos_py/launch/joint_sine_overlay.launch.py>`_:octicon:`link-external` launch file:
 
     .. code-block:: bash
 
         ros2 launch lbr_demos_py joint_sine_overlay.launch.py model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
 
-    The robot will move to the initial position via position control, then execute a rotation on joint ``A1``. A sinusoidal motion is overlayed on joint ``A4`` via `joint_sine_overlay_node <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_demos_py/lbr_demos_py/joint_sine_overlay_node.py>`_.
+    The robot will move to the initial position via position control, then execute a rotation on joint ``A1``. A sinusoidal motion is overlayed on joint ``A4`` via `joint_sine_overlay_node <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_demos_py/lbr_demos_py/joint_sine_overlay_node.py>`_:octicon:`link-external`.
 
 Joint Trajectory Controller
 ---------------------------
@@ -32,7 +32,7 @@ Simulation
 
         ros2 launch lbr_bringup bringup.launch.py sim:=true model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
 
-#. Run the `joint_trajectory_executioner_node <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_demos_ros2_control_python/lbr_demos_ros2_control_python/joint_trajectory_executioner_node.py>`_:
+#. Run the `joint_trajectory_executioner_node <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_demos_ros2_control_python/lbr_demos_ros2_control_python/joint_trajectory_executioner_node.py>`_:octicon:`link-external`:
 
     .. code-block:: bash
 
@@ -61,13 +61,13 @@ Torque Sine Overlay
 
     .. thumbnail:: ../../doc/img/applications_torque_sine_overlay.png
 
-#. Launch the `torque_sine_overlay.launch.py <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_demos_py/launch/torque_sine_overlay.launch.py>`_ launch file:
+#. Launch the `torque_sine_overlay.launch.py <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_demos_py/launch/torque_sine_overlay.launch.py>`_:octicon:`link-external` launch file:
 
     .. code-block:: bash
 
         ros2 launch lbr_demos_py torque_sine_overlay.launch.py model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
 
-    The robot will move to the initial position via joint impedance control. A sinusoidal torque is overlayed on joint ``A4`` via `torque_sine_overlay_node <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_demos_py/lbr_demos_py/torque_sine_overlay_node.py>`_.
+    The robot will move to the initial position via joint impedance control. A sinusoidal torque is overlayed on joint ``A4`` via `torque_sine_overlay_node <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_demos_py/lbr_demos_py/torque_sine_overlay_node.py>`_:octicon:`link-external`.
 
 Wrench Sine Overlay
 -------------------
@@ -75,10 +75,10 @@ Wrench Sine Overlay
 
     .. thumbnail:: ../../doc/img/applications_wrench_sine_overlay.png
 
-#. Launch the `wrench_sine_overlay.launch.py <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_demos_py/launch/wrench_sine_overlay.launch.py>`_ launch file:
+#. Launch the `wrench_sine_overlay.launch.py <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_demos_py/launch/wrench_sine_overlay.launch.py>`_:octicon:`link-external` launch file:
 
     .. code-block:: bash
 
         ros2 launch lbr_demos_py wrench_sine_overlay.launch.py model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
 
-    The robot will move to the initial position via cartesian impedance control. A sinusoidal force is overlayed on the x- and y-axis via `wrench_sine_overlay_node <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_demos_py/lbr_demos_py/wrench_sine_overlay_node.py>`_.
+    The robot will move to the initial position via cartesian impedance control. A sinusoidal force is overlayed on the x- and y-axis via `wrench_sine_overlay_node <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_demos_py/lbr_demos_py/wrench_sine_overlay_node.py>`_:octicon:`link-external`.

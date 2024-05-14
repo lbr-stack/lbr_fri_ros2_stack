@@ -30,7 +30,7 @@ To run the ``lbr_fri_ros2_stack`` in a Docker container, follow the instructions
 
     ros2 launch lbr_bringup bringup.launch.py model:=iiwa7 sim:=true moveit:=true
 
-   .. note::
+   .. hint::
 
     List all arguments for the launch file via
 

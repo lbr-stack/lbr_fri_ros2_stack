@@ -23,14 +23,14 @@ Joint Sine Overlay
     .. code-block:: bash
 
         ros2 launch lbr_bringup bringup.launch.py \
-            ctrl:=lbr_position_command_controller \
+            ctrl:=lbr_joint_position_command_controller \
             sim:=false \
             model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
 
 
     The robot will move to the initial position through the Java application.
 
-#. Run the `joint_sine_overlay <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_demos_cpp/src/joint_sine_overlay.cpp>`_ node:
+#. Run the `joint_sine_overlay <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_demos_cpp/src/joint_sine_overlay.cpp>`_:octicon:`link-external` node:
 
     .. code-block:: bash
 
@@ -48,7 +48,7 @@ Simulation
 
         ros2 launch lbr_bringup bringup.launch.py sim:=true model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
 
-#. Run the `joint_trajectory_client <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_demos_cpp/src/joint_trajectory_client.cpp>`_:
+#. Run the `joint_trajectory_client <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_demos_cpp/src/joint_trajectory_client.cpp>`_:octicon:`link-external`:
 
     .. code-block:: bash
 
@@ -95,7 +95,7 @@ Torque Sine Overlay
 
     The robot will move to the initial position through the Java application.
 
-#. Run the `torque_sine_overlay <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_demos_cpp/src/torque_sine_overlay.cpp>`_ node:
+#. Run the `torque_sine_overlay <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_demos_cpp/src/torque_sine_overlay.cpp>`_:octicon:`link-external` node:
 
     .. code-block:: bash
 
@@ -127,7 +127,7 @@ Wrench Sine Overlay
 
     The robot will move to the initial position through the Java application.
 
-#. Run the `wrench_sine_overlay <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_demos_cpp/src/wrench_sine_overlay>`_ node:
+#. Run the `wrench_sine_overlay <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_demos_cpp/src/wrench_sine_overlay>`_:octicon:`link-external` node:
 
     .. code-block:: bash
 

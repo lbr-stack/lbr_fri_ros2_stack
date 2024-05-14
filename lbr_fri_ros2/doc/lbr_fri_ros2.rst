@@ -2,7 +2,7 @@ lbr_fri_ros2
 ============
 .. note::
     
-    Users will interface the hardware through :ref:`lbr_ros2_control`. Documentation for ``lbr_fri_ros2`` is intended for developers.
+    Users will interface the hardware through :ref:`lbr_ros2_control`. Documentation for ``lbr_fri_ros2`` is **intended for developers**.
 
 .. toctree::
    :caption: API Reference
