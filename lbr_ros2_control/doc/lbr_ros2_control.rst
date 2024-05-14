@@ -17,6 +17,12 @@ This package implements:
 #. A ``hardware_interface::SystemInterface`` for ``ros2_control`` integration: `Hardware Plugin`_
 #. Dedicated ``ros2_controllers`` for various command modes and the state: `Controller Plugins`_
 
+A simplified overview of ``lbr_ros2_control`` is shown :ref:`below <lbr_ros2_control simplified software architecture figure>` (click to expand):
+
+.. _lbr_ros2_control simplified software architecture figure:
+.. thumbnail:: img/lbr_ros2_control_v2.0.0.svg
+    :alt: lbr_ros2_control
+
 New starters are often confused by ``ros2_control``. Everything in ``ros2_control`` is a plugin, refer `pluginlib <https://docs.ros.org/en/humble/Tutorials/Beginner-Client-Libraries/Pluginlib.html>`_:octicon:`link-external`.
 
 Hardware components and controllers are loaded as plugins (components) by the ``controller_manager::ControllerManager`` during runtime. Therefore, hardware and controllers communicate over shared memory in the same process, **not** topics! 
@@ -30,11 +36,11 @@ Hardware Plugin
 ---------------
 lbr_fri_ros2::SystemInterface
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-The ``lbr_fri_ros2::SystemInterface`` plugin implements a ``hardware_interface::SystemInterface`` and utilizes the :ref:`lbr_fri_ros2` package for communication with the robot. Overview :ref:`below <lbr_ros2_control software architecture figure>` (click to expand):
+The ``lbr_fri_ros2::SystemInterface`` plugin implements a ``hardware_interface::SystemInterface`` and utilizes the :ref:`lbr_fri_ros2` package for communication with the robot. Overview :ref:`below <lbr_ros2_control detailed software architecture figure>` (click to expand):
 
-.. _lbr_ros2_control software architecture figure:
-.. thumbnail:: img/lbr_ros2_control_v2.0.0.svg
-    :alt: lbr_ros2_control
+.. _lbr_ros2_control detailed software architecture figure:
+.. thumbnail:: img/lbr_ros2_control_detailed_v2.0.0.svg
+    :alt: lbr_ros2_control_detailed
 
 - The ``controller_manager::ControllerManager`` loads the correct plugin from the ``<ros2_control>`` tag in the ``robot_description``: `lbr_system_interface.xacro <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_ros2_control/config/lbr_system_interface.xacro>`_:octicon:`link-external`
 - FRI relevant parameters are forwarded to the ``lbr_fri_ros2::SystemInterface`` plugin from `lbr_system_paramters.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_ros2_control/config/lbr_system_parameters.yaml>`_:octicon:`link-external`
