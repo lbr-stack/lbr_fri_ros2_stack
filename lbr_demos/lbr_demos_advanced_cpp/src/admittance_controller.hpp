@@ -41,8 +41,8 @@ public:
     q_.resize(chain_.getNrOfJoints());
   };
 
-  const lbr_fri_idl::msg::LBRPositionCommand &update(const lbr_fri_idl::msg::LBRState &lbr_state,
-                                                      const double &dt) {
+  const lbr_fri_idl::msg::LBRJointPositionCommand &
+  update(const lbr_fri_idl::msg::LBRState &lbr_state, const double &dt) {
     std::memcpy(q_.data.data(), lbr_state.measured_joint_position.data(),
                 sizeof(double) * KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
     std::memcpy(tau_ext_.data(), lbr_state.external_torque.data(),
@@ -71,7 +71,7 @@ public:
   };
 
 protected:
-  lbr_fri_idl::msg::LBRPositionCommand lbr_position_command_;
+  lbr_fri_idl::msg::LBRJointPositionCommand lbr_position_command_;
   KDL::Tree tree_;
   KDL::Chain chain_;
   std::unique_ptr<KDL::ChainJntToJacSolver> jacobian_solver_;

@@ -1,7 +1,7 @@
 import numpy as np
 import rclpy
 
-from lbr_fri_idl.msg import LBRPositionCommand, LBRState
+from lbr_fri_idl.msg import LBRJointPositionCommand, LBRState
 
 from .admittance_rcm_controller import AdmittanceRCMController
 from .lbr_base_position_command_node import LBRBasePositionCommandNode
@@ -65,7 +65,7 @@ class LBRAdmittanceControlRCMNode(LBRBasePositionCommandNode):
         )
 
     def _command(self, q) -> None:
-        lbr_command = LBRPositionCommand()
+        lbr_command = LBRJointPositionCommand()
         lbr_command.joint_position = q
         self._lbr_position_command_pub.publish(lbr_command)
 

@@ -22,7 +22,7 @@ public:
 
     // publishers and subscribers
     lbr_position_command_pub_ =
-        create_publisher<lbr_fri_idl::msg::LBRPositionCommand>("command/joint_position", 1);
+        create_publisher<lbr_fri_idl::msg::LBRJointPositionCommand>("command/joint_position", 1);
 
     lbr_state_sub_ = create_subscription<lbr_fri_idl::msg::LBRState>(
         "state", 1,
@@ -30,7 +30,7 @@ public:
   }
 
 protected:
-  rclcpp::Publisher<lbr_fri_idl::msg::LBRPositionCommand>::SharedPtr lbr_position_command_pub_;
+  rclcpp::Publisher<lbr_fri_idl::msg::LBRJointPositionCommand>::SharedPtr lbr_position_command_pub_;
   rclcpp::Subscription<lbr_fri_idl::msg::LBRState>::SharedPtr lbr_state_sub_;
 
   std::string robot_description_;

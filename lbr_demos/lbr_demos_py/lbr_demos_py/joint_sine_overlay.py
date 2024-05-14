@@ -6,7 +6,7 @@ from rcl_interfaces.srv import GetParameters
 from rclpy.node import Node
 
 # import lbr_fri_idl
-from lbr_fri_idl.msg import LBRPositionCommand, LBRState
+from lbr_fri_idl.msg import LBRJointPositionCommand, LBRState
 
 
 class JointSineOverlayNode(Node):
@@ -16,11 +16,11 @@ class JointSineOverlayNode(Node):
         self._amplitude = 0.04  # rad
         self._frequency = 0.25  # Hz
         self._phase = 0.0
-        self._lbr_position_command = LBRPositionCommand()
+        self._lbr_position_command = LBRJointPositionCommand()
 
         # create publisher to command/joint_position
         self._lbr_position_command_pub = self.create_publisher(
-            LBRPositionCommand,
+            LBRJointPositionCommand,
             "command/joint_position",
             1,
         )

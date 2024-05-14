@@ -20,8 +20,8 @@ class JointSineOverlay {
 public:
   JointSineOverlay(const rclcpp::Node::SharedPtr node) : node_(node), phase_(0.) {
     // create publisher to command/joint_position
-    lbr_position_command_pub_ =
-        node_->create_publisher<lbr_fri_idl::msg::LBRPositionCommand>("command/joint_position", 1);
+    lbr_position_command_pub_ = node_->create_publisher<lbr_fri_idl::msg::LBRJointPositionCommand>(
+        "command/joint_position", 1);
 
     // create subscription to state
     lbr_state_sub_ = node_->create_subscription<lbr_fri_idl::msg::LBRState>(
@@ -57,11 +57,11 @@ protected:
   rclcpp::Node::SharedPtr node_;
   double dt_;
   double phase_;
-  rclcpp::Publisher<lbr_fri_idl::msg::LBRPositionCommand>::SharedPtr lbr_position_command_pub_;
+  rclcpp::Publisher<lbr_fri_idl::msg::LBRJointPositionCommand>::SharedPtr lbr_position_command_pub_;
   rclcpp::Subscription<lbr_fri_idl::msg::LBRState>::SharedPtr lbr_state_sub_;
   bool lbr_state_init_ = false;
   lbr_fri_idl::msg::LBRState lbr_state_;
-  lbr_fri_idl::msg::LBRPositionCommand lbr_position_command_;
+  lbr_fri_idl::msg::LBRJointPositionCommand lbr_position_command_;
 };
 
 int main(int argc, char **argv) {
