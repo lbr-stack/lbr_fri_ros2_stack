@@ -71,7 +71,7 @@ protected:
 
       lbr_fri_idl::msg::LBRJointPositionCommand joint_position_command =
           compute_ik_(msg, current_joint_positions);
-      lbr_position_command_pub_->publish(joint_position_command);
+      lbr_joint_position_command_pub_->publish(joint_position_command);
     }
   }
 

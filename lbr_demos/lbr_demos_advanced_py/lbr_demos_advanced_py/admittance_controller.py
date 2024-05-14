@@ -14,7 +14,7 @@ class AdmittanceController(object):
         dq_gains: np.ndarray = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]),
         dx_gains: np.ndarray = np.array([0.1, 0.1, 0.1, 0.1, 0.1, 0.1]),
     ) -> None:
-        self._lbr_position_command = LBRJointPositionCommand()
+        self._lbr_joint_position_command = LBRJointPositionCommand()
 
         self._robot = optas.RobotModel(urdf_string=robot_description)
 
@@ -54,8 +54,8 @@ class AdmittanceController(object):
             + (1 - self._alpha) * self._dq_gains @ self._jacobian_inv @ dx
         )
 
-        self._lbr_position_command.joint_position = (
+        self._lbr_joint_position_command.joint_position = (
             np.array(lbr_state.measured_joint_position.tolist()) + dt * self._dq
         ).data
 
-        return self._lbr_position_command
+        return self._lbr_joint_position_command

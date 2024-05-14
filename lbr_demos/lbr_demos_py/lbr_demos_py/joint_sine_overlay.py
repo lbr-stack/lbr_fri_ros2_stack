@@ -16,10 +16,10 @@ class JointSineOverlayNode(Node):
         self._amplitude = 0.04  # rad
         self._frequency = 0.25  # Hz
         self._phase = 0.0
-        self._lbr_position_command = LBRJointPositionCommand()
+        self._lbr_joint_position_command = LBRJointPositionCommand()
 
         # create publisher to command/joint_position
-        self._lbr_position_command_pub = self.create_publisher(
+        self._lbr_joint_position_command_pub = self.create_publisher(
             LBRJointPositionCommand,
             "command/joint_position",
             1,
@@ -37,18 +37,20 @@ class JointSineOverlayNode(Node):
     def _on_lbr_state(self, lbr_state: LBRState) -> None:
         if self._lbr_state is None:
             self._lbr_state = lbr_state
-        self._lbr_position_command.joint_position = deepcopy(
+        self._lbr_joint_position_command.joint_position = deepcopy(
             self._lbr_state.measured_joint_position
         )
 
         if lbr_state.session_state == 4:  # KUKA::FRI::COMMANDING_ACTIVE == 4
             # overlay sine wave on 4th joint
-            self._lbr_position_command.joint_position[3] += self._amplitude * math.sin(
-                self._phase
-            )
+            self._lbr_joint_position_command.joint_position[
+                3
+            ] += self._amplitude * math.sin(self._phase)
             self._phase += 2 * math.pi * self._frequency * self._dt
 
-            self._lbr_position_command_pub.publish(self._lbr_position_command)
+            self._lbr_joint_position_command_pub.publish(
+                self._lbr_joint_position_command
+            )
         else:
             # reset phase
             self._phase = 0.0

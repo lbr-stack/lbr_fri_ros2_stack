@@ -62,7 +62,7 @@ protected:
     smooth_lbr_state_(lbr_state);
 
     auto lbr_command = admittance_controller_->update(lbr_state_, dt_);
-    lbr_position_command_pub_->publish(lbr_command);
+    lbr_joint_position_command_pub_->publish(lbr_command);
   };
 
   void smooth_lbr_state_(const lbr_fri_idl::msg::LBRState::SharedPtr lbr_state) {

@@ -67,7 +67,7 @@ class LBRAdmittanceControlRCMNode(LBRBasePositionCommandNode):
     def _command(self, q) -> None:
         lbr_command = LBRJointPositionCommand()
         lbr_command.joint_position = q
-        self._lbr_position_command_pub.publish(lbr_command)
+        self._lbr_joint_position_command_pub.publish(lbr_command)
 
     def _admittance(self, tau_ext, qc) -> None:
         J = self._controller.jacobian_func(qc)

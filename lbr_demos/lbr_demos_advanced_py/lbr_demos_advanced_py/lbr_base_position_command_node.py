@@ -32,7 +32,7 @@ class LBRBasePositionCommandNode(Node):
         self._lbr_state_sub = self.create_subscription(
             LBRState, "state", self._on_lbr_state, 1
         )
-        self._lbr_position_command_pub = self.create_publisher(
+        self._lbr_joint_position_command_pub = self.create_publisher(
             LBRJointPositionCommand,
             "command/joint_position",
             1,

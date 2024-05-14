@@ -14,7 +14,7 @@
 
 #include "friLBRState.h"
 
-#include "lbr_fri_idl/msg/lbr_position_command.hpp"
+#include "lbr_fri_idl/msg/lbr_joint_position_command.hpp"
 
 namespace lbr_ros2_control {
 class LBRJointPositionCommandController : public controller_interface::ControllerInterface {
@@ -44,9 +44,9 @@ protected:
       "A1", "A2", "A3", "A4", "A5", "A6", "A7"};
 
   realtime_tools::RealtimeBuffer<lbr_fri_idl::msg::LBRJointPositionCommand::SharedPtr>
-      rt_lbr_position_command_ptr_;
+      rt_lbr_joint_position_command_ptr_;
   rclcpp::Subscription<lbr_fri_idl::msg::LBRJointPositionCommand>::SharedPtr
-      lbr_position_command_subscription_ptr_;
+      lbr_joint_position_command_subscription_ptr_;
 };
 } // end of namespace lbr_ros2_control
 #endif // LBR_ROS2_CONTROL__LBR_JOINT_POSITION_COMMAND_CONTROLLER_HPP_

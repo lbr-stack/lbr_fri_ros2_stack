@@ -12,7 +12,7 @@
 
 #include "friLBRState.h"
 
-#include "lbr_fri_idl/msg/lbr_position_command.hpp"
+#include "lbr_fri_idl/msg/lbr_joint_position_command.hpp"
 #include "lbr_fri_idl/msg/lbr_state.hpp"
 #include "lbr_fri_ros2/pinv.hpp"
 
@@ -64,14 +64,15 @@ public:
     dq_ = dq_gains_.asDiagonal() * jacobian_inv_ * f_ext_;
 
     for (int i = 0; i < 7; i++) {
-      lbr_position_command_.joint_position[i] = lbr_state.measured_joint_position[i] + dq_[i] * dt;
+      lbr_joint_position_command_.joint_position[i] =
+          lbr_state.measured_joint_position[i] + dq_[i] * dt;
     }
 
-    return lbr_position_command_;
+    return lbr_joint_position_command_;
   };
 
 protected:
-  lbr_fri_idl::msg::LBRJointPositionCommand lbr_position_command_;
+  lbr_fri_idl::msg::LBRJointPositionCommand lbr_joint_position_command_;
   KDL::Tree tree_;
   KDL::Chain chain_;
   std::unique_ptr<KDL::ChainJntToJacSolver> jacobian_solver_;

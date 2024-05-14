@@ -2,7 +2,8 @@
 
 namespace lbr_ros2_control {
 LBRJointPositionCommandController::LBRJointPositionCommandController()
-    : rt_lbr_position_command_ptr_(nullptr), lbr_position_command_subscription_ptr_(nullptr) {}
+    : rt_lbr_joint_position_command_ptr_(nullptr),
+      lbr_joint_position_command_subscription_ptr_(nullptr) {}
 
 controller_interface::InterfaceConfiguration
 LBRJointPositionCommandController::command_interface_configuration() const {
@@ -22,11 +23,11 @@ LBRJointPositionCommandController::state_interface_configuration() const {
 
 controller_interface::CallbackReturn LBRJointPositionCommandController::on_init() {
   try {
-    lbr_position_command_subscription_ptr_ =
+    lbr_joint_position_command_subscription_ptr_ =
         this->get_node()->create_subscription<lbr_fri_idl::msg::LBRJointPositionCommand>(
             "command/joint_position", 1,
             [this](const lbr_fri_idl::msg::LBRJointPositionCommand::SharedPtr msg) {
-              rt_lbr_position_command_ptr_.writeFromNonRT(msg);
+              rt_lbr_joint_position_command_ptr_.writeFromNonRT(msg);
             });
   } catch (const std::exception &e) {
     RCLCPP_ERROR(this->get_node()->get_logger(),
@@ -40,13 +41,13 @@ controller_interface::CallbackReturn LBRJointPositionCommandController::on_init(
 controller_interface::return_type
 LBRJointPositionCommandController::update(const rclcpp::Time & /*time*/,
                                           const rclcpp::Duration & /*period*/) {
-  auto lbr_position_command = rt_lbr_position_command_ptr_.readFromRT();
-  if (!lbr_position_command || !(*lbr_position_command)) {
+  auto lbr_joint_position_command = rt_lbr_joint_position_command_ptr_.readFromRT();
+  if (!lbr_joint_position_command || !(*lbr_joint_position_command)) {
     return controller_interface::return_type::OK;
   }
   std::for_each(command_interfaces_.begin(), command_interfaces_.end(),
-                [lbr_position_command, idx = 0](auto &command_interface) mutable {
-                  command_interface.set_value((*lbr_position_command)->joint_position[idx++]);
+                [lbr_joint_position_command, idx = 0](auto &command_interface) mutable {
+                  command_interface.set_value((*lbr_joint_position_command)->joint_position[idx++]);
                 });
   return controller_interface::return_type::OK;
 }
