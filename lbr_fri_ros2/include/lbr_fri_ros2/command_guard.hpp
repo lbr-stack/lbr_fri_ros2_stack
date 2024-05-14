@@ -54,8 +54,7 @@ public:
 protected:
   virtual bool command_in_position_limits_(const_idl_command_t_ref lbr_command,
                                            const_idl_state_t_ref /*lbr_state*/) const;
-  virtual bool command_in_velocity_limits_(const_idl_command_t_ref lbr_command,
-                                           const_idl_state_t_ref lbr_state);
+  virtual bool command_in_velocity_limits_(const_idl_state_t_ref lbr_state);
   virtual bool command_in_torque_limits_(const_idl_command_t_ref lbr_command,
                                          const_idl_state_t_ref lbr_state) const;
 
