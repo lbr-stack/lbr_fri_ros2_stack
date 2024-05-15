@@ -29,7 +29,7 @@ find_package(realtime_tools REQUIRED)
 add_library(
   ${PROJECT_NAME}
   SHARED
-  src/lbr_position_command_controller.cpp
+  src/lbr_joint_position_command_controller.cpp
   src/lbr_torque_command_controller.cpp
   src/lbr_wrench_command_controller.cpp
   src/lbr_state_broadcaster.cpp

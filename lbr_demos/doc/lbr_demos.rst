@@ -1,6 +1,6 @@
 lbr_demos
 =========
-Contolling the LBR through ``ros2_control``.
+All demos build on :ref:`lbr_ros2_control`. Different ``ros2_controllers`` are loaded to command the robot.
 
 .. note::
     Some demos require a real robot. Make sure you followed :doc:`Hardware Setup <../../lbr_fri_ros2_stack/doc/hardware_setup>` first.
@@ -24,9 +24,12 @@ Advanced
     lbr_demos_advanced_cpp <../lbr_demos_advanced_cpp/doc/lbr_demos_advanced_cpp.rst>
     lbr_demos_advanced_py <../lbr_demos_advanced_py/doc/lbr_demos_advanced_py.rst>
 
-MoveIt 2
---------------
-TODO moveit simple action client demos
+MoveIt 
+-------
+.. toctree::
+    :titlesonly:
+
+    lbr_moveit2_py <../lbr_moveit_py/doc/lbr_moveit_py.rst>
 
 Integration
 -----------

@@ -9,7 +9,7 @@ bool CommandGuard::is_valid_command(const_idl_command_t_ref lbr_command,
   if (!command_in_position_limits_(lbr_command, lbr_state)) {
     return false;
   }
-  if (!command_in_velocity_limits_(lbr_command, lbr_state)) {
+  if (!command_in_velocity_limits_(lbr_state)) {
     return false;
   }
   return true;
@@ -42,15 +42,14 @@ bool CommandGuard::command_in_position_limits_(const_idl_command_t_ref lbr_comma
   return true;
 }
 
-bool CommandGuard::command_in_velocity_limits_(const_idl_command_t_ref lbr_command,
-                                               const_idl_state_t_ref lbr_state) {
+bool CommandGuard::command_in_velocity_limits_(const_idl_state_t_ref lbr_state) {
   const double &dt = lbr_state.sample_time;
   if (!prev_measured_joint_position_init_) {
     prev_measured_joint_position_init_ = true;
     prev_measured_joint_position_ = lbr_state.measured_joint_position;
     return true;
   }
-  for (std::size_t i = 0; i < lbr_command.joint_position.size(); ++i) {
+  for (std::size_t i = 0; i < lbr_state.measured_joint_position.size(); ++i) {
     if (std::abs(prev_measured_joint_position_[i] - lbr_state.measured_joint_position[i]) / dt >
         parameters_.max_velocities[i]) {
       RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME),

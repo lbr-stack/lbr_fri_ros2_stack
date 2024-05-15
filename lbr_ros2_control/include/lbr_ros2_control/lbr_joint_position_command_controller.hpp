@@ -1,5 +1,5 @@
-#ifndef LBR_ROS2_CONTROL__LBR_POSITION_COMMAND_CONTROLLER_HPP_
-#define LBR_ROS2_CONTROL__LBR_POSITION_COMMAND_CONTROLLER_HPP_
+#ifndef LBR_ROS2_CONTROL__LBR_JOINT_POSITION_COMMAND_CONTROLLER_HPP_
+#define LBR_ROS2_CONTROL__LBR_JOINT_POSITION_COMMAND_CONTROLLER_HPP_
 
 #include <algorithm>
 #include <array>
@@ -14,12 +14,12 @@
 
 #include "friLBRState.h"
 
-#include "lbr_fri_idl/msg/lbr_position_command.hpp"
+#include "lbr_fri_idl/msg/lbr_joint_position_command.hpp"
 
 namespace lbr_ros2_control {
-class LBRPositionCommandController : public controller_interface::ControllerInterface {
+class LBRJointPositionCommandController : public controller_interface::ControllerInterface {
 public:
-  LBRPositionCommandController();
+  LBRJointPositionCommandController();
 
   controller_interface::InterfaceConfiguration command_interface_configuration() const override;
 
@@ -43,10 +43,10 @@ protected:
   std::array<std::string, KUKA::FRI::LBRState::NUMBER_OF_JOINTS> joint_names_ = {
       "A1", "A2", "A3", "A4", "A5", "A6", "A7"};
 
-  realtime_tools::RealtimeBuffer<lbr_fri_idl::msg::LBRPositionCommand::SharedPtr>
-      rt_lbr_position_command_ptr_;
-  rclcpp::Subscription<lbr_fri_idl::msg::LBRPositionCommand>::SharedPtr
-      lbr_position_command_subscription_ptr_;
+  realtime_tools::RealtimeBuffer<lbr_fri_idl::msg::LBRJointPositionCommand::SharedPtr>
+      rt_lbr_joint_position_command_ptr_;
+  rclcpp::Subscription<lbr_fri_idl::msg::LBRJointPositionCommand>::SharedPtr
+      lbr_joint_position_command_subscription_ptr_;
 };
 } // end of namespace lbr_ros2_control
-#endif // LBR_ROS2_CONTROL__LBR_POSITION_COMMAND_CONTROLLER_HPP_
+#endif // LBR_ROS2_CONTROL__LBR_JOINT_POSITION_COMMAND_CONTROLLER_HPP_

@@ -1,84 +1,171 @@
 lbr_demos_py
 ============
-Collection of basic usage examples for the ``lbr_fri_ros2`` package through Python.
-
-.. note::
-    These demos are compatible with and closely follow KUKA's FRI example applications.
-
 .. warning::
-    Do always execute in ``T1`` mode first.
+    On hardware, do always execute in ``T1`` mode first.
 
-Joint Sine Overlay
-------------------
-#. .. dropdown:: Launch the ``LBRJointSineOverlay`` application on the ``KUKA smartPAD``
+.. contents:: Table of Contents
+   :depth: 2
+   :local:
+   :backlinks: none
 
-    .. thumbnail:: ../../doc/img/applications_joint_sine_overlay.png
+LBR Joint Position Command Controller (Hardware only)
+-----------------------------------------------------
+This demo uses the :ref:`lbr_fri_ros2::LBRJointPositionCommandController` and overlays a sinusoidal motion on joint ``A4``.
 
-#. Launch the `joint_sine_overlay.launch.py <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_demos_py/launch/joint_sine_overlay.launch.py>`_ launch file:
+#. Client side configurations:
+
+    #. Configure the ``client_command_mode`` to ``position`` in `lbr_system_parameters.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_ros2_control/config/lbr_system_parameters.yaml>`_:octicon:`link-external`
+    #. Set the ``update_rate`` to ``100`` in `lbr_controllers.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_ros2_control/config/lbr_controllers.yaml>`_:octicon:`link-external`
+
+#. Remote side configurations:
+
+    #. .. dropdown:: Launch the ``LBRServer`` application on the ``KUKA smartPAD``
+
+        .. thumbnail:: ../../doc/img/applications_lbr_server.png
+
+    #. Select
+
+        - ``FRI send period``: ``10 ms``
+        - ``IP address``: ``your configuration``
+        - ``FRI control mode``: ``POSITION_CONTROL``
+        - ``FRI client command mode``: ``POSITION``
+
+#. Run the robot driver:
 
     .. code-block:: bash
 
-        ros2 launch lbr_demos_py joint_sine_overlay.launch.py model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
+        ros2 launch lbr_bringup bringup.launch.py \
+            ctrl:=lbr_joint_position_command_controller \
+            sim:=false \
+            model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
 
-    The robot will move to the initial position via position control, then execute a rotation on joint ``A1``. A sinusoidal motion is overlayed on joint ``A4`` via `joint_sine_overlay_node <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_demos_py/lbr_demos_py/joint_sine_overlay_node.py>`_.
+#. Run the `joint_sine_overlay <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_demos_py/lbr_demos_py/joint_sine_overlay.py>`_:octicon:`link-external` node:
+
+    .. code-block:: bash
+
+        ros2 run lbr_demos_py joint_sine_overlay --ros-args -r __ns:=/lbr
+
+    This node overlays a sinusoidal motion on joint ``A4``.
 
 Joint Trajectory Controller
 ---------------------------
+This demos uses the ``joint_trajectory_controller`` of ``ros2_controllers`` and moves the robot to a predefined configuration.
+
 Simulation
 ~~~~~~~~~~
 #. Launch the ``LBRBringup``:
 
     .. code-block:: bash
 
-        ros2 launch lbr_bringup bringup.launch.py sim:=true model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
+        ros2 launch lbr_bringup bringup.launch.py \
+            sim:=true \
+            ctrl:=joint_trajectory_controller \
+            model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
 
-#. Run the `joint_trajectory_executioner_node <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_demos_ros2_control_python/lbr_demos_ros2_control_python/joint_trajectory_executioner_node.py>`_:
+#. Run the `joint_trajectory_client <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_demos_py/lbr_demos_py/joint_trajectory_client.py>`_:octicon:`link-external`:
 
     .. code-block:: bash
 
-        ros2 run lbr_demos_ros2_control_python joint_trajectory_executioner_node
+        ros2 run lbr_demos_py joint_trajectory_client --ros-args -r __ns:=/lbr
 
 The robot will twist, then move to the zero configuration.
 
 Hardware
 ~~~~~~~~
-#. .. dropdown:: Launch the ``LBRServer`` application on the ``KUKA smartPAD``
+#. Client side configurations:
 
-    .. thumbnail:: ../../doc/img/applications_lbr_server.png
+    #. Configure the ``client_command_mode`` to ``position`` in `lbr_system_parameters.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_ros2_control/config/lbr_system_parameters.yaml>`_:octicon:`link-external`
+    #. Set the ``update_rate`` to ``100`` in `lbr_controllers.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_ros2_control/config/lbr_controllers.yaml>`_:octicon:`link-external`
 
-#. Select
+#. Remote side configurations:
 
-    - ``FRI send period``: ``10 ms``
-    - ``IP address``: ``your configuration``
-    - ``FRI control mode``: ``POSITION_CONTROL`` or ``JOINT_IMPEDANCE_CONTROL``
-    - ``FRI client command mode``: ``POSITION``
+    #. .. dropdown:: Launch the ``LBRServer`` application on the ``KUKA smartPAD``
+
+        .. thumbnail:: ../../doc/img/applications_lbr_server.png
+
+    #. Select
+
+        - ``FRI send period``: ``10 ms``
+        - ``IP address``: ``your configuration``
+        - ``FRI control mode``: ``POSITION_CONTROL`` or ``JOINT_IMPEDANCE_CONTROL``
+        - ``FRI client command mode``: ``POSITION``
 
 #. Proceed with steps 1 and 2 from `Simulation`_ but with ``sim:=false``.
 
-Torque Sine Overlay
--------------------
-#. .. dropdown:: Launch the ``LBRTorqueSineOverlay`` application on the ``KUKA smartPAD``
+LBR Torque Command Controller (Hardware only)
+---------------------------------------------
+This demo uses the :ref:`lbr_fri_ros2::LBRTorqueCommandController` and overlays a sinusoidal torque on joint ``A4``.
 
-    .. thumbnail:: ../../doc/img/applications_torque_sine_overlay.png
+#. Client side configurations:
 
-#. Launch the `torque_sine_overlay.launch.py <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_demos_py/launch/torque_sine_overlay.launch.py>`_ launch file:
+    #. Configure the ``client_command_mode`` to ``torque`` in `lbr_system_parameters.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_ros2_control/config/lbr_system_parameters.yaml>`_:octicon:`link-external`
+    #. Set the ``update_rate`` to ``500`` in `lbr_controllers.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_ros2_control/config/lbr_controllers.yaml>`_:octicon:`link-external`
+
+#. Remote side configurations:
+
+    #. .. dropdown:: Launch the ``LBRServer`` application on the ``KUKA smartPAD``
+
+        .. thumbnail:: ../../doc/img/applications_lbr_server.png
+
+    #. Select
+
+        - ``FRI send period``: ``2 ms``
+        - ``IP address``: ``your configuration``
+        - ``FRI control mode``: ``JOINT_IMPEDANCE_CONTROL``
+        - ``FRI client command mode``: ``TORQUE``
+
+#. Run the robot driver:
 
     .. code-block:: bash
 
-        ros2 launch lbr_demos_py torque_sine_overlay.launch.py model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
+        ros2 launch lbr_bringup bringup.launch.py \
+            ctrl:=lbr_torque_command_controller \
+            sim:=false \
+            model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
 
-    The robot will move to the initial position via joint impedance control. A sinusoidal torque is overlayed on joint ``A4`` via `torque_sine_overlay_node <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_demos_py/lbr_demos_py/torque_sine_overlay_node.py>`_.
-
-Wrench Sine Overlay
--------------------
-#. .. dropdown:: Launch the ``LBRWrenchSineOverlay`` application on the ``KUKA smartPAD``
-
-    .. thumbnail:: ../../doc/img/applications_wrench_sine_overlay.png
-
-#. Launch the `wrench_sine_overlay.launch.py <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_demos_py/launch/wrench_sine_overlay.launch.py>`_ launch file:
+#. Run the `torque_sine_overlay <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_demos_py/lbr_demos_py/torque_sine_overlay.py>`_:octicon:`link-external` node:
 
     .. code-block:: bash
 
-        ros2 launch lbr_demos_py wrench_sine_overlay.launch.py model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
+        ros2 run lbr_demos_py torque_sine_overlay --ros-args -r __ns:=/lbr
 
-    The robot will move to the initial position via cartesian impedance control. A sinusoidal force is overlayed on the x- and y-axis via `wrench_sine_overlay_node <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_demos_py/lbr_demos_py/wrench_sine_overlay_node.py>`_.
+    This node overlays a sinusoidal torque on joint ``A4``.
+
+LBR Wrench Command Controller (Hardware only)
+---------------------------------------------
+This demo uses the :ref:`lbr_fri_ros2::LBRWrenchCommandController` and overlays a sinusoidal force on the x- and y-axis.
+
+#. Client side configurations:
+
+    #. Configure the ``client_command_mode`` to ``wrench`` in `lbr_system_parameters.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_ros2_control/config/lbr_system_parameters.yaml>`_:octicon:`link-external`
+    #. Set the ``update_rate`` to ``500`` in `lbr_controllers.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_ros2_control/config/lbr_controllers.yaml>`_:octicon:`link-external`
+
+#. Remote side configurations:
+
+    #. .. dropdown:: Launch the ``LBRServer`` application on the ``KUKA smartPAD``
+
+        .. thumbnail:: ../../doc/img/applications_lbr_server.png
+
+    #. Select
+
+        - ``FRI send period``: ``2 ms``
+        - ``IP address``: ``your configuration``
+        - ``FRI control mode``: ``CARTESIAN_IMPEDANCE_CONTROL``
+        - ``FRI client command mode``: ``WRENCH``
+
+#. Run the robot driver:
+
+    .. code-block:: bash
+
+        ros2 launch lbr_bringup bringup.launch.py \
+            ctrl:=lbr_wrench_command_controller \
+            sim:=false \
+            model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
+
+#. Run the `wrench_sine_overlay <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_demos_py/lbr_demos_py/wrench_sine_overlay.py>`_:octicon:`link-external` node:
+
+    .. code-block:: bash
+
+        ros2 run lbr_demos_py wrench_sine_overlay --ros-args -r __ns:=/lbr
+
+    This node overlays a sinusoidal force on the x- and y-axis.

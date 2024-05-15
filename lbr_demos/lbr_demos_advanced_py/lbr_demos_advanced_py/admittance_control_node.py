@@ -59,7 +59,7 @@ class AdmittanceControlNode(LBRBasePositionCommandNode):
         self._smooth_lbr_state(lbr_state)
 
         lbr_command = self._controller(self._lbr_state, self._dt)
-        self._lbr_position_command_pub.publish(lbr_command)
+        self._lbr_joint_position_command_pub.publish(lbr_command)
 
     def _smooth_lbr_state(self, lbr_state: LBRState) -> None:
         if not self._init:

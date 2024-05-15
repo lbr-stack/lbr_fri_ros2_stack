@@ -4,7 +4,7 @@ from rcl_interfaces.msg import ParameterValue
 from rcl_interfaces.srv import GetParameters
 from rclpy.node import Node
 
-from lbr_fri_idl.msg import LBRPositionCommand, LBRState
+from lbr_fri_idl.msg import LBRJointPositionCommand, LBRState
 
 
 class LBRBasePositionCommandNode(Node):
@@ -32,8 +32,8 @@ class LBRBasePositionCommandNode(Node):
         self._lbr_state_sub = self.create_subscription(
             LBRState, "state", self._on_lbr_state, 1
         )
-        self._lbr_position_command_pub = self.create_publisher(
-            LBRPositionCommand,
+        self._lbr_joint_position_command_pub = self.create_publisher(
+            LBRJointPositionCommand,
             "command/joint_position",
             1,
         )

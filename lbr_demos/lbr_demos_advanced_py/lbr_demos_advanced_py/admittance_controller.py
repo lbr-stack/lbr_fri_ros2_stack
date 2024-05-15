@@ -1,7 +1,7 @@
 import numpy as np
 import optas
 
-from lbr_fri_idl.msg import LBRPositionCommand, LBRState
+from lbr_fri_idl.msg import LBRJointPositionCommand, LBRState
 
 
 class AdmittanceController(object):
@@ -14,7 +14,7 @@ class AdmittanceController(object):
         dq_gains: np.ndarray = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]),
         dx_gains: np.ndarray = np.array([0.1, 0.1, 0.1, 0.1, 0.1, 0.1]),
     ) -> None:
-        self._lbr_position_command = LBRPositionCommand()
+        self._lbr_joint_position_command = LBRJointPositionCommand()
 
         self._robot = optas.RobotModel(urdf_string=robot_description)
 
@@ -34,7 +34,7 @@ class AdmittanceController(object):
         self._f_ext_th = f_ext_th
         self._alpha = 0.95
 
-    def __call__(self, lbr_state: LBRState, dt: float) -> LBRPositionCommand:
+    def __call__(self, lbr_state: LBRState, dt: float) -> LBRJointPositionCommand:
         self._q = np.array(lbr_state.measured_joint_position.tolist())
         self._tau_ext = np.array(lbr_state.external_torque.tolist())
 
@@ -54,8 +54,8 @@ class AdmittanceController(object):
             + (1 - self._alpha) * self._dq_gains @ self._jacobian_inv @ dx
         )
 
-        self._lbr_position_command.joint_position = (
+        self._lbr_joint_position_command.joint_position = (
             np.array(lbr_state.measured_joint_position.tolist()) + dt * self._dq
         ).data
 
-        return self._lbr_position_command
+        return self._lbr_joint_position_command

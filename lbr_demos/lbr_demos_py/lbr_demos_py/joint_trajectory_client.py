@@ -5,7 +5,7 @@ from rclpy.node import Node
 from trajectory_msgs.msg import JointTrajectoryPoint
 
 
-class LBRJointTrajectoryExecutionerNode(Node):
+class JointTrajectoryClient(Node):
     def __init__(
         self,
         node_name: str,
@@ -14,7 +14,7 @@ class LBRJointTrajectoryExecutionerNode(Node):
         self._joint_trajectory_action_client = ActionClient(
             node=self,
             action_type=FollowJointTrajectory,
-            action_name="/lbr/joint_trajectory_controller/follow_joint_trajectory",
+            action_name="joint_trajectory_controller/follow_joint_trajectory",
         )
         while not self._joint_trajectory_action_client.wait_for_server(1):
             self.get_logger().info("Waiting for action server to become available...")
@@ -66,13 +66,11 @@ class LBRJointTrajectoryExecutionerNode(Node):
 
 def main(args: list = None) -> None:
     rclpy.init(args=args)
-    joint_trajectory_executioner_node = LBRJointTrajectoryExecutionerNode(
-        "joint_trajectory_executioner_node"
-    )
+    joint_trajectory_client = JointTrajectoryClient("joint_trajectory_client")
 
     # rotate odd joints
-    joint_trajectory_executioner_node.get_logger().info("Rotating odd joints.")
-    joint_trajectory_executioner_node.execute(
+    joint_trajectory_client.get_logger().info("Rotating odd joints.")
+    joint_trajectory_client.execute(
         [
             1.0,
             0.0,
@@ -85,8 +83,8 @@ def main(args: list = None) -> None:
     )
 
     # move to zero position
-    joint_trajectory_executioner_node.get_logger().info("Moving to zero position.")
-    joint_trajectory_executioner_node.execute(
+    joint_trajectory_client.get_logger().info("Moving to zero position.")
+    joint_trajectory_client.execute(
         [
             0.0,
             0.0,

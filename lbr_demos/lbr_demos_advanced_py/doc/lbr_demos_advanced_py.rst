@@ -1,20 +1,34 @@
 lbr_demos_advanced_py
 =====================
-Collection of advanced usage examples for the ``lbr_ros2_control`` package through Python.
-
 .. warning::
-    Do always execute in ``T1`` mode first.
+    On hardware, do always execute in ``T1`` mode first.
+
+.. contents:: Table of Contents
+   :depth: 2
+   :local:
+   :backlinks: none
 
 Admittance Controller
 ---------------------
 This demo implements a simple admittance controller.
 
-.. warning::
-    May not be well behaved around singularities, put the robot in a well-behaved configuration first, e.g. ``A1 = 0°``, ``A2 = -30°``, ``A3 = 0°``, ``A4 = 60°``, ``A5 = 0°``, ``A6 = -90°``, ``A7 = 0°``. This can be done using the ``smartPAD`` in ``T1`` mode.
+#. Client side configurations:
 
-#. .. dropdown:: Launch the ``LBRServer`` application on the ``KUKA smartPAD``
+    #. Configure the ``client_command_mode`` to ``position`` in `lbr_system_parameters.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_ros2_control/config/lbr_system_parameters.yaml>`_:octicon:`link-external`
+    #. Set the ``update_rate`` to ``100`` in `lbr_controllers.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_ros2_control/config/lbr_controllers.yaml>`_:octicon:`link-external`
 
-    .. thumbnail:: ../../doc/img/applications_lbr_server.png
+#. Remote side configurations:
+
+    #. .. dropdown:: Launch the ``LBRServer`` application on the ``KUKA smartPAD``
+
+        .. thumbnail:: ../../doc/img/applications_lbr_server.png
+
+    #. Select
+
+        - ``FRI send period``: ``10 ms``
+        - ``IP address``: ``your configuration``
+        - ``FRI control mode``: ``POSITION_CONTROL``
+        - ``FRI client command mode``: ``POSITION``
 
 #. Launch the robot driver:
 
@@ -22,10 +36,10 @@ This demo implements a simple admittance controller.
 
         ros2 launch lbr_bringup bringup.launch.py \
             sim:=false \
-            ctrl:=lbr_position_command_controller \
+            ctrl:=lbr_joint_position_command_controller \
             model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
 
-#. Run the `admittance_control <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_demos_advanced_py/lbr_demos_advanced_py/admittance_control_node.py>`_ with remapping and parameter file:
+#. Run the `admittance_control <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_demos_advanced_py/lbr_demos_advanced_py/admittance_control_node.py>`_:octicon:`link-external` with remapping and parameter file:
 
     .. code-block:: bash
 
@@ -39,9 +53,23 @@ Admittance Controller with Remote Center of Motion
 --------------------------------------------------
 This demo implements an admittance controller with a remote center of motion (RCM).
 
-#. .. dropdown:: Launch the ``LBRServer`` application on the ``KUKA smartPAD``
+#. Client side configurations:
 
-    .. thumbnail:: ../../doc/img/applications_lbr_server.png
+    #. Configure the ``client_command_mode`` to ``position`` in `lbr_system_parameters.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_ros2_control/config/lbr_system_parameters.yaml>`_:octicon:`link-external`
+    #. Set the ``update_rate`` to ``100`` in `lbr_controllers.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_ros2_control/config/lbr_controllers.yaml>`_:octicon:`link-external`
+
+#. Remote side configurations:
+
+    #. .. dropdown:: Launch the ``LBRServer`` application on the ``KUKA smartPAD``
+
+        .. thumbnail:: ../../doc/img/applications_lbr_server.png
+
+    #. Select
+
+        - ``FRI send period``: ``10 ms``
+        - ``IP address``: ``your configuration``
+        - ``FRI control mode``: ``POSITION_CONTROL``
+        - ``FRI client command mode``: ``POSITION``
 
 #. Launch the robot driver:
 
@@ -49,10 +77,10 @@ This demo implements an admittance controller with a remote center of motion (RC
 
         ros2 launch lbr_bringup bringup.launch.py \
             sim:=false \
-            ctrl:=lbr_position_command_controller \
+            ctrl:=lbr_joint_position_command_controller \
             model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
 
-#. Run the `admittance_rcm_control <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_demos_advanced_py/lbr_demos_advanced_py/admittance_rcm_control_node.py>`_ with remapping and parameter file:
+#. Run the `admittance_rcm_control <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_demos_advanced_py/lbr_demos_advanced_py/admittance_rcm_control_node.py>`_:octicon:`link-external` with remapping and parameter file:
 
     .. code-block:: bash
 

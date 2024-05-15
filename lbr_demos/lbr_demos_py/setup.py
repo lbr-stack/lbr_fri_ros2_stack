@@ -4,7 +4,7 @@ package_name = "lbr_demos_py"
 
 setup(
     name=package_name,
-    version="1.4.3",
+    version="2.0.0",
     packages=[package_name],
     data_files=[
         ("share/ament_index/resource_index/packages", ["resource/" + package_name]),
@@ -20,7 +20,7 @@ setup(
     entry_points={
         "console_scripts": [
             "joint_sine_overlay = lbr_demos_py.joint_sine_overlay:main",
-            "joint_trajectory_client = lbr_demos_ros2_control_python.joint_trajectory_client:main",
+            "joint_trajectory_client = lbr_demos_py.joint_trajectory_client:main",
             "torque_sine_overlay = lbr_demos_py.torque_sine_overlay:main",
             "wrench_sine_overlay = lbr_demos_py.wrench_sine_overlay:main",
         ],
