@@ -12,18 +12,23 @@ Admittance Controller
 ---------------------
 This demo implements a simple admittance controller.
 
-#. Configure the ``client_command_mode`` to ``position`` in `lbr_system_parameters.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_ros2_control/config/lbr_system_parameters.yaml>`_:octicon:`link-external`
+#. Client side configurations:
 
-#. .. dropdown:: Launch the ``LBRServer`` application on the ``KUKA smartPAD``
+    #. Configure the ``client_command_mode`` to ``position`` in `lbr_system_parameters.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_ros2_control/config/lbr_system_parameters.yaml>`_:octicon:`link-external`
+    #. Set the ``update_rate`` to ``100`` in `lbr_controllers.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_ros2_control/config/lbr_controllers.yaml>`_:octicon:`link-external`
 
-    .. thumbnail:: ../../doc/img/applications_lbr_server.png
+#. Remote side configurations:
 
-#. Select
+    #. .. dropdown:: Launch the ``LBRServer`` application on the ``KUKA smartPAD``
 
-    - ``FRI send period``: ``10 ms``
-    - ``IP address``: ``your configuration``
-    - ``FRI control mode``: ``POSITION_CONTROL``
-    - ``FRI client command mode``: ``POSITION``
+        .. thumbnail:: ../../doc/img/applications_lbr_server.png
+
+    #. Select
+
+        - ``FRI send period``: ``10 ms``
+        - ``IP address``: ``your configuration``
+        - ``FRI control mode``: ``POSITION_CONTROL``
+        - ``FRI client command mode``: ``POSITION``
 
 #. Launch the robot driver:
 
@@ -48,18 +53,23 @@ Admittance Controller with Remote Center of Motion
 --------------------------------------------------
 This demo implements an admittance controller with a remote center of motion (RCM).
 
-#. Configure the ``client_command_mode`` to ``position`` in `lbr_system_parameters.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_ros2_control/config/lbr_system_parameters.yaml>`_:octicon:`link-external`
+#. Client side configurations:
 
-#. .. dropdown:: Launch the ``LBRServer`` application on the ``KUKA smartPAD``
+    #. Configure the ``client_command_mode`` to ``position`` in `lbr_system_parameters.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_ros2_control/config/lbr_system_parameters.yaml>`_:octicon:`link-external`
+    #. Set the ``update_rate`` to ``100`` in `lbr_controllers.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_ros2_control/config/lbr_controllers.yaml>`_:octicon:`link-external`
 
-    .. thumbnail:: ../../doc/img/applications_lbr_server.png
+#. Remote side configurations:
 
-#. Select
+    #. .. dropdown:: Launch the ``LBRServer`` application on the ``KUKA smartPAD``
 
-    - ``FRI send period``: ``10 ms``
-    - ``IP address``: ``your configuration``
-    - ``FRI control mode``: ``POSITION_CONTROL``
-    - ``FRI client command mode``: ``POSITION``
+        .. thumbnail:: ../../doc/img/applications_lbr_server.png
+
+    #. Select
+
+        - ``FRI send period``: ``10 ms``
+        - ``IP address``: ``your configuration``
+        - ``FRI control mode``: ``POSITION_CONTROL``
+        - ``FRI client command mode``: ``POSITION``
 
 #. Launch the robot driver:
 

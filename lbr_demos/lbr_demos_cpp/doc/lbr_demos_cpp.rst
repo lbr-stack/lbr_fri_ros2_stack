@@ -12,18 +12,23 @@ LBR Joint Position Command Controller (Hardware only)
 -----------------------------------------------------
 This demo uses the :ref:`lbr_fri_ros2::LBRJointPositionCommandController` and overlays a sinusoidal motion on joint ``A4``.
 
-#. Configure the ``client_command_mode`` to ``position`` in `lbr_system_parameters.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_ros2_control/config/lbr_system_parameters.yaml>`_:octicon:`link-external`
+#. Client side configurations:
 
-#. .. dropdown:: Launch the ``LBRServer`` application on the ``KUKA smartPAD``
+    #. Configure the ``client_command_mode`` to ``position`` in `lbr_system_parameters.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_ros2_control/config/lbr_system_parameters.yaml>`_:octicon:`link-external`
+    #. Set the ``update_rate`` to ``100`` in `lbr_controllers.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_ros2_control/config/lbr_controllers.yaml>`_:octicon:`link-external`
 
-    .. thumbnail:: ../../doc/img/applications_lbr_server.png
+#. Remote side configurations:
 
-#. Select
+    #. .. dropdown:: Launch the ``LBRServer`` application on the ``KUKA smartPAD``
 
-    - ``FRI send period``: ``10 ms``
-    - ``IP address``: ``your configuration``
-    - ``FRI control mode``: ``POSITION_CONTROL``
-    - ``FRI client command mode``: ``POSITION``
+        .. thumbnail:: ../../doc/img/applications_lbr_server.png
+
+    #. Select
+
+        - ``FRI send period``: ``10 ms``
+        - ``IP address``: ``your configuration``
+        - ``FRI control mode``: ``POSITION_CONTROL``
+        - ``FRI client command mode``: ``POSITION``
 
 #. Run the robot driver:
 
@@ -67,18 +72,23 @@ Simulation
 
 Hardware
 ~~~~~~~~
-#. Configure the ``client_command_mode`` to ``position`` in `lbr_system_parameters.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_ros2_control/config/lbr_system_parameters.yaml>`_:octicon:`link-external`
+#. Client side configurations:
 
-#. .. dropdown:: Launch the ``LBRServer`` application on the ``KUKA smartPAD``
+    #. Configure the ``client_command_mode`` to ``position`` in `lbr_system_parameters.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_ros2_control/config/lbr_system_parameters.yaml>`_:octicon:`link-external`
+    #. Set the ``update_rate`` to ``100`` in `lbr_controllers.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_ros2_control/config/lbr_controllers.yaml>`_:octicon:`link-external`
 
-    .. thumbnail:: ../../doc/img/applications_lbr_server.png
+#. Remote side configurations:
 
-#. Select
+    #. .. dropdown:: Launch the ``LBRServer`` application on the ``KUKA smartPAD``
 
-    - ``FRI send period``: ``10 ms``
-    - ``IP address``: ``your configuration``
-    - ``FRI control mode``: ``POSITION_CONTROL`` or ``JOINT_IMPEDANCE_CONTROL``
-    - ``FRI client command mode``: ``POSITION``
+        .. thumbnail:: ../../doc/img/applications_lbr_server.png
+
+    #. Select
+
+        - ``FRI send period``: ``10 ms``
+        - ``IP address``: ``your configuration``
+        - ``FRI control mode``: ``POSITION_CONTROL`` or ``JOINT_IMPEDANCE_CONTROL``
+        - ``FRI client command mode``: ``POSITION``
 
 #. Proceed with steps 1 and 2 from `Simulation`_ but with ``sim:=false``.
 
@@ -86,18 +96,23 @@ LBR Torque Command Controller (Hardware only)
 ---------------------------------------------
 This demo uses the :ref:`lbr_fri_ros2::LBRTorqueCommandController` and overlays a sinusoidal torque on joint ``A4``.
 
-#. Configure the ``client_command_mode`` to ``torque`` in `lbr_system_parameters.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_ros2_control/config/lbr_system_parameters.yaml>`_:octicon:`link-external`
+#. Client side configurations:
 
-#. .. dropdown:: Launch the ``LBRServer`` application on the ``KUKA smartPAD``
+    #. Configure the ``client_command_mode`` to ``torque`` in `lbr_system_parameters.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_ros2_control/config/lbr_system_parameters.yaml>`_:octicon:`link-external`
+    #. Set the ``update_rate`` to ``500`` in `lbr_controllers.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_ros2_control/config/lbr_controllers.yaml>`_:octicon:`link-external`
 
-    .. thumbnail:: ../../doc/img/applications_lbr_server.png
+#. Remote side configurations:
 
-#. Select
+    #. .. dropdown:: Launch the ``LBRServer`` application on the ``KUKA smartPAD``
 
-    - ``FRI send period``: ``2 ms``
-    - ``IP address``: ``your configuration``
-    - ``FRI control mode``: ``JOINT_IMPEDANCE_CONTROL``
-    - ``FRI client command mode``: ``TORQUE``
+        .. thumbnail:: ../../doc/img/applications_lbr_server.png
+
+    #. Select
+
+        - ``FRI send period``: ``2 ms``
+        - ``IP address``: ``your configuration``
+        - ``FRI control mode``: ``JOINT_IMPEDANCE_CONTROL``
+        - ``FRI client command mode``: ``TORQUE``
 
 #. Run the robot driver:
 
@@ -120,18 +135,23 @@ LBR Wrench Command Controller (Hardware only)
 ---------------------------------------------
 This demo uses the :ref:`lbr_fri_ros2::LBRWrenchCommandController` and overlays a sinusoidal force on the x- and y-axis.
 
-#. Configure the ``client_command_mode`` to ``wrench`` in `lbr_system_parameters.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_ros2_control/config/lbr_system_parameters.yaml>`_:octicon:`link-external`
+#. Client side configurations:
 
-#. .. dropdown:: Launch the ``LBRServer`` application on the ``KUKA smartPAD``
+    #. Configure the ``client_command_mode`` to ``wrench`` in `lbr_system_parameters.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_ros2_control/config/lbr_system_parameters.yaml>`_:octicon:`link-external`
+    #. Set the ``update_rate`` to ``500`` in `lbr_controllers.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_ros2_control/config/lbr_controllers.yaml>`_:octicon:`link-external`
 
-    .. thumbnail:: ../../doc/img/applications_lbr_server.png
+#. Remote side configurations:
 
-#. Select
+    #. .. dropdown:: Launch the ``LBRServer`` application on the ``KUKA smartPAD``
 
-    - ``FRI send period``: ``2 ms``
-    - ``IP address``: ``your configuration``
-    - ``FRI control mode``: ``CARTESIAN_IMPEDANCE_CONTROL``
-    - ``FRI client command mode``: ``WRENCH``
+        .. thumbnail:: ../../doc/img/applications_lbr_server.png
+
+    #. Select
+
+        - ``FRI send period``: ``2 ms``
+        - ``IP address``: ``your configuration``
+        - ``FRI control mode``: ``CARTESIAN_IMPEDANCE_CONTROL``
+        - ``FRI client command mode``: ``WRENCH``
 
 #. Run the robot driver:
 
