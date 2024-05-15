@@ -24,9 +24,12 @@ Advanced
     lbr_demos_advanced_cpp <../lbr_demos_advanced_cpp/doc/lbr_demos_advanced_cpp.rst>
     lbr_demos_advanced_py <../lbr_demos_advanced_py/doc/lbr_demos_advanced_py.rst>
 
-MoveIt 2
---------------
-TODO moveit simple action client demos
+MoveIt 
+-------
+.. toctree::
+    :titlesonly:
+
+    lbr_moveit2_py <../lbr_moveit_py/doc/lbr_moveit_py.rst>
 
 Integration
 -----------
