@@ -3,7 +3,7 @@ lbr_demos_advanced_cpp
 Collection of advanced usage examples for the ``lbr_fri_ros2`` package through C++.
 
 .. warning::
-    Do always execute in ``T1`` mode first.
+    On hardware, do always execute in ``T1`` mode first.
 
 Admittance Controller
 ---------------------

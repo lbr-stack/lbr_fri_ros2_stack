@@ -1,15 +1,18 @@
 lbr_demos_cpp
 =============
-add table of contents TODO with sim / real matrix
-
 .. warning::
-    Do always execute in ``T1`` mode first.
+    On hardware, do always execute in ``T1`` mode first.
 
-Joint Sine Overlay
-------------------
-#. .. dropdown:: Launch the ``LBRJointSineOverlay`` application on the ``KUKA smartPAD``
+.. contents:: Table of Contents
+   :depth: 2
+   :local:
+   :backlinks: none
 
-    .. thumbnail:: ../../doc/img/applications_joint_sine_overlay.png
+Joint Sine Overlay (Hardware only)
+----------------------------------
+#. .. dropdown:: Launch the ``LBRServer`` application on the ``KUKA smartPAD``
+
+    .. thumbnail:: ../../doc/img/applications_lbr_server.png
 
 #. Select
 
@@ -26,9 +29,6 @@ Joint Sine Overlay
             ctrl:=lbr_joint_position_command_controller \
             sim:=false \
             model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
-
-
-    The robot will move to the initial position through the Java application.
 
 #. Run the `joint_sine_overlay <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_demos_cpp/src/joint_sine_overlay.cpp>`_:octicon:`link-external` node:
 
@@ -71,11 +71,11 @@ Hardware
 
 #. Proceed with steps 1 and 2 from `Simulation`_ but with ``sim:=false``.
 
-Torque Sine Overlay
--------------------
-#. .. dropdown:: Launch the ``LBRTorqueSineOverlay`` application on the ``KUKA smartPAD``
+Torque Sine Overlay (Hardware only)
+-----------------------------------
+#. .. dropdown:: Launch the ``LBRServer`` application on the ``KUKA smartPAD``
 
-    .. thumbnail:: ../../doc/img/applications_torque_sine_overlay.png
+    .. thumbnail:: ../../doc/img/applications_lbr_server.png
 
 #. Select
 
@@ -93,8 +93,6 @@ Torque Sine Overlay
             sim:=false \
             model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
 
-    The robot will move to the initial position through the Java application.
-
 #. Run the `torque_sine_overlay <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_demos_cpp/src/torque_sine_overlay.cpp>`_:octicon:`link-external` node:
 
     .. code-block:: bash
@@ -103,11 +101,11 @@ Torque Sine Overlay
 
     This node overlays a sinusoidal torque on joint ``A4``.
 
-Wrench Sine Overlay
--------------------
-#. .. dropdown:: Launch the ``LBRWrenchSineOverlay`` application on the ``KUKA smartPAD``
+Wrench Sine Overlay (Hardware only)
+-----------------------------------
+#. .. dropdown:: Launch the ``LBRServer`` application on the ``KUKA smartPAD``
 
-    .. thumbnail:: ../../doc/img/applications_wrench_sine_overlay.png
+    .. thumbnail:: ../../doc/img/applications_lbr_server.png
 
 #. Select
 
@@ -125,9 +123,7 @@ Wrench Sine Overlay
             sim:=false \
             model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
 
-    The robot will move to the initial position through the Java application.
-
-#. Run the `wrench_sine_overlay <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_demos_cpp/src/wrench_sine_overlay>`_:octicon:`link-external` node:
+#. Run the `wrench_sine_overlay <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_demos_cpp/src/wrench_sine_overlay.cpp>`_:octicon:`link-external` node:
 
     .. code-block:: bash
 

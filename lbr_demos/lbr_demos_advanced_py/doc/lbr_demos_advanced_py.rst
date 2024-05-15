@@ -3,7 +3,7 @@ lbr_demos_advanced_py
 Collection of advanced usage examples for the ``lbr_ros2_control`` package through Python.
 
 .. warning::
-    Do always execute in ``T1`` mode first.
+    On hardware, do always execute in ``T1`` mode first.
 
 Admittance Controller
 ---------------------
