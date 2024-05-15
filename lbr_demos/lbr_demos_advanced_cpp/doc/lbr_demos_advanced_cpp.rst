@@ -12,6 +12,8 @@ Admittance Controller
 ---------------------
 This demo implements a simple admittance controller.
 
+#. Configure the ``client_command_mode`` to ``position`` in `lbr_system_parameters.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_ros2_control/config/lbr_system_parameters.yaml>`_:octicon:`link-external`
+
 #. .. dropdown:: Launch the ``LBRServer`` application on the ``KUKA smartPAD``
 
     .. thumbnail:: ../../doc/img/applications_lbr_server.png
@@ -32,13 +34,6 @@ This demo implements a simple admittance controller.
             ctrl:=lbr_joint_position_command_controller \
             model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
 
-#. Select
-
-    - ``FRI send period``: ``10 ms``
-    - ``IP address``: ``your configuration``
-    - ``FRI control mode``: ``POSITION_CONTROL``
-    - ``FRI client command mode``: ``POSITION``
-
 #. Launch the `admittance_control <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_demos_advanced_cpp/src/admittance_control_node.cpp>`_:octicon:`link-external`:
 
     .. code-block:: bash    
@@ -53,6 +48,8 @@ Pose Controller
 ---------------
 This demo uses ``KDL`` to calculate forward kinematics and inverse
 kinematics to move the robot's end-effector along the z-axis in Cartesian space.
+
+#. Configure the ``client_command_mode`` to ``position`` in `lbr_system_parameters.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_ros2_control/config/lbr_system_parameters.yaml>`_:octicon:`link-external`
 
 #. .. dropdown:: Launch the ``LBRServer`` application on the ``KUKA smartPAD``
 

@@ -10,6 +10,8 @@ lbr_demos_py
 
 Joint Sine Overlay (Hardware only)
 ----------------------------------
+#. Configure the ``client_command_mode`` to ``position`` in `lbr_system_parameters.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_ros2_control/config/lbr_system_parameters.yaml>`_:octicon:`link-external`
+
 #. .. dropdown:: Launch the ``LBRServer`` application on the ``KUKA smartPAD``
 
     .. thumbnail:: ../../doc/img/applications_lbr_server.png
@@ -58,6 +60,8 @@ The robot will twist, then move to the zero configuration.
 
 Hardware
 ~~~~~~~~
+#. Configure the ``client_command_mode`` to ``position`` in `lbr_system_parameters.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_ros2_control/config/lbr_system_parameters.yaml>`_:octicon:`link-external`
+
 #. .. dropdown:: Launch the ``LBRServer`` application on the ``KUKA smartPAD``
 
     .. thumbnail:: ../../doc/img/applications_lbr_server.png
@@ -73,6 +77,8 @@ Hardware
 
 Torque Sine Overlay (Hardware only)
 -----------------------------------
+#. Configure the ``client_command_mode`` to ``torque`` in `lbr_system_parameters.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_ros2_control/config/lbr_system_parameters.yaml>`_:octicon:`link-external`
+
 #. .. dropdown:: Launch the ``LBRServer`` application on the ``KUKA smartPAD``
 
     .. thumbnail:: ../../doc/img/applications_lbr_server.png
@@ -103,6 +109,8 @@ Torque Sine Overlay (Hardware only)
 
 Wrench Sine Overlay (Hardware only)
 -----------------------------------
+#. Configure the ``client_command_mode`` to ``wrench`` in `lbr_system_parameters.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_ros2_control/config/lbr_system_parameters.yaml>`_:octicon:`link-external`
+
 #. .. dropdown:: Launch the ``LBRServer`` application on the ``KUKA smartPAD``
 
     .. thumbnail:: ../../doc/img/applications_lbr_server.png
