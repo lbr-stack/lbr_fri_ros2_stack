@@ -32,9 +32,12 @@ class JointSineOverlayNode(Node):
         )
 
         # get control rate from controller_manager
-        self._dt = self._retrieve_update_rate()
+        self._dt = None
+        self._retrieve_update_rate()
 
     def _on_lbr_state(self, lbr_state: LBRState) -> None:
+        if self._dt is None:
+            return
         if self._lbr_state is None:
             self._lbr_state = lbr_state
         self._lbr_joint_position_command.joint_position = deepcopy(
@@ -72,7 +75,7 @@ class JointSineOverlayNode(Node):
             raise RuntimeError(f"Failed to get parameter '{paramter_name}'.")
         update_rate = future.result().values[0].integer_value
         self.get_logger().info(f"{paramter_name}: {update_rate} Hz")
-        return 1.0 / float(update_rate)
+        self._dt = 1.0 / float(update_rate)
 
 
 def main(args: list = None) -> None:
