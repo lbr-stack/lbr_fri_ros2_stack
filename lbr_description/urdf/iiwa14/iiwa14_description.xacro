@@ -14,10 +14,6 @@
             value="$(find lbr_description)/urdf/iiwa14/joint_limits.yaml" />
         <xacro:property name="joint_limits" value="${xacro.load_yaml(joint_limits_path)}" />
 
-        <!-- system parameters via yaml -->
-        <xacro:property name="system_parameters"
-            value="${xacro.load_yaml(system_parameters_path)}" />
-
         <!-- constants -->
         <xacro:property name="PI" value="3.1415926535897931" />
         <xacro:property name="joint_damping" value="10.0" />
@@ -28,7 +24,7 @@
         <xacro:lbr_system_interface
             sim="${sim}"
             joint_limits="${joint_limits}"
-            system_parameters="${system_parameters}" />
+            system_parameters_path="${system_parameters_path}" />
 
         <link name="link_0">
             <inertial>

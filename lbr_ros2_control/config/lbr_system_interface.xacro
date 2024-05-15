@@ -1,7 +1,11 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
     <xacro:macro name="lbr_system_interface"
-        params="sim joint_limits system_parameters">
+        params="sim joint_limits system_parameters_path">
+        <!-- load system parameters via yaml -->
+        <xacro:property name="system_parameters"
+            value="${xacro.load_yaml(system_parameters_path)}" />
+
         <ros2_control name="lbr_system_interface" type="system">
             <!-- define hardware including parameters, also gazebo -->
             <xacro:if value="${sim}">
