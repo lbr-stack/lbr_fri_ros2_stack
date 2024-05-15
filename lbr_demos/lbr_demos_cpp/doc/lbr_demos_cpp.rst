@@ -8,8 +8,10 @@ lbr_demos_cpp
    :local:
    :backlinks: none
 
-Joint Sine Overlay (Hardware only)
-----------------------------------
+LBR Joint Position Command Controller (Hardware only)
+-----------------------------------------------------
+This demo uses the :ref:`lbr_fri_ros2::LBRJointPositionCommandController` and overlays a sinusoidal motion on joint ``A4``.
+
 #. Configure the ``client_command_mode`` to ``position`` in `lbr_system_parameters.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_ros2_control/config/lbr_system_parameters.yaml>`_:octicon:`link-external`
 
 #. .. dropdown:: Launch the ``LBRServer`` application on the ``KUKA smartPAD``
@@ -42,6 +44,8 @@ Joint Sine Overlay (Hardware only)
 
 Joint Trajectory Controller
 ---------------------------
+This demos uses the ``joint_trajectory_controller`` of ``ros2_controllers`` and moves the robot to a predefined configuration.
+
 Simulation
 ~~~~~~~~~~
 #. Launch the simulated robot:
@@ -78,8 +82,10 @@ Hardware
 
 #. Proceed with steps 1 and 2 from `Simulation`_ but with ``sim:=false``.
 
-Torque Sine Overlay (Hardware only)
------------------------------------
+LBR Torque Command Controller (Hardware only)
+---------------------------------------------
+This demo uses the :ref:`lbr_fri_ros2::LBRTorqueCommandController` and overlays a sinusoidal torque on joint ``A4``.
+
 #. Configure the ``client_command_mode`` to ``torque`` in `lbr_system_parameters.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_ros2_control/config/lbr_system_parameters.yaml>`_:octicon:`link-external`
 
 #. .. dropdown:: Launch the ``LBRServer`` application on the ``KUKA smartPAD``
@@ -110,8 +116,10 @@ Torque Sine Overlay (Hardware only)
 
     This node overlays a sinusoidal torque on joint ``A4``.
 
-Wrench Sine Overlay (Hardware only)
------------------------------------
+LBR Wrench Command Controller (Hardware only)
+---------------------------------------------
+This demo uses the :ref:`lbr_fri_ros2::LBRWrenchCommandController` and overlays a sinusoidal force on the x- and y-axis.
+
 #. Configure the ``client_command_mode`` to ``wrench`` in `lbr_system_parameters.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_ros2_control/config/lbr_system_parameters.yaml>`_:octicon:`link-external`
 
 #. .. dropdown:: Launch the ``LBRServer`` application on the ``KUKA smartPAD``
