@@ -74,7 +74,6 @@ class TorqueSineOverlayNode(Node):
         self._dt = 1.0 / float(update_rate)
 
 
-
 def main(args: list = None) -> None:
     rclpy.init(args=args)
     rclpy.spin(TorqueSineOverlayNode("torque_sine_overlay_node"))
