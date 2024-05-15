@@ -1,20 +1,27 @@
 lbr_demos_advanced_py
 =====================
-Collection of advanced usage examples for the ``lbr_ros2_control`` package through Python.
-
 .. warning::
     On hardware, do always execute in ``T1`` mode first.
+
+.. contents:: Table of Contents
+   :depth: 2
+   :local:
+   :backlinks: none
 
 Admittance Controller
 ---------------------
 This demo implements a simple admittance controller.
 
-.. warning::
-    May not be well behaved around singularities, put the robot in a well-behaved configuration first, e.g. ``A1 = 0°``, ``A2 = -30°``, ``A3 = 0°``, ``A4 = 60°``, ``A5 = 0°``, ``A6 = -90°``, ``A7 = 0°``. This can be done using the ``smartPAD`` in ``T1`` mode.
-
 #. .. dropdown:: Launch the ``LBRServer`` application on the ``KUKA smartPAD``
 
     .. thumbnail:: ../../doc/img/applications_lbr_server.png
+
+#. Select
+
+    - ``FRI send period``: ``10 ms``
+    - ``IP address``: ``your configuration``
+    - ``FRI control mode``: ``POSITION_CONTROL``
+    - ``FRI client command mode``: ``POSITION``
 
 #. Launch the robot driver:
 
@@ -42,6 +49,13 @@ This demo implements an admittance controller with a remote center of motion (RC
 #. .. dropdown:: Launch the ``LBRServer`` application on the ``KUKA smartPAD``
 
     .. thumbnail:: ../../doc/img/applications_lbr_server.png
+
+#. Select
+
+    - ``FRI send period``: ``10 ms``
+    - ``IP address``: ``your configuration``
+    - ``FRI control mode``: ``POSITION_CONTROL``
+    - ``FRI client command mode``: ``POSITION``
 
 #. Launch the robot driver:
 

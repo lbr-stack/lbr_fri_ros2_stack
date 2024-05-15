@@ -1,18 +1,27 @@
 lbr_demos_advanced_cpp
 ======================
-Collection of advanced usage examples for the ``lbr_fri_ros2`` package through C++.
-
 .. warning::
     On hardware, do always execute in ``T1`` mode first.
 
+.. contents:: Table of Contents
+   :depth: 2
+   :local:
+   :backlinks: none
+
 Admittance Controller
 ---------------------
-.. warning::
-    Not well behaved around singularities, put the robot in a well-behaved configuration first, e.g. ``A1 = 0°``, ``A2 = -30°``, ``A3 = 0°``, ``A4 = 60°``, ``A5 = 0°``, ``A6 = -90°``, ``A7 = 0°``. This can be done using the ``smartPAD`` in ``T1`` mode.
+This demo implements a simple admittance controller.
 
 #. .. dropdown:: Launch the ``LBRServer`` application on the ``KUKA smartPAD``
 
     .. thumbnail:: ../../doc/img/applications_lbr_server.png
+
+#. Select
+
+    - ``FRI send period``: ``10 ms``
+    - ``IP address``: ``your configuration``
+    - ``FRI control mode``: ``POSITION_CONTROL``
+    - ``FRI client command mode``: ``POSITION``
 
 #. Launch the robot driver:
 
@@ -22,6 +31,13 @@ Admittance Controller
             sim:=false \
             ctrl:=lbr_joint_position_command_controller \
             model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
+
+#. Select
+
+    - ``FRI send period``: ``10 ms``
+    - ``IP address``: ``your configuration``
+    - ``FRI control mode``: ``POSITION_CONTROL``
+    - ``FRI client command mode``: ``POSITION``
 
 #. Launch the `admittance_control <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_demos_advanced_cpp/src/admittance_control_node.cpp>`_:octicon:`link-external`:
 
@@ -41,6 +57,13 @@ kinematics to move the robot's end-effector along the z-axis in Cartesian space.
 #. .. dropdown:: Launch the ``LBRServer`` application on the ``KUKA smartPAD``
 
     .. thumbnail:: ../../doc/img/applications_lbr_server.png
+
+#. Select
+
+    - ``FRI send period``: ``10 ms``
+    - ``IP address``: ``your configuration``
+    - ``FRI control mode``: ``POSITION_CONTROL``
+    - ``FRI client command mode``: ``POSITION``
 
 #. Launch the robot driver:
 

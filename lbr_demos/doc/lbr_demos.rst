@@ -1,6 +1,6 @@
 lbr_demos
 =========
-Contolling the LBR through ``ros2_control``.
+All demos build on :ref:`lbr_ros2_control`. Different ``ros2_controllers`` are loaded to command the robot.
 
 .. note::
     Some demos require a real robot. Make sure you followed :doc:`Hardware Setup <../../lbr_fri_ros2_stack/doc/hardware_setup>` first.
