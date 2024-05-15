@@ -20,7 +20,7 @@ setup(
     entry_points={
         "console_scripts": [
             "joint_sine_overlay = lbr_demos_py.joint_sine_overlay:main",
-            "joint_trajectory_client = lbr_demos_ros2_control_python.joint_trajectory_client:main",
+            "joint_trajectory_client = lbr_demos_py.joint_trajectory_client:main",
             "torque_sine_overlay = lbr_demos_py.torque_sine_overlay:main",
             "wrench_sine_overlay = lbr_demos_py.wrench_sine_overlay:main",
         ],

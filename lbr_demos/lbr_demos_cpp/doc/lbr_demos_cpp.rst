@@ -48,7 +48,10 @@ Simulation
 
     .. code-block:: bash
 
-        ros2 launch lbr_bringup bringup.launch.py sim:=true model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
+        ros2 launch lbr_bringup bringup.launch.py \
+            sim:=true \
+            ctrl:=joint_trajectory_controller \
+            model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
 
 #. Run the `joint_trajectory_client <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_demos_cpp/src/joint_trajectory_client.cpp>`_:octicon:`link-external`:
 
