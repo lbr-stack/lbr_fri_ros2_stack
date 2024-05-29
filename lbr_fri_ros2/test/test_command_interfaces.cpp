@@ -39,6 +39,9 @@ public:
 #if FRICLIENT_VERSION_MAJOR == 2
     case KUKA::FRI::EClientCommandMode::JOINT_POSITION:
 #endif
+#if FRICLIENT_VERSION_MAJOR == 3
+    case KUKA::FRI::EClientCommandMode::JOINT_POSITION:
+#endif
     {
       command_interface_ =
           std::make_shared<lbr_fri_ros2::PositionCommandInterface>(pid_params_, cmd_guard_params_);
@@ -147,6 +150,9 @@ TEST_F(TestCommandInterfaces, TestPositionCommandInterface) {
   set_up(KUKA::FRI::EClientCommandMode::POSITION);
 #endif
 #if FRICLIENT_VERSION_MAJOR == 2
+  set_up(KUKA::FRI::EClientCommandMode::JOINT_POSITION);
+#endif
+#if FRICLIENT_VERSION_MAJOR == 3
   set_up(KUKA::FRI::EClientCommandMode::JOINT_POSITION);
 #endif
   test_simple();

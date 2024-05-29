@@ -72,13 +72,13 @@ def main(args: list = None) -> None:
     joint_trajectory_client.get_logger().info("Rotating odd joints.")
     joint_trajectory_client.execute(
         [
-            1.0,
             0.0,
-            1.0,
             0.0,
-            1.0,
             0.0,
-            1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.5,
         ]
     )
 
