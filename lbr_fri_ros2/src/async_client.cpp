@@ -24,6 +24,9 @@ AsyncClient::AsyncClient(const KUKA::FRI::EClientCommandMode &client_command_mod
 #if FRICLIENT_VERSION_MAJOR == 2
   case KUKA::FRI::EClientCommandMode::JOINT_POSITION:
 #endif
+#if FRICLIENT_VERSION_MAJOR == 3
+  case KUKA::FRI::EClientCommandMode::JOINT_POSITION:
+#endif
   {
     command_interface_ptr_ = std::make_shared<PositionCommandInterface>(
         pid_parameters, command_guard_parameters, command_guard_variant);

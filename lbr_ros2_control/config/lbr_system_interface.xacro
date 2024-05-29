@@ -103,7 +103,6 @@
                     <state_interface name="velocity" />
                     <state_interface name="effort" />
                     <xacro:unless value="${sim}">
-                        <state_interface name="commanded_joint_position" />
                         <state_interface name="commanded_torque" />
                         <state_interface name="external_torque" />
                         <state_interface name="ipo_joint_position" />
