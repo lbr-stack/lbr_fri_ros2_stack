@@ -103,6 +103,9 @@
                     <state_interface name="velocity" />
                     <state_interface name="effort" />
                     <xacro:unless value="${sim}">
+                        <xacro:if value="${system_parameters['fri_client_version']['major'] == 1}">
+                            <state_interface name="commanded_joint_position" />
+                        </xacro:if>
                         <state_interface name="commanded_torque" />
                         <state_interface name="external_torque" />
                         <state_interface name="ipo_joint_position" />
