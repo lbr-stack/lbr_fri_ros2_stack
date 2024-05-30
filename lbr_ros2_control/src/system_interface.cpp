@@ -328,6 +328,9 @@ bool SystemInterface::parse_parameters_(const hardware_interface::HardwareInfo &
 #if FRICLIENT_VERSION_MAJOR == 2
       parameters_.client_command_mode = KUKA::FRI::EClientCommandMode::JOINT_POSITION;
 #endif
+#if FRICLIENT_VERSION_MAJOR == 3
+      parameters_.client_command_mode = KUKA::FRI::EClientCommandMode::JOINT_POSITION;
+#endif
     } else if (client_command_mode == "torque") {
       parameters_.client_command_mode = KUKA::FRI::EClientCommandMode::TORQUE;
     } else if (client_command_mode == "wrench") {
