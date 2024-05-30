@@ -15,7 +15,7 @@ hardware:
   pid_i_min: 0.0 # min integral value for the joint position command
   pid_antiwindup: false # enable antiwindup for the joint position command
   command_guard_variant: default # if requested position / velocities beyond limits, CommandGuard will be triggered and shut the connection. Available: [default, safe_stop]
-  external_torque_cutoff_frequency: 10 # low-pass filter for the external joint torque measurements [Hz] 
+  external_torque_cutoff_frequency: 10 # low-pass filter for the external joint torque measurements [Hz]
   measured_torque_cutoff_frequency: 10 # low-pass filter for the joint torque measurements [Hz]
   open_loop: true # KUKA works the best in open_loop control mode
 
