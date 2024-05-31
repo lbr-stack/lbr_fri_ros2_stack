@@ -1,6 +1,6 @@
 # these parameters are read by the lbr_system_interface.xacro and configure the lbr_ros2_control::SystemInterface
 hardware:
-  fri_client_sdk:
+  fri_client_sdk: # the fri_client_sdk version is used to create the correct state interfaces lbr_system_interface.xacro
     major_version: 1
     minor_version: 15
   client_command_mode: position # the command mode specifies the user-sent commands. Available: [position, torque, wrench]
@@ -14,7 +14,7 @@ hardware:
   pid_i_min: 0.0 # min integral value for the joint position command
   pid_antiwindup: false # enable antiwindup for the joint position command
   command_guard_variant: default # if requested position / velocities beyond limits, CommandGuard will be triggered and shut the connection. Available: [default, safe_stop]
-  external_torque_cutoff_frequency: 10 # low-pass filter for the external joint torque measurements [Hz] 
+  external_torque_cutoff_frequency: 10 # low-pass filter for the external joint torque measurements [Hz]
   measured_torque_cutoff_frequency: 10 # low-pass filter for the joint torque measurements [Hz]
   open_loop: true # KUKA works the best in open_loop control mode
 

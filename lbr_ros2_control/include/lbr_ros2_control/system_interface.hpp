@@ -31,6 +31,8 @@
 
 namespace lbr_ros2_control {
 struct SystemInterfaceParameters {
+  uint8_t fri_client_sdk_major_version{1};
+  uint8_t fri_client_sdk_minor_version{15};
 #if FRICLIENT_VERSION_MAJOR == 1
   KUKA::FRI::EClientCommandMode client_command_mode{KUKA::FRI::EClientCommandMode::POSITION};
 #endif

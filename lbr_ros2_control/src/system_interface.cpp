@@ -320,6 +320,20 @@ hardware_interface::return_type SystemInterface::write(const rclcpp::Time & /*ti
 
 bool SystemInterface::parse_parameters_(const hardware_interface::HardwareInfo &system_info) {
   try {
+    parameters_.fri_client_sdk_major_version =
+        std::stoul(system_info.hardware_parameters.at("fri_client_sdk_major_version"));
+    parameters_.fri_client_sdk_minor_version =
+        std::stoul(system_info.hardware_parameters.at("fri_client_sdk_minor_version"));
+    if (parameters_.fri_client_sdk_major_version != FRICLIENT_VERSION_MAJOR) {
+      RCLCPP_ERROR_STREAM(
+          rclcpp::get_logger(LOGGER_NAME),
+          lbr_fri_ros2::ColorScheme::ERROR
+              << "Expected FRI client SDK version '" << FRICLIENT_VERSION_MAJOR << "', got '"
+              << std::to_string(parameters_.fri_client_sdk_major_version)
+              << "'. Update lbr_system_parameters.yaml or compile against correct FRI version."
+              << lbr_fri_ros2::ColorScheme::ENDC);
+      return false;
+    }
     std::string client_command_mode = system_info.hardware_parameters.at("client_command_mode");
     if (client_command_mode == "position") {
 #if FRICLIENT_VERSION_MAJOR == 1
