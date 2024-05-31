@@ -19,7 +19,7 @@ void PositionCommandInterface::buffered_command_to_fri(fri_command_t_ref command
     throw std::runtime_error(err);
   }
 #endif
-#if FRICLIENT_VERSION_MAJOR == 2
+#if FRICLIENT_VERSION_MAJOR >= 2
   if (state.client_command_mode != KUKA::FRI::EClientCommandMode::JOINT_POSITION) {
     std::string err =
         "Expected robot in " +

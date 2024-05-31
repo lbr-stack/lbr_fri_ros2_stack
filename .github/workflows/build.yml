@@ -15,7 +15,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        fri_version: [1.11, 1.14, 1.15, 1.16, 2.5]
+        fri_version: [1.11, 1.14, 1.15, 1.16, 2.5, 2.7]
     steps:
       - uses: ros-tooling/setup-ros@v0.7
       - uses: ros-tooling/action-ros-ci@v0.2
