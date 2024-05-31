@@ -325,10 +325,7 @@ bool SystemInterface::parse_parameters_(const hardware_interface::HardwareInfo &
 #if FRICLIENT_VERSION_MAJOR == 1
       parameters_.client_command_mode = KUKA::FRI::EClientCommandMode::POSITION;
 #endif
-#if FRICLIENT_VERSION_MAJOR == 2
-      parameters_.client_command_mode = KUKA::FRI::EClientCommandMode::JOINT_POSITION;
-#endif
-#if FRICLIENT_VERSION_MAJOR == 3
+#if FRICLIENT_VERSION_MAJOR >= 2
       parameters_.client_command_mode = KUKA::FRI::EClientCommandMode::JOINT_POSITION;
 #endif
     } else if (client_command_mode == "torque") {

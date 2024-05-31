@@ -24,9 +24,9 @@
     </group_state>
     <group_state name="transport" group="arm">
         <joint name="A1" value="0"/>
-        <joint name="A2" value="0.436"/>
+        <joint name="A2" value="0.4363"/>
         <joint name="A3" value="0"/>
-        <joint name="A4" value="1.57"/>
+        <joint name="A4" value="1.5707"/>
         <joint name="A5" value="0"/>
         <joint name="A6" value="0"/>
         <joint name="A7" value="0"/>

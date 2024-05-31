@@ -34,10 +34,7 @@ struct SystemInterfaceParameters {
 #if FRICLIENT_VERSION_MAJOR == 1
   KUKA::FRI::EClientCommandMode client_command_mode{KUKA::FRI::EClientCommandMode::POSITION};
 #endif
-#if FRICLIENT_VERSION_MAJOR == 2
-  KUKA::FRI::EClientCommandMode client_command_mode{KUKA::FRI::EClientCommandMode::JOINT_POSITION};
-#endif
-#if FRICLIENT_VERSION_MAJOR == 3
+#if FRICLIENT_VERSION_MAJOR >= 2
   KUKA::FRI::EClientCommandMode client_command_mode{KUKA::FRI::EClientCommandMode::JOINT_POSITION};
 #endif
   int32_t port_id{30200};
@@ -71,7 +68,12 @@ class SystemInterface : public hardware_interface::SystemInterface {
 protected:
   static constexpr char LOGGER_NAME[] = "lbr_ros2_control::SystemInterface";
 
+#if FRICLIENT_VERSION_MAJOR == 1
+  static constexpr uint8_t LBR_FRI_STATE_INTERFACE_SIZE = 7;
+#endif
+#if FRICLIENT_VERSION_MAJOR >= 2
   static constexpr uint8_t LBR_FRI_STATE_INTERFACE_SIZE = 6;
+#endif
   static constexpr uint8_t LBR_FRI_COMMAND_INTERFACE_SIZE = 2;
   static constexpr uint8_t LBR_FRI_SENSORS = 2;
   static constexpr uint8_t AUXILIARY_SENSOR_SIZE = 12;

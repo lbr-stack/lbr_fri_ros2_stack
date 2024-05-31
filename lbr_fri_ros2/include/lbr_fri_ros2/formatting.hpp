@@ -61,13 +61,7 @@ struct EnumMaps {
     case KUKA::FRI::EClientCommandMode::POSITION:
       return "POSITION";
 #endif
-#if FRICLIENT_VERSION_MAJOR == 2
-    case KUKA::FRI::EClientCommandMode::JOINT_POSITION:
-      return "JOINT_POSITION";
-    case KUKA::FRI::EClientCommandMode::CARTESIAN_POSE:
-      return "CARTESIAN_POSE";
-#endif
-#if FRICLIENT_VERSION_MAJOR == 3
+#if FRICLIENT_VERSION_MAJOR >= 2
     case KUKA::FRI::EClientCommandMode::JOINT_POSITION:
       return "JOINT_POSITION";
     case KUKA::FRI::EClientCommandMode::CARTESIAN_POSE:

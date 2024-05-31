@@ -1,5 +1,8 @@
 # these parameters are read by the lbr_system_interface.xacro and configure the lbr_ros2_control::SystemInterface
 hardware:
+  fri_client_sdk:
+    major_version: 1
+    minor_version: 15
   client_command_mode: position # the command mode specifies the user-sent commands. Available: [position, torque, wrench]
   port_id: 30200 # port id for the UDP communication. Useful in multi-robot setups
   remote_host: INADDR_ANY # the expected robot IP address. INADDR_ANY will accept any incoming connection

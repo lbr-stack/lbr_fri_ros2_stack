@@ -36,10 +36,7 @@ public:
 #if FRICLIENT_VERSION_MAJOR == 1
     case KUKA::FRI::EClientCommandMode::POSITION:
 #endif
-#if FRICLIENT_VERSION_MAJOR == 2
-    case KUKA::FRI::EClientCommandMode::JOINT_POSITION:
-#endif
-#if FRICLIENT_VERSION_MAJOR == 3
+#if FRICLIENT_VERSION_MAJOR >= 2
     case KUKA::FRI::EClientCommandMode::JOINT_POSITION:
 #endif
     {
