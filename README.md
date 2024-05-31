@@ -85,9 +85,15 @@ If you enjoyed using this repository for your work, we would really appreciate �
 
 ## Acknowledgements
 ### Open Source Contributors
-We would like to acknowledge all open source contributors 🚀
+We would like to acknowledge all contributors 🚀
+
+**lbr_fri_ros2_stack**
 
 [![lbr_fri_ros2_stack contributors](https://contrib.rocks/image?repo=lbr-stack/lbr_fri_ros2_stack&max=20)](https://github.com/lbr-stack/lbr_fri_ros2_stack/graphs/contributors)
+
+**fri**
+
+[![fri contributors](https://contrib.rocks/image?repo=lbr-stack/fri&max=20)](https://github.com/lbr-stack/fri/graphs/contributors)
 
 ### Organizations and Grants
 We would further like to acknowledge following supporters:
