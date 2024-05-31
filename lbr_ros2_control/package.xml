@@ -9,7 +9,7 @@
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
-  <depend>FRIClient</depend>
+  <depend>fri_client_sdk</depend>
   <depend>lbr_fri_idl</depend>
   <depend>lbr_fri_ros2</depend>
   <depend>pluginlib</depend>
