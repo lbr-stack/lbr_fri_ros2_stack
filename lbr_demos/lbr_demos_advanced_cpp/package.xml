@@ -11,7 +11,7 @@
 
   <exec_depend>lbr_description</exec_depend>
 
-  <depend>FRIClient</depend>
+  <depend>fri_client_sdk</depend>
   <depend>geometry_msgs</depend>
   <depend>kdl_parser</depend>
   <depend>lbr_fri_idl</depend>

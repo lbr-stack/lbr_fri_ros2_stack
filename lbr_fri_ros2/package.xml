@@ -14,7 +14,7 @@
   <build_depend>eigen</build_depend>
 
   <depend>control_toolbox</depend>
-  <depend>FRIClient</depend>
+  <depend>fri_client_sdk</depend>
   <depend>kdl_parser</depend>
   <depend>lbr_fri_idl</depend>
   <depend>orocos_kdl_vendor</depend>
