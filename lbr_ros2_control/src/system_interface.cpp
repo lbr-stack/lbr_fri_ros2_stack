@@ -683,7 +683,7 @@ void SystemInterface::compute_hw_velocity_() {
   });
 }
 
-} // end of namespace lbr_ros2_control
+} // namespace lbr_ros2_control
 
 #include <pluginlib/class_list_macros.hpp>
 

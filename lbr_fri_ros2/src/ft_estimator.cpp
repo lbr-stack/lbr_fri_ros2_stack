@@ -56,4 +56,4 @@ void FTEstimator::reset() {
   tau_ext_.setZero();
   f_ext_.setZero();
 }
-} // end of namespace lbr_fri_ros2
+} // namespace lbr_fri_ros2

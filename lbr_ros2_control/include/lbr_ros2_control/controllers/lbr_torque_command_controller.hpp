@@ -56,5 +56,5 @@ protected:
   rclcpp::Subscription<lbr_fri_idl::msg::LBRTorqueCommand>::SharedPtr
       lbr_torque_command_subscription_ptr_;
 };
-} // end of namespace lbr_ros2_control
+} // namespace lbr_ros2_control
 #endif // LBR_ROS2_CONTROL__LBR_TORQUE_COMMAND_CONTROLLER_HPP_

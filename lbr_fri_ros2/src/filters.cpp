@@ -80,4 +80,4 @@ void JointPIDArray::log_info() const {
   RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "*   antiwindup: %s",
               pid_parameters_.antiwindup ? "true" : "false");
 };
-} // end of namespace lbr_fri_ros2
+} // namespace lbr_fri_ros2

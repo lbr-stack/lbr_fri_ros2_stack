@@ -76,5 +76,5 @@ protected:
 std::unique_ptr<CommandGuard>
 command_guard_factory(const CommandGuardParameters &command_guard_parameters,
                       const std::string &variant = "default");
-} // end of namespace lbr_fri_ros2
+} // namespace lbr_fri_ros2
 #endif // LBR_FRI_ROS2__COMMAND_GUARD_HPP_

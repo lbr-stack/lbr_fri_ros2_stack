@@ -39,5 +39,5 @@ protected:
   std::unique_ptr<KUKA::FRI::UdpConnection> connection_ptr_;
   std::unique_ptr<KUKA::FRI::ClientApplication> app_ptr_;
 };
-} // end of namespace lbr_fri_ros2
+} // namespace lbr_fri_ros2
 #endif // LBR_FRI_ROS2__APP_HPP_

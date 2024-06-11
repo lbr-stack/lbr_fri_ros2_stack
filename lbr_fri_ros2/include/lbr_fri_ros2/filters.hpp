@@ -139,5 +139,5 @@ protected:
   PIDParameters pid_parameters_; /**< PID parameters for all joints.*/
   pid_array_t pid_controllers_;  /**< PID controllers for each joint.*/
 };
-} // end of namespace lbr_fri_ros2
+} // namespace lbr_fri_ros2
 #endif // LBR_FRI_ROS2__FILTERS_HPP_

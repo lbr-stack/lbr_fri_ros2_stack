@@ -1,4 +1,4 @@
-#include "lbr_ros2_control/lbr_state_broadcaster.hpp"
+#include "lbr_ros2_control/controllers/lbr_state_broadcaster.hpp"
 
 namespace lbr_ros2_control {
 controller_interface::InterfaceConfiguration
@@ -154,7 +154,7 @@ void LBRStateBroadcaster::init_state_msg_() {
   rt_state_publisher_ptr_->msg_.time_stamp_sec = std::numeric_limits<uint32_t>::quiet_NaN();
   rt_state_publisher_ptr_->msg_.tracking_performance = std::numeric_limits<double>::quiet_NaN();
 }
-} // end of namespace lbr_ros2_control
+} // namespace lbr_ros2_control
 
 #include "pluginlib/class_list_macros.hpp"
 
