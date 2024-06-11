@@ -5,6 +5,7 @@
   <version>2.0.0</version>
   <description>Advanced Python demos for the lbr_ros2_control.</description>
   <maintainer email="m.huber_1994@hotmail.de">mhubii</maintainer>
+  <maintainer email="mower.chris@gmail.com">cmower</maintainer>
   <license>Apache License 2.0</license>
 
   <exec_depend>lbr_description</exec_depend>
