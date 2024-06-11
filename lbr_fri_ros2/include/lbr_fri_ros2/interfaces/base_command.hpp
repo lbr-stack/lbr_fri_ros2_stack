@@ -49,7 +49,6 @@ public:
 
 protected:
   std::unique_ptr<CommandGuard> command_guard_;
-  PIDParameters pid_parameters_;
   JointPIDArray joint_position_pid_;
   idl_command_t command_, command_target_;
 };

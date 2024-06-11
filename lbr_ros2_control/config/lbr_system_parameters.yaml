@@ -7,7 +7,7 @@ hardware:
   port_id: 30200 # port id for the UDP communication. Useful in multi-robot setups
   remote_host: INADDR_ANY # the expected robot IP address. INADDR_ANY will accept any incoming connection
   rt_prio: 80 # real-time priority for the control loop
-  pid_p: 10.0 # P gain for the joint position  (useful for asynchronous control)
+  pid_p: 0.1 # P gain for the joint position  (useful for asynchronous control)
   pid_i: 0.0 # I gain for the joint position command
   pid_d: 0.0 # D gain for the joint position command
   pid_i_max: 0.0 # max integral value for the joint position command
