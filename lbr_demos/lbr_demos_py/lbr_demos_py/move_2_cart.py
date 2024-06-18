@@ -7,7 +7,9 @@ import math
 import copy
 import time
 import numpy as np
-from lbr_demos_py.asbr import * 
+from lbr_demos_py.asbr import *
+from lbr_fri_idl.srv import MoveToPose
+import threading
 
 class Move2Cart(Node):
 
@@ -15,79 +17,57 @@ class Move2Cart(Node):
         super().__init__('move_2_cart')
         self.is_init = False
         self.curr_pose = Pose()
-        self.goal_pose = Pose() # get from constructor?
+        self.goal_pose = Pose()
+        self.desired_pose = Pose()
 
         self.communication_rate = 0.01  # 10 ms
-        self.pid_p_correction = 12.2 # For compensating delay during execution. This value -in accordance with p = 12.2 - was found to be good by manual testings.
-                                   # See: https://github.com/lbr-stack/lbr_fri_ros2_stack/issues/187  
-
+        self.pid_p_correction = 12.2
         self.move_orientation_init_time = -1
 
         self.pose_pub = self.create_publisher(Pose, 'command/pose', 1)
         self.pose_sub = self.create_subscription(Pose, 'state/pose', self.on_pose, 1)
-        self.flag=1
-        
+        self.service = self.create_service(MoveToPose, 'move_to_pose', self.move_to_pose_callback)
+
+        self.moving_event = threading.Event()
+        self.moving_thread = threading.Thread(target=self.move_robot)
+        self.moving_thread.start()
 
     def on_pose(self, msg):
-        
+        self.curr_pose = msg
         if not self.is_init:
             self.is_init = True
-            self.initial_pose = msg
+            self.desired_pose = msg
+        print('updating!')
 
-            #Specify goal pose
+    def move_to_pose_callback(self, request, response):
+        self.goal_pose = request.goal_pose
+        self.moving_event.set()
+        response.success = True
+        return response
 
-            self.goal_pose.position.x = 0.5 
-            self.goal_pose.position.y = 0.0
-            self.goal_pose.position.z = 0.55
+    def move_robot(self):
+        while rclpy.ok():
+            self.moving_event.wait()  # Wait until the event is set
+            while not (self.is_close_pos() and self.is_close_orien()):
+                if not self.is_close_pos():
+                    lin_vel = 0.005
+                    command_pose = self.generate_move_command(lin_vel)
+                else:
+                    MotionTime = 20.0
+                    command_pose = self.generate_move_command_rotation(MotionTime)
 
-            goal_orientation = Rotation(self.initial_pose.orientation)
-            goal_orientation = goal_orientation.as_ABC(True)
-            goal_orientation[1]=10.0
-            goal_orientation[2]=-160.0
-            goal_orientation[0]=180.0
-            goal_orientation = Rotation.from_ABC(goal_orientation,True)
-            goal_orientation = goal_orientation.as_geometry_orientation()
-            self.goal_pose.orientation = goal_orientation 
-            
-            self.desired_pose = msg # desired_pose: the pose which the robot should be in, at the moment. This is useful particularly in orientation control. 
-                                    # For some reason, the orientation gets some noise during execution. Therefore, relying on curr_pose.orientation for generating
-                                    # commands was giving problems.
+                if self.is_safe_pose(command_pose):
+                    self.pose_pub.publish(command_pose)
+                    print(command_pose.position)
+                else:
+                    self.moving_event.clear()
+                    break
 
-            print('starting at:', int(round(time.time() * 1000)))  # Current time in milliseconds
+                time.sleep(self.communication_rate)
 
+            self.moving_event.clear()
 
-        else:
-
-            self.curr_pose = msg
-            
-            if (self.is_close_pos() and self.is_close_orien()):
-                
-                if(self.flag==1):
-                    current_time_ms = int(round(time.time() * 1000))  # Current time in milliseconds
-                    print(f'Time (ms): {current_time_ms}')
-                    self.flag=0
-                return
-            elif (self.is_close_pos()):
-                MotionTime = 20.0 #s
-                command_pose = self.generate_move_command_rotation(MotionTime)
-                # print('here')
-            else:
-                lin_vel = 0.01 # replace the number with desired linear velocity in m/s
-                command_pose = self.generate_move_command(lin_vel)
-                # print('I AM HERE!')
-            
-
-            if (command_pose.position.x > 0.75 or command_pose.position.x < 0.35 or 
-                command_pose.position.y > 0.1 or command_pose.position.y < -0.1 or 
-                command_pose.position.z > 0.78 or command_pose.position.z < 0.5): #Command guarding
-                
-                print('Failed, not executable')
-
-            else:
-                self.pose_pub.publish(command_pose)
-                
-
-    def generate_move_command(self, lin_vel, pos_thresh = 0.0005): #Generates move commands, for motions containing ONLY rotational movements use generate_move_command_rotation method
+    def generate_move_command(self, lin_vel, pos_thresh=0.0005): #Generates move commands, for motions containing ONLY rotational movements use generate_move_command_rotation method
         command_pose = Pose()
         GoalPose = self.goal_pose
         CurrPose = self.curr_pose
@@ -110,6 +90,7 @@ class Move2Cart(Node):
             goal_Rot = Rotation(GoalPose.orientation)
             ABC_diff = goal_Rot.as_ABC() - (Rotation(self.desired_pose.orientation)).as_ABC()
             for i in range(3):
+                
                 if(ABC_diff[i]>np.pi):
                     ABC_diff[i]-=2.0*np.pi
                 elif(ABC_diff[i]<(-np.pi)):
@@ -155,14 +136,6 @@ class Move2Cart(Node):
 
                 command_pose.orientation = quat_command.as_geometry_orientation()
                 
-                
-                # if(np.max(np.abs(ABC_command - curr_Rot.as_ABC()))>0.2*3.14159/180.0):
-                #     if(int(round(time.time() * 1000))%5==0):
-                #         print(ABC_command)
-                #         print(curr_Rot.as_ABC())
-                #         print((Rotation(self.desired_pose.orientation)).as_ABC())
-                #         print('Too much jump')
-                    # return False
 
                 self.last_command = command_pose
                 self.desired_pose = copy.deepcopy(command_pose)
@@ -196,6 +169,13 @@ class Move2Cart(Node):
 
         return np.max(np.abs(ABC_diff))<angle_thresh
 
+    def is_safe_pose(self, pose):
+        if (pose.position.x > 0.6 or pose.position.x < 0.4 or 
+            pose.position.y > 0.1 or pose.position.y < -0.1 or 
+            pose.position.z > 0.6 or pose.position.z < 0.4):
+            print('Failed, not executable')
+            return False
+        return True
 
 def main(args=None):
     rclpy.init(args=args)

@@ -25,6 +25,7 @@ setup(
             "wrench_sine_overlay = lbr_demos_py.wrench_sine_overlay:main",
             "pose_planning = lbr_demos_py.pose_planning:main",
             "move_2_cart = lbr_demos_py.move_2_cart:main",
+            "move_to_pose_client = lbr_demos_py.move_to_pose_client:main",
         ],
     },
 )
