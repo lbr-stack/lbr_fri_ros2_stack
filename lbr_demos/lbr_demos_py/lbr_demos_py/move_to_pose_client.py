@@ -44,9 +44,9 @@ def main(args=None):
     client = MoveToPoseClient()
 
     goal_pose = Pose()
-    goal_pose.position.x = 0.5
+    goal_pose.position.x = 0.512
     goal_pose.position.y = 0.0
-    goal_pose.position.z = 0.55
+    goal_pose.position.z = 0.5
     # Set orientation as required
 
     goal_orientation = [180, 0, 180]
@@ -58,21 +58,21 @@ def main(args=None):
     print(f'Success: {response.success}')
     client.wait_for_goal()
     print('first goal achieved')
-    time.sleep(2)
+    # time.sleep(2)
 
-    goal_pose.position.x = 0.55
-    goal_pose.position.y = 0.0
-    goal_pose.position.z = 0.55
-    # Set orientation as required
+    # goal_pose.position.x = 0.55
+    # goal_pose.position.y = 0.0
+    # goal_pose.position.z = 0.45
+    # # Set orientation as required
 
-    goal_orientation = [180, 0, 180]
-    goal_orientation = Rotation.from_ABC(goal_orientation,True)
-    goal_orientation = goal_orientation.as_geometry_orientation()
-    goal_pose.orientation = goal_orientation 
+    # goal_orientation = [180, 0, 180]
+    # goal_orientation = Rotation.from_ABC(goal_orientation,True)
+    # goal_orientation = goal_orientation.as_geometry_orientation()
+    # goal_pose.orientation = goal_orientation 
     
-    response = client.send_request(goal_pose)
-    client.wait_for_goal()
-    print('second goal achieved')
+    # response = client.send_request(goal_pose)
+    # client.wait_for_goal()
+    # print('second goal achieved')
 
 
 

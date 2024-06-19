@@ -36,40 +36,33 @@ class PrintLines(Node):
 
     def __init__(self):
         super().__init__('long_lines_node')
-        self.goalReached = False
-        self.curr_pose = Pose()
-        self.goal_pub = self.create_publisher(Pose, 'command/Goal_Pose', 1)
+        self.move_client = self.create_client(MoveToPose, 'move_to_pose')
+        while not self.client.wait_for_service(timeout_sec=1.0):
+            self.get_logger().info('Service not available, waiting again...')
+
+        self.request = MoveToPose.Request()
+        self.reach_subs = self.create_subscription(Bool, 'goal_reached_top', self.goal_reach_update, 1)
+
+        self.goal_state = False
+        self.commiunication_rate = 0.01
         self.printer_pub = self.create_publisher(Float32, 'syringeVel', 1) 
-        self.reach_sub = self.create_subscription(Bool, 'state/Goal_Reached', self.goalReached_callback, 1)
-        self.pose_sub = self.create_subscription(Pose, 'state/pose', self.update_curr_pose, 1)
 
-        # Use an event to signal the spin thread to stop
-        self.spin_event = threading.Event()
+    
+    def send_request(self, goal_pose):
+        self.request.goal_pose = goal_pose
+        self.future = self.move_client.call_async(self.request)
+        rclpy.spin_until_future_complete(self, self.future)
+        return self.future.result()
 
-        # Start a new thread for spinning
-        self.spin_thread = threading.Thread(target=self.spin)
-        self.spin_thread.start()
+    def goal_reach_update(self, msg):
+        if msg.data == True:
+            self.goal_state = True
 
-    def spin(self):
-        while not self.spin_event.is_set():
-            rclpy.spin_once(self, timeout_sec=0.1)
-    def update_curr_pose(self, msg):
-        # self.curr_pose
-        self.curr_pose = msg
-
-    def goalReached_callback(self,msg):
-        if msg.data:
-            self.goalReached = True
-
-    def wait_for_goal(self, timeout=60.0):
-        start_time = datetime.datetime.now()
-        while not self.goalReached:
-            elapsed_time = (datetime.datetime.now() - start_time).total_seconds()
-            if elapsed_time > timeout:
-                self.get_logger().warn('Timeout while waiting for goal to be reached')
-                return False
-            sleep(0.001)
-        return True
+    def wait_for_goal(self):
+        while not self.goal_state:
+            rclpy.spin_once(self, timeout_sec = self.commiunication_rate)
+        self.goal_state = False
+        return 
 
     def is_close_pos(self, xyz_array, pos_thresh = 0.0005):
         translation_vec = np.asarray([xyz_array[0] - self.curr_pose.position.x, 
@@ -80,12 +73,8 @@ class PrintLines(Node):
 
 
     def print_lines(self, start_pos, z_table_height, z_surface_height, needle_surface_dist_ideal):
-        
-        
-        
         global entered
         entered = False
-
         
         line_distance = 50 * 0.001
         print_length = 140 * 0.001
@@ -141,13 +130,9 @@ class PrintLines(Node):
             line_end_pose.position.z = needle_height
             line_end_pose.orientation = (Rotation.from_ABC([180,0,180],True)).as_geometry_orientation()
 
-            sleep(0.5)
-            self.goalReached = False
-            self.goal_pub.publish(print_start_pose)
-
-            if not self.wait_for_goal():
-                self.get_logger().error('Failed to reach goal within timeout')
-                return
+            # self.goal_state = False
+            response = self.send_request(print_start_pose)
+            self.wait_for_goal()
 
 
             sleep(0.2)
@@ -156,14 +141,12 @@ class PrintLines(Node):
             file.write('\n')
 
             self.printer_pub.publish(Float32(data=print_vel))  # TODO
-            self.goalReached = False
-            self.goal_pub.publish(line_end_pose)
+            # self.goal_state = False
+            response = self.send_request(print_end_pose)
 
-            flag = 0
-            while(not self.goalReached):
+            while(not self.goal_state):
                 if (needle_position_file_counter%10==0):
                     needle_pos_time = np.vstack((needle_pos_time,np.asarray([self.curr_pose.position.x,self.curr_pose.position.y,self.curr_pose.position.z,create_relative_timestamp()])))
-
                 if(entered):
                     file.write('Time stamp per user request: ' + str(create_relative_timestamp()) + '\n')
                     file.write('Actual position: x: ' + str(self.curr_pose.position.x) + ' y: ' + str(self.curr_pose.position.y) + ' z: ' + str(self.curr_pose.position.z) + '\n')
@@ -173,15 +156,19 @@ class PrintLines(Node):
                     thread.daemon = True
                     thread.start()
                 
-                if(self.is_close_pos(print_end_pose.position) and flag==0):
-                    file.write('Injection stopped at time: ' + str(create_relative_timestamp()) + '\n')
-                    file.write('Actual position: x: ' + str(self.curr_pose.position.x) + ' y: ' + str(self.curr_pose.position.y) + ' z: ' + str(self.curr_pose.position.z) + '\n')
-                    file.write('\n')
-                    printer_pub.publish(0)
-                    flag = 1
                 needle_position_file_counter = needle_position_file_counter + 1
-                rclpy.spin_once(self)
-            
+                rclpy.spin_once(self, timeout_sec = self.commiunication_rate)
+            self.goal_state = False
+
+
+            file.write('Injection stopped at time: ' + str(create_relative_timestamp()) + '\n')
+            file.write('Actual position: x: ' + str(self.curr_pose.position.x) + ' y: ' + str(self.curr_pose.position.y) + ' z: ' + str(self.curr_pose.position.z) + '\n')
+            file.write('\n')
+            printer_pub.publish(0)
+
+            response = self.send_request(line_end_pose)
+            self.wait_for_goal()
+
             file.write('End line reached at time: ' + str(create_relative_timestamp()) + '\n')
             file.write('Actual position: x: ' + str(self.curr_pose.position.x) + ' y: ' + str(self.curr_pose.position.y) + ' z: ' + str(self.curr_pose.position.z) + '\n')
             file.write('\n')
@@ -194,15 +181,14 @@ class PrintLines(Node):
         
         print('Take me to shooting pose!')
         shooting_pose = Pose()
-        shooting_pose.position.x = -0.650
+        shooting_pose.position.x = -0.550
         shooting_pose.position.y = 0.0
-        shooting_pose.position.z = 0.150
+        shooting_pose.position.z = 0.50
         shooting_pose.orientation = (Rotation.from_ABC([180,0,180],True)).as_geometry_orientation()
-        self.goalReached = False
-        self.goal_pub.publish(shooting_pose)
-        if not self.wait_for_goal():
-            self.get_logger().error('Failed to reach goal within timeout')
-            return
+
+        response = self.send_request(shooting_pose)
+        self.wait_for_goal()
+        
 
 
         

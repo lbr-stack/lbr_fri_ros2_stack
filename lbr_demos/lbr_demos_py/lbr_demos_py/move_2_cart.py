@@ -75,7 +75,7 @@ class Move2Cart(Node):
             self.goal_pub.publish(temp)
 
 
-    def generate_move_command(self, lin_vel, pos_thresh=0.0005):  # Generates move commands, for motions containing ONLY rotational movements use generate_move_command_rotation method
+    def generate_move_command(self, lin_vel, pos_thresh=0.0001):  # Generates move commands, for motions containing ONLY rotational movements use generate_move_command_rotation method
         command_pose = Pose()
         GoalPose = self.goal_pose
         CurrPose = self.curr_pose
@@ -150,7 +150,7 @@ class Move2Cart(Node):
 
         return command_pose
 
-    def is_close_pos(self, pos_thresh=0.0005):
+    def is_close_pos(self, pos_thresh=0.0001):
         translation_vec = np.asarray([self.goal_pose.position.x - self.curr_pose.position.x,
                                       self.goal_pose.position.y - self.curr_pose.position.y,
                                       self.goal_pose.position.z - self.curr_pose.position.z])
