@@ -12,6 +12,21 @@ MoveIt via RViZ
 
 To run MoveIt via RViZ, simply follow:
 
+Simulation
+~~~~~~~~~~
+#. Run the robot driver:
+
+    .. code-block:: bash
+
+        ros2 launch lbr_bringup bringup.launch.py \
+            moveit:=true \
+            sim:=true \
+            model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
+
+#. You can now move the robot via MoveIt in RViZ!
+
+Hardware
+~~~~~~~~
 #. Client side configurations:
 
     #. Configure the ``client_command_mode`` to ``position`` in `lbr_system_parameters.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_ros2_control/config/lbr_system_parameters.yaml>`_:octicon:`link-external`
@@ -30,13 +45,4 @@ To run MoveIt via RViZ, simply follow:
         - ``FRI control mode``: ``POSITION_CONTROL`` or ``JOINT_IMPEDANCE_CONTROL``
         - ``FRI client command mode``: ``POSITION``
 
-#. Run the robot driver:
-
-    .. code-block:: bash
-
-        ros2 launch lbr_bringup bringup.launch.py \
-            moveit:=true \
-            sim:=false \
-            model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
-
-#. You can now move the robot via MoveIt in RViZ!
+#. Proceed with steps 1 and 2 from `Simulation`_ but with ``sim:=false``.

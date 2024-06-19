@@ -5,9 +5,9 @@ moveit_setup_assistant_config:
   srdf:
     relative_path: config/med7.srdf
   package_settings:
-    author_name: Omid
-    author_email: omid.rezayof@utexas.edu
-    generated_timestamp: 1716909457
+    author_name: mhubii
+    author_email: m.huber_1994@hotmail.de
+    generated_timestamp: 1690640668
   control_xacro:
     command:
       - position
