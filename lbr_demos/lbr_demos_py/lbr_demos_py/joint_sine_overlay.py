@@ -49,6 +49,10 @@ class JointSineOverlayNode(Node):
             self._lbr_joint_position_command.joint_position[
                 3
             ] += self._amplitude * math.sin(self._phase)
+
+            self._lbr_joint_position_command.joint_position[
+                5
+            ] += -self._amplitude * math.sin(self._phase)
             self._phase += 2 * math.pi * self._frequency * self._dt
 
             self._lbr_joint_position_command_pub.publish(
@@ -56,6 +60,7 @@ class JointSineOverlayNode(Node):
             )
         else:
             # reset phase
+            print('resetting')
             self._phase = 0.0
 
     def _retrieve_update_rate(self) -> float:

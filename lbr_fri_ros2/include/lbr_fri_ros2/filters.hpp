@@ -126,20 +126,18 @@ protected:
   using pid_array_t = std::array<control_toolbox::Pid, KUKA::FRI::LBRState::NUMBER_OF_JOINTS>;
 
 public:
-  JointPIDArray() = default;
+  JointPIDArray() = delete;
+  JointPIDArray(const PIDParameters &pid_parameters);
 
   void compute(const value_array_t &command_target, const value_array_t &state,
                const std::chrono::nanoseconds &dt, value_array_t &command);
   void compute(const value_array_t &command_target, const double *state,
                const std::chrono::nanoseconds &dt, value_array_t &command);
-  void initialize(const PIDParameters &pid_parameters, const double &dt);
-  inline const bool &is_initialized() const { return initialized_; };
-
   void log_info() const;
 
 protected:
-  bool initialized_{false};     /**< True if initialized.*/
-  pid_array_t pid_controllers_; /**< PID controllers for each joint.*/
+  PIDParameters pid_parameters_; /**< PID parameters for all joints.*/
+  pid_array_t pid_controllers_;  /**< PID controllers for each joint.*/
 };
 } // end of namespace lbr_fri_ros2
 #endif // LBR_FRI_ROS2__FILTERS_HPP_

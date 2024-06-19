@@ -19,17 +19,7 @@ void PositionCommandInterface::buffered_command_to_fri(fri_command_t_ref command
     throw std::runtime_error(err);
   }
 #endif
-#if FRICLIENT_VERSION_MAJOR == 2
-  if (state.client_command_mode != KUKA::FRI::EClientCommandMode::JOINT_POSITION) {
-    std::string err =
-        "Expected robot in " +
-        EnumMaps::client_command_mode_map(KUKA::FRI::EClientCommandMode::JOINT_POSITION) +
-        " command mode.";
-    RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME()), err.c_str());
-    throw std::runtime_error(err);
-  }
-#endif
-#if FRICLIENT_VERSION_MAJOR == 3
+#if FRICLIENT_VERSION_MAJOR >= 2
   if (state.client_command_mode != KUKA::FRI::EClientCommandMode::JOINT_POSITION) {
     std::string err =
         "Expected robot in " +
@@ -51,9 +41,6 @@ void PositionCommandInterface::buffered_command_to_fri(fri_command_t_ref command
   }
 
   // PID
-  if (!joint_position_pid_.is_initialized()) {
-    joint_position_pid_.initialize(pid_parameters_, state.sample_time);
-  }
   joint_position_pid_.compute(
       command_target_.joint_position, state.measured_joint_position,
       std::chrono::nanoseconds(static_cast<int64_t>(state.sample_time * 1.e9)),

@@ -43,6 +43,17 @@ void JointExponentialFilterArray::initialize(const double &cutoff_frequency,
   initialized_ = true;
 }
 
+JointPIDArray::JointPIDArray(const PIDParameters &pid_parameters)
+    : pid_parameters_(pid_parameters) // keep local copy of parameters since
+                                      // controller_toolbox::Pid::getGains is not const correct
+                                      // (i.e. can't be called in this->log_info)
+{
+  std::for_each(pid_controllers_.begin(), pid_controllers_.end(), [&](auto &pid) {
+    pid.initPid(pid_parameters_.p, pid_parameters_.i, pid_parameters_.d, pid_parameters_.i_max,
+                pid_parameters_.i_min, pid_parameters_.antiwindup);
+  });
+}
+
 void JointPIDArray::compute(const value_array_t &command_target, const value_array_t &state,
                             const std::chrono::nanoseconds &dt, value_array_t &command) {
   std::for_each(command.begin(), command.end(), [&, i = 0](double &command_i) mutable {
@@ -59,11 +70,14 @@ void JointPIDArray::compute(const value_array_t &command_target, const double *s
   });
 }
 
-void JointPIDArray::initialize(const PIDParameters &pid_parameters, const double &dt) {
-  std::for_each(pid_controllers_.begin(), pid_controllers_.end(), [&](auto &pid) {
-    pid.initPid(pid_parameters.p * dt, pid_parameters.i * dt, pid_parameters.d * dt,
-                pid_parameters.i_max * dt, pid_parameters.i_min * dt, pid_parameters.antiwindup);
-  });
-  initialized_ = true;
-}
+void JointPIDArray::log_info() const {
+  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "*** Parameters:");
+  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "*   p: %.1f", pid_parameters_.p);
+  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "*   i: %.1f", pid_parameters_.i);
+  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "*   d: %.1f", pid_parameters_.d);
+  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "*   i_max: %.1f", pid_parameters_.i_max);
+  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "*   i_min: %.1f", pid_parameters_.i_min);
+  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "*   antiwindup: %s",
+              pid_parameters_.antiwindup ? "true" : "false");
+};
 } // end of namespace lbr_fri_ros2
