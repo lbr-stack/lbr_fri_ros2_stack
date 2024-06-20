@@ -22,8 +22,9 @@ class MoveToPoseClient(Node):
         self.goal_state = False
         self.commiunication_rate = 0.01
 
-    def send_request(self, goal_pose):
+    def send_request(self, goal_pose, lin_vel = 0.005):
         self.request.goal_pose = goal_pose
+        self.request.lin_vel = lin_vel
         self.future = self.client.call_async(self.request)
         rclpy.spin_until_future_complete(self, self.future)
         return self.future.result()

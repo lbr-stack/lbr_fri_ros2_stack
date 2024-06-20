@@ -33,16 +33,18 @@ class Move2Cart(Node):
 
         self.moving_thread = threading.Thread(target=self.move_robot)
         self.moving_thread.start()
+        self.lin_vel = False
 
     def on_pose(self, msg):
         self.curr_pose = msg
         if not self.is_init:
             self.is_init = True
             self.desired_pose = msg
-        print('updating!')
+        # print('updating!')
 
     def move_to_pose_callback(self, request, response):
         self.goal_pose = request.goal_pose
+        self.lin_vel = request.lin_vel.data
         self.moving_event.set()
 
 
@@ -54,16 +56,17 @@ class Move2Cart(Node):
             self.moving_event.wait()  # Wait until the event is set
             while not (self.is_close_pos() and self.is_close_orien()):
                 if not self.is_close_pos():
-                    lin_vel = 0.005
-                    command_pose = self.generate_move_command(lin_vel)
+                    
+                    command_pose = self.generate_move_command(self.lin_vel)
                 else:
-                    MotionTime = 20.0
+                    MotionTime = 20.0 #TODO get from service
                     command_pose = self.generate_move_command_rotation(MotionTime)
 
-                if self.is_safe_pose(command_pose):
+                if self.is_safe_pose(command_pose) and self.lin_vel<0.1:
                     self.pose_pub.publish(command_pose)
                     print(command_pose.position)
                 else:
+                    print('Command not safe. Execution halted.')
                     self.moving_event.clear()
                     break
 

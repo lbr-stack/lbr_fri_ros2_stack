@@ -2,6 +2,7 @@ import rclpy
 from rclpy.node import Node
 from std_msgs.msg import String, Bool, Float32
 from geometry_msgs.msg import Pose
+from lbr_fri_idl.srv import MoveToPose
 import datetime
 import numpy as np
 import threading
@@ -35,21 +36,27 @@ def create_relative_timestamp():
 class PrintLines(Node):
 
     def __init__(self):
-        super().__init__('long_lines_node')
+        super().__init__('long_lines')
         self.move_client = self.create_client(MoveToPose, 'move_to_pose')
-        while not self.client.wait_for_service(timeout_sec=1.0):
+        while not self.move_client.wait_for_service(timeout_sec=1.0):
             self.get_logger().info('Service not available, waiting again...')
 
         self.request = MoveToPose.Request()
         self.reach_subs = self.create_subscription(Bool, 'goal_reached_top', self.goal_reach_update, 1)
+        self.curr_pose_subs = self.create_subscription(Pose, 'state/pose', self.curr_pose_update, 1)
 
         self.goal_state = False
         self.commiunication_rate = 0.01
         self.printer_pub = self.create_publisher(Float32, 'syringeVel', 1) 
+        self.curr_pose = Pose()
+
+    def curr_pose_update(self, msg):
+        self.curr_pose = msg
 
     
-    def send_request(self, goal_pose):
+    def send_request(self, goal_pose, lin_vel):
         self.request.goal_pose = goal_pose
+        self.request.lin_vel = Float32(data = lin_vel)
         self.future = self.move_client.call_async(self.request)
         rclpy.spin_until_future_complete(self, self.future)
         return self.future.result()
@@ -64,21 +71,21 @@ class PrintLines(Node):
         self.goal_state = False
         return 
 
-    def is_close_pos(self, xyz_array, pos_thresh = 0.0005):
-        translation_vec = np.asarray([xyz_array[0] - self.curr_pose.position.x, 
-                                      xyz_array[1] - self.curr_pose.position.y, 
-                                      xyz_array[2] - self.curr_pose.position.z])
-        
-        return np.linalg.norm(translation_vec)<pos_thresh
+    def go_home(self, home_pose, lin_vel = 0.005):
+        response = self.send_request(home_pose, lin_vel)
+        print(response)
+        self.wait_for_goal()    
+        return 
 
 
-    def print_lines(self, start_pos, z_table_height, z_surface_height, needle_surface_dist_ideal):
+
+    def print_lines(self, start_pos, z_table_height, z_surface_height, needle_surface_dist_ideal, lin_vel):
         global entered
         entered = False
         
         line_distance = 50 * 0.001
-        print_length = 140 * 0.001
-        line_length = 400 * 0.001
+        print_length = 50 * 0.001
+        line_length = 100 * 0.001
         num_lines = 2
         direction = 1
         needle_position_file_counter = 0
@@ -101,7 +108,9 @@ class PrintLines(Node):
         thread = threading.Thread(target=listen_for_enter)
         thread.daemon = True
         thread.start()
-        needle_height = z_surface_height + z_table_height + needle_surface_dist_ideal
+        # needle_height = z_surface_height + z_table_height + needle_surface_dist_ideal
+        needle_height = start_pos.position.z - 0.02
+
 
         for line_num in range(num_lines):
             print('line_num: ', line_num)
@@ -131,7 +140,7 @@ class PrintLines(Node):
             line_end_pose.orientation = (Rotation.from_ABC([180,0,180],True)).as_geometry_orientation()
 
             # self.goal_state = False
-            response = self.send_request(print_start_pose)
+            response = self.send_request(print_start_pose, lin_vel)
             self.wait_for_goal()
 
 
@@ -142,7 +151,7 @@ class PrintLines(Node):
 
             self.printer_pub.publish(Float32(data=print_vel))  # TODO
             # self.goal_state = False
-            response = self.send_request(print_end_pose)
+            response = self.send_request(print_end_pose, lin_vel)
 
             while(not self.goal_state):
                 if (needle_position_file_counter%10==0):
@@ -164,9 +173,9 @@ class PrintLines(Node):
             file.write('Injection stopped at time: ' + str(create_relative_timestamp()) + '\n')
             file.write('Actual position: x: ' + str(self.curr_pose.position.x) + ' y: ' + str(self.curr_pose.position.y) + ' z: ' + str(self.curr_pose.position.z) + '\n')
             file.write('\n')
-            printer_pub.publish(0)
+            self.printer_pub.publish(Float32(data = 0.0))
 
-            response = self.send_request(line_end_pose)
+            response = self.send_request(line_end_pose, lin_vel)
             self.wait_for_goal()
 
             file.write('End line reached at time: ' + str(create_relative_timestamp()) + '\n')
@@ -181,12 +190,12 @@ class PrintLines(Node):
         
         print('Take me to shooting pose!')
         shooting_pose = Pose()
-        shooting_pose.position.x = -0.550
+        shooting_pose.position.x = 0.550
         shooting_pose.position.y = 0.0
         shooting_pose.position.z = 0.50
         shooting_pose.orientation = (Rotation.from_ABC([180,0,180],True)).as_geometry_orientation()
 
-        response = self.send_request(shooting_pose)
+        response = self.send_request(shooting_pose, lin_vel)
         self.wait_for_goal()
         
 
@@ -196,15 +205,22 @@ class PrintLines(Node):
         np.save('needle_array_data.npy', needle_pos_time)
         sleep(2)
 
-    def stop_spin_thread(self):
-        self.spin_event.set()
-        self.spin_thread.join()
 
 def main(args=None):
     rclpy.init(args=args)
     node = PrintLines()
-    node.print_lines(z_table_height=0.01, z_surface_height=0.02, needle_surface_dist_ideal=0.4)
-    node.stop_spin_thread()
+    lin_vel = 0.005
+    home_pose = Pose()
+    home_pose.position.x = 0.6
+    home_pose.position.y = 0.05
+    home_pose.position.z = 0.45
+    home_pose.orientation = (Rotation.from_ABC([180,0,180],True)).as_geometry_orientation()
+
+    node.go_home(home_pose, lin_vel)
+    print('Home position finished')
+    sleep(2)
+
+    node.print_lines(home_pose, 0.01, 0.02, 0.4, 0.005)
     node.destroy_node()
     rclpy.shutdown()
 
