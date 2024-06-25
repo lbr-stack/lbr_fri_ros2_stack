@@ -24,6 +24,7 @@ setup(
         "console_scripts": [
             "admittance_control = lbr_demos_advanced_py.admittance_control_node:main",
             "admittance_rcm_control = lbr_demos_advanced_py.admittance_rcm_control_node:main",
+            "pivot_calib = lbr_demos_advanced_py.pivot_calibration:main",
         ],
     },
 )
