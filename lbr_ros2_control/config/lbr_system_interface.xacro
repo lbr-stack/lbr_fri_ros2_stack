@@ -10,7 +10,7 @@
             <!-- define hardware including parameters, also gazebo -->
             <xacro:if value="${sim}">
                 <hardware>
-                    <plugin>gazebo_ros2_control/GazeboSystem</plugin>
+                    <plugin>gz_ros2_control/GazeboSimSystem</plugin>
                 </hardware>
             </xacro:if>
             <xacro:unless value="${sim}">

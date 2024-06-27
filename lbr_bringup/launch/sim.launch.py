@@ -11,7 +11,7 @@ from launch.substitutions import (
     PathJoinSubstitution,
 )
 from launch_mixins.lbr_bringup import LBRMoveGroupMixin
-from launch_mixins.lbr_description import GazeboMixin, LBRDescriptionMixin, RVizMixin
+from launch_mixins.lbr_description import GZMixin, LBRDescriptionMixin, RVizMixin
 from launch_mixins.lbr_ros2_control import LBRROS2ControlMixin
 
 
@@ -20,9 +20,9 @@ def launch_setup(context: LaunchContext) -> List[LaunchDescriptionEntity]:
 
     robot_description = LBRDescriptionMixin.param_robot_description(sim=True)
     world_robot_tf = [0, 0, 0, 0, 0, 0]  # keep zero
-    ld.add_action(GazeboMixin.include_gazebo())  # Gazebo has its own controller manager
-    spawn_entity = GazeboMixin.node_spawn_entity(tf=world_robot_tf)
-    ld.add_action(spawn_entity)
+    ld.add_action(GZMixin.include_gz_sim())  # Gazebo has its own controller manager
+    create = GZMixin.node_create(tf=world_robot_tf)
+    ld.add_action(create)
     joint_state_broadcaster = LBRROS2ControlMixin.node_controller_spawner(
         controller="joint_state_broadcaster"
     )
@@ -120,7 +120,7 @@ def launch_setup(context: LaunchContext) -> List[LaunchDescriptionEntity]:
 
     # RViz event handler
     rviz_event_handler = RegisterEventHandler(
-        OnProcessExit(target_action=spawn_entity, on_exit=[rviz_moveit, rviz])
+        OnProcessExit(target_action=create, on_exit=[rviz_moveit, rviz])
     )
     ld.add_action(rviz_event_handler)
 

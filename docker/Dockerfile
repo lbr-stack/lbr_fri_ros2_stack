@@ -1,4 +1,4 @@
-FROM ros:humble-ros-base-jammy
+FROM ros:jazzy-ros-base
 
 # change default shell to bash
 SHELL ["/bin/bash", "-c"]
