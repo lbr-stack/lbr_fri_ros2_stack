@@ -7,7 +7,7 @@ import copy
 import time
 import numpy as np
 from lbr_demos_py.asbr import *
-from lbr_fri_idl.srv import MoveToPose
+from lbr_fri_idl.srv import MoveToPose, FreeFormMove
 import threading
 
 class Move2Cart(Node):
@@ -18,6 +18,9 @@ class Move2Cart(Node):
         self.curr_pose = Pose()
         self.goal_pose = Pose()
         self.desired_pose = Pose()
+        self.goal_poses_to_reach = []
+        self.lin_vel_in_each_sec = []
+        self.lin_vel = False
 
         self.communication_rate = 0.01  # 10 ms
         self.pid_p_correction = 12.2
@@ -27,13 +30,15 @@ class Move2Cart(Node):
         self.goal_pub = self.create_publisher(Bool, 'goal_reached_top', 1)
         self.pose_sub = self.create_subscription(Pose, 'state/pose', self.on_pose, 1)
         self.service = self.create_service(MoveToPose, 'move_to_pose', self.move_to_pose_callback)
+        self.service = self.create_service(FreeFormMove, 'free_form_move', self.free_form_move_callback)
 
         self.moving_event = threading.Event()
         self.motion_complete = threading.Condition()
 
+        
         self.moving_thread = threading.Thread(target=self.move_robot)
         self.moving_thread.start()
-        self.lin_vel = False
+        
 
     def on_pose(self, msg):
         self.curr_pose = msg
@@ -43,10 +48,17 @@ class Move2Cart(Node):
         # print('updating!')
 
     def move_to_pose_callback(self, request, response):
-        self.goal_pose = request.goal_pose
-        self.lin_vel = request.lin_vel.data
+        self.goal_poses_to_reach.append(request.goal_pose)
+        self.lin_vel_in_each_sec.append(request.lin_vel.data)
         self.moving_event.set()
 
+        response.success = True
+        return response
+
+    def free_form_move_callback(self, request, response):
+        self.goal_poses_to_reach = request.poses
+        self.lin_vel_in_each_sec = request.lin_vels
+        self.moving_event.set()
 
         response.success = True
         return response
@@ -54,23 +66,26 @@ class Move2Cart(Node):
     def move_robot(self):
         while rclpy.ok():
             self.moving_event.wait()  # Wait until the event is set
-            while not (self.is_close_pos() and self.is_close_orien()):
-                if not self.is_close_pos():
-                    
-                    command_pose = self.generate_move_command(self.lin_vel)
-                else:
-                    MotionTime = 20.0 #TODO get from service
-                    command_pose = self.generate_move_command_rotation(MotionTime)
+            for i_pose in range(len(self.goal_poses_to_reach)):
+                self.goal_pose = self.goal_poses_to_reach[i_pose]
+                self.lin_vel = self.lin_vel_in_each_sec[i_pose]
+                while not (self.is_close_pos() and self.is_close_orien()):
+                    if not self.is_close_pos():
+                        
+                        command_pose = self.generate_move_command(self.lin_vel)
+                    else:
+                        MotionTime = 20.0 #TODO get from service
+                        command_pose = self.generate_move_command_rotation(MotionTime)
 
-                if self.is_safe_pose(command_pose) and self.lin_vel<0.1:
-                    self.pose_pub.publish(command_pose)
-                    print(command_pose.position)
-                else:
-                    print('Command not safe. Execution halted.')
-                    self.moving_event.clear()
-                    break
+                    if self.is_safe_pose(command_pose) and self.lin_vel<0.1:
+                        self.pose_pub.publish(command_pose)
+                        print(command_pose.position)
+                    else:
+                        print('Command not safe. Execution halted.')
+                        self.moving_event.clear()
+                        break
 
-                time.sleep(self.communication_rate)
+                    time.sleep(self.communication_rate)
 
             self.moving_event.clear()
             temp = Bool()
@@ -115,7 +130,6 @@ class Move2Cart(Node):
             self.last_command = command_pose
         else:
             command_pose.orientation = self.last_command.orientation
-        # command_pose.orientation = self.initial_pose.orientation
 
         return command_pose
 
@@ -175,11 +189,11 @@ class Move2Cart(Node):
         return np.max(np.abs(ABC_diff)) < angle_thresh
 
     def is_safe_pose(self, pose):
-        if (pose.position.x > 0.7 or pose.position.x < 0.4 or
-            pose.position.y > 0.1 or pose.position.y < -0.1 or
-            pose.position.z > 0.7 or pose.position.z < 0.4):
-            print('Failed, not executable')
-            return False
+        # if (pose.position.x > 0.7 or pose.position.x < 0.35 or
+        #     pose.position.y > 0.1 or pose.position.y < -0.1 or
+        #     pose.position.z > 0.7 or pose.position.z < 0.4):
+        #     print('Failed, not executable')
+        #     return False
         return True
 
 def main(args=None):
