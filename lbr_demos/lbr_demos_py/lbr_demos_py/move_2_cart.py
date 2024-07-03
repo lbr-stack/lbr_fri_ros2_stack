@@ -24,7 +24,7 @@ class Move2Cart(Node):
 
         self.communication_rate = 0.01  # 10 ms
         self.pid_p_correction = 12.2
-        self.move_orientation_init_time = -1
+        self.move_init_time = -1
 
         self.pose_pub = self.create_publisher(Pose, 'command/pose', 1)
         self.goal_pub = self.create_publisher(Bool, 'goal_reached_top', 1)
@@ -56,8 +56,8 @@ class Move2Cart(Node):
         return response
 
     def free_form_move_callback(self, request, response):
-        self.goal_poses_to_reach = request.poses
-        self.lin_vel_in_each_sec = request.lin_vels
+        self.goal_poses_to_reach = request.goal_pose
+        self.lin_vel_in_each_sec = [i.data for i in request.lin_vel]
         self.moving_event.set()
 
         response.success = True
@@ -69,8 +69,8 @@ class Move2Cart(Node):
             for i_pose in range(len(self.goal_poses_to_reach)):
                 self.goal_pose = self.goal_poses_to_reach[i_pose]
                 self.lin_vel = self.lin_vel_in_each_sec[i_pose]
-                while not (self.is_close_pos() and self.is_close_orien()):
-                    if not self.is_close_pos():
+                while not (self.is_close_pos(self.communication_rate*self.lin_vel) and self.is_close_orien()):
+                    if not self.is_close_pos(self.communication_rate*self.lin_vel):
                         
                         command_pose = self.generate_move_command(self.lin_vel)
                     else:
@@ -79,13 +79,16 @@ class Move2Cart(Node):
 
                     if self.is_safe_pose(command_pose) and self.lin_vel<0.1:
                         self.pose_pub.publish(command_pose)
-                        print(command_pose.position)
+                        # print(command_pose.position)
+                        print(self.lin_vel)
                     else:
                         print('Command not safe. Execution halted.')
                         self.moving_event.clear()
                         break
-
                     time.sleep(self.communication_rate)
+            self.goal_poses_to_reach = []
+            self.lin_vel_in_each_sec = []
+
 
             self.moving_event.clear()
             temp = Bool()
@@ -101,8 +104,9 @@ class Move2Cart(Node):
         translation_vec = np.asarray([GoalPose.position.x - CurrPose.position.x,
                                       GoalPose.position.y - CurrPose.position.y,
                                       GoalPose.position.z - CurrPose.position.z])
-        if(np.linalg.norm(translation_vec) < 2 * pos_thresh):
+        if (np.linalg.norm(translation_vec) < 2 * pos_thresh):
             vel_vec = (translation_vec / np.linalg.norm(translation_vec)) * lin_vel
+            # pass
         else:
             vel_vec = (translation_vec / np.linalg.norm(translation_vec)) * lin_vel * self.pid_p_correction
         command_pose.position.x = CurrPose.position.x + vel_vec[0] * self.communication_rate
@@ -133,16 +137,53 @@ class Move2Cart(Node):
 
         return command_pose
 
+    def generate_move_command_dev(self, lin_vel):  # Generates move commands, for motions containing ONLY rotational movements use generate_move_command_rotation method
+        command_pose = Pose()
+        GoalPose = self.goal_pose
+        DesPose = self.desired_pose
+
+
+        translation_vec = np.asarray([GoalPose.position.x - DesPose.position.x,
+                                      GoalPose.position.y - DesPose.position.y,
+                                      GoalPose.position.z - DesPose.position.z])
+
+        motion_time = np.linalg.norm(translation_vec) / lin_vel
+        vel_vec = (translation_vec / np.linalg.norm(translation_vec)) * lin_vel
+        command_pose.position.x = DesPose.position.x + vel_vec[0] * self.communication_rate
+        command_pose.position.y = DesPose.position.y + vel_vec[1] * self.communication_rate
+        command_pose.position.z = DesPose.position.z + vel_vec[2] * self.communication_rate
+
+        if(int(motion_time/self.communication_rate) > 0):
+            goal_Rot = Rotation(GoalPose.orientation)
+            ABC_diff = goal_Rot.as_ABC() - (Rotation(DesPose.orientation)).as_ABC()
+            for i in range(3):
+
+                if(ABC_diff[i] > np.pi):
+                    ABC_diff[i] -= 2.0 * np.pi
+                elif(ABC_diff[i] < (-np.pi)):
+                    ABC_diff[i] += 2.0 * np.pi
+
+            ABC_step = (ABC_diff / motion_time) * self.communication_rate
+            ABC_command = ABC_step + (Rotation(DesPose.orientation)).as_ABC()
+            quat_command = Rotation.from_ABC(ABC_command)
+            command_pose.orientation = quat_command.as_geometry_orientation()    
+            self.last_command = command_pose
+        else:
+            command_pose.orientation = self.last_command.orientation
+
+        self.desired_pose = copy.deepcopy(command_pose)
+        return command_pose
+
     def generate_move_command_rotation(self, motion_time, angle_thresh=0.1*3.1415/180.0):
         GoalPose = self.goal_pose
         CurrPose = self.curr_pose
         command_pose = copy.deepcopy(CurrPose)
 
-        if(self.move_orientation_init_time == -1):
-            self.move_orientation_init_time = int(round(time.time() * 1000))/1000.0  # Current time in seconds
+        if(self.move_init_time == -1):
+            self.move_init_time = int(round(time.time() * 1000))/1000.0  # Current time in seconds
         else:
             curr_time = int(round(time.time() * 1000))/1000.0  # Current time in seconds
-            timeRemain2Reach = motion_time - (curr_time - self.move_orientation_init_time)
+            timeRemain2Reach = motion_time - (curr_time - self.move_init_time)
             if(int(timeRemain2Reach/self.communication_rate) > 0):
                 curr_Rot = Rotation(CurrPose.orientation)
                 goal_Rot = Rotation(GoalPose.orientation)
@@ -184,7 +225,7 @@ class Move2Cart(Node):
             elif(ABC_diff[i] < (-np.pi)):
                 ABC_diff[i] += 2.0 * np.pi
         if(np.max(np.abs(ABC_diff)) < angle_thresh):
-            self.move_orientation_init_time = -1
+            self.move_init_time = -1
 
         return np.max(np.abs(ABC_diff)) < angle_thresh
 

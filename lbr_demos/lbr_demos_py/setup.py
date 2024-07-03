@@ -27,6 +27,7 @@ setup(
             "move_2_cart = lbr_demos_py.move_2_cart:main",
             "move_to_pose_client = lbr_demos_py.move_to_pose_client:main",
             "long_lines = lbr_demos_py.long_lines:main",
+            "submerged_demo = lbr_demos_py.submerged_demo:main"
         ],
     },
 )
