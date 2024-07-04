@@ -17,11 +17,9 @@ class Move2Cart(Node):
         self.is_init = False
         self.curr_pose = Pose()
         self.goal_pose = Pose()
-        self.desired_pose = Pose()
         self.goal_poses_to_reach = []
         self.lin_vel_in_each_sec = []
         self.lin_vel = False
-        self.move_init_time = -1
 
         self.communication_rate = 0.01  # 10 ms
 
@@ -29,7 +27,7 @@ class Move2Cart(Node):
         self.goal_pub = self.create_publisher(Bool, 'goal_reached_top', 1)
         self.pose_sub = self.create_subscription(Pose, 'state/pose', self.on_pose, 1)
         self.service = self.create_service(MoveToPose, 'move_to_pose', self.move_to_pose_callback)
-        self.service = self.create_service(FreeFormMove, 'free_form_move', self.free_form_move_callback)
+        self.FFM_service = self.create_service(FreeFormMove, 'free_form_move', self.free_form_move_callback)
 
         self.planning_finished = False
         self.moving_queue = []
@@ -39,15 +37,15 @@ class Move2Cart(Node):
         self.curr_pose = msg
         if not self.is_init:
             self.is_init = True
-            self.desired_pose = msg
-        if len(self.moveing_queue) > 0 and self.planning_finished:
-            command_pose = self.moveing_queue.pop(0)
-            self.pose_pub.publish(command_pose)
-            print(command_pose.position)
-            if len(self.moveing_queue) == 0:
-                goal_reached = Bool()
-                goal_reached.data = True
-                self.goal_pub.publish(goal_reached)
+        if len(self.moving_queue) > 0 and self.planning_finished:
+            command_pose = self.moving_queue.pop(0)
+            if(self.is_safe_pose(command_pose)):
+                self.pose_pub.publish(command_pose)
+                # print(command_pose.position)
+                if len(self.moving_queue) == 0:
+                    goal_reached = Bool()
+                    goal_reached.data = True
+                    self.goal_pub.publish(goal_reached)
 
     def move_to_pose_callback(self, request, response):
         self.goal_poses_to_reach.append(request.goal_pose)
@@ -76,29 +74,33 @@ class Move2Cart(Node):
             self.goal_pose = self.goal_poses_to_reach.pop(0)
             self.lin_vel = self.lin_vel_in_each_sec.pop(0)
             if not self.is_close_pos(self.communication_rate*self.lin_vel):
-                
-                self.generate_move_command(self.lin_vel)
+                self.generate_move_command(self.lin_vel, False)
             elif not self.is_close_orien():
                 MotionTime = 20.0 #TODO get from service
-                self.generate_move_command_rotation(MotionTime)
-            
+                self.generate_move_command(False, MotionTime)
+                print('orientation planning only.')
+
             self.last_goal_reached = self.goal_pose
         self.planning_finished = True
 
 
-    def generate_move_command(self, lin_vel):  # Generates move commands, for motions containing ONLY rotational movements use generate_move_command_rotation method
-        command_pose = copy.deepcopy(self.last_goal_reached)
+    def generate_move_command(self, lin_vel, motion_time):  # Generates move commands, for motions containing ONLY rotational movements use generate_move_command_rotation method
+        
         GoalPose = self.goal_pose
-        # DesPose = self.desired_pose
         command_poses = []
 
         translation_vec = np.asarray([GoalPose.position.x - self.last_goal_reached.position.x,
                                       GoalPose.position.y - self.last_goal_reached.position.y,
                                       GoalPose.position.z - self.last_goal_reached.position.z])
+        if(motion_time != False and lin_vel != False):
+            print('MotionTime and lin_vel cannot both be present.')
+            return False
+        if(motion_time == False and lin_vel!=False):
+            motion_time = np.linalg.norm(translation_vec) / lin_vel
+            # vel_vec = (translation_vec / np.linalg.norm(translation_vec)) * lin_vel
+        
 
-        motion_time = np.linalg.norm(translation_vec) / lin_vel
-        # vel_vec = (translation_vec / np.linalg.norm(translation_vec)) * lin_vel
-        num_of_steps = motion_time / self.communication_rate
+        num_of_steps = int(motion_time / self.communication_rate)
 
         goal_Rot = Rotation(GoalPose.orientation)
         ABC_diff = goal_Rot.as_ABC() - (Rotation(self.last_goal_reached.orientation)).as_ABC()
@@ -109,6 +111,7 @@ class Move2Cart(Node):
                 ABC_diff[i] += 2.0 * np.pi
 
         for step_counter in range(num_of_steps):
+            command_pose = copy.deepcopy(self.last_goal_reached)
             command_pose.position.x = command_pose.position.x + translation_vec[0] * (step_counter+1) / num_of_steps
             command_pose.position.y = command_pose.position.y + translation_vec[1] * (step_counter+1) / num_of_steps
             command_pose.position.z = command_pose.position.z + translation_vec[2] * (step_counter+1) / num_of_steps
@@ -119,65 +122,40 @@ class Move2Cart(Node):
 
             command_poses.append(command_pose)  
 
-        # self.desired_pose = copy.deepcopy(command_pose)
-        self.moving_queue.append(command_poses)
+        self.moving_queue.extend(command_poses)
         return 
 
-    def generate_move_command_rotation(self, motion_time, angle_thresh=0.1*3.1415/180.0):
-        GoalPose = self.goal_pose
-        CurrPose = self.curr_pose
-        command_pose = copy.deepcopy(CurrPose)
+    def is_close_pos(self, pos_thresh=0.0001):
+        translation_vec = np.asarray([self.goal_pose.position.x - self.last_goal_reached.position.x,
+                                      self.goal_pose.position.y - self.last_goal_reached.position.y,
+                                      self.goal_pose.position.z - self.last_goal_reached.position.z])
 
-        if(self.move_init_time == -1):
-            self.move_init_time = int(round(time.time() * 1000))/1000.0  # Current time in seconds
-        else:
-            curr_time = int(round(time.time() * 1000))/1000.0  # Current time in seconds
-            timeRemain2Reach = motion_time - (curr_time - self.move_init_time)
-            if(int(timeRemain2Reach/self.communication_rate) > 0):
-                curr_Rot = Rotation(CurrPose.orientation)
-                goal_Rot = Rotation(GoalPose.orientation)
-                ABC_diff = goal_Rot.as_ABC() - (Rotation(self.desired_pose.orientation)).as_ABC()
-                for i in range(3):
-                    if(ABC_diff[i] > np.pi):
-                        ABC_diff[i] -= 2.0 * np.pi
-                    elif(ABC_diff[i] < (-np.pi)):
-                        ABC_diff[i] += 2.0 * np.pi
+        return np.linalg.norm(translation_vec) < pos_thresh
 
-                ABC_step = (ABC_diff / timeRemain2Reach) * self.communication_rate
-                ABC_command = ABC_step + (Rotation(self.desired_pose.orientation)).as_ABC()
-                quat_command = Rotation.from_ABC(ABC_command)
+    def is_close_orien(self, angle_thresh=0.08*3.1415/180.0):
+        last_goal_reached = Rotation(self.last_goal_reached.orientation)
+        goal_Rot = Rotation(self.goal_pose.orientation)
+        ABC_diff = last_goal_reached.as_ABC() - goal_Rot.as_ABC()
+        for i in range(3):
+            if(ABC_diff[i] > np.pi):
+                ABC_diff[i] -= 2.0 * np.pi
+            elif(ABC_diff[i] < (-np.pi)):
+                ABC_diff[i] += 2.0 * np.pi
 
-                command_pose.orientation = quat_command.as_geometry_orientation()
+        if(np.max(np.abs(ABC_diff)) < angle_thresh):
+            return True
 
-                self.last_command = command_pose
-                self.desired_pose = copy.deepcopy(command_pose)
+        return False
 
-            else:
-                command_pose.orientation = self.last_command.orientation
-
-        return command_pose
-
-
-        def is_close_pos(self, pos_thresh=0.0001):
-            translation_vec = np.asarray([self.goal_pose.position.x - self.curr_pose.position.x,
-                                          self.goal_pose.position.y - self.curr_pose.position.y,
-                                          self.goal_pose.position.z - self.curr_pose.position.z])
-
-            return np.linalg.norm(translation_vec) < pos_thresh
-
-        def is_close_orien(self, angle_thresh=0.1*3.1415/180.0):
-            curr_Rot = Rotation(self.curr_pose.orientation)
-            goal_Rot = Rotation(self.goal_pose.orientation)
-            ABC_diff = curr_Rot.as_ABC() - goal_Rot.as_ABC()
-            for i in range(3):
-                if(ABC_diff[i] > np.pi):
-                    ABC_diff[i] -= 2.0 * np.pi
-                elif(ABC_diff[i] < (-np.pi)):
-                    ABC_diff[i] += 2.0 * np.pi
-            if(np.max(np.abs(ABC_diff)) < angle_thresh):
-                self.move_init_time = -1
-
-            return np.max(np.abs(ABC_diff)) < angle_thresh
+    def is_safe_pose(self, pose):
+        if (pose.position.x > 0.75 or pose.position.x < 0.35 or
+            pose.position.y > 0.2 or pose.position.y < -0.2):
+            # or
+            #pose.position.z > 0.75 or pose.position.z < 0.35):
+            print(pose)
+            print('Failed, not executable')
+            return False
+        return True
 
 def main(args=None):
     rclpy.init(args=args)

@@ -60,7 +60,8 @@ class PrintLines(Node):
 
 
 
-    def print_lines(self, start_pos, lin_vel):
+    def print_lines_arc(self, start_pos, lin_vel):
+        #rectangle layer by layer
         global entered
         entered = False
         
@@ -180,6 +181,43 @@ class PrintLines(Node):
 
             # self.printer_pub.publish(Float32(data=print_vel))  # TODO
             # self.printer_pub.publish(Float32(data = 0.0))
+
+
+    def print_lines(self, start_pos, lin_vel):
+        #rectangle layer by layer
+
+        
+        height = 0.06
+
+        center = copy.deepcopy(start_pos)
+        center.position.z -= height * 2
+
+        sleep(0.2)
+        response = self.send_request(center, lin_vel*5)
+        self.wait_for_goal()
+        print('reached center node')
+        a = input('wait for enter:') 
+
+        first_node = Pose()
+        first_node.position.x = center.position.x
+        first_node.position.y = center.position.y
+        first_node.position.z = center.position.z + height - 0.015
+        first_node.orientation = (Rotation.from_ABC([180,0,180],True)).as_geometry_orientation()
+        response = self.send_request(first_node, lin_vel)
+        self.wait_for_goal()
+        print('reached first node')     
+
+
+        second_node = Pose()
+        second_node.position.x = center.position.x + 0.04
+        second_node.position.y = center.position.y 
+        second_node.position.z = center.position.z + height - 0.015
+        second_node.orientation = (Rotation.from_ABC([180,0,180],True)).as_geometry_orientation()
+        response = self.send_request(second_node, lin_vel)
+        self.wait_for_goal()
+        print('reached second node')
+
+        return
 
 
 def main(args=None):

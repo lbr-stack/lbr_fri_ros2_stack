@@ -77,7 +77,7 @@ def main(args=None):
     goal_pose.position.z = 0.50
     # Set orientation as required
 
-    goal_orientation = [180, 0, 180]
+    goal_orientation = [180, 5, 180]
     goal_orientation = Rotation.from_ABC(goal_orientation,True)
     goal_orientation = goal_orientation.as_geometry_orientation()
     goal_pose.orientation = goal_orientation 
@@ -87,6 +87,19 @@ def main(args=None):
     client.wait_for_goal()
     print(int(time.time() * 1000))
     print('first goal achieved')
+    a = input('Press enter to move')
+
+
+    goal_orientation = [180, 0, 180]
+    goal_orientation = Rotation.from_ABC(goal_orientation,True)
+    goal_orientation = goal_orientation.as_geometry_orientation()
+    goal_pose.orientation = goal_orientation 
+    print(int(time.time() * 1000))
+    response = client.send_request(goal_pose, 0.01)
+    print(f'Success: {response.success}')
+    client.wait_for_goal()
+    print(int(time.time() * 1000))
+    print('second goal achieved')
     a = input('Press enter to move')
     # time.sleep(2)
 
@@ -108,9 +121,9 @@ def main(args=None):
     goal_orientation = Rotation.from_ABC(goal_orientation,True)
     goal_orientation = goal_orientation.as_geometry_orientation()
 
-    pitch = 0.0
+    pitch = -0.02
     radius = 0.05
-    turns = 0.25
+    turns = 2
     resolution = 1.2 * np.pi / 180.0
     num_of_steps = turns * 2 * np.pi / resolution
     poses=[] 
@@ -152,7 +165,6 @@ def main(args=None):
 
     current_time_milliseconds = int(time.time() * 1000)
 
-    # Print the current time in milliseconds
     print(f"Current time in milliseconds: {current_time_milliseconds}")
 
     # response = client.send_request_FFM(poses, 0.005)
@@ -162,7 +174,6 @@ def main(args=None):
 
     current_time_milliseconds = int(time.time() * 1000)
 
-    # Print the current time in milliseconds
     print(f"Current time in milliseconds: {current_time_milliseconds}")
     
     client.destroy_node()
