@@ -5,21 +5,25 @@ Humble v2.0.0 (2024-07-08)
 --------------------------
 * Remove ``app.launch.py`` from demos in favor for ``ros2_control`` variant (breaking change)
 * ``lbr_ros2_control``:
+
   * Add Cartesian impedance controller
   * Add ``lbr_system_parameters.yaml`` for system parameter configuration
 * ``lbr_demos``:
+
   * Remove legacy demos
   * Add demo for each available controller, both in C++ and Python
 * ``lbr_fri_ros2``: De-couple the async client into ``position`` / ``torque`` / ``wrench``
 * Matrix testing against multiple FRIs (https://github.com/lbr-stack/fri): ``1.11``, ``1.14``, ``1.15``, ``1.16``, ``2.5``, ``2.7``
 * IDL changes: (breaking change)
+
   * ``lbr_fri_msgs`` to ``lbr_fri_idl``
   * Moved ``lbr_fri_idl`` into external folder (https://github.com/lbr-stack/lbr_fri_idl) for supporting multiple FRI versions
   * Renamed ``LBRPositionCommand`` to ``LBRJointPositionCommand``
 * Update documentation
-  - Refer https://lbr-stack.readthedocs.io/en/latest/
-  - Deletes branches at https://github.com/lbr-stack/lbr_stack_doc in favor of tags
-  - Adds an architecture chart to highlight ``lbr_ros2_control`` relation to ``ros2_control``
+
+  * Refer https://lbr-stack.readthedocs.io/en/latest/
+  * Deletes branches at https://github.com/lbr-stack/lbr_stack_doc in favor of tags
+  * Adds an architecture chart to highlight ``lbr_ros2_control`` relation to ``ros2_control``
 * Add log coloring a la https://github.com/ros-controls/ros2_control/blob/e149646d3f2595f269cfa4e1cd0681abde89ee69/controller_manager/controller_manager/spawner.py#L45
 * Adds ``black`` linting for Python scripts
 * Fixes velocity limit checks in impedance control mode
