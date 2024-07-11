@@ -1,3 +1,8 @@
+# A copy of sheeladrilldemoadmittance
+
+
+
+
 import numpy as np
 import rclpy
 import threading
@@ -40,9 +45,9 @@ class PivotCalibrationNode(LBRBasePositionCommandNode):
         # self.declare_parameter("f_ext_th", [4.0, 4.0, 8.0, 0.2, 0.2, 0.2])
         # self.declare_parameter("dq_gains", [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
         # self.declare_parameter("dx_gains", [0.1, 0.1, 0.1, 0.4, 0.4, 0.4])
-        self.declare_parameter("f_ext_th", [4.0, 4.0, 8.0, 30.0, 30.0, 30.0])
+        self.declare_parameter("f_ext_th", [8.0, 8.0, 8.0, 0.7, 0.7, 0.7])
         self.declare_parameter("dq_gains", [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
-        self.declare_parameter("dx_gains", [0.1, 0.1, 0.1, 0.1, 0.1, 0.1])
+        self.declare_parameter("dx_gains", [0.04, 0.04, 0.04, 0.04, 0.04, 0.04])
         self.declare_parameter("exp_smooth", 0.95)
 
         self._init = False
