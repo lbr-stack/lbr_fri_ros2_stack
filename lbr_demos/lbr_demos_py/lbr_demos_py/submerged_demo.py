@@ -2,13 +2,15 @@ import rclpy
 from rclpy.node import Node
 from std_msgs.msg import String, Bool, Float32
 from geometry_msgs.msg import Pose
-from lbr_fri_idl.srv import MoveToPose
+from lbr_fri_idl.srv import MoveToPose, FreeFormMove
 import datetime
 import numpy as np
 import threading
 from lbr_demos_py.asbr import * 
 from time import sleep
 import copy
+from scipy.interpolate import splprep, splev
+
 
 
 
@@ -21,8 +23,9 @@ class PrintLines(Node):
         self.move_client = self.create_client(MoveToPose, 'move_to_pose')
         while not self.move_client.wait_for_service(timeout_sec=1.0):
             self.get_logger().info('Service not available, waiting again...')
-
+        self.free_form_client = self.create_client(FreeFormMove, 'free_form_move')
         self.request = MoveToPose.Request()
+        self.FFM_request = FreeFormMove.Request()
         self.reach_subs = self.create_subscription(Bool, 'goal_reached_top', self.goal_reach_update, 1)
         self.curr_pose_subs = self.create_subscription(Pose, 'state/pose', self.curr_pose_update, 1)
 
@@ -33,6 +36,16 @@ class PrintLines(Node):
 
     def curr_pose_update(self, msg):
         self.curr_pose = msg
+
+    def send_request_FFM(self, goal_poses, lin_vel):
+        self.FFM_request.goal_pose = goal_poses
+        if isinstance(lin_vel, list):
+            self.FFM_request.lin_vel = [Float32(data=v) for v in lin_vel]
+        elif isinstance(lin_vel,float):
+            self.FFM_request.lin_vel = [Float32(data=lin_vel)] * len(goal_poses)
+        self.future = self.free_form_client.call_async(self.FFM_request)
+        rclpy.spin_until_future_complete(self, self.future)
+        return self.future.result()
 
     
     def send_request(self, goal_pose, lin_vel):
@@ -58,12 +71,40 @@ class PrintLines(Node):
         self.wait_for_goal()    
         return 
 
+    def spline_interpol(self,way_poses, num_final_poses = 50):
+        # Keeps the orientation of the first pose
+        orien = way_poses[0].orientation
+
+        # Extract positions
+        positions = np.array([[pose.position.x, pose.position.y, pose.position.z] for pose in way_poses])
+
+        # Fit spline
+        tck, u = splprep(positions.T, s=0, k=2)
+
+        # Evaluate spline
+        u_fine = np.linspace(0, 1, num_final_poses)  
+        x_fine, y_fine, z_fine = splev(u_fine, tck)
+        refined_points = np.array([x_fine, y_fine, z_fine]).T
+
+        final_poses = []
+
+        for point in refined_points:
+            temp = Pose()
+            temp.position.x = point[0]
+            temp.position.y = point[1]
+            temp.position.z = point[2]
+            temp.orientation = orien
+            final_poses.append(temp)
+
+        return final_poses
+
+
+
+
 
 
     def print_lines_arc(self, start_pos, lin_vel):
         #rectangle layer by layer
-        global entered
-        entered = False
         
         radius = 0.002
         height = 0.06
@@ -219,6 +260,76 @@ class PrintLines(Node):
 
         return
 
+    def print_liver_vasc(self, start_pos, lin_vel):
+
+        height = 0.03
+        radius = 0.02
+
+        upper_center = copy.deepcopy(start_pos)
+
+        center = copy.deepcopy(start_pos)
+        center.position.z -= height
+
+        # sleep(0.2)
+        # response = self.send_request(center, lin_vel*5)
+        # self.wait_for_goal()
+        # print('reached center node')
+        # a = input('wait for enter:')
+
+        num_lines = 4
+        for line_num in range(num_lines):
+            angle = line_num * 2 * 3.141592 / num_lines
+            way_poses = []
+            way_poses.append(center)
+            for temp_counter in range(2):
+                temp_pose = copy.deepcopy(center)
+                temp_pose.position.x += ((temp_counter+1) * radius * np.cos(angle) / 3)
+                temp_pose.position.y += ((temp_counter+1) * radius * np.sin(angle) / 3)
+                temp_pose.position.z -= ((temp_counter+1) * height / 5)
+                way_poses.append(temp_pose)
+
+            node_2 = copy.deepcopy(center)
+            node_2.position.x += radius * np.cos(angle)
+            node_2.position.y += radius * np.sin(angle)
+            node_2.position.z -= height
+            way_poses.append(node_2)
+            way_poses = self.spline_interpol(way_poses)
+
+            node_1 = copy.deepcopy(upper_center)
+            node_1.position.x += radius * np.cos(angle)
+            node_1.position.y += radius * np.sin(angle)
+
+
+            # response = self.send_request_FFM(way_poses, lin_vel)
+            # print(f'Success: {response.success}')
+            # self.wait_for_goal()
+            # a = input('Enter to continue: ')
+
+            way_poses.reverse()
+
+            response = self.send_request(node_1, lin_vel*4)
+            print(response)
+            self.wait_for_goal()
+            sleep(0.2)
+
+            response = self.send_request(node_2, lin_vel*2)
+            print(response)
+            self.wait_for_goal()
+            sleep(0.2)
+
+            a=input('Press Enter:')
+            response = self.send_request_FFM(way_poses, lin_vel)
+            print(f'Success: {response.success}')
+            self.wait_for_goal()
+            sleep(3.0)
+
+            response = self.send_request(upper_center, lin_vel*2)
+            print(response)
+            self.wait_for_goal()
+            sleep(0.2)
+
+        return
+
 
 def main(args=None):
     rclpy.init(args=args)
@@ -227,18 +338,18 @@ def main(args=None):
     home_pose = Pose()
     home_pose.position.x = 0.65
     home_pose.position.y = 0.0
-    home_pose.position.z = 0.40
-    home_pose.orientation = (Rotation.from_ABC([180,0,180],True)).as_geometry_orientation()
+    home_pose.position.z = 0.35 #was 40
+    home_pose.orientation = (Rotation.from_ABC([180,10,170],True)).as_geometry_orientation()
 
     node.go_home(home_pose, lin_vel*5)
     print('Home position finished')
     sleep(2)
     wait_input = input('Press Enter to Print:')
 
-    node.print_lines(home_pose, lin_vel)
+    # node.print_liver_vasc(home_pose, lin_vel)
 
     sleep(2)
-    node.go_home(home_pose, lin_vel*2)
+    # node.go_home(home_pose, lin_vel*2)
 
     node.destroy_node()
     rclpy.shutdown()
