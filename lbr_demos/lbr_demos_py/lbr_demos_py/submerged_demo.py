@@ -339,17 +339,17 @@ def main(args=None):
     home_pose.position.x = 0.65
     home_pose.position.y = 0.0
     home_pose.position.z = 0.35 #was 40
-    home_pose.orientation = (Rotation.from_ABC([180,10,170],True)).as_geometry_orientation()
+    home_pose.orientation = (Rotation.from_ABC([180,0,180],True)).as_geometry_orientation()
 
     node.go_home(home_pose, lin_vel*5)
     print('Home position finished')
     sleep(2)
     wait_input = input('Press Enter to Print:')
 
-    # node.print_liver_vasc(home_pose, lin_vel)
+    node.print_liver_vasc(home_pose, lin_vel)
 
     sleep(2)
-    # node.go_home(home_pose, lin_vel*2)
+    node.go_home(home_pose, lin_vel*2)
 
     node.destroy_node()
     rclpy.shutdown()

@@ -73,18 +73,18 @@ class Move2Cart(Node):
         for i_pose in range(length):
             self.goal_pose = self.goal_poses_to_reach.pop(0)
             self.lin_vel = self.lin_vel_in_each_sec.pop(0)
+            ang_vel = 0.5 * 3.141592 / 180 #TODO get from service
             if not self.is_close_pos(self.communication_rate*self.lin_vel):
                 self.generate_move_command(self.lin_vel, False)
-            elif not self.is_close_orien():
-                MotionTime = 20.0 #TODO get from service
-                self.generate_move_command(False, MotionTime)
+            elif not self.is_close_orien(self.communication_rate*ang_vel):
+                self.generate_move_command(False, ang_vel)
                 print('orientation planning only.')
 
             self.last_goal_reached = self.goal_pose
         self.planning_finished = True
 
 
-    def generate_move_command(self, lin_vel, motion_time):  # Generates move commands, for motions containing ONLY rotational movements use generate_move_command_rotation method
+    def generate_move_command(self, lin_vel, ang_vel):  # Generates move commands, for motions containing ONLY rotational movements use generate_move_command_rotation method
         
         GoalPose = self.goal_pose
         command_poses = []
@@ -92,16 +92,6 @@ class Move2Cart(Node):
         translation_vec = np.asarray([GoalPose.position.x - self.last_goal_reached.position.x,
                                       GoalPose.position.y - self.last_goal_reached.position.y,
                                       GoalPose.position.z - self.last_goal_reached.position.z])
-        if(motion_time != False and lin_vel != False):
-            print('MotionTime and lin_vel cannot both be present.')
-            return False
-        if(motion_time == False and lin_vel!=False):
-            motion_time = np.linalg.norm(translation_vec) / lin_vel
-            # vel_vec = (translation_vec / np.linalg.norm(translation_vec)) * lin_vel
-        
-
-        num_of_steps = int(motion_time / self.communication_rate)
-
         goal_Rot = Rotation(GoalPose.orientation)
         ABC_diff = goal_Rot.as_ABC() - (Rotation(self.last_goal_reached.orientation)).as_ABC()
         for i in range(3):
@@ -110,6 +100,19 @@ class Move2Cart(Node):
             elif(ABC_diff[i] < (-np.pi)):
                 ABC_diff[i] += 2.0 * np.pi
 
+        if(ang_vel != False and lin_vel != False):
+            print('ang_vel and lin_vel cannot be both present.')
+            return False
+        if(ang_vel == False and lin_vel!=False):
+            motion_time = np.linalg.norm(translation_vec) / lin_vel
+            # vel_vec = (translation_vec / np.linalg.norm(translation_vec)) * lin_vel
+        if(ang_vel != False and lin_vel == False):
+            motion_time = np.max(np.abs(ABC_diff)) / ang_vel
+        
+
+        num_of_steps = int(motion_time / self.communication_rate)
+
+        
         for step_counter in range(num_of_steps):
             command_pose = copy.deepcopy(self.last_goal_reached)
             command_pose.position.x = command_pose.position.x + translation_vec[0] * (step_counter+1) / num_of_steps
@@ -126,6 +129,8 @@ class Move2Cart(Node):
         return 
 
     def is_close_pos(self, pos_thresh=0.0001):
+        if(pos_thresh < 0.00001):
+            pos_thresh = 0.00001
         translation_vec = np.asarray([self.goal_pose.position.x - self.last_goal_reached.position.x,
                                       self.goal_pose.position.y - self.last_goal_reached.position.y,
                                       self.goal_pose.position.z - self.last_goal_reached.position.z])
@@ -133,6 +138,8 @@ class Move2Cart(Node):
         return np.linalg.norm(translation_vec) < pos_thresh
 
     def is_close_orien(self, angle_thresh=0.08*3.1415/180.0):
+        if(angle_thresh<0.01*3.1415/180.0):
+            angle_thresh = 0.01*3.1415/180.0
         last_goal_reached = Rotation(self.last_goal_reached.orientation)
         goal_Rot = Rotation(self.goal_pose.orientation)
         ABC_diff = last_goal_reached.as_ABC() - goal_Rot.as_ABC()
