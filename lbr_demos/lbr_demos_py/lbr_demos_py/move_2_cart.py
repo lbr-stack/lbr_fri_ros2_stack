@@ -31,6 +31,7 @@ class Move2Cart(Node):
 
         self.planning_finished = False
         self.moving_queue = []
+        # self.test_text = open('Testing2.txt', 'w')
         
 
     def on_pose(self, msg):
@@ -40,12 +41,23 @@ class Move2Cart(Node):
         if len(self.moving_queue) > 0 and self.planning_finished:
             command_pose = self.moving_queue.pop(0)
             if(self.is_safe_pose(command_pose)):
+                # self.test_text.write(self.pose_to_string(command_pose) + '\n')
+
                 self.pose_pub.publish(command_pose)
                 # print(command_pose.position)
                 if len(self.moving_queue) == 0:
                     goal_reached = Bool()
                     goal_reached.data = True
                     self.goal_pub.publish(goal_reached)
+                    # self.test_text.close()
+                    # print('Done')
+
+    def pose_to_string(self, pose):
+        # Define a custom string representation for the Pose object
+        return (f"Position: x={pose.position.x}, y={pose.position.y}, z={pose.position.z}, "
+                f"Orientation: x={pose.orientation.x}, y={pose.orientation.y}, "
+                f"z={pose.orientation.z}, w={pose.orientation.w}")
+
 
     def move_to_pose_callback(self, request, response):
         self.goal_poses_to_reach.append(request.goal_pose)
@@ -84,7 +96,7 @@ class Move2Cart(Node):
         self.planning_finished = True
 
 
-    def generate_move_command(self, lin_vel, ang_vel):  # Generates move commands, for motions containing ONLY rotational movements use generate_move_command_rotation method
+    def generate_move_command(self, lin_vel, ang_vel):  
         
         GoalPose = self.goal_pose
         command_poses = []
@@ -93,6 +105,7 @@ class Move2Cart(Node):
                                       GoalPose.position.y - self.last_goal_reached.position.y,
                                       GoalPose.position.z - self.last_goal_reached.position.z])
         goal_Rot = Rotation(GoalPose.orientation)
+        print(goal_Rot.as_ABC())
         ABC_diff = goal_Rot.as_ABC() - (Rotation(self.last_goal_reached.orientation)).as_ABC()
         for i in range(3):
             if(ABC_diff[i] > np.pi):
