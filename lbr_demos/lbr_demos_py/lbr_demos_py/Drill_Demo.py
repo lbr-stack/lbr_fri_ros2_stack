@@ -89,10 +89,10 @@ def main(args=None):
     home_pose.orientation = home_orientation
 
     goal_pose = Pose()
-    goal_pose.position.x = 0.60
-    goal_pose.position.y = 0.0
-    goal_pose.position.z = 0.45
-    goal_orientation = [180, 30, 180]
+    goal_pose.position.x = 0.66
+    goal_pose.position.y = 0.141
+    goal_pose.position.z = 0.376
+    goal_orientation = [156.4, -12.64, 123.79]
     goal_orientation = Rotation.from_ABC(goal_orientation,True)
     goal_orientation = goal_orientation.as_geometry_orientation()
     goal_pose.orientation = goal_orientation
@@ -118,7 +118,7 @@ def main(args=None):
 
     
     # print(int(time.time() * 1000))
-    response = client.send_request(goal_pose, 0.01)
+    response = client.send_request(goal_pose, 0.002)
     # print(f'Success: {response.success}')
     client.wait_for_goal()
     # print(int(time.time() * 1000))
@@ -128,7 +128,7 @@ def main(args=None):
 
     
     #Insertion
-    vector_in_body = np.array([[-0.20], [0], [0], [1]])
+    vector_in_body = np.array([[-0.020], [0], [0], [1]])
     EE_pose = Transformation(client.curr_pose)
     print(EE_pose.m)
     print(EE_pose.m @ vector_in_body)
@@ -142,8 +142,8 @@ def main(args=None):
     print(final_pose)
     a = input('Press Enter (any key) to move:')
     time.sleep(0.2)
-    # response = client.send_request(final_pose, 0.01)
-    # print(f'Success: {response.success}')
+    response = client.send_request(final_pose, 0.005)
+    print(f'Success: {response.success}')
     client.wait_for_goal()
 
 

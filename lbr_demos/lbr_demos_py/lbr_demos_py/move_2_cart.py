@@ -31,7 +31,7 @@ class Move2Cart(Node):
 
         self.planning_finished = False
         self.moving_queue = []
-        # self.test_text = open('Testing2.txt', 'w')
+        # self.test_text = open('Testing.txt', 'w')
         
 
     def on_pose(self, msg):
@@ -85,7 +85,7 @@ class Move2Cart(Node):
         for i_pose in range(length):
             self.goal_pose = self.goal_poses_to_reach.pop(0)
             self.lin_vel = self.lin_vel_in_each_sec.pop(0)
-            ang_vel = 0.5 * 3.141592 / 180 #TODO get from service
+            ang_vel = 0.5 * np.pi / 180 #TODO get from service
             if not self.is_close_pos(self.communication_rate*self.lin_vel):
                 self.generate_move_command(self.lin_vel, False)
             elif not self.is_close_orien(self.communication_rate*ang_vel):
@@ -105,13 +105,16 @@ class Move2Cart(Node):
                                       GoalPose.position.y - self.last_goal_reached.position.y,
                                       GoalPose.position.z - self.last_goal_reached.position.z])
         goal_Rot = Rotation(GoalPose.orientation)
-        print(goal_Rot.as_ABC())
+        print(goal_Rot.as_ABC()[0])
+        print((Rotation(self.last_goal_reached.orientation)).as_ABC()[0])
         ABC_diff = goal_Rot.as_ABC() - (Rotation(self.last_goal_reached.orientation)).as_ABC()
         for i in range(3):
             if(ABC_diff[i] > np.pi):
                 ABC_diff[i] -= 2.0 * np.pi
             elif(ABC_diff[i] < (-np.pi)):
                 ABC_diff[i] += 2.0 * np.pi
+
+        print(ABC_diff)
 
         if(ang_vel != False and lin_vel != False):
             print('ang_vel and lin_vel cannot be both present.')
@@ -150,9 +153,9 @@ class Move2Cart(Node):
 
         return np.linalg.norm(translation_vec) < pos_thresh
 
-    def is_close_orien(self, angle_thresh=0.08*3.1415/180.0):
-        if(angle_thresh<0.01*3.1415/180.0):
-            angle_thresh = 0.01*3.1415/180.0
+    def is_close_orien(self, angle_thresh=0.08*np.pi/180.0):
+        if(angle_thresh<0.01*np.pi/180.0):
+            angle_thresh = 0.01*np.pi/180.0
         last_goal_reached = Rotation(self.last_goal_reached.orientation)
         goal_Rot = Rotation(self.goal_pose.orientation)
         ABC_diff = last_goal_reached.as_ABC() - goal_Rot.as_ABC()
