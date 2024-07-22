@@ -98,6 +98,8 @@ class Rotation():
         return Rotation(None)
     @staticmethod
     def from_zyx(euler, degrees=False):
+        #euler = [alpha, beta, gamma]
+        #1: Rot about fixed x (gamma, yaw), 2: Rot about fixed y (beta, pitch), 3: Rot about fixed z (alpha, roll)
         if degrees:
             eulerrad = deg2rad(euler)
         else:
@@ -117,7 +119,10 @@ class Rotation():
         return Rotation.from_zyx(euler, degrees=True)
     @staticmethod
     def from_ABC(abc, degrees=False):
-        # An alias for zyx
+        # An alias for zyx (Jeff)
+        # Not sure this is exactly as zyx. It's more like x"(C).y'(B).z(A) i.e. 1: about z (A), 2: about y' (B), 3: about x" (C)
+        # [A,B,C]
+        # The trick is, x"(C).y'(B).z(A) = z(A).y(B).x(C)
         return Rotation.from_zyx(abc, degrees=degrees)
         # Alternative implementation via quaternions:
         #  https://doc.rc-visard.com/v21.07/en/pose_format_kuka.html
@@ -136,7 +141,8 @@ class Rotation():
         return Rotation.from_ABC(abc_deg, degrees=True)
     @staticmethod
     def from_rpy(rpy, degrees=False):
-        return Rotation.from_zyx(np.flip(rpy), degrees=degrees)
+        #Omid: alias as ZYX, [Roll, Pitch, Yaw]
+        return Rotation.from_zyx(rpy, degrees=degrees)
     def is_eye(self):
         return is_eye(self.m)
     def as_zyx(self, degrees=False):
@@ -161,9 +167,9 @@ class Rotation():
         #ans = np.array([A, B, C]).T
         #return np.rad2deg(ans) if degrees else ans
     def as_rpy(self, degrees=False):
-        # Same as ZYX, but presented in different order.
+        # Same as ZYX, but presented in different order. (Jeff; not sure is true)
         zyx = self.as_zyx(degrees)
-        return np.flip(zyx)
+        return zyx
     def as_quat(self):
         return quaternion.from_rotation_matrix(self.m)
     def as_geometry_orientation(self):
