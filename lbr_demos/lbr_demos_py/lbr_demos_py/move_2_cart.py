@@ -50,7 +50,7 @@ class Move2Cart(Node):
                     goal_reached.data = True
                     self.goal_pub.publish(goal_reached)
                     # self.test_text.close()
-                    # print('Done')
+                    print('Done')
 
     def pose_to_string(self, pose):
         # Define a custom string representation for the Pose object
@@ -87,43 +87,44 @@ class Move2Cart(Node):
             self.lin_vel = self.lin_vel_in_each_sec.pop(0)
             ang_vel = 0.5 * np.pi / 180 #TODO get from service
             if not self.is_close_pos(self.communication_rate*self.lin_vel):
+                print('planning.')
                 self.generate_move_command(self.lin_vel, False)
             elif not self.is_close_orien(self.communication_rate*ang_vel):
-                self.generate_move_command(False, ang_vel)
                 print('orientation planning only.')
+                self.generate_move_command(False, ang_vel)
+                
 
             self.last_goal_reached = self.goal_pose
         self.planning_finished = True
 
 
     def generate_move_command(self, lin_vel, ang_vel):  
-        
         GoalPose = self.goal_pose
         command_poses = []
 
         translation_vec = np.asarray([GoalPose.position.x - self.last_goal_reached.position.x,
                                       GoalPose.position.y - self.last_goal_reached.position.y,
                                       GoalPose.position.z - self.last_goal_reached.position.z])
+        
+        curr_orientation = (Rotation(self.last_goal_reached.orientation)).as_quat()
         goal_Rot = Rotation(GoalPose.orientation)
-        print(goal_Rot.as_ABC()[0])
-        print((Rotation(self.last_goal_reached.orientation)).as_ABC()[0])
-        ABC_diff = goal_Rot.as_ABC() - (Rotation(self.last_goal_reached.orientation)).as_ABC()
-        for i in range(3):
-            if(ABC_diff[i] > np.pi):
-                ABC_diff[i] -= 2.0 * np.pi
-            elif(ABC_diff[i] < (-np.pi)):
-                ABC_diff[i] += 2.0 * np.pi
+        goal_orientation = (Rotation(GoalPose.orientation)).as_quat()
 
-        print(ABC_diff)
+        dot_product = np.dot(quaternion.as_float_array(curr_orientation), quaternion.as_float_array(goal_orientation))
+        if(dot_product<0):
+            # This means the angle between the two quats is more than 180, so there is a shorter path
+            dot_product = -dot_product
+            goal_orientation = -goal_orientation
+        angle_rad = 2 * np.arccos(np.clip(dot_product, -1.0, 1.0))
+
 
         if(ang_vel != False and lin_vel != False):
             print('ang_vel and lin_vel cannot be both present.')
             return False
         if(ang_vel == False and lin_vel!=False):
             motion_time = np.linalg.norm(translation_vec) / lin_vel
-            # vel_vec = (translation_vec / np.linalg.norm(translation_vec)) * lin_vel
         if(ang_vel != False and lin_vel == False):
-            motion_time = np.max(np.abs(ABC_diff)) / ang_vel
+            motion_time = angle_rad / ang_vel
         
 
         num_of_steps = int(motion_time / self.communication_rate)
@@ -135,14 +136,27 @@ class Move2Cart(Node):
             command_pose.position.y = command_pose.position.y + translation_vec[1] * (step_counter+1) / num_of_steps
             command_pose.position.z = command_pose.position.z + translation_vec[2] * (step_counter+1) / num_of_steps
  
-            ABC_command = (Rotation(self.last_goal_reached.orientation)).as_ABC() + ABC_diff * (step_counter+1) / num_of_steps
-            quat_command = Rotation.from_ABC(ABC_command)
-            command_pose.orientation = quat_command.as_geometry_orientation()  
+            quat_command = Rotation(self.quaternion_slerp(curr_orientation, goal_orientation, (step_counter+1) / num_of_steps))
+            command_pose.orientation = quat_command.as_geometry_orientation() 
 
             command_poses.append(command_pose)  
 
         self.moving_queue.extend(command_poses)
         return 
+
+    def quaternion_slerp(self, p0, p1, t):
+        """Spherical linear interpolation between two quaternions."""
+        dot = np.dot(quaternion.as_float_array(p0), quaternion.as_float_array(p1))
+
+        if dot < 0.0:
+            p1 = -p1
+            dot = -dot
+
+        if dot > 0.9995:
+            result = p0 + t * (p1 - p0)
+            return result.normalized()
+
+        return p0*(p0.conjugate()*p1)**t
 
     def is_close_pos(self, pos_thresh=0.0001):
         if(pos_thresh < 0.00001):
@@ -156,16 +170,17 @@ class Move2Cart(Node):
     def is_close_orien(self, angle_thresh=0.08*np.pi/180.0):
         if(angle_thresh<0.01*np.pi/180.0):
             angle_thresh = 0.01*np.pi/180.0
-        last_goal_reached = Rotation(self.last_goal_reached.orientation)
-        goal_Rot = Rotation(self.goal_pose.orientation)
-        ABC_diff = last_goal_reached.as_ABC() - goal_Rot.as_ABC()
-        for i in range(3):
-            if(ABC_diff[i] > np.pi):
-                ABC_diff[i] -= 2.0 * np.pi
-            elif(ABC_diff[i] < (-np.pi)):
-                ABC_diff[i] += 2.0 * np.pi
+        curr_orientation = Rotation(self.last_goal_reached.orientation).as_quat()
+        goal_orientation = Rotation(self.goal_pose.orientation).as_quat()
+        dot_product = np.dot(quaternion.as_float_array(curr_orientation), quaternion.as_float_array(goal_orientation))
+        if(dot_product<0):
+            # This means the angle between the two quats is more than 180, so there is a shorter path
+            dot_product = -dot_product
+            goal_orientation = -goal_orientation
+        angle_rad = 2 * np.arccos(np.clip(dot_product, -1.0, 1.0))
 
-        if(np.max(np.abs(ABC_diff)) < angle_thresh):
+
+        if(angle_rad < angle_thresh):
             return True
 
         return False
