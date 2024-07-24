@@ -67,7 +67,7 @@ class LBRMoveGroupMixin:
                     f"urdf/{robot_name}/{robot_name}.xacro",
                 ),
             )
-            .planning_pipelines(default_planning_pipeline="ompl", pipelines=["ompl"])
+            .planning_pipelines(default_planning_pipeline="ompl")
         )
 
     @staticmethod
