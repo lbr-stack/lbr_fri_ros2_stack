@@ -4,6 +4,11 @@ lbr_moveit_cpp
 
     Also refer to the official `MoveIt <https://moveit.picknik.ai/humble/doc/tutorials/your_first_project/your_first_project.html>`_:octicon:`link-external` documentation.
 
+.. contents:: Table of Contents
+   :depth: 2
+   :local:
+   :backlinks: none
+
 MoveIt via C++ API
 ------------------
 Simulation
@@ -46,3 +51,36 @@ Hardware
         - ``FRI client command mode``: ``POSITION``
 
 #. Proceed with steps 1 and 2 from `Simulation`_ but with ``sim:=false``.
+
+Examining the Code
+~~~~~~~~~~~~~~~~~~
+The source code for this demo is available on `GitHub <https://github.com/lbr-stack/lbr_fri_ros2_stack/tree/humble/lbr_demos/lbr_moveit_cpp>`_:octicon:`link-external`. The demo vastly follows the official `MoveIt <https://moveit.picknik.ai/humble/doc/tutorials/your_first_project/your_first_project.html>`_:octicon:`link-external` demo.
+
+Differently, this repository puts the ``MoveGroup`` under a namespace. The ``MoveGroup`` is thus created as follows:
+
+.. code-block:: cpp
+
+    // Create MoveGroupInterface (lives inside robot_name namespace)
+    auto move_group_interface = moveit::planning_interface::MoveGroupInterface(
+        node_ptr, moveit::planning_interface::MoveGroupInterface::Options("arm", "robot_description",
+                                                                        robot_name));
+
+The ``MoveGroup`` configurations are parsed conveniently through a mixin:
+
+.. code-block:: python
+
+    from launch_mixins.lbr_bringup import LBRMoveGroupMixin
+
+    ...
+
+    model = LaunchConfiguration("model").perform(context)
+
+    # generate moveit configs
+    moveit_configs = LBRMoveGroupMixin.moveit_configs_builder(
+        robot_name=model,
+        package_name=f"{model}_moveit_config",
+    )
+
+.. note::
+
+    The MoveIt configurations might vary depending the user's configurations.
