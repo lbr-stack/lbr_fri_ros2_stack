@@ -31,7 +31,7 @@ class PrintLines(Node):
 
         self.goal_state = False
         self.commiunication_rate = 0.01
-        # self.printer_pub = self.create_publisher(Float32, 'syringeVel', 1) 
+        self.printer_pub = self.create_publisher(Float32, '/syringevel', 1) 
         self.curr_pose = Pose()
 
     def curr_pose_update(self, msg):
@@ -330,26 +330,128 @@ class PrintLines(Node):
 
         return
 
+    def layer_by_layer(self, start_pos, lin_vel, dummy_vel):
+        #Prints 3 pillars in layer by layer method. No transverse motions in the media
+        #dummy_vel: velocity in between places which the robot can move pretty fast!
+        height = 0.06
+        layer_height = 0.002
+        number_of_layers = int(height / (layer_height * 2))
+
+        inj_rate = 0.25
+
+        radius = 0.02
+
+        center = copy.deepcopy(start_pos)
+
+        for layer_num in range(number_of_layers):
+            node_1_up = copy.deepcopy(center)
+            node_1_up.position.x += radius
+
+            node_1_down = copy.deepcopy(node_1_up)
+            node_1_down.position.z -= height - (layer_num+1)*layer_height
+
+
+            node_2_up = copy.deepcopy(center)
+            node_2_up.position.x -= radius
+
+            node_2_down = copy.deepcopy(node_2_up)
+            node_2_down.position.z -= height - (layer_num+1)*layer_height
+
+
+            node_3_up = copy.deepcopy(center)
+            node_3_up.position.y += radius - 2*(layer_num+1)*radius/number_of_layers
+
+            node_3_down = copy.deepcopy(node_3_up)
+            node_3_down.position.z -= height - (layer_num+1)*layer_height
+
+
+            response = self.send_request(node_1_up, dummy_vel)
+            print(response)
+            self.wait_for_goal()
+            sleep(0.2)
+            a = input('Enter to proceed')
+
+            response = self.send_request(node_1_down, lin_vel)
+            print(response)
+            self.wait_for_goal()
+            self.printer_pub.publish(Float32(data=inj_rate))  # TODO
+            sleep(0.8)
+            self.printer_pub.publish(Float32(data=0.0))
+            sleep(2.0)
+
+            response = self.send_request(node_1_up, lin_vel)
+            print(response)
+            self.wait_for_goal()
+            sleep(0.2)
+
+            a = input('Enter to proceed')
+
+
+            response = self.send_request(node_2_up, dummy_vel)
+            print(response)
+            self.wait_for_goal()
+            sleep(0.2)
+
+            a = input('Enter to proceed')
+
+            response = self.send_request(node_2_down, lin_vel)
+            print(response)
+            self.wait_for_goal()
+            self.printer_pub.publish(Float32(data=inj_rate))  # TODO
+            sleep(0.8)
+            self.printer_pub.publish(Float32(data=0.0))
+            sleep(2.0)
+
+            response = self.send_request(node_2_up, lin_vel)
+            print(response)
+            self.wait_for_goal()
+            sleep(0.2)
+
+
+            a = input('Enter to proceed')
+
+            response = self.send_request(node_3_up, dummy_vel)
+            print(response)
+            self.wait_for_goal()
+            sleep(0.2)
+
+            a = input('Enter to proceed')
+
+            response = self.send_request(node_3_down, lin_vel)
+            print(response)
+            self.wait_for_goal()
+            self.printer_pub.publish(Float32(data=inj_rate))  # TODO
+            sleep(0.8)
+            self.printer_pub.publish(Float32(data=0.0))
+            sleep(2.0)
+
+            response = self.send_request(node_3_up, lin_vel)
+            print(response)
+            self.wait_for_goal()
+            sleep(0.2)
+
+        return
+
 
 def main(args=None):
     rclpy.init(args=args)
     node = PrintLines()
-    lin_vel = 0.001
+    lin_vel = 0.005
     home_pose = Pose()
     home_pose.position.x = 0.65
     home_pose.position.y = 0.0
     home_pose.position.z = 0.35 #was 40
     home_pose.orientation = (Rotation.from_ABC([180,0,180],True)).as_geometry_orientation()
 
-    node.go_home(home_pose, lin_vel*5)
+    node.go_home(home_pose, 0.01)
     print('Home position finished')
     sleep(2)
     wait_input = input('Press Enter to Print:')
 
-    node.print_liver_vasc(home_pose, lin_vel)
+    node.layer_by_layer(home_pose, lin_vel, 0.01)
 
     sleep(2)
-    node.go_home(home_pose, lin_vel*2)
+    node.go_home(home_pose, 0.005)
 
     node.destroy_node()
     rclpy.shutdown()
