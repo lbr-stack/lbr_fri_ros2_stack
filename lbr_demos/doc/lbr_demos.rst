@@ -30,6 +30,7 @@ MoveIt
     :titlesonly:
 
     lbr_moveit2_py <../lbr_moveit_py/doc/lbr_moveit_py.rst>
+    lbr_moveit2_cpp <../lbr_moveit_cpp/doc/lbr_moveit_cpp.rst>
 
 Integration
 -----------
