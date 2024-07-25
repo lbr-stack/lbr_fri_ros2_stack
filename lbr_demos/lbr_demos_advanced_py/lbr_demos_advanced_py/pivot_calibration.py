@@ -37,9 +37,9 @@ class PivotCalibrationNode(LBRBasePositionCommandNode):
         # parameters
         self.declare_parameter("base_link", "link_0")
         self.declare_parameter("end_effector_link", "link_ee")
-        self.declare_parameter("f_ext_th", [4.0, 4.0, 8.0, 0.2, 0.2, 0.2])
+        self.declare_parameter("f_ext_th", [2.0, 2.0, 8.0, 0.5, 0.5, 0.5])
         self.declare_parameter("dq_gains", [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
-        self.declare_parameter("dx_gains", [0.1, 0.1, 0.1, 0.4, 0.4, 0.4])
+        self.declare_parameter("dx_gains", [0.2, 0.2, 0.2, 0.4, 0.4, 0.4])
         self.declare_parameter("exp_smooth", 0.95)
 
         self._init = False
@@ -130,11 +130,11 @@ class PivotCalibrationNode(LBRBasePositionCommandNode):
         for pi,p in enumerate(poses):
             rbase = 3 * pi
             R = lbr_demos_py.asbr.Rotation(p.orientation)
-            b[rbase + 0, 0] = p.position.x
-            b[rbase + 1, 0] = p.position.y
-            b[rbase + 2, 0] = p.position.z
+            b[rbase + 0, 0] = -p.position.x
+            b[rbase + 1, 0] = -p.position.y
+            b[rbase + 2, 0] = -p.position.z
             A[rbase:rbase+3, 0:3] = R.m
-            A[rbase:rbase+3, 3:6] = np.eye(3)
+            A[rbase:rbase+3, 3:6] = -np.eye(3)
 
         x = np.linalg.lstsq(A, b, rcond=None)[0]
 
