@@ -76,62 +76,18 @@ def main(args=None):
     goal_pose.position.y = 0.0
     goal_pose.position.z = 0.50
     # Set orientation as required
-
-    # goal_orientation = [180, 5, 180]
-    # goal_orientation = Rotation.from_ABC(goal_orientation,True)
-    # goal_orientation = goal_orientation.as_geometry_orientation()
-    # goal_pose.orientation = goal_orientation 
-    # print(int(time.time() * 1000))
-    # response = client.send_request(goal_pose, 0.01)
-    # print(f'Success: {response.success}')
-    # client.wait_for_goal()
-    # print(int(time.time() * 1000))
-    # print('first goal achieved')
-    # a = input('Press enter to move')
-
-
     goal_orientation = [180, 0, 180]
     goal_orientation = Rotation.from_ABC(goal_orientation,True)
-    goal_orientation = goal_orientation.as_geometry_orientation()
+    goal_orientation = goal_orientation.as_geometry_orientation() #One can directly set this variable as a geometry_pose quaternion message and not use euler angles
     goal_pose.orientation = goal_orientation 
-    print(int(time.time() * 1000))
-    response = client.send_request(goal_pose, 0.005)
-    print(f'Success: {response.success}')
+
+    lin_vel = 0.005 #m/s linear velocity of the end effector
+
+    response = client.send_request(goal_pose, lin_vel)
+    print(f'Success: {response.success}') #The success message only indicates that the motion command was received by the motion server. Use wait_for_goal to wait until the goal is reached
     client.wait_for_goal()
-    print(int(time.time() * 1000))
-    print('second goal achieved')
-    a = input('Press enter to move')
+    print('Goal reached')
 
-    goal_orientation = [180, 70, 180]
-    goal_orientation = Rotation.from_ABC(goal_orientation,True)
-    goal_orientation = goal_orientation.as_geometry_orientation()
-    goal_pose.orientation = goal_orientation 
-    print(int(time.time() * 1000))
-    response = client.send_request(goal_pose, 0.005)
-    print(f'Success: {response.success}')
-    client.wait_for_goal()
-    print(int(time.time() * 1000))
-    print('second goal achieved')
-    a = input('Press enter to move')
-    # time.sleep(2)
-
-    # goal_pose = Pose()
-    # goal_pose.position.x = client.curr_pose.position.x - 0.035
-    # goal_pose.position.y = client.curr_pose.position.y
-    # goal_pose.position.z = client.curr_pose.position.z
-
-    # goal_orientation = [180, 0, 180]
-    # goal_orientation = Rotation.from_ABC(goal_orientation,True)
-    # goal_orientation = goal_orientation.as_geometry_orientation()
-    # goal_pose.orientation = goal_orientation 
-    
-    # response = client.send_request(goal_pose, 0.001)
-    # client.wait_for_goal()
-    # print('second goal achieved')
-
-    goal_orientation = [180, 0, 180]
-    goal_orientation = Rotation.from_ABC(goal_orientation,True)
-    goal_orientation = goal_orientation.as_geometry_orientation()
 
     pitch = -0.02
     radius = 0.05
@@ -139,7 +95,7 @@ def main(args=None):
     resolution = 1.2 * np.pi / 180.0
     num_of_steps = turns * 2 * np.pi / resolution
     poses=[] 
-    print(num_of_steps)
+
     a = input('Press enter to move')
     for i in range(int(num_of_steps)):
         goal_pose = Pose()
@@ -149,44 +105,10 @@ def main(args=None):
         goal_pose.position.z = client.curr_pose.position.z + i*pitch*resolution/(2*np.pi)
         poses.append(goal_pose)
 
-
-
-
-    # goal_pose_1 = Pose()
-    # goal_pose_1.position.x = client.curr_pose.position.x + 0.021
-    # goal_pose_1.position.y = client.curr_pose.position.y
-    # goal_pose_1.position.z = client.curr_pose.position.z
-    # # Set orientation as required
-
-    
-    # goal_pose_1.orientation = goal_orientation 
-    
-    # goal_pose_2 = Pose()
-    # goal_pose_2.position.x = client.curr_pose.position.x - 0.021
-    # goal_pose_2.position.y = client.curr_pose.position.y
-    # goal_pose_2.position.z = client.curr_pose.position.z 
-    # goal_pose_2.orientation = goal_orientation
-
-    # goal_pose_3 = Pose()
-    # goal_pose_3.position.x = client.curr_pose.position.x 
-    # goal_pose_3.position.y = client.curr_pose.position.y - 0.1
-    # goal_pose_3.position.z = client.curr_pose.position.z - 0.05
-    # goal_pose_3.orientation = goal_orientation
-
-    # goal_poses = [goal_pose_1, goal_pose_2]# , goal_pose_3]
-
-    current_time_milliseconds = int(time.time() * 1000)
-
-    print(f"Current time in milliseconds: {current_time_milliseconds}")
-
-    # response = client.send_request_FFM(poses, 0.005)
+    response = client.send_request_FFM(poses, lin_vel)
     print(f'Success: {response.success}')
     client.wait_for_goal()
     print('All goals achieved')
-
-    current_time_milliseconds = int(time.time() * 1000)
-
-    print(f"Current time in milliseconds: {current_time_milliseconds}")
     
     client.destroy_node()
     rclpy.shutdown()
