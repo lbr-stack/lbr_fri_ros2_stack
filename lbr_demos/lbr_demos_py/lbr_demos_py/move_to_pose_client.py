@@ -77,17 +77,17 @@ def main(args=None):
     goal_pose.position.z = 0.50
     # Set orientation as required
 
-    goal_orientation = [180, 5, 180]
-    goal_orientation = Rotation.from_ABC(goal_orientation,True)
-    goal_orientation = goal_orientation.as_geometry_orientation()
-    goal_pose.orientation = goal_orientation 
-    print(int(time.time() * 1000))
-    response = client.send_request(goal_pose, 0.01)
-    print(f'Success: {response.success}')
-    client.wait_for_goal()
-    print(int(time.time() * 1000))
-    print('first goal achieved')
-    a = input('Press enter to move')
+    # goal_orientation = [180, 5, 180]
+    # goal_orientation = Rotation.from_ABC(goal_orientation,True)
+    # goal_orientation = goal_orientation.as_geometry_orientation()
+    # goal_pose.orientation = goal_orientation 
+    # print(int(time.time() * 1000))
+    # response = client.send_request(goal_pose, 0.01)
+    # print(f'Success: {response.success}')
+    # client.wait_for_goal()
+    # print(int(time.time() * 1000))
+    # print('first goal achieved')
+    # a = input('Press enter to move')
 
 
     goal_orientation = [180, 0, 180]
@@ -95,7 +95,19 @@ def main(args=None):
     goal_orientation = goal_orientation.as_geometry_orientation()
     goal_pose.orientation = goal_orientation 
     print(int(time.time() * 1000))
-    response = client.send_request(goal_pose, 0.01)
+    response = client.send_request(goal_pose, 0.005)
+    print(f'Success: {response.success}')
+    client.wait_for_goal()
+    print(int(time.time() * 1000))
+    print('second goal achieved')
+    a = input('Press enter to move')
+
+    goal_orientation = [180, 70, 180]
+    goal_orientation = Rotation.from_ABC(goal_orientation,True)
+    goal_orientation = goal_orientation.as_geometry_orientation()
+    goal_pose.orientation = goal_orientation 
+    print(int(time.time() * 1000))
+    response = client.send_request(goal_pose, 0.005)
     print(f'Success: {response.success}')
     client.wait_for_goal()
     print(int(time.time() * 1000))
