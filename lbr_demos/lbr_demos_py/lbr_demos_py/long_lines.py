@@ -101,13 +101,14 @@ class PrintLines(Node):
         entered = False
 
 
-        needle_surface_dist_ideal = 1.5 * 0.001
+
+        needle_surface_dist_ideal = 3.6 * 0.001
         z_table_height = 3 * 0.001 #Wooden table height, found from divot location after pivot calibration
         sheet_height = 3.3 * 0.001 #White sheet thickness
         needle_height = needle_surface_dist_ideal + z_table_height + sheet_height
 
         line_distance = 50 * 0.001
-        print_length = 130 * 0.001
+        print_length = 140 * 0.001
         line_length = 280 * 0.001
         num_lines = 1
         direction = 1
@@ -166,9 +167,10 @@ class PrintLines(Node):
             line_end_pose.orientation = (Rotation.from_ABC([180,0,180],True)).as_geometry_orientation()
 
             # self.goal_state = False
-            response = self.send_request_frame(print_start_pose, lin_vel)
+            response = self.send_request_frame(print_start_pose, lin_vel*3)
             self.wait_for_goal()
-            a= input('Do you want to proceed?')
+            # a= input('Do you want to proceed?')
+            sleep(4.0)
 
 
             sleep(0.2)
@@ -180,6 +182,7 @@ class PrintLines(Node):
             self.printer_pub.publish(Float32(data=print_vel))  # TODO
             # self.goal_state = False
             response = self.send_request_frame(line_end_pose, lin_vel)
+            flag = False
 
             while(not self.goal_state):
                 if (needle_position_file_counter%10==0):
@@ -194,7 +197,8 @@ class PrintLines(Node):
                     thread.daemon = True
                     thread.start()
 
-                if(self.is_close_pos(self.needle_loc(), print_end_pose)):
+                if(flag == False and self.is_close_pos(self.needle_loc(), print_end_pose)):
+                    flag = True
                     file.write('Injection stopped at time: ' + str(create_relative_timestamp()) + '\n')
                     curr_needle_pos = self.needle_loc()
                     file.write('Actual needle position: x: ' + str(curr_needle_pos.position.x) + ' y: ' + str(curr_needle_pos.position.y) + ' z: ' + str(curr_needle_pos.position.z) + '\n')
@@ -210,7 +214,8 @@ class PrintLines(Node):
             file.write('Actual needle position: x: ' + str(curr_needle_pos.position.x) + ' y: ' + str(curr_needle_pos.position.y) + ' z: ' + str(curr_needle_pos.position.z) + '\n')
             file.write('\n')
             sleep(1)
-            a= input('Do you want to proceed?')
+            # a= input('Do you want to proceed?')
+            sleep(4.0)
             direction = -direction
         sleep(0.1)
         file.close()
@@ -268,7 +273,7 @@ def main(args=None):
 
     node.go_home(home_pose, 0.02)
     print('Home position finished')
-    sleep(2)
+    sleep(6.0)
 
     node.print_lines(home_pose, lin_vel)
     node.destroy_node()
