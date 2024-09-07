@@ -8,8 +8,8 @@
 #include "rclcpp/logger.hpp"
 #include "rclcpp/logging.hpp"
 
+#include "friClientVersion.h"
 #include "friLBRClient.h"
-#include "friVersion.h"
 
 #include "lbr_fri_ros2/filters.hpp"
 #include "lbr_fri_ros2/formatting.hpp"

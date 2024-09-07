@@ -110,7 +110,7 @@ std::vector<hardware_interface::StateInterface> SystemInterface::export_state_in
     state_interfaces.emplace_back(info_.joints[i].name, hardware_interface::HW_IF_POSITION,
                                   &hw_lbr_state_.measured_joint_position[i]);
 
-#if FRICLIENT_VERSION_MAJOR == 1
+#if FRI_CLIENT_VERSION_MAJOR == 1
     state_interfaces.emplace_back(info_.joints[i].name, HW_IF_COMMANDED_JOINT_POSITION,
                                   &hw_lbr_state_.commanded_joint_position[i]);
 #endif
@@ -324,11 +324,11 @@ bool SystemInterface::parse_parameters_(const hardware_interface::HardwareInfo &
         std::stoul(system_info.hardware_parameters.at("fri_client_sdk_major_version"));
     parameters_.fri_client_sdk_minor_version =
         std::stoul(system_info.hardware_parameters.at("fri_client_sdk_minor_version"));
-    if (parameters_.fri_client_sdk_major_version != FRICLIENT_VERSION_MAJOR) {
+    if (parameters_.fri_client_sdk_major_version != FRI_CLIENT_VERSION_MAJOR) {
       RCLCPP_ERROR_STREAM(
           rclcpp::get_logger(LOGGER_NAME),
           lbr_fri_ros2::ColorScheme::ERROR
-              << "Expected FRI client SDK version '" << FRICLIENT_VERSION_MAJOR << "', got '"
+              << "Expected FRI client SDK version '" << FRI_CLIENT_VERSION_MAJOR << "', got '"
               << std::to_string(parameters_.fri_client_sdk_major_version)
               << "'. Update lbr_system_parameters.yaml or compile against correct FRI version."
               << lbr_fri_ros2::ColorScheme::ENDC);
@@ -336,10 +336,10 @@ bool SystemInterface::parse_parameters_(const hardware_interface::HardwareInfo &
     }
     std::string client_command_mode = system_info.hardware_parameters.at("client_command_mode");
     if (client_command_mode == "position") {
-#if FRICLIENT_VERSION_MAJOR == 1
+#if FRI_CLIENT_VERSION_MAJOR == 1
       parameters_.client_command_mode = KUKA::FRI::EClientCommandMode::POSITION;
 #endif
-#if FRICLIENT_VERSION_MAJOR >= 2
+#if FRI_CLIENT_VERSION_MAJOR >= 2
       parameters_.client_command_mode = KUKA::FRI::EClientCommandMode::JOINT_POSITION;
 #endif
     } else if (client_command_mode == "torque") {
@@ -405,7 +405,7 @@ void SystemInterface::nan_command_interfaces_() {
 void SystemInterface::nan_state_interfaces_() {
   // state interfaces of type double
   hw_lbr_state_.measured_joint_position.fill(std::numeric_limits<double>::quiet_NaN());
-#if FRICLIENT_VERSION_MAJOR == 1
+#if FRI_CLIENT_VERSION_MAJOR == 1
   hw_lbr_state_.commanded_joint_position.fill(std::numeric_limits<double>::quiet_NaN());
 #endif
   hw_lbr_state_.measured_torque.fill(std::numeric_limits<double>::quiet_NaN());

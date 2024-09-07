@@ -4,9 +4,9 @@
 
 #include "friClientApplication.h"
 #include "friClientIf.h"
+#include "friClientVersion.h"
 #include "friLBRClient.h"
 #include "friUdpConnection.h"
-#include "friVersion.h"
 
 #include "lbr_fri_idl/msg/lbr_command.hpp"
 #include "lbr_fri_ros2/interfaces/base_command.hpp"
@@ -33,10 +33,10 @@ public:
 
   void set_up(const KUKA::FRI::EClientCommandMode &client_command_mode) {
     switch (client_command_mode) {
-#if FRICLIENT_VERSION_MAJOR == 1
+#if FRI_CLIENT_VERSION_MAJOR == 1
     case KUKA::FRI::EClientCommandMode::POSITION:
 #endif
-#if FRICLIENT_VERSION_MAJOR >= 2
+#if FRI_CLIENT_VERSION_MAJOR >= 2
     case KUKA::FRI::EClientCommandMode::JOINT_POSITION:
 #endif
     {
@@ -143,10 +143,10 @@ protected:
 };
 
 TEST_F(TestCommandInterfaces, TestPositionCommandInterface) {
-#if FRICLIENT_VERSION_MAJOR == 1
+#if FRI_CLIENT_VERSION_MAJOR == 1
   set_up(KUKA::FRI::EClientCommandMode::POSITION);
 #endif
-#if FRICLIENT_VERSION_MAJOR >= 2
+#if FRI_CLIENT_VERSION_MAJOR >= 2
   set_up(KUKA::FRI::EClientCommandMode::JOINT_POSITION);
 #endif
   test_simple();

@@ -6,7 +6,7 @@ StateInterface::StateInterface(const StateInterfaceParameters &state_interface_p
 
 void StateInterface::set_state(const_fri_state_t_ref state) {
   state_.client_command_mode = state.getClientCommandMode();
-#if FRICLIENT_VERSION_MAJOR == 1
+#if FRI_CLIENT_VERSION_MAJOR == 1
   std::memcpy(state_.commanded_joint_position.data(), state.getCommandedJointPosition(),
               sizeof(double) * fri_state_t::NUMBER_OF_JOINTS);
 #endif
@@ -43,7 +43,7 @@ void StateInterface::set_state(const_fri_state_t_ref state) {
 void StateInterface::set_state_open_loop(const_fri_state_t_ref state,
                                          const_idl_joint_pos_t_ref joint_position) {
   state_.client_command_mode = state.getClientCommandMode();
-#if FRICLIENT_VERSION_MAJOR == 1
+#if FRI_CLIENT_VERSION_MAJOR == 1
   std::memcpy(state_.commanded_joint_position.data(), state.getCommandedJointPosition(),
               sizeof(double) * fri_state_t::NUMBER_OF_JOINTS);
 #endif
