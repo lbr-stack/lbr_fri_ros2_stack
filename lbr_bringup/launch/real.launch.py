@@ -88,13 +88,13 @@ def launch_setup(context: LaunchContext) -> List[LaunchDescriptionEntity]:
         robot_name=model,
         package_name=f"{model}_moveit_config",
     )
-    movegroup_params = LBRMoveGroupMixin.params_move_group()
+    move_group_params = LBRMoveGroupMixin.params_move_group()
 
     ld.add_action(
         LBRMoveGroupMixin.node_move_group(
             parameters=[
                 moveit_configs_builder.to_dict(),
-                movegroup_params,
+                move_group_params,
                 {"use_sim_time": False},
             ],
             condition=IfCondition(LaunchConfiguration("moveit")),

@@ -9,8 +9,8 @@
 #include "rclcpp/logger.hpp"
 #include "rclcpp/logging.hpp"
 
+#include "friClientVersion.h"
 #include "friLBRClient.h"
-#include "friVersion.h"
 
 #include "lbr_fri_idl/msg/lbr_command.hpp"
 #include "lbr_fri_ros2/command_guard.hpp"
