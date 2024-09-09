@@ -51,13 +51,16 @@ class LBRROS2ControlMixin:
         robot_name: Optional[Union[LaunchConfiguration, str]] = LaunchConfiguration(
             "robot_name", default="lbr"
         ),
+        use_sim_time: Optional[Union[LaunchConfiguration, bool]] = LaunchConfiguration(
+            "use_sim_time", default="false"
+        ),
         **kwargs,
     ) -> Node:
         return Node(
             package="controller_manager",
             executable="ros2_control_node",
             parameters=[
-                {"use_sim_time": False},
+                {"use_sim_time": use_sim_time},
                 PathJoinSubstitution(
                     [
                         FindPackageShare(

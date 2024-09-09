@@ -66,12 +66,10 @@ class LBRDescriptionMixin:
         port_id: Optional[Union[LaunchConfiguration, str]] = LaunchConfiguration(
             "port_id", default="30200"
         ),
-        sim: Optional[Union[LaunchConfiguration, bool]] = LaunchConfiguration(
-            "sim", default="true"
+        mode: Optional[Union[LaunchConfiguration, bool]] = LaunchConfiguration(
+            "mode", default="mock"
         ),
     ) -> Dict[str, str]:
-        if type(sim) is bool:
-            sim = "true" if sim else "false"
         robot_description = {
             "robot_description": Command(
                 [
@@ -90,8 +88,8 @@ class LBRDescriptionMixin:
                     robot_name,
                     " port_id:=",
                     port_id,
-                    " sim:=",
-                    sim,
+                    " mode:=",
+                    mode,
                 ]
             )
         }
@@ -124,11 +122,16 @@ class LBRDescriptionMixin:
         )
 
     @staticmethod
-    def arg_sim(default_value: str = "true") -> DeclareLaunchArgument:
+    def arg_mode(default_value: str = "mock") -> DeclareLaunchArgument:
         return DeclareLaunchArgument(
-            name="sim",
+            name="mode",
             default_value=default_value,
-            description="Whether to use the simulation or not.",
+            description="The mode to launch in.",
+            choices=[
+                "mock",
+                "hardware",
+                "gazebo",
+            ],
         )
 
     @staticmethod
@@ -140,8 +143,8 @@ class LBRDescriptionMixin:
         return {"port_id": LaunchConfiguration("port_id", default="30200")}
 
     @staticmethod
-    def param_sim() -> Dict[str, LaunchConfiguration]:
-        return {"sim": LaunchConfiguration("sim", default="true")}
+    def param_mode() -> Dict[str, LaunchConfiguration]:
+        return {"mode": LaunchConfiguration("mode", default="mock")}
 
     @staticmethod
     def node_static_tf(

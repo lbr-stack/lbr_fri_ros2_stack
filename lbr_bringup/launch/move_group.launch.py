@@ -2,9 +2,9 @@ from typing import List
 
 from launch import LaunchContext, LaunchDescription, LaunchDescriptionEntity
 from launch.actions import OpaqueFunction
-from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
-from launch_mixins.lbr_bringup import LBRMoveGroupMixin
-from launch_mixins.lbr_description import LBRDescriptionMixin, RVizMixin
+from launch.substitutions import LaunchConfiguration
+from lbr_bringup.description import LBRDescriptionMixin, RVizMixin
+from lbr_bringup.move_group import LBRMoveGroupMixin
 
 
 def launch_setup(context: LaunchContext) -> List[LaunchDescriptionEntity]:
@@ -23,30 +23,19 @@ def launch_setup(context: LaunchContext) -> List[LaunchDescriptionEntity]:
     )
     move_group_params = LBRMoveGroupMixin.params_move_group()
 
-    # MoveGroup:
-    # - requires world frame
-    # - urdf only has robot_name/world
-    # This transform needs publishing
-    robot_name = LaunchConfiguration("robot_name").perform(context)
-    ld.add_action(
-        LBRDescriptionMixin.node_static_tf(
-            tf=[0, 0, 0, 0, 0, 0],  # keep zero
-            parent="world",
-            child=PathJoinSubstitution(
-                [
-                    robot_name,
-                    "world",
-                ]  # results in robot_name/world
-            ),
-        )
-    )
+    mode = LaunchConfiguration("mode").perform(context)
+    use_sim_time = False
+    if mode == "gazebo":
+        use_sim_time = True
 
+    # MoveGroup
+    robot_name = LaunchConfiguration("robot_name").perform(context)
     ld.add_action(
         LBRMoveGroupMixin.node_move_group(
             parameters=[
                 moveit_configs_builder.to_dict(),
                 move_group_params,
-                {"use_sim_time": LaunchConfiguration("sim")},
+                {"use_sim_time": use_sim_time},
             ],
             namespace=robot_name,
         )
@@ -59,7 +48,7 @@ def launch_setup(context: LaunchContext) -> List[LaunchDescriptionEntity]:
         parameters=LBRMoveGroupMixin.params_rviz(
             moveit_configs=moveit_configs_builder.to_moveit_configs()
         )
-        + [{"use_sim_time": LaunchConfiguration("sim")}],
+        + [{"use_sim_time": use_sim_time}],
         remappings=[
             ("display_planned_path", robot_name + "/display_planned_path"),
             ("joint_states", robot_name + "/joint_states"),
@@ -79,9 +68,10 @@ def launch_setup(context: LaunchContext) -> List[LaunchDescriptionEntity]:
 def generate_launch_description() -> LaunchDescription:
     ld = LaunchDescription()
 
+    ld.add_action(LBRDescriptionMixin.arg_mode())
     ld.add_action(LBRDescriptionMixin.arg_model())
     ld.add_action(LBRDescriptionMixin.arg_robot_name())
-    ld.add_action(LBRDescriptionMixin.arg_sim())
+    ld.add_action(LBRDescriptionMixin.arg_mode())
 
     ld.add_action(OpaqueFunction(function=launch_setup))
 
