@@ -77,7 +77,7 @@ controller_interface::return_type LBRStateBroadcaster::update(const rclcpp::Time
     // joint related states
     std::for_each(joint_names_.begin(), joint_names_.end(),
                   [&, idx = 0](const std::string &joint_name) mutable {
-#if FRICLIENT_VERSION_MAJOR == 1
+#if FRI_CLIENT_VERSION_MAJOR == 1
                     rt_state_publisher_ptr_->msg_.commanded_joint_position[idx] =
                         state_interface_map_[joint_name][HW_IF_COMMANDED_JOINT_POSITION];
 #endif
@@ -133,7 +133,7 @@ void LBRStateBroadcaster::init_state_interface_map_() {
 
 void LBRStateBroadcaster::init_state_msg_() {
   rt_state_publisher_ptr_->msg_.client_command_mode = std::numeric_limits<int8_t>::quiet_NaN();
-#if FRICLIENT_VERSION_MAJOR == 1
+#if FRI_CLIENT_VERSION_MAJOR == 1
   rt_state_publisher_ptr_->msg_.commanded_joint_position.fill(
       std::numeric_limits<double>::quiet_NaN());
 #endif

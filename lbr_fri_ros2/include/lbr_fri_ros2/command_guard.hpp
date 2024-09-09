@@ -10,9 +10,9 @@
 #include "rclcpp/logger.hpp"
 #include "rclcpp/logging.hpp"
 
+#include "friClientVersion.h"
 #include "friLBRClient.h"
 #include "friLBRState.h"
-#include "friVersion.h"
 
 #include "lbr_fri_idl/msg/lbr_command.hpp"
 #include "lbr_fri_idl/msg/lbr_state.hpp"
@@ -66,7 +66,7 @@ protected:
 class SafeStopCommandGuard : public CommandGuard {
 public:
   SafeStopCommandGuard(const CommandGuardParameters &command_guard_parameters)
-      : CommandGuard(command_guard_parameters){};
+      : CommandGuard(command_guard_parameters) {};
 
 protected:
   virtual bool command_in_position_limits_(const_idl_command_t_ref lbr_command,

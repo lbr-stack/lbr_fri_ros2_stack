@@ -15,8 +15,8 @@
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp_lifecycle/state.hpp"
 
+#include "friClientVersion.h"
 #include "friLBRState.h"
-#include "friVersion.h"
 
 #include "lbr_fri_idl/msg/lbr_command.hpp"
 #include "lbr_fri_idl/msg/lbr_state.hpp"
@@ -33,10 +33,10 @@ namespace lbr_ros2_control {
 struct SystemInterfaceParameters {
   uint8_t fri_client_sdk_major_version{1};
   uint8_t fri_client_sdk_minor_version{15};
-#if FRICLIENT_VERSION_MAJOR == 1
+#if FRI_CLIENT_VERSION_MAJOR == 1
   KUKA::FRI::EClientCommandMode client_command_mode{KUKA::FRI::EClientCommandMode::POSITION};
 #endif
-#if FRICLIENT_VERSION_MAJOR >= 2
+#if FRI_CLIENT_VERSION_MAJOR >= 2
   KUKA::FRI::EClientCommandMode client_command_mode{KUKA::FRI::EClientCommandMode::JOINT_POSITION};
 #endif
   int32_t port_id{30200};
@@ -70,10 +70,10 @@ class SystemInterface : public hardware_interface::SystemInterface {
 protected:
   static constexpr char LOGGER_NAME[] = "lbr_ros2_control::SystemInterface";
 
-#if FRICLIENT_VERSION_MAJOR == 1
+#if FRI_CLIENT_VERSION_MAJOR == 1
   static constexpr uint8_t LBR_FRI_STATE_INTERFACE_SIZE = 7;
 #endif
-#if FRICLIENT_VERSION_MAJOR >= 2
+#if FRI_CLIENT_VERSION_MAJOR >= 2
   static constexpr uint8_t LBR_FRI_STATE_INTERFACE_SIZE = 6;
 #endif
   static constexpr uint8_t LBR_FRI_COMMAND_INTERFACE_SIZE = 2;

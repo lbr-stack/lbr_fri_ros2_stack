@@ -15,8 +15,8 @@
 #include "realtime_tools/realtime_publisher.h"
 
 #include "friClientIf.h"
+#include "friClientVersion.h"
 #include "friLBRState.h"
-#include "friVersion.h"
 
 #include "lbr_fri_idl/msg/lbr_state.hpp"
 #include "lbr_ros2_control/system_interface_type_values.hpp"
