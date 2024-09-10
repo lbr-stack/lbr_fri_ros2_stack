@@ -13,6 +13,7 @@ Humble v2.1.0 (2024-09-10)
     * ``ros2 launch lbr_bringup hardware.launch.py`` (real robot)
     * ``ros2 launch lbr_bringup gazebo.launch.py`` (Gazebo simulation)
 * Added mock hardware to ``lbr_ros2_control`` (for simple ``ros2_control`` testing without the need for Gazebo)
+* Minor documentation fixes
 
 Humble v2.0.0 (2024-07-08)
 --------------------------
