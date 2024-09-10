@@ -39,7 +39,7 @@ To run the ``lbr_fri_ros2_stack`` in a Docker container, follow the instructions
 
         ros2 launch lbr_bringup mock.launch.py
 
-    .. hint::
+   .. hint::
 
     Refer to :ref:`lbr_bringup` for more launch options.
 
