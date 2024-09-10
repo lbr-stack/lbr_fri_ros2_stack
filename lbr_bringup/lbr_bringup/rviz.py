@@ -8,6 +8,14 @@ from launch_ros.substitutions import FindPackageShare
 
 class RVizMixin:
     @staticmethod
+    def arg_rviz(default_value: str = "false") -> DeclareLaunchArgument:
+        return DeclareLaunchArgument(
+            name="rviz",
+            default_value=default_value,
+            description="Whether to launch RViz.",
+        )
+
+    @staticmethod
     def arg_rviz_config_pkg(
         default_value: str = "lbr_bringup",
     ) -> DeclareLaunchArgument:

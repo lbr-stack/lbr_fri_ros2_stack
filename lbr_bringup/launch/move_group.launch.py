@@ -2,14 +2,17 @@ from typing import List
 
 from launch import LaunchContext, LaunchDescription, LaunchDescriptionEntity
 from launch.actions import OpaqueFunction
-from launch.substitutions import LaunchConfiguration
+from launch.conditions import IfCondition
+from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
 from lbr_bringup.description import LBRDescriptionMixin
 from lbr_bringup.move_group import LBRMoveGroupMixin
+from lbr_bringup.rviz import RVizMixin
 
 
-def launch_setup(context: LaunchContext) -> List[LaunchDescriptionEntity]:
+def hidden_setup(context: LaunchContext) -> List[LaunchDescriptionEntity]:
     ld = LaunchDescription()
 
+    ld.add_action(LBRDescriptionMixin.arg_robot_name())
     ld.add_action(LBRMoveGroupMixin.arg_allow_trajectory_execution())
     ld.add_action(LBRMoveGroupMixin.arg_capabilities())
     ld.add_action(LBRMoveGroupMixin.arg_disable_capabilities())
@@ -29,7 +32,7 @@ def launch_setup(context: LaunchContext) -> List[LaunchDescriptionEntity]:
         use_sim_time = True
 
     # MoveGroup
-    robot_name = LaunchConfiguration("robot_name").perform(context)
+    robot_name = LaunchConfiguration("robot_name")
     ld.add_action(
         LBRMoveGroupMixin.node_move_group(
             parameters=[
@@ -40,6 +43,43 @@ def launch_setup(context: LaunchContext) -> List[LaunchDescriptionEntity]:
             namespace=robot_name,
         )
     )
+
+    # RViz if desired
+    rviz = RVizMixin.node_rviz(
+        rviz_config_pkg=f"{model}_moveit_config",
+        rviz_config="config/moveit.rviz",
+        parameters=LBRMoveGroupMixin.params_rviz(
+            moveit_configs=moveit_configs_builder.to_moveit_configs()
+        )
+        + [{"use_sim_time": use_sim_time}],
+        remappings=[
+            (
+                "display_planned_path",
+                PathJoinSubstitution([robot_name, "display_planned_path"]),
+            ),
+            ("joint_states", PathJoinSubstitution([robot_name, "joint_states"])),
+            (
+                "monitored_planning_scene",
+                PathJoinSubstitution([robot_name, "monitored_planning_scene"]),
+            ),
+            ("planning_scene", PathJoinSubstitution([robot_name, "planning_scene"])),
+            (
+                "planning_scene_world",
+                PathJoinSubstitution([robot_name, "planning_scene_world"]),
+            ),
+            (
+                "robot_description",
+                PathJoinSubstitution([robot_name, "robot_description"]),
+            ),
+            (
+                "robot_description_semantic",
+                PathJoinSubstitution([robot_name, "robot_description_semantic"]),
+            ),
+        ],
+        condition=IfCondition(LaunchConfiguration("rviz")),
+    )
+
+    ld.add_action(rviz)
     return ld.entities
 
 
@@ -48,9 +88,7 @@ def generate_launch_description() -> LaunchDescription:
 
     ld.add_action(LBRDescriptionMixin.arg_mode())
     ld.add_action(LBRDescriptionMixin.arg_model())
-    ld.add_action(LBRDescriptionMixin.arg_robot_name())
-    ld.add_action(LBRDescriptionMixin.arg_mode())
+    ld.add_action(RVizMixin.arg_rviz())
 
-    ld.add_action(OpaqueFunction(function=launch_setup))
-
+    ld.add_action(OpaqueFunction(function=hidden_setup))
     return ld

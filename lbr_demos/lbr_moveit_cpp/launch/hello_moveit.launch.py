@@ -8,7 +8,7 @@ from lbr_bringup.description import LBRDescriptionMixin
 from lbr_bringup.move_group import LBRMoveGroupMixin
 
 
-def launch_setup(context: LaunchContext) -> List[LaunchDescriptionEntity]:
+def hidden_setup(context: LaunchContext) -> List[LaunchDescriptionEntity]:
     ld = LaunchDescription()
 
     model = LaunchConfiguration("model").perform(context)
@@ -45,6 +45,6 @@ def generate_launch_description() -> LaunchDescription:
     ld.add_action(LBRDescriptionMixin.arg_robot_name())
     ld.add_action(LBRDescriptionMixin.arg_mode())
 
-    ld.add_action(OpaqueFunction(function=launch_setup))
+    ld.add_action(OpaqueFunction(function=hidden_setup))
 
     return ld

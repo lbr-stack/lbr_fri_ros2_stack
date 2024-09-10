@@ -110,6 +110,8 @@ class LBRDescriptionMixin:
         child: Optional[Union[LaunchConfiguration, str]] = None,
         **kwargs,
     ) -> Node:
+        if len(tf) != 6:
+            raise ValueError("tf must be a list of 6 floats.")
         label = ["--x", "--y", "--z", "--roll", "--pitch", "--yaw"]
         tf = [str(x) for x in tf]
         return Node(
