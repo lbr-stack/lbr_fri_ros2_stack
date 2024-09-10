@@ -1,6 +1,7 @@
 from launch import LaunchDescription
 from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
-from lbr_bringup.description import GazeboMixin, LBRDescriptionMixin
+from lbr_bringup.description import LBRDescriptionMixin
+from lbr_bringup.gazebo import GazeboMixin
 from lbr_bringup.ros2_control import LBRROS2ControlMixin
 
 
@@ -37,7 +38,9 @@ def generate_launch_description() -> LaunchDescription:
 
     # Gazebo
     ld.add_action(GazeboMixin.include_gazebo())  # Gazebo has its own controller manager
-    spawn_entity = GazeboMixin.node_spawn_entity(tf=world_robot_tf)
+    spawn_entity = GazeboMixin.node_spawn_entity(
+        tf=world_robot_tf
+    )  # spawns robot in Gazebo through robot_description topic of robot_state_publisher
     ld.add_action(spawn_entity)
 
     # controllers

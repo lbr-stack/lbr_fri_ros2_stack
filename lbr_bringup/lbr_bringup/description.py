@@ -1,7 +1,6 @@
 from typing import Dict, List, Optional, Union
 
-from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
-from launch.launch_description_sources import PythonLaunchDescriptionSource
+from launch.actions import DeclareLaunchArgument
 from launch.substitutions import (
     Command,
     FindExecutable,
@@ -10,48 +9,6 @@ from launch.substitutions import (
 )
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
-
-
-class GazeboMixin:
-    @staticmethod
-    def include_gazebo(**kwargs) -> IncludeLaunchDescription:
-        return IncludeLaunchDescription(
-            PythonLaunchDescriptionSource(
-                PathJoinSubstitution(
-                    [
-                        FindPackageShare("gazebo_ros"),
-                        "launch",
-                        "gazebo.launch.py",
-                    ]
-                )
-            ),
-            **kwargs,
-        )
-
-    @staticmethod
-    def node_spawn_entity(
-        robot_name: Optional[Union[LaunchConfiguration, str]] = LaunchConfiguration(
-            "robot_name", default="lbr"
-        ),
-        tf: List[float] = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-        **kwargs,
-    ) -> Node:
-        label = ["-x", "-y", "-z", "-R", "-P", "-Y"]
-        tf = [str(x) for x in tf]
-        return Node(
-            package="gazebo_ros",
-            executable="spawn_entity.py",
-            arguments=[
-                "-topic",
-                "robot_description",
-                "-entity",
-                robot_name,
-            ]
-            + [item for pair in zip(label, tf) for item in pair],
-            output="screen",
-            namespace=robot_name,
-            **kwargs,
-        )
 
 
 class LBRDescriptionMixin:
@@ -165,54 +122,6 @@ class LBRDescriptionMixin:
                 parent,
                 "--child-frame-id",
                 child,
-            ],
-            **kwargs,
-        )
-
-
-class RVizMixin:
-    @staticmethod
-    def arg_rviz_config_pkg(
-        default_value: str = "lbr_description",
-    ) -> DeclareLaunchArgument:
-        return DeclareLaunchArgument(
-            name="rviz_config_pkg",
-            default_value=default_value,
-            description="The RViz configuration file.",
-        )
-
-    @staticmethod
-    def arg_rviz_config(
-        default_value: str = "config/config.rviz",
-    ) -> DeclareLaunchArgument:
-        return DeclareLaunchArgument(
-            name="rviz_config",
-            default_value=default_value,
-            description="The RViz configuration file.",
-        )
-
-    @staticmethod
-    def node_rviz(
-        rviz_config_pkg: Optional[
-            Union[LaunchConfiguration, str]
-        ] = LaunchConfiguration("rviz_config_pkg", default="lbr_description"),
-        rviz_config: Optional[Union[LaunchConfiguration, str]] = LaunchConfiguration(
-            "rviz_config", default="config/config.rviz"
-        ),
-        **kwargs,
-    ) -> Node:
-        return Node(
-            package="rviz2",
-            executable="rviz2",
-            name="rviz2",
-            arguments=[
-                "-d",
-                PathJoinSubstitution(
-                    [
-                        FindPackageShare(rviz_config_pkg),
-                        rviz_config,
-                    ]
-                ),
             ],
             **kwargs,
         )
