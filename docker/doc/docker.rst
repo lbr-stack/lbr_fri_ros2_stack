@@ -45,12 +45,12 @@ To run the ``lbr_fri_ros2_stack`` in a Docker container, follow the instructions
 
 #. Connect another shell to the running container
 
-    .. code-block:: bash
+   .. code-block:: bash
     
-     ./container_new_console.sh
+    ./container_new_console.sh
 
 #. Run e.g. MoveIt with RViz
 
-    .. code-block:: bash
+   .. code-block:: bash
     
-     ros2 launch lbr_bringup move_group.launch.py rviz:=true
+    ros2 launch lbr_bringup move_group.launch.py rviz:=true
