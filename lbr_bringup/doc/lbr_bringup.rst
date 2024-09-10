@@ -121,7 +121,7 @@ This launch file will spin up ``RViz`` for visualization. It will (see `rviz.lau
     List all arguments for the launch file via ``ros2 launch lbr_bringup rviz.launch.py -s``.
 
 .. note::
-    Requires the user to run `Mock Setup`_, `Gazebo Simulation`_ or `Launch Hardware`_ first.
+    Requires the user to run `Mock Setup`_, `Gazebo Simulation`_ or `Hardware`_ first.
 
 MoveIt
 ~~~~~~
@@ -135,7 +135,7 @@ Please note that MoveIt configurations are specific and you as a user will need 
         rviz:=true
 
 .. note::
-    Requires the user to run `Mock Setup`_, `Gazebo Simulation`_ or `Launch Hardware`_ first.
+    Requires the user to run `Mock Setup`_, `Gazebo Simulation`_ or `Hardware`_ first.
 
 .. note::
     Runs ``RViz`` with specific MoveIt configurations.
