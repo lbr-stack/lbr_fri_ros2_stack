@@ -18,5 +18,5 @@ public:
 
   void buffered_command_to_fri(fri_command_t_ref command, const_idl_state_t_ref state) override;
 };
-} // end of namespace lbr_fri_ros2
+} // namespace lbr_fri_ros2
 #endif // LBR_FRI_ROS2__INTERFACES__WRENCH_COMMAND_HPP_

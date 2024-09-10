@@ -17,9 +17,16 @@ Simulation
 
     .. code-block:: bash
 
-        ros2 launch lbr_bringup bringup.launch.py \
+        ros2 launch lbr_bringup mock.launch.py \
             moveit:=true \
-            sim:=true \
+            model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
+
+#. Run MoveIt:
+
+    .. code-block:: bash
+
+        ros2 launch lbr_moveit_cpp move_group.launch.py \
+            mode:=mock \
             model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
 
 #. Run the `hello_moveit <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_moveit_cpp/src/hello_moveit.cpp>`_:octicon:`link-external` node:
@@ -27,7 +34,7 @@ Simulation
     .. code-block:: bash
 
         ros2 launch lbr_moveit_cpp hello_moveit.launch.py \
-            sim:=true \
+            mode:=mock \
             model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
 
 Hardware
@@ -50,7 +57,7 @@ Hardware
         - ``FRI control mode``: ``POSITION_CONTROL`` or ``JOINT_IMPEDANCE_CONTROL``
         - ``FRI client command mode``: ``POSITION``
 
-#. Proceed with steps 1 and 2 from `Simulation`_ but with ``sim:=false``.
+#. Proceed with steps 1, 2 and 3 from `Simulation`_ but with ``ros2 launch lbr_bringup hardware.launch.py``.
 
 Examining the Code
 ~~~~~~~~~~~~~~~~~~
@@ -69,7 +76,7 @@ The ``MoveGroup`` configurations are parsed conveniently through a mixin:
 
 .. code-block:: python
 
-    from launch_mixins.lbr_bringup import LBRMoveGroupMixin
+    from lbr_bringup.move_group import LBRMoveGroupMixin
 
     ...
 

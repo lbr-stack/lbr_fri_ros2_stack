@@ -91,4 +91,4 @@ void AsyncClient::command() {
       state_interface_ptr_->get_state()); // current state accessed via state interface (allows for
                                           // open loop and is statically sized)
 }
-} // end of namespace lbr_fri_ros2
+} // namespace lbr_fri_ros2

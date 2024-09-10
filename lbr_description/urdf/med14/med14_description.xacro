@@ -3,7 +3,7 @@
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
     <!-- robot as extracted via https://github.com/syuntoku14/fusion2urdf -->
     <xacro:macro name="med14"
-        params="robot_name:=^|lbr sim:=^=true system_parameters_path:=^|'$(find lbr_ros2_control)/config/lbr_system_parameters.yaml'">
+        params="robot_name:=^|lbr mode:=^|mock system_parameters_path:=^|'$(find lbr_ros2_control)/config/lbr_system_parameters.yaml'">
 
         <!-- includes -->
         <xacro:include filename="$(find lbr_description)/gazebo/lbr_gazebo.xacro" />
@@ -19,10 +19,10 @@
         <xacro:property name="joint_damping" value="10.0" />
         <xacro:property name="joint_friction" value="0.1" />
 
-        <!-- macros for simulation and real hardware -->
+        <!-- macros for gazebo / mock / hardware -->
         <xacro:lbr_gazebo robot_name="${robot_name}" />
         <xacro:lbr_system_interface
-            sim="${sim}"
+            mode="${mode}"
             joint_limits="${joint_limits}"
             system_parameters_path="${system_parameters_path}" />
 

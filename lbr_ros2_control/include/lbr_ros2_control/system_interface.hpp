@@ -166,5 +166,5 @@ protected:
   // exposed command interfaces
   lbr_fri_idl::msg::LBRCommand hw_lbr_command_;
 };
-} // end of namespace lbr_ros2_control
+} // namespace lbr_ros2_control
 #endif // LBR_ROS2_CONTROL__SYSTEM_INTERFACE_HPP_

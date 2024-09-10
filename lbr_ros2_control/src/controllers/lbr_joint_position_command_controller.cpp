@@ -1,4 +1,4 @@
-#include "lbr_ros2_control/lbr_joint_position_command_controller.hpp"
+#include "lbr_ros2_control/controllers/lbr_joint_position_command_controller.hpp"
 
 namespace lbr_ros2_control {
 LBRJointPositionCommandController::LBRJointPositionCommandController()
@@ -66,7 +66,7 @@ controller_interface::CallbackReturn LBRJointPositionCommandController::on_deact
     const rclcpp_lifecycle::State & /*previous_state*/) {
   return controller_interface::CallbackReturn::SUCCESS;
 }
-} // end of namespace lbr_ros2_control
+} // namespace lbr_ros2_control
 
 #include "pluginlib/class_list_macros.hpp"
 

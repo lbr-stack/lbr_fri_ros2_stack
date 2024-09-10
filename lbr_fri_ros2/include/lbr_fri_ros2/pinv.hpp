@@ -25,5 +25,5 @@ pinv(const MatT &mat,
                 });
   return svd.matrixV() * dampedSingularValuesInv * svd.matrixU().adjoint();
 }
-} // end of namespace lbr_fri_ros2
+} // namespace lbr_fri_ros2
 #endif // LBR_FRI_ROS2__PINV_HPP_

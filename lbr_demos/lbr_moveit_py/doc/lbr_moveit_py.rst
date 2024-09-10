@@ -3,14 +3,14 @@ lbr_demos_moveit_py
 .. warning::
     On hardware, do always execute in ``T1`` mode first.
 
-MoveIt via RViZ
+MoveIt via RViz
 -----------------
 .. image:: img/iiwa7_moveit_rviz.png
     :align: center
-    :alt: MoveIt via RViZ
-**IIWA 7 R800 in RViZ**
+    :alt: MoveIt via RViz
+**IIWA 7 R800 in RViz**
 
-To run MoveIt via RViZ, simply follow:
+To run MoveIt via RViz, simply follow:
 
 Simulation
 ~~~~~~~~~~
@@ -18,12 +18,19 @@ Simulation
 
     .. code-block:: bash
 
-        ros2 launch lbr_bringup bringup.launch.py \
-            moveit:=true \
-            sim:=true \
+        ros2 launch lbr_bringup mock.launch.py \
             model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
 
-#. You can now move the robot via MoveIt in RViZ!
+#. Run MoveIt with RViz:
+
+    .. code-block:: bash
+
+        ros2 launch lbr_bringup move_group.launch.py \
+            mode:=mock \
+            rviz:=true \
+            model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
+
+#. You can now move the robot via MoveIt in RViz!
 
 Hardware
 ~~~~~~~~
@@ -45,4 +52,4 @@ Hardware
         - ``FRI control mode``: ``POSITION_CONTROL`` or ``JOINT_IMPEDANCE_CONTROL``
         - ``FRI client command mode``: ``POSITION``
 
-#. Proceed with steps 1 and 2 from `Simulation`_ but with ``sim:=false``.
+#. Proceed with steps 1 and 2 from `Simulation`_ but with ``ros2 launch lbr_bringup hardware.launch.py``.

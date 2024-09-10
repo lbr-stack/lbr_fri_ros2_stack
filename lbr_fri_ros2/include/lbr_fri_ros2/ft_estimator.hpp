@@ -66,5 +66,5 @@ protected:
   Eigen::Matrix<double, KUKA::FRI::LBRState::NUMBER_OF_JOINTS, 1> tau_ext_;
   Eigen::Matrix<double, CARTESIAN_DOF, 1> f_ext_;
 };
-} // end of namespace lbr_fri_ros2
+} // namespace lbr_fri_ros2
 #endif // LBR_FRI_ROS2__FT_ESTIMATOR_HPP_

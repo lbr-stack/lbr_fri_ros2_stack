@@ -20,34 +20,6 @@ find_package(orocos_kdl_vendor REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_components REQUIRED)
 
-# admittance control node
-add_library(admittance_control_component
-  SHARED
-    src/admittance_control_node.cpp
-)
-
-target_include_directories(admittance_control_component
-  PRIVATE src
-)
-
-ament_target_dependencies(admittance_control_component
-  kdl_parser
-  lbr_fri_idl
-  lbr_fri_ros2
-  orocos_kdl_vendor
-  rclcpp
-  rclcpp_components
-)
-
-target_link_libraries(admittance_control_component
-  FRIClient::FRIClient
-)
-
-rclcpp_components_register_node(admittance_control_component
-  PLUGIN lbr_demos::AdmittanceControlNode
-  EXECUTABLE admittance_control
-)
-
 # pose planning node
 add_library(pose_planning_component
   SHARED
@@ -99,7 +71,7 @@ rclcpp_components_register_node(pose_control_component
 
 # install
 install(
-  TARGETS admittance_control_component pose_planning_component pose_control_component
+  TARGETS pose_planning_component pose_control_component
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION lib/${PROJECT_NAME}
 )

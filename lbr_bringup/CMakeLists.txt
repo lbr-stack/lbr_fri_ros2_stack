@@ -15,6 +15,6 @@ install(
 )
 
 # Launch mixins
-ament_python_install_package(launch_mixins)
+ament_python_install_package(lbr_bringup)
 
 ament_package()

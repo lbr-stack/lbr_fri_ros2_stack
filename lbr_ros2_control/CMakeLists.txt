@@ -29,10 +29,10 @@ find_package(realtime_tools REQUIRED)
 add_library(
   ${PROJECT_NAME}
   SHARED
-  src/lbr_joint_position_command_controller.cpp
-  src/lbr_torque_command_controller.cpp
-  src/lbr_wrench_command_controller.cpp
-  src/lbr_state_broadcaster.cpp
+  src/controllers/lbr_joint_position_command_controller.cpp
+  src/controllers/lbr_torque_command_controller.cpp
+  src/controllers/lbr_wrench_command_controller.cpp
+  src/controllers/lbr_state_broadcaster.cpp
   src/system_interface.cpp
 )
 
@@ -62,8 +62,7 @@ target_link_libraries(${PROJECT_NAME}
   FRIClient::FRIClient
 )
 
-pluginlib_export_plugin_description_file(controller_interface plugin_description_files/broadcasters.xml)
-pluginlib_export_plugin_description_file(controller_interface plugin_description_files/forward_command_controllers.xml)
+pluginlib_export_plugin_description_file(controller_interface plugin_description_files/controllers.xml)
 pluginlib_export_plugin_description_file(hardware_interface plugin_description_files/system_interface.xml)
 
 # Export for downstream usage, see https://docs.ros.org/en/foxy/Guides/Ament-CMake-Documentation.html

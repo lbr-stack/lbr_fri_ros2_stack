@@ -132,4 +132,4 @@ bool App::valid_port_(const int &port_id) {
   }
   return true;
 }
-} // end of namespace lbr_fri_ros2
+} // namespace lbr_fri_ros2

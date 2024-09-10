@@ -59,5 +59,5 @@ protected:
   rclcpp::Subscription<lbr_fri_idl::msg::LBRWrenchCommand>::SharedPtr
       lbr_wrench_command_subscription_ptr_;
 };
-} // end of namespace lbr_ros2_control
+} // namespace lbr_ros2_control
 #endif // LBR_ROS2_CONTROL__LBR_WRENCH_COMMAND_CONTROLLER_HPP_

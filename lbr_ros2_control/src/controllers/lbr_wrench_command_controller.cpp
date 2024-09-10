@@ -1,4 +1,4 @@
-#include "lbr_ros2_control/lbr_wrench_command_controller.hpp"
+#include "lbr_ros2_control/controllers/lbr_wrench_command_controller.hpp"
 
 namespace lbr_ros2_control {
 LBRWrenchCommandController::LBRWrenchCommandController()
@@ -108,7 +108,7 @@ void LBRWrenchCommandController::clear_command_interfaces_() {
   joint_position_command_interfaces_.clear();
   wrench_command_interfaces_.clear();
 }
-} // end of namespace lbr_ros2_control
+} // namespace lbr_ros2_control
 
 #include "pluginlib/class_list_macros.hpp"
 

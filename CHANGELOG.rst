@@ -1,6 +1,20 @@
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Changelog for package LBR FRI ROS 2 Stack
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Humble v2.1.0 (2024-09-10)
+--------------------------
+* De-couple launch files from ``lbr_bringup`` for easier customization (breaking change):
+
+  * Removed ``sim:=true / false`` argument from launch files in favor of dedicated launch files (since no feature parity between simulation and real robot)
+  * MoveIt and RViz need to be launched separately now
+  * User can now launch via:
+
+    * ``ros2 launch lbr_bringup mock.launch.py`` (new: mock system)
+    * ``ros2 launch lbr_bringup hardware.launch.py`` (real robot)
+    * ``ros2 launch lbr_bringup gazebo.launch.py`` (Gazebo simulation)
+* Added mock hardware to ``lbr_ros2_control`` (for simple ``ros2_control`` testing without the need for Gazebo, refer https://control.ros.org/humble/doc/ros2_control/hardware_interface/doc/mock_components_userdoc.html)
+* Updated documentation
+
 Humble v2.0.0 (2024-07-08)
 --------------------------
 * Remove ``app.launch.py`` from demos in favor for ``ros2_control`` variant (breaking change)
@@ -47,7 +61,7 @@ Humble v1.4.2 (2023-12-29)
 Humble v1.4.1 (2023-12-15)
 --------------------------
 * Removes the ``base_frame`` parameter from ``lbr_bringup``, ``lbr_description``, ``lbr_fri_ros2``, ``lbr_ros2_control``
-* Updates RViZ default config in ``lbr_moveit_config``
+* Updates RViz default config in ``lbr_moveit_config``
 * Refers to https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/144
 
 Humble v1.4.0 (2023-12-08)

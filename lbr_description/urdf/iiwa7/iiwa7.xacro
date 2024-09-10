@@ -7,7 +7,7 @@
     <xacro:include filename="$(find lbr_description)/urdf/iiwa7/iiwa7_description.xacro" />
 
     <xacro:arg name="robot_name" default="lbr" />
-    <xacro:arg name="sim" default="true" />
+    <xacro:arg name="mode" default="mock" />
     <xacro:arg
         name="system_parameters_path"
         default="$(find lbr_ros2_control)/config/lbr_system_parameters.yaml" />
@@ -25,6 +25,6 @@
     <!-- iiwa -->
     <xacro:iiwa7
         robot_name="$(arg robot_name)"
-        sim="$(arg sim)"
+        mode="$(arg mode)"
         system_parameters_path="$(arg system_parameters_path)" />
 </robot>

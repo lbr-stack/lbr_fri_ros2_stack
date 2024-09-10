@@ -57,4 +57,4 @@ void PositionCommandInterface::buffered_command_to_fri(fri_command_t_ref command
   // write joint position to output
   command.setJointPosition(command_.joint_position.data());
 }
-} // end of namespace lbr_fri_ros2
+} // namespace lbr_fri_ros2

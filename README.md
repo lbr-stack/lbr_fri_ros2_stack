@@ -62,19 +62,25 @@ Full documentation available on [Read the Docs](https://lbr-stack.readthedocs.io
     colcon build --symlink-install
     ```
 
-4. Launch the simulation via
+4. In terminal 1, launch a mock setup via
 
     ```shell
     source install/setup.bash
-    ros2 launch lbr_bringup bringup.launch.py \
-        model:=iiwa7 # [iiwa7, iiwa14, med7, med14] \
-        sim:=true # [true, false] \
-        rviz:=true # [true, false] \
-        moveit:=true # [true, false]
+    ros2 launch lbr_bringup mock.launch.py \
+        model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
     ```
 
 > [!TIP]
-> List all arguments for the launch file via `ros2 launch lbr_bringup bringup.launch.py -s`
+> List all arguments for the launch file via `ros2 launch lbr_bringup mock.launch.py -s`
+
+5. In terminal 2, visualize the setup via
+
+    ```shell
+    source install/setup.bash
+    ros2 launch lbr_bringup rviz.launch.py \
+        rviz_config_pkg:=lbr_bringup \
+        rviz_config:=config/mock.rviz
+    ```
 
 Now, run the [demos](https://lbr-stack.readthedocs.io/en/latest/lbr_fri_ros2_stack/lbr_demos/doc/lbr_demos.html). To get started with the real robot, checkout the [Hardware Setup](https://lbr-stack.readthedocs.io/en/latest/lbr_fri_ros2_stack/lbr_fri_ros2_stack/doc/hardware_setup.html).
 

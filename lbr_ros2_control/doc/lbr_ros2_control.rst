@@ -34,18 +34,18 @@ The ``controller_manager::ControllerManager`` has a node, the `controller_manage
 
 Hardware Plugin
 ---------------
-lbr_fri_ros2::SystemInterface
+lbr_ros2_control::SystemInterface
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-The ``lbr_fri_ros2::SystemInterface`` plugin implements a ``hardware_interface::SystemInterface`` and utilizes the :ref:`lbr_fri_ros2` package for communication with the robot. Overview :ref:`below <lbr_ros2_control detailed software architecture figure>` (click to expand):
+The ``lbr_ros2_control::SystemInterface`` plugin implements a ``hardware_interface::SystemInterface`` and utilizes the :ref:`lbr_fri_ros2` package for communication with the robot. Overview :ref:`below <lbr_ros2_control detailed software architecture figure>` (click to expand):
 
 .. _lbr_ros2_control detailed software architecture figure:
 .. thumbnail:: img/lbr_ros2_control_detailed_v2.0.0.svg
     :alt: lbr_ros2_control_detailed
 
 - The ``controller_manager::ControllerManager`` loads the correct plugin from the ``<ros2_control>`` tag in the ``robot_description``: `lbr_system_interface.xacro <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_ros2_control/config/lbr_system_interface.xacro>`_:octicon:`link-external`
-- FRI relevant parameters are forwarded to the ``lbr_fri_ros2::SystemInterface`` plugin from `lbr_system_paramters.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_ros2_control/config/lbr_system_parameters.yaml>`_:octicon:`link-external`
+- FRI relevant parameters are forwarded to the ``lbr_ros2_control::SystemInterface`` plugin from `lbr_system_paramters.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_ros2_control/config/lbr_system_parameters.yaml>`_:octicon:`link-external`
 
-The ``lbr_fri_ros2::SystemInterface`` is spun with the ``controller_manager`` node at a rate set by the ``update_rate`` parameter. The communication to the robot is run **asynchronously** at a rate set by the robot's sample time.
+The ``lbr_ros2_control::SystemInterface`` is spun with the ``controller_manager`` node at a rate set by the ``update_rate`` parameter. The communication to the robot is run **asynchronously** at a rate set by the robot's sample time.
 
 **Why asynchronously**? KUKA designed the FRI that way, by adhering to this design choice, we can support multiple FRI versions, see :ref:`fri`!
 

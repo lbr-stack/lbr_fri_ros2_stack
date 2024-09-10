@@ -34,8 +34,7 @@ This demo implements a simple admittance controller.
 
     .. code-block:: bash
 
-        ros2 launch lbr_bringup bringup.launch.py \
-            sim:=false \
+        ros2 launch lbr_bringup hardware.launch.py \
             ctrl:=lbr_joint_position_command_controller \
             model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
 
@@ -76,8 +75,7 @@ kinematics to move the robot's end-effector along the z-axis in Cartesian space.
 
     .. code-block:: bash
 
-        ros2 launch lbr_bringup bringup.launch.py \
-            sim:=false \
+        ros2 launch lbr_bringup hardware.launch.py \
             ctrl:=lbr_joint_position_command_controller \
             model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
 
