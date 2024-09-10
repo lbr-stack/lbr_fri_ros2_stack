@@ -34,9 +34,8 @@ This demo uses the :ref:`lbr_fri_ros2::LBRJointPositionCommandController` and ov
 
     .. code-block:: bash
 
-        ros2 launch lbr_bringup bringup.launch.py \
+        ros2 launch lbr_bringup hardware.launch.py \
             ctrl:=lbr_joint_position_command_controller \
-            sim:=false \
             model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
 
 #. Run the `joint_sine_overlay <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_demos_py/lbr_demos_py/joint_sine_overlay.py>`_:octicon:`link-external` node:
@@ -57,8 +56,7 @@ Simulation
 
     .. code-block:: bash
 
-        ros2 launch lbr_bringup bringup.launch.py \
-            sim:=true \
+        ros2 launch lbr_bringup gazebo.launch.py \
             ctrl:=joint_trajectory_controller \
             model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
 
@@ -90,7 +88,7 @@ Hardware
         - ``FRI control mode``: ``POSITION_CONTROL`` or ``JOINT_IMPEDANCE_CONTROL``
         - ``FRI client command mode``: ``POSITION``
 
-#. Proceed with steps 1 and 2 from `Simulation`_ but with ``sim:=false``.
+#. Proceed with steps 1 and 2 from `Simulation`_ but with ``ros2 launch lbr_bringup hardware.launch.py``.
 
 LBR Torque Command Controller (Hardware only)
 ---------------------------------------------
@@ -118,9 +116,8 @@ This demo uses the :ref:`lbr_fri_ros2::LBRTorqueCommandController` and overlays 
 
     .. code-block:: bash
 
-        ros2 launch lbr_bringup bringup.launch.py \
+        ros2 launch lbr_bringup hardware.launch.py \
             ctrl:=lbr_torque_command_controller \
-            sim:=false \
             model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
 
 #. Run the `torque_sine_overlay <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_demos_py/lbr_demos_py/torque_sine_overlay.py>`_:octicon:`link-external` node:
@@ -157,9 +154,8 @@ This demo uses the :ref:`lbr_fri_ros2::LBRWrenchCommandController` and overlays 
 
     .. code-block:: bash
 
-        ros2 launch lbr_bringup bringup.launch.py \
+        ros2 launch lbr_bringup hardware.launch.py \
             ctrl:=lbr_wrench_command_controller \
-            sim:=false \
             model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
 
 #. Run the `wrench_sine_overlay <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_demos_py/lbr_demos_py/wrench_sine_overlay.py>`_:octicon:`link-external` node:

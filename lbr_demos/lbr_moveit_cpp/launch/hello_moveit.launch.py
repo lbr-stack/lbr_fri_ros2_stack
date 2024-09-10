@@ -42,7 +42,6 @@ def generate_launch_description() -> LaunchDescription:
     ld = LaunchDescription()
 
     ld.add_action(LBRDescriptionMixin.arg_model())
-    ld.add_action(LBRDescriptionMixin.arg_robot_name())
     ld.add_action(LBRDescriptionMixin.arg_mode())
 
     ld.add_action(OpaqueFunction(function=hidden_setup))

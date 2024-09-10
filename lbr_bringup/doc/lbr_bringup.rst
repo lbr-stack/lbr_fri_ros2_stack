@@ -34,7 +34,7 @@ The launch files can also be run via the command line, as further described belo
 
 Launch Files
 ------------
-Launch a Mock Setup
+Mock Setup
 ~~~~~~~~~~
 Useful for running a physics-free simulation of the system. This launch file will (see `mock.launch.py <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_bringup/launch/mock.launch.py>`_:octicon:`link-external`):
 
@@ -50,8 +50,8 @@ Useful for running a physics-free simulation of the system. This launch file wil
 .. note::
     List all arguments for the launch file via ``ros2 launch lbr_bringup mock.launch.py -s``.
 
-Launch the Gazebo Simulation
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Gazebo Simulation
+~~~~~~~~~~~~~~~~~
 Useful for running a physics simulation the the system. This launch file will will (see `gazebo.launch.py <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_bringup/launch/gazebo.launch.py>`_:octicon:`link-external`):
 
 #. Start the ``robot_state_publisher``
@@ -67,8 +67,8 @@ Useful for running a physics simulation the the system. This launch file will wi
 .. note::
     List all arguments for the launch file via ``ros2 launch lbr_bringup gazebo.launch.py -s``.
 
-Launch Hardware
-~~~~~~~~~~~~~~~
+Hardware
+~~~~~~~~
 .. warning::
     Do always execute in ``T1`` mode first.
 
@@ -104,8 +104,8 @@ Launch Hardware
     .. note::
         List all arguments for the launch file via ``ros2 launch lbr_bringup hardware.launch.py -s``.
 
-Launch RViz
-~~~~~~~~~~~
+RViz
+~~~~
 This launch file will spin up ``RViz`` for visualization. It will (see `rviz.launch.py <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_bringup/launch/rviz.launch.py>`_:octicon:`link-external`):
 
 #. Read ``RViz`` configurations.
@@ -121,10 +121,10 @@ This launch file will spin up ``RViz`` for visualization. It will (see `rviz.lau
     List all arguments for the launch file via ``ros2 launch lbr_bringup rviz.launch.py -s``.
 
 .. note::
-    Requires the user to run :ref:`Launch a Mock Setup`, :ref:`Launch the Gazebo Simulation` or :ref:`Launch Hardware` first.
+    Requires the user to run `Mock Setup`_, `Gazebo Simulation`_ or `Launch Hardware`_ first.
 
-Launch MoveIt
-~~~~~~~~~~~~~
+MoveIt
+~~~~~~
 Please note that MoveIt configurations are specific and you as a user will need to create your own for your system (potentially containing multiple robots or an end-effector).
 
 .. code:: bash
@@ -135,7 +135,7 @@ Please note that MoveIt configurations are specific and you as a user will need 
         rviz:=true
 
 .. note::
-    Requires the user to run :ref:`Launch a Mock Setup`, :ref:`Launch the Gazebo Simulation` or :ref:`Launch Hardware` first.
+    Requires the user to run `Mock Setup`_, `Gazebo Simulation`_ or `Launch Hardware`_ first.
 
 .. note::
     Runs ``RViz`` with specific MoveIt configurations.
