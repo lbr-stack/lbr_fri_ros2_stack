@@ -38,10 +38,10 @@ def generate_launch_description() -> LaunchDescription:
 
     # Gazebo
     ld.add_action(GazeboMixin.include_gazebo())  # Gazebo has its own controller manager
-    spawn_entity = GazeboMixin.node_spawn_entity(
-        tf=world_robot_tf
+    ld.add_action(GazeboMixin.node_clock_bridge())
+    ld.add_action(
+        GazeboMixin.node_create(tf=world_robot_tf)
     )  # spawns robot in Gazebo through robot_description topic of robot_state_publisher
-    ld.add_action(spawn_entity)
 
     # controllers
     joint_state_broadcaster = LBRROS2ControlMixin.node_controller_spawner(

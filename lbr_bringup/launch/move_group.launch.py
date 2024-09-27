@@ -75,6 +75,10 @@ def hidden_setup(context: LaunchContext) -> List[LaunchDescriptionEntity]:
                 "robot_description_semantic",
                 PathJoinSubstitution([robot_name, "robot_description_semantic"]),
             ),
+            (
+                "recognized_object_array",
+                PathJoinSubstitution([robot_name, "recognized_object_array"]),
+            ),
         ],
         condition=IfCondition(LaunchConfiguration("rviz")),
     )
