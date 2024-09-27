@@ -1,6 +1,13 @@
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Changelog for package LBR FRI ROS 2 Stack
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Humble v2.1.1 (2024-09-27)
+--------------------------
+* Adds support for the new Gazebo and removes support for Gazebo Classic (End-of-Life January 2025, refer https://community.gazebosim.org/t/gazebo-classic-end-of-life/2563).
+  * ``lbr_bringup``: Updated launch files and dependencies.
+  * ``lbr_description``: Updated ``<gazebo>`` tag to include Gazebo plugin (see https://github.com/ros-controls/gz_ros2_control/tree/humble). 
+  * ``lbr_ros2_control``: Changed ``gazebo_ros2_control/GazeboSystem`` -> ``ign_ros2_control/IgnitionSystem```
+
 Humble v2.1.0 (2024-09-10)
 --------------------------
 * De-couple launch files from ``lbr_bringup`` for easier customization (breaking change):
