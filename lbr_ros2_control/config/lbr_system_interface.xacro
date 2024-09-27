@@ -100,7 +100,7 @@
                     </command_interface>
                     <!-- only single command interface, refer
                     https://github.com/ros-controls/gz_ros2_control/issues/182 -->
-                    <xacro:unless value="${sim}">
+                    <xacro:unless value="${mode == 'gazebo'}">
                         <command_interface name="effort">
                             <param name="min">-${max_torque}</param>
                             <param name="max"> ${max_torque}</param>
