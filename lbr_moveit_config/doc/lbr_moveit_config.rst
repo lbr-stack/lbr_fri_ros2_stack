@@ -1,6 +1,6 @@
-LBR MoveIt Config
+lbr_moveit_config
 =================
-Documentation for generating (:ref:`Generate MoveIt Configuration`) and updating (:ref:`Update MoveIt Configuration`) the ``MoveIt 2`` configurations for the LBRs. For full documentation see `MoveIt Documentation <https://moveit.picknik.ai/main/index.html>`_.
+Documentation for generating (:ref:`Generate MoveIt Configuration`) and updating (:ref:`Update MoveIt Configuration`) the ``MoveIt 2`` configurations for the LBRs. For full documentation see `MoveIt Documentation <https://moveit.picknik.ai/main/index.html>`_:octicon:`link-external`.
 
 Generate MoveIt Configuration 
 -----------------------------
@@ -12,7 +12,7 @@ This procedure applies to all LBRs: ``iiwa7``, ``iiwa14``, ``med7``, and ``med14
 
     sudo apt install ros-$ROS_DISTRO-moveit*
 
-#. Make sure the ``lbr_fri_ros2_stack`` is installed and **sourced**, see :ref:`Installation`.
+#. Make sure the ``lbr-stack`` is installed and **sourced**, see :ref:`Installation`.
 
 #. Launch the setup assistant
 
@@ -20,7 +20,7 @@ This procedure applies to all LBRs: ``iiwa7``, ``iiwa14``, ``med7``, and ``med14
 
     ros2 launch moveit_setup_assistant setup_assistant.launch.py
 
-#. .. dropdown:: ``Load Files``: E.g. ``lbr_fri_ros2_stack_ws/install/lbr_description/share/lbr_description/urdf/iiwa7/iiwa7.urdf.xacro``
+#. .. dropdown:: ``Load Files``: E.g. ``lbr-stack/install/lbr_description/share/lbr_description/urdf/iiwa7/iiwa7.xacro``
 
     .. thumbnail:: img/00_start_screen.png
 
@@ -86,20 +86,20 @@ This procedure applies to all LBRs: ``iiwa7``, ``iiwa14``, ``med7``, and ``med14
 
 #. Manual changes:
 
-    #. Manually add acceleration limits in `joint_limits.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_moveit_config/iiwa7_moveit_config/config/joint_limits.yaml>`_ (not supported in ``URDF``)
+    #. Manually add acceleration limits in `joint_limits.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_moveit_config/iiwa7_moveit_config/config/joint_limits.yaml>`_:octicon:`link-external` (not supported in ``URDF``)
     
-    #. In the `move_group.launch.py <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_moveit_config/iiwa7_moveit_config/launch/move_group.launch.py>`_ use the robot descriotion from ``lbr_description``
+    #. In the `move_group.launch.py <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_moveit_config/iiwa7_moveit_config/launch/move_group.launch.py>`_:octicon:`link-external` use the robot descriotion from ``lbr_description``
     
-    #. In `moveit_controllers.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_moveit_config/iiwa7_moveit_config/config/moveit_controllers.yaml>`_ change the ``arm_controller`` to ``joint_trajectory_controller``, as in `lbr_controllers.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_ros2_control/config/lbr_controllers.yaml>`_ 
+    #. In `moveit_controllers.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_moveit_config/iiwa7_moveit_config/config/moveit_controllers.yaml>`_:octicon:`link-external` change the ``arm_controller`` to ``joint_trajectory_controller``, as in `lbr_controllers.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_ros2_control/config/lbr_controllers.yaml>`_:octicon:`link-external` 
 
 Update MoveIt Configuration 
 ---------------------------
-#. Make sure the ``lbr_fri_ros2_stack`` is installed and sourced, see :ref:`Installation`.
+#. Make sure the ``lbr-stack`` is installed and sourced, see :ref:`Installation`.
 
 #. Run the setup assistant for the existing configuration.
 
-.. code-block:: bash
+    .. code-block:: bash
 
-    ros2 launch iiwa7_moveit_config  setup_assistant.launch.py # [iiwa7, iiwa14, med7, med14]
+        ros2 launch iiwa7_moveit_config  setup_assistant.launch.py # [iiwa7, iiwa14, med7, med14]
 
 #. Update and save the configurations, similar to :ref:`Generate MoveIt Configuration`.

@@ -1,0 +1,297 @@
+<?xml version="1.0"?>
+
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+    <!-- robot as extracted via https://github.com/syuntoku14/fusion2urdf -->
+    <xacro:macro name="med14"
+        params="robot_name:=^|lbr mode:=^|mock system_parameters_path:=^|'$(find lbr_ros2_control)/config/lbr_system_parameters.yaml'">
+
+        <!-- includes -->
+        <xacro:include filename="$(find lbr_description)/gazebo/lbr_gazebo.xacro" />
+        <xacro:include filename="$(find lbr_ros2_control)/config/lbr_system_interface.xacro" />
+
+        <!-- joint limits via yaml -->
+        <xacro:property name="joint_limits_path"
+            value="$(find lbr_description)/urdf/med14/joint_limits.yaml" />
+        <xacro:property name="joint_limits" value="${xacro.load_yaml(joint_limits_path)}" />
+
+        <!-- constants -->
+        <xacro:property name="PI" value="3.1415926535897931" />
+        <xacro:property name="joint_damping" value="10.0" />
+        <xacro:property name="joint_friction" value="0.1" />
+
+        <!-- macros for gazebo / mock / hardware -->
+        <xacro:lbr_gazebo robot_name="${robot_name}" />
+        <xacro:lbr_system_interface
+            mode="${mode}"
+            joint_limits="${joint_limits}"
+            system_parameters_path="${system_parameters_path}" />
+
+
+        <link name="link_0">
+            <inertial>
+                <origin rpy="0 0 0" xyz="-0.001864 0.0 0.077517" />
+                <mass value="8.146413" />
+                <inertia ixx="0.044604" ixy="0.0" ixz="-0.000788" iyy="0.045465" iyz="0.0"
+                    izz="0.061904" />
+            </inertial>
+            <visual>
+                <origin rpy="0 0 0" xyz="0 0 0" />
+                <geometry>
+                    <mesh filename="package://lbr_description/meshes/med14/visual/link_0.dae" />
+                </geometry>
+            </visual>
+            <collision>
+                <origin rpy="0 0 0" xyz="0 0 0" />
+                <geometry>
+                    <mesh filename="package://lbr_description/meshes/med14/collision/link_0.stl" />
+                </geometry>
+            </collision>
+        </link>
+
+        <joint name="A1" type="revolute">
+            <origin rpy="0 0 0" xyz="0.0 0.0 0.147" />
+            <parent link="link_0" />
+            <child link="link_1" />
+            <axis xyz="0.0 0.0 1.0" />
+            <limit
+                effort="${joint_limits['A1']['effort']}"
+                lower="${joint_limits['A1']['lower'] * PI / 180}"
+                upper="${joint_limits['A1']['upper'] * PI / 180}"
+                velocity="${joint_limits['A1']['velocity'] * PI / 180}" />
+            <dynamics damping="${joint_damping}" friction="${joint_friction}" />
+        </joint>
+
+        <link name="link_1">
+            <inertial>
+                <origin rpy="0 0 0" xyz="0.0 -0.033795  0.132404" />
+                <mass value="5.591419" />
+                <inertia ixx="0.044885" ixy="0.0" ixz="0.0" iyy="0.045283" iyz="0.006703"
+                    izz="0.016776" />
+            </inertial>
+            <visual>
+                <origin rpy="0 0 0" xyz="0.0 0.0 -0.147" />
+                <geometry>
+                    <mesh filename="package://lbr_description/meshes/med14/visual/link_1.dae" />
+                </geometry>
+            </visual>
+            <collision>
+                <origin rpy="0 0 0" xyz="0.0 0.0 -0.147" />
+                <geometry>
+                    <mesh filename="package://lbr_description/meshes/med14/collision/link_1.stl" />
+                </geometry>
+            </collision>
+        </link>
+
+        <joint name="A2" type="revolute">
+            <origin rpy="0 0 0" xyz="0.0 -0.01 0.2125" />
+            <parent link="link_1" />
+            <child link="link_2" />
+            <axis xyz="0.0 1.0 0.0" />
+            <limit
+                effort="${joint_limits['A2']['effort']}"
+                lower="${joint_limits['A2']['lower'] * PI / 180}"
+                upper="${joint_limits['A2']['upper'] * PI / 180}"
+                velocity="${joint_limits['A2']['velocity'] * PI / 180}" />
+            <dynamics damping="${joint_damping}" friction="${joint_friction}" />
+        </joint>
+
+        <link name="link_2">
+            <inertial>
+                <origin rpy="0 0 0" xyz="0.000136 0.047546 0.076324" />
+                <mass value="6.013411" />
+                <inertia ixx="0.05833" ixy="-3.5e-05" ixz="5.9e-05" iyy="0.057062" iyz="0.010605"
+                    izz="0.017466" />
+            </inertial>
+            <visual>
+                <origin rpy="0 0 0" xyz="0.0 0.01 -0.3595" />
+                <geometry>
+                    <mesh filename="package://lbr_description/meshes/med14/visual/link_2.dae" />
+                </geometry>
+            </visual>
+            <collision>
+                <origin rpy="0 0 0" xyz="0.0 0.01 -0.3595" />
+                <geometry>
+                    <mesh filename="package://lbr_description/meshes/med14/collision/link_2.stl" />
+                </geometry>
+            </collision>
+        </link>
+
+        <joint name="A3" type="revolute">
+            <origin rpy="0 0 0" xyz="0.0 0.01 0.228" />
+            <parent link="link_2" />
+            <child link="link_3" />
+            <axis xyz="0.0 0.0 1.0" />
+            <limit
+                effort="${joint_limits['A3']['effort']}"
+                lower="${joint_limits['A3']['lower'] * PI / 180}"
+                upper="${joint_limits['A3']['upper'] * PI / 180}"
+                velocity="${joint_limits['A3']['velocity'] * PI / 180}" />
+            <dynamics damping="${joint_damping}" friction="${joint_friction}" />
+        </joint>
+
+        <link name="link_3">
+            <inertial>
+                <origin rpy="0 0 0" xyz="0.0 0.034913 0.123108" />
+                <mass value="3.65879" />
+                <inertia ixx="0.02296" ixy="0.0" ixz="0.0" iyy="0.021913" iyz="-0.004065"
+                    izz="0.00814" />
+            </inertial>
+            <visual>
+                <origin rpy="0 0 0" xyz="0.0 0.0 -0.5875" />
+                <geometry>
+                    <mesh filename="package://lbr_description/meshes/med14/visual/link_3.dae" />
+                </geometry>
+            </visual>
+            <collision>
+                <origin rpy="0 0 0" xyz="0.0 0.0 -0.5875" />
+                <geometry>
+                    <mesh filename="package://lbr_description/meshes/med14/collision/link_3.stl" />
+                </geometry>
+            </collision>
+        </link>
+
+        <joint name="A4" type="revolute">
+            <origin rpy="0 0 0" xyz="0.0 0.0105 0.192" />
+            <parent link="link_3" />
+            <child link="link_4" />
+            <axis xyz="0.0 -1.0 0.0" />
+            <limit
+                effort="${joint_limits['A4']['effort']}"
+                lower="${joint_limits['A4']['lower'] * PI / 180}"
+                upper="${joint_limits['A4']['upper'] * PI / 180}"
+                velocity="${joint_limits['A4']['velocity'] * PI / 180}" />
+            <dynamics damping="${joint_damping}" friction="${joint_friction}" />
+        </joint>
+
+        <link name="link_4">
+            <inertial>
+                <origin rpy="0 0 0" xyz="0.0 -0.039793  0.086944" />
+                <mass value="4.358267" />
+                <inertia ixx="0.034255" ixy="0.0" ixz="0.0" iyy="0.032512" iyz="-0.006365"
+                    izz="0.010444" />
+            </inertial>
+            <visual>
+                <origin rpy="0 0 0" xyz="0.0 -0.0105 -0.7795" />
+                <geometry>
+                    <mesh filename="package://lbr_description/meshes/med14/visual/link_4.dae" />
+                </geometry>
+            </visual>
+            <collision>
+                <origin rpy="0 0 0" xyz="0.0 -0.0105 -0.7795" />
+                <geometry>
+                    <mesh filename="package://lbr_description/meshes/med14/collision/link_4.stl" />
+                </geometry>
+            </collision>
+        </link>
+
+        <joint name="A5" type="revolute">
+            <origin rpy="0 0 0" xyz="0.0 -0.0105 0.2075" />
+            <parent link="link_4" />
+            <child link="link_5" />
+            <axis xyz="0.0 0.0 1.0" />
+            <limit
+                effort="${joint_limits['A5']['effort']}"
+                lower="${joint_limits['A5']['lower'] * PI / 180}"
+                upper="${joint_limits['A5']['upper'] * PI / 180}"
+                velocity="${joint_limits['A5']['velocity'] * PI / 180}" />
+            <dynamics damping="${joint_damping}" friction="${joint_friction}" />
+        </joint>
+
+        <link name="link_5">
+            <inertial>
+                <origin rpy="0 0 0" xyz="0.0 -0.029824  0.076267" />
+                <mass value="1.653015" />
+                <inertia ixx="0.009172" ixy="0.0" ixz="0.0"
+                    iyy="0.007714" iyz="0.003033" izz="0.004159" />
+            </inertial>
+            <visual>
+                <origin rpy="0 0 0" xyz="0.0 0.0 -0.987" />
+                <geometry>
+                    <mesh filename="package://lbr_description/meshes/med14/visual/link_5.dae" />
+                </geometry>
+            </visual>
+            <collision>
+                <origin rpy="0 0 0" xyz="0.0 0.0 -0.987" />
+                <geometry>
+                    <mesh filename="package://lbr_description/meshes/med14/collision/link_5.stl" />
+                </geometry>
+            </collision>
+        </link>
+
+        <joint name="A6" type="revolute">
+            <origin rpy="0 0 0" xyz="0.0 -0.0707 0.1925" />
+            <parent link="link_5" />
+            <child link="link_6" />
+            <axis xyz="0.0 1.0 0.0" />
+            <limit
+                effort="${joint_limits['A6']['effort']}"
+                lower="${joint_limits['A6']['lower'] * PI / 180}"
+                upper="${joint_limits['A6']['upper'] * PI / 180}"
+                velocity="${joint_limits['A6']['velocity'] * PI / 180}" />
+            <dynamics damping="${joint_damping}" friction="${joint_friction}" />
+        </joint>
+
+        <link name="link_6">
+            <inertial>
+                <origin rpy="0 0 0" xyz="-1.000e-06 7.102e-02 4.953e-03" />
+                <mass value="2.598211" />
+                <inertia ixx="0.00764" ixy="0.0" ixz="0.0" iyy="0.007355" iyz="0.000336"
+                    izz="0.005004" />
+            </inertial>
+            <visual>
+                <origin rpy="0 0 0" xyz="0.0 0.0707 -1.1795" />
+                <geometry>
+                    <mesh filename="package://lbr_description/meshes/med14/visual/link_6.dae" />
+                </geometry>
+            </visual>
+            <collision>
+                <origin rpy="0 0 0" xyz="0.0 0.0707 -1.1795" />
+                <geometry>
+                    <mesh filename="package://lbr_description/meshes/med14/collision/link_6.stl" />
+                </geometry>
+            </collision>
+        </link>
+
+        <joint name="A7" type="revolute">
+            <origin rpy="0 0 0" xyz="0.0 0.0707 0.091" />
+            <parent link="link_6" />
+            <child link="link_7" />
+            <axis xyz="0.0 0.0 1.0" />
+            <limit
+                effort="${joint_limits['A7']['effort']}"
+                lower="${joint_limits['A7']['lower'] * PI / 180}"
+                upper="${joint_limits['A7']['upper'] * PI / 180}"
+                velocity="${joint_limits['A7']['velocity'] * PI / 180}" />
+            <dynamics damping="${joint_damping}" friction="${joint_friction}" />
+        </joint>
+
+        <link name="link_7">
+            <inertial>
+                <origin rpy="0 0 0" xyz="3.0000e-06 -2.0000e-06 1.3782e-02" />
+                <mass value="0.280474" />
+                <inertia ixx="0.000185" ixy="0.0" ixz="0.0" iyy="0.000185" iyz="0.0" izz="0.000323" />
+            </inertial>
+            <visual>
+                <origin rpy="0 0 0" xyz="0.0 0.0 -1.2705" />
+                <geometry>
+                    <mesh filename="package://lbr_description/meshes/med14/visual/link_7.dae" />
+                </geometry>
+            </visual>
+            <collision>
+                <origin rpy="0 0 0" xyz="0.0 0.0 -1.2705" />
+                <geometry>
+                    <mesh filename="package://lbr_description/meshes/med14/collision/link_7.stl" />
+                </geometry>
+            </collision>
+        </link>
+
+        <joint name="joint_ee" type="fixed">
+            <parent link="link_7" />
+            <child link="link_ee" />
+            <origin xyz="0 0 0.035" rpy="0 0 0" />
+        </joint>
+
+        <link name="link_ee">
+        </link>
+    </xacro:macro>
+</robot>

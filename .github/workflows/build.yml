@@ -1,24 +1,24 @@
 name: Build
 
 on:
-  pull_request:
-    branches:
-      - humble
-  schedule:
-    - cron: '0 0 * * 0'
+  workflow_call: # https://github.com/orgs/community/discussions/52616#discussioncomment-9364532
+    inputs:
+      os:
+        required: true
+        type: string
+      fri_version:
+        required: true
+        type: string
 
 # ros 2 ci: https://github.com/marketplace/actions/ros-2-ci-action
 # doc: https://ubuntu.com/blog/ros-2-ci-with-github-actions
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
+    runs-on: ${{ inputs.os }}
     steps:
       - uses: ros-tooling/setup-ros@v0.7
       - uses: ros-tooling/action-ros-ci@v0.2
         with:
           package-name: lbr_fri_ros2_stack
           target-ros2-distro: humble
-          vcs-repo-file-url: https://raw.githubusercontent.com/lbr-stack/lbr_fri_ros2_stack/humble/lbr_fri_ros2_stack/repos.yaml
+          vcs-repo-file-url: https://raw.githubusercontent.com/lbr-stack/lbr_fri_ros2_stack/humble/lbr_fri_ros2_stack/repos-fri-${{ inputs.fri_version }}.yaml

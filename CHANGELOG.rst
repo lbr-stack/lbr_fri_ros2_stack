@@ -1,6 +1,57 @@
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Changelog for package LBR FRI ROS 2 Stack
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Humble v2.1.0 (2024-09-10)
+--------------------------
+* De-couple launch files from ``lbr_bringup`` for easier customization (breaking change):
+
+  * Removed ``sim:=true / false`` argument from launch files in favor of dedicated launch files (since no feature parity between simulation and real robot)
+  * MoveIt and RViz need to be launched separately now
+  * User can now launch via:
+
+    * ``ros2 launch lbr_bringup mock.launch.py`` (new: mock system)
+    * ``ros2 launch lbr_bringup hardware.launch.py`` (real robot)
+    * ``ros2 launch lbr_bringup gazebo.launch.py`` (Gazebo simulation)
+* Added mock hardware to ``lbr_ros2_control`` (for simple ``ros2_control`` testing without the need for Gazebo, refer https://control.ros.org/humble/doc/ros2_control/hardware_interface/doc/mock_components_userdoc.html)
+* Updated documentation
+
+Humble v2.0.0 (2024-07-08)
+--------------------------
+* Remove ``app.launch.py`` from demos in favor for ``ros2_control`` variant (breaking change)
+* ``lbr_ros2_control``:
+
+  * Add Cartesian impedance controller
+  * Add ``lbr_system_parameters.yaml`` for system parameter configuration
+* ``lbr_demos``:
+
+  * Remove legacy demos
+  * Add demo for each available controller, both in C++ and Python
+* ``lbr_fri_ros2``: De-couple the async client into ``position`` / ``torque`` / ``wrench``
+* Matrix testing against multiple FRIs (https://github.com/lbr-stack/fri): ``1.11``, ``1.14``, ``1.15``, ``1.16``, ``2.5``, ``2.7``
+* IDL changes: (breaking change)
+
+  * ``lbr_fri_msgs`` to ``lbr_fri_idl``
+  * Moved ``lbr_fri_idl`` into external folder (https://github.com/lbr-stack/lbr_fri_idl) for supporting multiple FRI versions
+  * Renamed ``LBRPositionCommand`` to ``LBRJointPositionCommand``
+* Update documentation
+
+  * Refer https://lbr-stack.readthedocs.io/en/latest/
+  * Deletes branches at https://github.com/lbr-stack/lbr_stack_doc in favor of tags
+  * Adds an architecture chart to highlight ``lbr_ros2_control`` relation to ``ros2_control``
+* Add log coloring a la https://github.com/ros-controls/ros2_control/blob/e149646d3f2595f269cfa4e1cd0681abde89ee69/controller_manager/controller_manager/spawner.py#L45
+* Adds ``black`` linting for Python scripts
+* Fixes velocity limit checks in impedance control mode
+* Add development tools dependency https://github.com/lbr-stack/lbr_fri_ros2_stack/issues/145
+* ``ros2_control_node``: Read robot description from robot state publisher
+* Add tests to ``lbr_fri_idl`` and ``lbr_fri_ros2``
+* Moves all launch mixins to ``lbr_bringup``
+* Update parameter source for ``gazebo_ros2_control`` package in ``lbr.gazebo.xacro``
+
+Humble v1.4.3 (2024-02-03)
+--------------------------
+* Fixes planning scene namespace https://github.com/lbr-stack/lbr_fri_ros2_stack/issues/153
+* Refers to https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/155
+
 Humble v1.4.2 (2023-12-29)
 --------------------------
 * Fixes cartesian path for move group node with namespace: https://github.com/lbr-stack/lbr_fri_ros2_stack/issues/133
@@ -10,7 +61,7 @@ Humble v1.4.2 (2023-12-29)
 Humble v1.4.1 (2023-12-15)
 --------------------------
 * Removes the ``base_frame`` parameter from ``lbr_bringup``, ``lbr_description``, ``lbr_fri_ros2``, ``lbr_ros2_control``
-* Updates RViZ default config in ``lbr_moveit_config``
+* Updates RViz default config in ``lbr_moveit_config``
 * Refers to https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/144
 
 Humble v1.4.0 (2023-12-08)

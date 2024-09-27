@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<library path="lbr_ros2_control">
+    <!-- LBR state broadcaster plugin -->
+    <class name="lbr_ros2_control/LBRStateBroadcaster" type="lbr_ros2_control::LBRStateBroadcaster"
+        base_class_type="controller_interface::ControllerInterface">
+        <description>Broadcaster for LBRState messages, see lbr_fri_idl/msg/LBRState.msg.</description>
+    </class>
+
+    <!-- LBR forward position command controller plugin -->
+    <class name="lbr_ros2_control/LBRJointPositionCommandController"
+        type="lbr_ros2_control::LBRJointPositionCommandController"
+        base_class_type="controller_interface::ControllerInterface">
+        <description>Forward command controller for LBRJointPositionCommand message, see
+            lbr_fri_idl/msg/LBRJointPositionCommand.msg.</description>
+    </class>
+
+    <!-- LBR forward torque command controller plugin -->
+    <class name="lbr_ros2_control/LBRTorqueCommandController"
+        type="lbr_ros2_control::LBRTorqueCommandController"
+        base_class_type="controller_interface::ControllerInterface">
+        <description>Forward command controller for LBRTorqueCommand message, see
+            lbr_fri_idl/msg/LBRTorqueCommand.msg.</description>
+    </class>
+
+    <!-- LBR forward wrench command controller plugin -->
+    <class name="lbr_ros2_control/LBRWrenchCommandController"
+        type="lbr_ros2_control::LBRWrenchCommandController"
+        base_class_type="controller_interface::ControllerInterface">
+        <description>Forward command controller for LBRWrenchCommand message, see
+            lbr_fri_idl/msg/LBRWrenchCommand.msg.</description>
+    </class>
+
+    <!-- Admittance controller plugin -->
+    <class name="lbr_ros2_control/AdmittanceController"
+        type="lbr_ros2_control::AdmittanceController"
+        base_class_type="controller_interface::ControllerInterface">
+        <description>A simple admittance controller.</description>
+    </class>
+</library>

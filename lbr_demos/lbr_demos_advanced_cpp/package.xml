@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>lbr_demos_advanced_cpp</name>
+  <version>2.1.0</version>
+  <description>Advanced C++ demos for the lbr_ros2_control.</description>
+  <maintainer email="m.huber_1994@hotmail.de">mhubii</maintainer>
+  <license>Apache License 2.0</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <exec_depend>lbr_description</exec_depend>
+
+  <depend>fri_client_sdk</depend>
+  <depend>geometry_msgs</depend>
+  <depend>kdl_parser</depend>
+  <depend>lbr_fri_idl</depend>
+  <depend>lbr_fri_ros2</depend>
+  <depend>orocos_kdl_vendor</depend>
+  <depend>rclcpp</depend>
+  <depend>rclcpp_components</depend>
+
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

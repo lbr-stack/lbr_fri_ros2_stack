@@ -15,12 +15,10 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 find_package(ament_cmake REQUIRED)
-find_package(ament_cmake_python REQUIRED)
 find_package(controller_interface REQUIRED)
-find_package(fri_vendor REQUIRED)
 find_package(FRIClient REQUIRED)
 find_package(hardware_interface REQUIRED)
-find_package(lbr_fri_msgs REQUIRED)
+find_package(lbr_fri_idl REQUIRED)
 find_package(lbr_fri_ros2 REQUIRED)
 find_package(kinematics_interface REQUIRED)
 find_package(pluginlib REQUIRED)
@@ -31,9 +29,10 @@ find_package(realtime_tools REQUIRED)
 add_library(
   ${PROJECT_NAME}
   SHARED
-  src/forward_lbr_position_command_controller.cpp
-  src/forward_lbr_torque_command_controller.cpp
-  src/lbr_state_broadcaster.cpp
+  src/controllers/lbr_joint_position_command_controller.cpp
+  src/controllers/lbr_torque_command_controller.cpp
+  src/controllers/lbr_wrench_command_controller.cpp
+  src/controllers/lbr_state_broadcaster.cpp
   src/system_interface.cpp
 )
 
@@ -51,9 +50,8 @@ target_include_directories(
 ament_target_dependencies(
   ${PROJECT_NAME}
   controller_interface
-  fri_vendor
   hardware_interface
-  lbr_fri_msgs
+  lbr_fri_idl
   lbr_fri_ros2
   pluginlib
   rclcpp
@@ -64,8 +62,7 @@ target_link_libraries(${PROJECT_NAME}
   FRIClient::FRIClient
 )
 
-pluginlib_export_plugin_description_file(controller_interface plugin_description_files/broadcasters.xml)
-pluginlib_export_plugin_description_file(controller_interface plugin_description_files/forward_command_controllers.xml)
+pluginlib_export_plugin_description_file(controller_interface plugin_description_files/controllers.xml)
 pluginlib_export_plugin_description_file(hardware_interface plugin_description_files/system_interface.xml)
 
 # Export for downstream usage, see https://docs.ros.org/en/foxy/Guides/Ament-CMake-Documentation.html
@@ -75,10 +72,9 @@ ament_export_targets(
 
 ament_export_dependencies(
   controller_interface
-  fri_vendor
   FRIClient
   hardware_interface
-  lbr_fri_msgs
+  lbr_fri_idl
   lbr_fri_ros2
   pluginlib
   rclcpp
@@ -99,11 +95,8 @@ install(
 )
 
 install(
-  DIRECTORY config launch
+  DIRECTORY config
   DESTINATION share/${PROJECT_NAME}
 )
-
-# Launch mixins
-ament_python_install_package(${PROJECT_NAME})
 
 ament_package()

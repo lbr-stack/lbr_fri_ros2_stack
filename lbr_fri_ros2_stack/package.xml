@@ -2,18 +2,19 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>lbr_fri_ros2_stack</name>
-  <version>1.4.2</version>
+  <version>2.1.0</version>
   <description>ROS 2 stack for KUKA LBRs.</description>
   <maintainer email="m.huber_1994@hotmail.de">mhubii</maintainer>
-  <license>MIT</license>
+  <license>Apache License 2.0</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
+  
+  <depend>lbr_fri_idl</depend>
+  <depend>lbr_fri_ros2</depend>
+  <depend>lbr_ros2_control</depend>
 
   <exec_depend>lbr_bringup</exec_depend>
   <exec_depend>lbr_description</exec_depend>
-  <exec_depend>lbr_fri_msgs</exec_depend>
-  <exec_depend>lbr_fri_ros2</exec_depend>
-  <exec_depend>lbr_ros2_control</exec_depend>
 
   <export>
     <build_type>ament_cmake</build_type>

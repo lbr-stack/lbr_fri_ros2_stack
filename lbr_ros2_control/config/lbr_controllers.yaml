@@ -2,7 +2,7 @@
 # managers regardless of their namespace. Usefull in multi-robot setups.
 /**/controller_manager:
   ros__parameters:
-    update_rate: 100
+    update_rate: 200
 
     # ROS 2 control broadcasters
     joint_state_broadcaster:
@@ -23,11 +23,18 @@
       type: position_controllers/JointGroupPositionController
 
     # LBR ROS 2 control controllers
-    forward_lbr_position_command_controller:
-      type: lbr_ros2_control/ForwardLBRPositionCommandController
+    lbr_joint_position_command_controller:
+      type: lbr_ros2_control/LBRJointPositionCommandController
 
-    forward_lbr_torque_command_controller:
-      type: lbr_ros2_control/ForwardLBRTorqueCommandController
+    lbr_torque_command_controller:
+      type: lbr_ros2_control/LBRTorqueCommandController
+
+    lbr_wrench_command_controller:
+      type: lbr_ros2_control/LBRWrenchCommandController
+
+    # Admittance controller
+    admittance_controller:
+      type: lbr_ros2_control/AdmittanceController
 
 /**/force_torque_broadcaster:
   ros__parameters:

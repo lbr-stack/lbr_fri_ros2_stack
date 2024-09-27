@@ -1,35 +1,37 @@
-LBR Demos
+lbr_demos
 =========
-Demos for controlling the LBR through the Fast Robot Interface (FRI) from ROS 2.
+All demos build on :ref:`lbr_ros2_control`. Different ``ros2_controllers`` are loaded to command the robot.
+
+.. note::
+    Some demos require a real robot. Make sure you followed :doc:`Hardware Setup <../../lbr_fri_ros2_stack/doc/hardware_setup>` first.
 
 .. warning::
     On the real robot, do always execute in ``T1`` mode first.
 
-LBR Demos FRI ROS 2
--------------------
-.. note::
-    These demos are compatible with and closely follow KUKA's FRI example applications. They send commands to ``/lbr/command`` and read states from ``/lbr/state``.
-
-.. note::
-    A real robot is required to run these demos. Make sure you followed :ref:`Robot Setup` first.
-
+Simple
+------
 .. toctree::
     :titlesonly:
 
-    LBR Demos FRI ROS 2 C++ <../lbr_demos_fri_ros2_cpp/doc/lbr_demos_fri_ros2_cpp.rst>
-    LBR Demos FRI ROS 2 Python <../lbr_demos_fri_ros2_python/doc/lbr_demos_fri_ros2_python.rst>
-    LBR Demos FRI ROS 2 Advanced C++ <../lbr_demos_fri_ros2_advanced_cpp/doc/lbr_demos_fri_ros2_advanced_cpp.rst>
-    LBR Demos FRI ROS 2 Advanced Python <../lbr_demos_fri_ros2_advanced_python/doc/lbr_demos_fri_ros2_advanced_python.rst>
+    lbr_demos_cpp <../lbr_demos_cpp/doc/lbr_demos_cpp.rst>
+    lbr_demos_py <../lbr_demos_py/doc/lbr_demos_py.rst>
 
-LBR ROS 2 Control Demos
------------------------
-These demos demonstrate the LBR integration into the ROS 2 ecosystem through ``ros2_control``.
-
-.. note::
-    These demos run in simulation **and** on the real robot. For the real robot, make sure you followed :ref:`Robot Setup` first.
-
+Advanced
+--------
 .. toctree::
     :titlesonly:
 
-    LBR Demos ROS 2 Control C++ <../lbr_demos_ros2_control_cpp/doc/lbr_demos_ros2_control_cpp.rst>
-    LBR Demos ROS 2 Control Python <../lbr_demos_ros2_control_python/doc/lbr_demos_ros2_control_python.rst>
+    lbr_demos_advanced_cpp <../lbr_demos_advanced_cpp/doc/lbr_demos_advanced_cpp.rst>
+    lbr_demos_advanced_py <../lbr_demos_advanced_py/doc/lbr_demos_advanced_py.rst>
+
+MoveIt 
+-------
+.. toctree::
+    :titlesonly:
+
+    lbr_moveit2_py <../lbr_moveit_py/doc/lbr_moveit_py.rst>
+    lbr_moveit2_cpp <../lbr_moveit_cpp/doc/lbr_moveit_cpp.rst>
+
+Integration
+-----------
+TODO system integration demos
