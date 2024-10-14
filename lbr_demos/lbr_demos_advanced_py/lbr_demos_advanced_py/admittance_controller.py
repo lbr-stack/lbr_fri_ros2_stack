@@ -41,6 +41,8 @@ class AdmittanceController(object):
         self._jacobian = self._jacobian_func(self._q)
         self._jacobian_inv = np.linalg.pinv(self._jacobian, rcond=0.1)
         self._f_ext = self._jacobian_inv.T @ self._tau_ext
+        # self._f_ext[2]+= 38.0 #FOR SHEELA'S DRILL
+        # print(self._f_ext)
 
         dx = np.where(
             abs(self._f_ext) > self._f_ext_th,
