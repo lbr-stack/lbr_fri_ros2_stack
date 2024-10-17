@@ -6,7 +6,7 @@
   <description>The lbr_fri_ros2 package provides the Fast Robot Interface (FRI) integration into ROS
     2. Robot states can be extracted and commanded.</description>
   <maintainer email="m.huber_1994@hotmail.de">mhubii</maintainer>
-  <license>Apache License 2.0</license>
+  <license>Apache-2.0</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
   <buildtool_depend>eigen3_cmake_module</buildtool_depend>

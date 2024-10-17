@@ -5,7 +5,7 @@
   <version>2.1.2</version>
   <description>Python demos for lbr_ros2_control.</description>
   <maintainer email="m.huber_1994@hotmail.de">mhubii</maintainer>
-  <license>Apache License 2.0</license>
+  <license>Apache-2.0</license>
 
   <exec_depend>control_msgs</exec_depend>
   <exec_depend>lbr_bringup</exec_depend>
