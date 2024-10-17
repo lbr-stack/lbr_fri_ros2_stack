@@ -17,6 +17,8 @@
   <exec_depend>lbr_description</exec_depend>
   <exec_depend>lbr_fri_ros2</exec_depend>
   <exec_depend>lbr_ros2_control</exec_depend>
+  <exec_depend>moveit_ros_move_group</exec_depend>
+  <exec_depend>moveit_servo</exec_depend>
   <exec_depend>rclpy</exec_depend>
   <exec_depend>robot_state_publisher</exec_depend>
   <exec_depend>ros_gz_sim</exec_depend>
