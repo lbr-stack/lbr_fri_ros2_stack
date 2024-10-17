@@ -5,7 +5,7 @@ from launch.actions import OpaqueFunction
 from launch.conditions import IfCondition
 from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
 from lbr_bringup.description import LBRDescriptionMixin
-from lbr_bringup.move_group import LBRMoveGroupMixin
+from lbr_bringup.moveit import LBRMoveGroupMixin
 from lbr_bringup.rviz import RVizMixin
 
 
