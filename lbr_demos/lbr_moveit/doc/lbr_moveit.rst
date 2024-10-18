@@ -11,14 +11,23 @@ lbr_moveit
 MoveIt Servo
 ------------
 
-Simulation
-~~~~~~~~~~
+MoveIt Servo - Simulation
+~~~~~~~~~~~~~~~~~~~~~~~~~
 #. Run the mock setup:
 
     .. code-block:: bash
 
         ros2 launch lbr_bringup mock.launch.py \
             model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
+
+   .. hint::
+   
+       For a physics-based simulation, also try Gazebo (remember to set ``mode:=gazebo`` for the next steps):
+   
+           .. code-block:: bash
+   
+               ros2 launch lbr_bringup gazebo.launch.py \
+                   model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
 
 #. Run MoveIt Servo:
     
@@ -38,10 +47,10 @@ You can now experiment with
 
 - Modifying the MoveIt Servo parameters in `moveit_servo.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_bringup/config/moveit_servo.yaml>`_:octicon:`link-external`. E.g. the ``robot_link_command_frame`` to change the commanding frame.
 - Connect a joystick or game controller.
-- Or changing the veloctiy scales for this keyboard driver in `forward_keyboard.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_moveit/forward_keyboard.yaml>`_:octicon:`linkt-external`.
+- Or changing the veloctiy scales for this keyboard driver in `forward_keyboard.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_demos/lbr_moveit/forward_keyboard.yaml>`_:octicon:`link-external`.
 
-Hardware
-~~~~~~~~
+MoveIt Servo - Hardware
+~~~~~~~~~~~~~~~~~~~~~~~
 #. Client side configurations:
 
     #. Configure the ``client_command_mode`` to ``position`` in `lbr_system_parameters.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_ros2_control/config/lbr_system_parameters.yaml>`_:octicon:`link-external`
@@ -60,7 +69,7 @@ Hardware
         - ``FRI control mode``: ``POSITION_CONTROL`` or ``JOINT_IMPEDANCE_CONTROL``
         - ``FRI client command mode``: ``POSITION``
 
-#. Proceed with steps 1, 2 and 3 from `Simulation`_ but with ``ros2 launch lbr_bringup hardware.launch.py`` in step 1.
+#. Proceed with steps 1, 2 and 3 from `MoveIt Servo - Simulation`_ but with ``ros2 launch lbr_bringup hardware.launch.py`` in step 1.
 
 MoveIt via RViz
 ---------------
@@ -71,14 +80,23 @@ MoveIt via RViz
 
 To run MoveIt via RViz, simply follow:
 
-Simulation
-~~~~~~~~~~
+MoveIt via RViz - Simulation
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #. Run the mock setup:
 
     .. code-block:: bash
 
         ros2 launch lbr_bringup mock.launch.py \
             model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
+
+   .. hint::
+   
+       For a physics-based simulation, also try Gazebo (remember to set ``mode:=gazebo`` for the next steps):
+   
+           .. code-block:: bash
+   
+               ros2 launch lbr_bringup gazebo.launch.py \
+                   model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
 
 #. Run MoveIt with RViz:
 
@@ -91,8 +109,8 @@ Simulation
 
 #. You can now move the robot via MoveIt in RViz!
 
-Hardware
-~~~~~~~~
+MoveIt via RViz - Hardware
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 #. Client side configurations:
 
     #. Configure the ``client_command_mode`` to ``position`` in `lbr_system_parameters.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/humble/lbr_ros2_control/config/lbr_system_parameters.yaml>`_:octicon:`link-external`
@@ -111,4 +129,4 @@ Hardware
         - ``FRI control mode``: ``POSITION_CONTROL`` or ``JOINT_IMPEDANCE_CONTROL``
         - ``FRI client command mode``: ``POSITION``
 
-#. Proceed with steps 1 and 2 from `Simulation`_ but with ``ros2 launch lbr_bringup hardware.launch.py`` in step 1.
+#. Proceed with steps 1 and 2 from `MoveIt via RViz - Simulation`_ but with ``ros2 launch lbr_bringup hardware.launch.py`` in step 1.

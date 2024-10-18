@@ -29,7 +29,7 @@ MoveIt
 .. toctree::
     :titlesonly:
 
-    lbr_moveit_py <../lbr_moveit/doc/lbr_moveit.rst>
+    lbr_moveit <../lbr_moveit/doc/lbr_moveit.rst>
     lbr_moveit_cpp <../lbr_moveit_cpp/doc/lbr_moveit_cpp.rst>
 
 Integration
