@@ -13,11 +13,12 @@ MoveIt Servo
 
 MoveIt Servo - Simulation
 ~~~~~~~~~~~~~~~~~~~~~~~~~
-#. Run the mock setup:
+#. Run the mock setup (important to run the ``forward_position_controller`` controller for servoing):
 
     .. code-block:: bash
 
         ros2 launch lbr_bringup mock.launch.py \
+            ctrl:=forward_position_controller \
             model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
 
    .. hint::

@@ -83,12 +83,12 @@ class KeyboardListener:
                 key_str
                 == self._command_forward_node.keyboard_layout.rotation.y.increase
             ):
-                self._twist_cmd[3] = 0.0  # rotation about y-axis
+                self._twist_cmd[4] = 0.0  # rotation about y-axis
             elif (
                 key_str
                 == self._command_forward_node.keyboard_layout.rotation.y.decrease
             ):
-                self._twist_cmd[3] = 0.0
+                self._twist_cmd[4] = 0.0
             elif key_str in self._valid_numbers:
                 # get index of key_str within valid_numbers
                 index = self._valid_numbers.index(key_str)
@@ -173,12 +173,12 @@ class KeyboardListener:
                 key_str
                 == self._command_forward_node.keyboard_layout.rotation.y.increase
             ):
-                self._twist_cmd[3] = 1.0  # rotation about y-axis
+                self._twist_cmd[4] = 1.0  # rotation about y-axis
             elif (
                 key_str
                 == self._command_forward_node.keyboard_layout.rotation.y.decrease
             ):
-                self._twist_cmd[3] = -1.0
+                self._twist_cmd[4] = -1.0
             elif key_str == self._command_forward_node.keyboard_layout.reverse_joints:
                 self._joint_vel_direction *= -1.0
             elif key_str in self._valid_numbers:

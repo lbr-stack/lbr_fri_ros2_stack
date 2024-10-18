@@ -17,16 +17,16 @@
       # override_velocity_scaling_factor = 0.0 # valid range [0.0:1.0]
 
       ## Properties of outgoing commands
-      publish_period: 0.034 # 1/Nominal publish rate [seconds]
+      publish_period: 0.005 # #1/controller manager update rate [seconds]
       low_latency_mode: false # Set this to true to publish as soon as an incoming Twist command is received (publish_period is ignored)
 
       # What type of topic does your robot driver expect?
       # Currently supported are std_msgs/Float64MultiArray or trajectory_msgs/JointTrajectory
-      command_out_type: trajectory_msgs/JointTrajectory
+      command_out_type: std_msgs/Float64MultiArray
 
       # What to publish? Can save some bandwidth as most robots only require positions or velocities
       publish_joint_positions: true
-      publish_joint_velocities: true
+      publish_joint_velocities: false
       publish_joint_accelerations: false
 
       ## Plugins for smoothing outgoing commands
@@ -63,7 +63,7 @@
       joint_command_in_topic: ~/delta_joint_cmds # Topic for incoming joint angle commands
       joint_topic: /lbr/joint_states
       status_topic: ~/status # Publish status to this topic
-      command_out_topic: /lbr/joint_trajectory_controller/joint_trajectory # Publish outgoing commands here
+      command_out_topic: /lbr/forward_position_controller/commands # Publish outgoing commands here
 
       ## Collision checking for the entire robot body
       check_collisions: true # Check collisions?
