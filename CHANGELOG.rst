@@ -1,6 +1,13 @@
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Changelog for package LBR FRI ROS 2 Stack
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Humble v2.1.2 (2024-10-18)
+--------------------------
+* Adds MoveIt Servo demo, related to https://github.com/lbr-stack/lbr_fri_ros2_stack/issues/50 and https://github.com/lbr-stack/lbr_fri_ros2_stack/issues/211
+
+  * ``lbr_bringup``: New launch mixin and launch file for MoveIt Servo
+  * ``lbr_moveit``: New keyboard driver to interface with MoveIt Servo
+
 Humble v2.1.1 (2024-09-27)
 --------------------------
 * Adds support for the new Gazebo and removes support for Gazebo Classic (End-of-Life January 2025, refer https://community.gazebosim.org/t/gazebo-classic-end-of-life/2563).

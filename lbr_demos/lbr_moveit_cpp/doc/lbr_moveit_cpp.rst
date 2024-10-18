@@ -76,7 +76,7 @@ The ``MoveGroup`` configurations are parsed conveniently through a mixin:
 
 .. code-block:: python
 
-    from lbr_bringup.move_group import LBRMoveGroupMixin
+    from lbr_bringup.moveit import LBRMoveGroupMixin
 
     ...
 
