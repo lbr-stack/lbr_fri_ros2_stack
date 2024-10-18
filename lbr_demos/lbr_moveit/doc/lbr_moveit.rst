@@ -33,9 +33,16 @@ MoveIt Servo - Simulation
     
     .. code-block:: bash
 
-        ros2 launch lbr_moveit moveit_servo.launch.py \
+        ros2 launch lbr_bringup moveit_servo.launch.py \
             mode:=mock \
             model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
+
+
+#. Optionally run RViZ:
+
+    .. code-block:: bash
+
+        ros2 launch lbr_bringup rviz.launch.py
 
 #. Publish to ``/lbr/servo_node/delta_joint_cmds`` and ``/lbr/servo_node/delta_twist_cmds``. For this demo, we provide a keyboard driver (keyboard layout is printed to terminal):
 
@@ -69,7 +76,7 @@ MoveIt Servo - Hardware
         - ``FRI control mode``: ``POSITION_CONTROL`` or ``JOINT_IMPEDANCE_CONTROL``
         - ``FRI client command mode``: ``POSITION``
 
-#. Proceed with steps 1, 2 and 3 from `MoveIt Servo - Simulation`_ but with ``ros2 launch lbr_bringup hardware.launch.py`` in step 1.
+#. Proceed with steps 1, 2, 3 and 4 from `MoveIt Servo - Simulation`_ but with ``ros2 launch lbr_bringup hardware.launch.py`` in step 1.
 
 MoveIt via RViz
 ---------------
