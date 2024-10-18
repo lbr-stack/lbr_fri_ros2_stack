@@ -28,6 +28,7 @@ MoveIt Servo - Simulation
            .. code-block:: bash
    
                ros2 launch lbr_bringup gazebo.launch.py \
+                   ctrl:=forward_position_controller \
                    model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
 
 #. Run MoveIt Servo:
