@@ -88,15 +88,19 @@ void App::run_async(int rt_prio) {
                        ColorScheme::WARNING << "App already running" << ColorScheme::ENDC);
     return;
   }
-  run_thread_ = std::thread([&]() {
-    if (realtime_tools::has_realtime_kernel()) {
-      if (!realtime_tools::configure_sched_fifo(rt_prio)) {
-        RCLCPP_WARN_STREAM(rclcpp::get_logger(LOGGER_NAME),
-                           ColorScheme::WARNING << "Failed to set FIFO realtime scheduling policy"
-                                                << ColorScheme::ENDC);
-      }
+  run_thread_ = std::thread([this, rt_prio]() {
+    if (!realtime_tools::configure_sched_fifo(rt_prio)) {
+      RCLCPP_WARN_STREAM(rclcpp::get_logger(LOGGER_NAME),
+                         ColorScheme::WARNING
+                             << "Failed to set FIFO realtime scheduling policy. Refer to "
+                                "[https://control.ros.org/master/doc/ros2_control/"
+                                "controller_manager/doc/userdoc.html]."
+                             << ColorScheme::ENDC);
     } else {
-      RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "Realtime kernel recommended but not required");
+      RCLCPP_INFO_STREAM(rclcpp::get_logger(LOGGER_NAME),
+                         ColorScheme::OKGREEN
+                             << "Realtime scheduling policy set to FIFO with priority '" << rt_prio
+                             << "'" << ColorScheme::ENDC);
     }
 
     RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "Starting run thread");
