@@ -19,7 +19,7 @@
         between world and link_0-->
     <joint name="world_joint" type="fixed">
         <parent link="world" />
-        <child link="link_0" />
+        <child link="$(arg robot_name)_link_0" />
     </joint>
 
     <!-- med -->

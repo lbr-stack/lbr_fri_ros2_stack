@@ -38,19 +38,19 @@
 
 /**/force_torque_broadcaster:
   ros__parameters:
-    frame_id: lbr/link_ee # namespace: https://github.com/ros2/rviz/issues/1103
+    frame_id: lbr_link_ee # namespace: https://github.com/ros2/rviz/issues/1103
     sensor_name: estimated_ft_sensor
 
 /**/joint_trajectory_controller:
   ros__parameters:
     joints:
-      - A1
-      - A2
-      - A3
-      - A4
-      - A5
-      - A6
-      - A7
+      - lbr_A1
+      - lbr_A2
+      - lbr_A3
+      - lbr_A4
+      - lbr_A5
+      - lbr_A6
+      - lbr_A7
     command_interfaces:
       - position
     state_interfaces:
@@ -62,11 +62,11 @@
 /**/forward_position_controller:
   ros__parameters:
     joints:
-      - A1
-      - A2
-      - A3
-      - A4
-      - A5
-      - A6
-      - A7
+      - lbr_A1
+      - lbr_A2
+      - lbr_A3
+      - lbr_A4
+      - lbr_A5
+      - lbr_A6
+      - lbr_A7
     interface_name: position

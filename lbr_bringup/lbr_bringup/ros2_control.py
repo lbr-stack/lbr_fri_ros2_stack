@@ -122,10 +122,6 @@ class LBRROS2ControlMixin:
             parameters=[
                 robot_description,
                 {"use_sim_time": use_sim_time},
-                # use robot name as frame prefix
-                {
-                    "frame_prefix": PathJoinSubstitution([robot_name, ""])
-                },  # neat hack to add trailing slash, which is required by frame_prefix
             ],
             namespace=robot_name,
             **kwargs,
