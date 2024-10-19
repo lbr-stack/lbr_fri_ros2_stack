@@ -8,8 +8,6 @@ moveit_simple_controller_manager:
 
   joint_trajectory_controller:
     type: FollowJointTrajectory
-    action_ns: follow_joint_trajectory
-    default: true
     joints:
       - A1
       - A2
@@ -18,3 +16,5 @@ moveit_simple_controller_manager:
       - A5
       - A6
       - A7
+    action_ns: follow_joint_trajectory
+    default: true
