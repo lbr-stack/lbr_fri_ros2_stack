@@ -40,8 +40,9 @@ public:
   on_deactivate(const rclcpp_lifecycle::State &previous_state) override;
 
 protected:
-  std::array<std::string, KUKA::FRI::LBRState::NUMBER_OF_JOINTS> joint_names_ = {
-      "A1", "A2", "A3", "A4", "A5", "A6", "A7"};
+  void configure_joint_names_();
+
+  std::array<std::string, KUKA::FRI::LBRState::NUMBER_OF_JOINTS> joint_names_;
 
   realtime_tools::RealtimeBuffer<lbr_fri_idl::msg::LBRJointPositionCommand::SharedPtr>
       rt_lbr_joint_position_command_ptr_;

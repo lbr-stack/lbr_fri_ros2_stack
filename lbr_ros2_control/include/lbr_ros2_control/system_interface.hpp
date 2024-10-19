@@ -55,8 +55,8 @@ struct SystemInterfaceParameters {
 };
 
 struct EstimatedFTSensorParameters {
-  std::string chain_root{"link_0"};
-  std::string chain_tip{"link_ee"};
+  std::string chain_root{"lbr_link_0"};
+  std::string chain_tip{"lbr_link_ee"};
   double damping{0.2};
   double force_x_th{2.0};
   double force_y_th{2.0};

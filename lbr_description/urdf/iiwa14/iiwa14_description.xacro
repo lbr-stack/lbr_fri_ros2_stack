@@ -22,6 +22,7 @@
         <!-- macros for gazebo / mock / hardware -->
         <xacro:lbr_gazebo robot_name="${robot_name}" />
         <xacro:lbr_system_interface
+            robot_name="${robot_name}"
             mode="${mode}"
             joint_limits="${joint_limits}"
             system_parameters_path="${system_parameters_path}" />

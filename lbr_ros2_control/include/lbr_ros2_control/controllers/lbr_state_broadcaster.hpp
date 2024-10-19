@@ -47,9 +47,10 @@ public:
 protected:
   void init_state_interface_map_();
   void init_state_msg_();
+  void configure_joint_names_();
 
   std::array<std::string, KUKA::FRI::LBRState::NUMBER_OF_JOINTS> joint_names_ = {
-      "A1", "A2", "A3", "A4", "A5", "A6", "A7"};
+      "lbr_A1", "lbr_A2", "lbr_A3", "lbr_A4", "lbr_A5", "lbr_A6", "lbr_A7"};
   std::unordered_map<std::string, std::unordered_map<std::string, double>> state_interface_map_;
 
   rclcpp::Publisher<lbr_fri_idl::msg::LBRState>::SharedPtr state_publisher_ptr_;

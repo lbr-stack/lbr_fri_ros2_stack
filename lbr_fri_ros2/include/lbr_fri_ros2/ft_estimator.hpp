@@ -35,8 +35,8 @@ public:
   using cart_array_t_ref = cart_array_t &;
   using const_cart_array_t_ref = const cart_array_t &;
 
-  FTEstimator(const std::string &robot_description, const std::string &chain_root = "link_0",
-              const std::string &chain_tip = "link_ee",
+  FTEstimator(const std::string &robot_description, const std::string &chain_root = "lbr_link_0",
+              const std::string &chain_tip = "lbr_link_ee",
               const_cart_array_t_ref f_ext_th = {2., 2., 2., 0.5, 0.5, 0.5});
   void compute(const_jnt_pos_array_t_ref measured_joint_position,
                const_ext_tau_array_t_ref external_torque, cart_array_t_ref f_ext,

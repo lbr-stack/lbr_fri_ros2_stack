@@ -74,4 +74,18 @@ void AdmittanceController::clear_command_interfaces_() {
 void AdmittanceController::clear_state_interfaces_() {
   estimated_ft_sensor_state_interface_.clear();
 }
+
+void AdmittanceController::configure_joint_names_() {
+  if (joint_names_.size() != KUKA::FRI::LBRState::NUMBER_OF_JOINTS) {
+    RCLCPP_ERROR(
+        this->get_node()->get_logger(),
+        "Number of joint names (%ld) does not match the number of joints in the robot (%d).",
+        joint_names_.size(), KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
+    throw std::runtime_error("Failed to configure joint names.");
+  }
+  std::string robot_name = this->get_node()->get_parameter("robot_name").as_string();
+  for (int i = 0; i < KUKA::FRI::LBRState::NUMBER_OF_JOINTS; i++) {
+    joint_names_[i] = robot_name + "_A" + std::to_string(i + 1);
+  }
+}
 } // namespace lbr_ros2_control
