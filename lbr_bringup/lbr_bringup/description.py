@@ -26,7 +26,10 @@ class LBRDescriptionMixin:
         system_config_path: Optional[
             Union[LaunchConfiguration, str]
         ] = PathJoinSubstitution(
-            [LaunchConfiguration("sys_cfg_pkg"), LaunchConfiguration("sys_cfg")]
+            [
+                FindPackageShare(LaunchConfiguration("sys_cfg_pkg")),
+                LaunchConfiguration("sys_cfg"),
+            ]
         ),
     ) -> Dict[str, str]:
         robot_description = {
@@ -47,7 +50,7 @@ class LBRDescriptionMixin:
                     robot_name,
                     " mode:=",
                     mode,
-                    "system_config_path:=",
+                    " system_config_path:=",
                     system_config_path,
                 ]
             )
