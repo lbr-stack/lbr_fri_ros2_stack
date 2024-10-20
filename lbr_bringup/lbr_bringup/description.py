@@ -27,8 +27,12 @@ class LBRDescriptionMixin:
             Union[LaunchConfiguration, str]
         ] = PathJoinSubstitution(
             [
-                FindPackageShare(LaunchConfiguration("sys_cfg_pkg")),
-                LaunchConfiguration("sys_cfg"),
+                FindPackageShare(
+                    LaunchConfiguration("sys_cfg_pkg", default="lbr_description")
+                ),
+                LaunchConfiguration(
+                    "sys_cfg", default="ros2_control/lbr_system_config.yaml"
+                ),
             ]
         ),
     ) -> Dict[str, str]:
