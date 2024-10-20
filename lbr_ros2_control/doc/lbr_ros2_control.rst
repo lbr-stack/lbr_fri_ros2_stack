@@ -43,7 +43,7 @@ The ``lbr_ros2_control::SystemInterface`` plugin implements a ``hardware_interfa
     :alt: lbr_ros2_control_detailed
 
 - The ``controller_manager::ControllerManager`` loads the correct plugin from the ``<ros2_control>`` tag in the ``robot_description``: `lbr_system_interface.xacro <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/rolling/lbr_description/ros2_control/lbr_system_interface.xacro>`_:octicon:`link-external`
-- FRI relevant parameters are forwarded to the ``lbr_ros2_control::SystemInterface`` plugin from `lbr_system_paramters.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/rolling/lbr_description/ros2_control/lbr_system_parameters.yaml>`_:octicon:`link-external`
+- FRI relevant parameters are forwarded to the ``lbr_ros2_control::SystemInterface`` plugin from `lbr_system_config.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/rolling/lbr_description/ros2_control/lbr_system_config.yaml>`_:octicon:`link-external`
 
 The ``lbr_ros2_control::SystemInterface`` is spun with the ``controller_manager`` node at a rate set by the ``update_rate`` parameter. The communication to the robot is run **asynchronously** at a rate set by the robot's sample time.
 

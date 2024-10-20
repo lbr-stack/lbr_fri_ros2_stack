@@ -9,8 +9,8 @@
     <xacro:arg name="robot_name" default="lbr" />
     <xacro:arg name="mode" default="mock" />
     <xacro:arg
-        name="system_parameters_path"
-        default="$(find lbr_description)/ros2_control/lbr_system_parameters.yaml" />
+        name="system_config_path"
+        default="$(find lbr_description)/ros2_control/lbr_system_config.yaml" />
 
     <!-- fixed to world, see http://classic.gazebosim.org/tutorials?tut=ros_urdf&cat=connect_ros -->
     <link name="world" />
@@ -26,5 +26,5 @@
     <xacro:iiwa7
         robot_name="$(arg robot_name)"
         mode="$(arg mode)"
-        system_parameters_path="$(arg system_parameters_path)" />
+        system_config_path="$(arg system_config_path)" />
 </robot>

@@ -3,7 +3,7 @@
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
     <!-- robot as extracted via https://github.com/syuntoku14/fusion2urdf -->
     <xacro:macro name="iiwa14"
-        params="robot_name:=^|lbr mode:=^|mock system_parameters_path:=^|'$(find lbr_description)/ros2_control/lbr_system_parameters.yaml'">
+        params="robot_name:=^|lbr mode:=^|mock system_config_path:=^|'$(find lbr_description)/ros2_control/lbr_system_config.yaml'">
 
         <!-- includes -->
         <xacro:include filename="$(find lbr_description)/gazebo/lbr_gazebo.xacro" />
@@ -25,7 +25,7 @@
             robot_name="${robot_name}"
             mode="${mode}"
             joint_limits="${joint_limits}"
-            system_parameters_path="${system_parameters_path}" />
+            system_config_path="${system_config_path}" />
 
         <link name="${robot_name}_link_0">
             <inertial>
