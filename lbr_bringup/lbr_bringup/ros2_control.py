@@ -35,6 +35,7 @@ class LBRROS2ControlMixin:
                 "lbr_joint_position_command_controller",
                 "lbr_torque_command_controller",
                 "lbr_wrench_command_controller",
+                "twist_controller",
             ],
         )
 

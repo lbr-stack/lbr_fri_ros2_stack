@@ -44,7 +44,7 @@ protected:
   cart_array_t f_ext_th_;
 
   // kinematics
-  std::unique_ptr<Kinematics> kinematics_;
+  std::unique_ptr<Kinematics> kinematics_ptr_;
 
   // force estimation
   Eigen::Matrix<double, KUKA::FRI::LBRState::NUMBER_OF_JOINTS, Kinematics::CARTESIAN_DOF>

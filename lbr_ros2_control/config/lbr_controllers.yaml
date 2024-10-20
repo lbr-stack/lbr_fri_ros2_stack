@@ -23,6 +23,9 @@
       type: position_controllers/JointGroupPositionController
 
     # LBR ROS 2 control controllers
+    admittance_controller:
+      type: lbr_ros2_control/AdmittanceController
+
     lbr_joint_position_command_controller:
       type: lbr_ros2_control/LBRJointPositionCommandController
 
@@ -32,8 +35,8 @@
     lbr_wrench_command_controller:
       type: lbr_ros2_control/LBRWrenchCommandController
 
-    admittance_controller:
-      type: lbr_ros2_control/AdmittanceController
+    twist_controller:
+      type: lbr_ros2_control/TwistController
 
 # ROS 2 control broadcasters
 /**/force_torque_broadcaster:
@@ -89,3 +92,12 @@
 /**/lbr_wrench_command_controller:
   ros__parameters:
     robot_name: lbr
+
+/**/twist_controller:
+  ros__parameters:
+    robot_name: lbr
+    chain_root: lbr_link_0
+    chain_tip: lbr_link_ee
+    damping: 0.2 # damping factor for the pseudo-inverse of the Jacobian
+    max_linear_velocity: 0.1 # maximum linear velocity
+    max_angular_velocity: 0.1 # maximum linear acceleration

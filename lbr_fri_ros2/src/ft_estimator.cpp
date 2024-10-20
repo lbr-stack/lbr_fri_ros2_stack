@@ -4,7 +4,7 @@ namespace lbr_fri_ros2 {
 FTEstimator::FTEstimator(const std::string &robot_description, const std::string &chain_root,
                          const std::string &chain_tip, const_cart_array_t_ref f_ext_th)
     : f_ext_th_(f_ext_th) {
-  kinematics_ = std::make_unique<Kinematics>(robot_description, chain_root, chain_tip);
+  kinematics_ptr_ = std::make_unique<Kinematics>(robot_description, chain_root, chain_tip);
   reset();
 }
 
@@ -13,12 +13,12 @@ void FTEstimator::compute(const_jnt_pos_array_t_ref measured_joint_position,
                           const double &damping) {
   tau_ext_ = Eigen::Map<const Eigen::Matrix<double, KUKA::FRI::LBRState::NUMBER_OF_JOINTS, 1>>(
       external_torque.data());
-  auto jacobian = kinematics_->compute_jacobian(measured_joint_position);
+  auto jacobian = kinematics_ptr_->compute_jacobian(measured_joint_position);
   jacobian_inv_ = pinv(jacobian.data, damping);
   f_ext_ = jacobian_inv_.transpose() * tau_ext_;
 
   // rotate into chain tip frame
-  auto chain_tip_frame = kinematics_->compute_fk(measured_joint_position);
+  auto chain_tip_frame = kinematics_ptr_->compute_fk(measured_joint_position);
   f_ext_.topRows(3) = Eigen::Matrix3d::Map(chain_tip_frame.M.data) * f_ext_.topRows(3);
   f_ext_.bottomRows(3) = Eigen::Matrix3d::Map(chain_tip_frame.M.data) * f_ext_.bottomRows(3);
 
