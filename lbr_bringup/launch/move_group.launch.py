@@ -46,8 +46,8 @@ def hidden_setup(context: LaunchContext) -> List[LaunchDescriptionEntity]:
 
     # RViz if desired
     rviz = RVizMixin.node_rviz(
-        rviz_config_pkg=f"{model}_moveit_config",
-        rviz_config="config/moveit.rviz",
+        rviz_cfg_pkg=f"{model}_moveit_config",
+        rviz_cfg="config/moveit.rviz",
         parameters=LBRMoveGroupMixin.params_rviz(
             moveit_configs=moveit_configs_builder.to_moveit_configs()
         )
