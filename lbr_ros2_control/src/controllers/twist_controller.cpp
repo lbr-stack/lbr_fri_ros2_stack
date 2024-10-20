@@ -66,6 +66,7 @@ controller_interface::CallbackReturn TwistController::on_init() {
     twist_subscription_ptr_ = this->get_node()->create_subscription<geometry_msgs::msg::Twist>(
         "command/twist", 1, [this](const geometry_msgs::msg::Twist::SharedPtr msg) {
           rt_twist_ptr_.writeFromNonRT(msg);
+          updates_since_last_command_ = 0;
         });
     this->get_node()->declare_parameter("robot_name", "lbr");
     this->get_node()->declare_parameter("chain_root", "lbr_link_0");
@@ -85,7 +86,7 @@ controller_interface::CallbackReturn TwistController::on_init() {
 }
 
 controller_interface::return_type TwistController::update(const rclcpp::Time & /*time*/,
-                                                          const rclcpp::Duration & /*period*/) {
+                                                          const rclcpp::Duration &period) {
   auto twist_command = rt_twist_ptr_.readFromRT();
   if (!twist_command || !(*twist_command)) {
     return controller_interface::return_type::OK;
@@ -97,6 +98,13 @@ controller_interface::return_type TwistController::update(const rclcpp::Time & /
   if (static_cast<int>(session_state_interface_->get().get_value()) !=
       KUKA::FRI::ESessionState::COMMANDING_ACTIVE) {
     return controller_interface::return_type::OK;
+  }
+  if (updates_since_last_command_ >
+      static_cast<int>(max_time_without_command_ / period.seconds())) {
+    RCLCPP_ERROR(this->get_node()->get_logger(),
+                 "No twist command received within time %f. Stopping the controller.",
+                 max_time_without_command_);
+    return controller_interface::return_type::ERROR;
   }
 
   // pass joint positions to q_
@@ -114,6 +122,8 @@ controller_interface::return_type TwistController::update(const rclcpp::Time & /
         q_i + dq_[i] * sample_time_state_interface_->get().get_value());
     ++i;
   });
+
+  ++updates_since_last_command_;
 
   return controller_interface::return_type::OK;
 }

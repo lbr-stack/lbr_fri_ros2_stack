@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <array>
+#include <atomic>
 #include <functional>
 #include <memory>
 #include <stdexcept>
@@ -79,6 +80,10 @@ protected:
   void reset_command_buffer_();
   void configure_joint_names_();
   void configure_twist_impl_();
+
+  // some safety checks
+  std::atomic<int> updates_since_last_command_ = 0;
+  double max_time_without_command_ = 0.2;
 
   // joint veloctiy computation
   std::unique_ptr<TwistImpl> twist_impl_ptr_;
