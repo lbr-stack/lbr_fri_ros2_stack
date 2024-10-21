@@ -67,6 +67,10 @@ Visualization Manager:
         Expand Link Details: false
         Expand Tree: false
         Link Tree Style: Links in Alphabetic Order
+        lbr_floating_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         lbr_link_0:
           Alpha: 1
           Show Axes: false
@@ -108,10 +112,6 @@ Visualization Manager:
           Show Trail: false
           Value: true
         lbr_link_ee:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        world:
           Alpha: 1
           Show Axes: false
           Show Trail: false
