@@ -18,7 +18,7 @@ setup(
     maintainer="mhubii",
     maintainer_email="m.huber_1994@hotmail.de",
     description="Advanced Python demos for the lbr_ros2_control.",
-    license="MIT",
+    license="Apache-2.0",
     tests_require=["pytest"],
     entry_points={
         "console_scripts": [

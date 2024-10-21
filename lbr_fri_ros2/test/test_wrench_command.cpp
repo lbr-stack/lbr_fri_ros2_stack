@@ -24,7 +24,8 @@ int main() {
 
   pid_params.p = 10.0;
 
-  cmd_guard_params.joint_names = {"A1", "A2", "A3", "A4", "A5", "A6", "A7"};
+  cmd_guard_params.joint_names = {"lbr_A1", "lbr_A2", "lbr_A3", "lbr_A4",
+                                  "lbr_A5", "lbr_A6", "lbr_A7"};
   cmd_guard_params.max_positions = {170. * M_PI / 180., 120. * M_PI / 180., 170. * M_PI / 180.,
                                     120. * M_PI / 180., 170. * M_PI / 180., 120. * M_PI / 180.,
                                     175. * M_PI / 180.};

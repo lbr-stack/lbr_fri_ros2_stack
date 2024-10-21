@@ -11,7 +11,8 @@ SystemInterface::on_init(const hardware_interface::HardwareInfo &system_info) {
     return ret;
   }
 
-  // parameters_ from config/lbr_system_interface.xacro
+  // parameters_ from lbr_system_interface.xacro (located in
+  // lbr_description/ros2_control/lbr_system_interface.xacro)
   if (!parse_parameters_(system_info)) {
     return controller_interface::CallbackReturn::ERROR;
   }
@@ -531,7 +532,8 @@ bool SystemInterface::verify_sensors_() {
 }
 
 bool SystemInterface::verify_auxiliary_sensor_() {
-  // check all interfaces are defined in config/lbr_system_interface.xacro
+  // check all interfaces are defined in lbr_system_interface.xacro (located in
+  // lbr_description/ros2_control/lbr_system_interface.xacro)
   const auto &auxiliary_sensor = info_.sensors[0];
   if (auxiliary_sensor.name != HW_IF_AUXILIARY_PREFIX) {
     RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME),

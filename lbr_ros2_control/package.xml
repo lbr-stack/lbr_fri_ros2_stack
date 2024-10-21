@@ -8,17 +8,24 @@
   <license>Apache-2.0</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
+  <buildtool_depend>eigen3_cmake_module</buildtool_depend>
+
+  <build_depend>eigen</build_depend>
 
   <depend>fri_client_sdk</depend>
+  <depend>geometry_msgs</depend>
   <depend>lbr_fri_idl</depend>
   <depend>lbr_fri_ros2</depend>
   <depend>pluginlib</depend>
   <depend>rclcpp</depend>
   <depend>realtime_tools</depend>
   <depend>ros2_control</depend>
-
+  
   <exec_depend>lbr_description</exec_depend>
   <exec_depend>ros2_controllers</exec_depend>
+
+  <buildtool_export_depend>eigen3_cmake_module</buildtool_export_depend>
+  <build_export_depend>eigen</build_export_depend>
 
   <export>
     <build_type>ament_cmake</build_type>

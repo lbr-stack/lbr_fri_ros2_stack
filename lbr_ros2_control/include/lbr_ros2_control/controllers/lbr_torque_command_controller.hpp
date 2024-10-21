@@ -44,9 +44,9 @@ public:
 protected:
   bool reference_command_interfaces_();
   void clear_command_interfaces_();
+  void configure_joint_names_();
 
-  std::array<std::string, KUKA::FRI::LBRState::NUMBER_OF_JOINTS> joint_names_ = {
-      "A1", "A2", "A3", "A4", "A5", "A6", "A7"};
+  std::array<std::string, KUKA::FRI::LBRState::NUMBER_OF_JOINTS> joint_names_;
 
   std::vector<std::reference_wrapper<hardware_interface::LoanedCommandInterface>>
       joint_position_command_interfaces_, torque_command_interfaces_;

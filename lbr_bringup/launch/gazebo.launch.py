@@ -1,5 +1,5 @@
 from launch import LaunchDescription
-from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
+from launch.substitutions import LaunchConfiguration, PythonExpression
 from lbr_bringup.description import LBRDescriptionMixin
 from lbr_bringup.gazebo import GazeboMixin
 from lbr_bringup.ros2_control import LBRROS2ControlMixin
@@ -15,13 +15,15 @@ def generate_launch_description() -> LaunchDescription:
         LBRROS2ControlMixin.arg_ctrl()
     )  # Gazebo loads controller configuration through lbr_description/gazebo/*.xacro from lbr_ros2_control/config/lbr_controllers.yaml
 
-    # static transform world -> robot_name/world
+    # static transform world -> <robot_name>_floating_link
     world_robot_tf = [0, 0, 0, 0, 0, 0]  # keep zero
     ld.add_action(
         LBRDescriptionMixin.node_static_tf(
             tf=world_robot_tf,
             parent="world",
-            child=PathJoinSubstitution([LaunchConfiguration("robot_name"), "world"]),
+            child=PythonExpression(
+                ["'", LaunchConfiguration("robot_name"), "' + '_floating_link'"]
+            ),
         )
     )
 
