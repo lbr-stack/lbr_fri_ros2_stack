@@ -16,8 +16,8 @@ void StateInterface::set_state(const_fri_state_t_ref state) {
   state_.control_mode = state.getControlMode();
   state_.drive_state = state.getDriveState();
   external_torque_filter_.compute(state.getExternalTorque(), state_.external_torque);
-  if (state.getSessionState() == fri_session_state_t::COMMANDING_WAIT ||
-      state.getSessionState() == fri_session_state_t::COMMANDING_ACTIVE) {
+  if (state.getSessionState() == KUKA::FRI::ESessionState::COMMANDING_WAIT ||
+      state.getSessionState() == KUKA::FRI::ESessionState::COMMANDING_ACTIVE) {
     std::memcpy(state_.ipo_joint_position.data(), state.getIpoJointPosition(),
                 sizeof(double) * fri_state_t::NUMBER_OF_JOINTS);
   }
@@ -41,7 +41,7 @@ void StateInterface::set_state(const_fri_state_t_ref state) {
 };
 
 void StateInterface::set_state_open_loop(const_fri_state_t_ref state,
-                                         const_idl_joint_pos_t_ref joint_position) {
+                                         const_jnt_array_t_ref joint_position) {
   state_.client_command_mode = state.getClientCommandMode();
 #if FRI_CLIENT_VERSION_MAJOR == 1
   std::memcpy(state_.commanded_joint_position.data(), state.getCommandedJointPosition(),
@@ -53,8 +53,8 @@ void StateInterface::set_state_open_loop(const_fri_state_t_ref state,
   state_.control_mode = state.getControlMode();
   state_.drive_state = state.getDriveState();
   external_torque_filter_.compute(state.getExternalTorque(), state_.external_torque);
-  if (state.getSessionState() == fri_session_state_t::COMMANDING_WAIT ||
-      state.getSessionState() == fri_session_state_t::COMMANDING_ACTIVE) {
+  if (state.getSessionState() == KUKA::FRI::ESessionState::COMMANDING_WAIT ||
+      state.getSessionState() == KUKA::FRI::ESessionState::COMMANDING_ACTIVE) {
     std::memcpy(state_.ipo_joint_position.data(), state.getIpoJointPosition(),
                 sizeof(double) * fri_state_t::NUMBER_OF_JOINTS);
   }

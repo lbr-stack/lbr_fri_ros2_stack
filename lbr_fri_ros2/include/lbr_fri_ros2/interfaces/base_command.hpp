@@ -10,27 +10,17 @@
 #include "rclcpp/logging.hpp"
 
 #include "friClientVersion.h"
-#include "friLBRClient.h"
 
 #include "lbr_fri_idl/msg/lbr_command.hpp"
 #include "lbr_fri_ros2/command_guard.hpp"
 #include "lbr_fri_ros2/filters.hpp"
 #include "lbr_fri_ros2/formatting.hpp"
+#include "lbr_fri_ros2/types.hpp"
 
 namespace lbr_fri_ros2 {
 class BaseCommandInterface {
 protected:
   virtual std::string LOGGER_NAME() const = 0;
-
-  // ROS IDL types
-  using idl_command_t = lbr_fri_idl::msg::LBRCommand;
-  using const_idl_command_t_ref = const idl_command_t &;
-  using idl_state_t = lbr_fri_idl::msg::LBRState;
-  using const_idl_state_t_ref = const idl_state_t &;
-
-  // FRI types
-  using fri_command_t = KUKA::FRI::LBRCommand;
-  using fri_command_t_ref = fri_command_t &;
 
 public:
   BaseCommandInterface() = delete;
