@@ -1,13 +1,10 @@
 #ifndef LBR_FRI_ROS2__APP_HPP_
 #define LBR_FRI_ROS2__APP_HPP_
 
-#include <atomic>
 #include <memory>
-#include <thread>
 
 #include "rclcpp/logger.hpp"
 #include "rclcpp/logging.hpp"
-#include "realtime_tools/thread_priority.hpp"
 
 #include "friClientApplication.h"
 #include "friUdpConnection.h"
@@ -39,9 +36,6 @@ public:
 protected:
   void perform_work_() override;
   bool valid_port_(const int &port_id);
-
-  std::atomic_bool should_stop_, running_;
-  std::thread run_thread_;
 
   std::shared_ptr<AsyncClient> async_client_ptr_;
   std::unique_ptr<KUKA::FRI::UdpConnection> connection_ptr_;
