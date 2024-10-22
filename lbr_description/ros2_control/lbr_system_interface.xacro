@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
     <xacro:macro name="lbr_system_interface"
-        params="mode joint_limits system_parameters_path">
+        params="robot_name mode joint_limits system_config_path">
         <!-- load system parameters via yaml -->
-        <xacro:property name="system_parameters"
-            value="${xacro.load_yaml(system_parameters_path)}" />
+        <xacro:property name="system_config"
+            value="${xacro.load_yaml(system_config_path)}" />
 
         <ros2_control name="lbr_system_interface" type="system">
             <!-- load plugin depending on mode -->
@@ -21,22 +21,22 @@
             <xacro:if value="${mode == 'hardware'}">
                 <hardware>
                     <plugin>lbr_ros2_control::SystemInterface</plugin>
-                    <param name="fri_client_sdk_major_version">${system_parameters['hardware']['fri_client_sdk']['major_version']}</param>
-                    <param name="fri_client_sdk_minor_version">${system_parameters['hardware']['fri_client_sdk']['minor_version']}</param>
-                    <param name="client_command_mode">${system_parameters['hardware']['client_command_mode']}</param>
-                    <param name="port_id">${system_parameters['hardware']['port_id']}</param>
-                    <param name="remote_host">${system_parameters['hardware']['remote_host']}</param>
-                    <param name="rt_prio">${system_parameters['hardware']['rt_prio']}</param>
-                    <param name="pid_p">${system_parameters['hardware']['pid_p']}</param>
-                    <param name="pid_i">${system_parameters['hardware']['pid_i']}</param>
-                    <param name="pid_d">${system_parameters['hardware']['pid_d']}</param>
-                    <param name="pid_i_max">${system_parameters['hardware']['pid_i_max']}</param>
-                    <param name="pid_i_min">${system_parameters['hardware']['pid_i_min']}</param>
-                    <param name="pid_antiwindup">${system_parameters['hardware']['pid_antiwindup']}</param>
-                    <param name="command_guard_variant">${system_parameters['hardware']['command_guard_variant']}</param>
-                    <param name="external_torque_cutoff_frequency">${system_parameters['hardware']['external_torque_cutoff_frequency']}</param>
-                    <param name="measured_torque_cutoff_frequency">${system_parameters['hardware']['measured_torque_cutoff_frequency']}</param>
-                    <param name="open_loop">${system_parameters['hardware']['open_loop']}</param>
+                    <param name="fri_client_sdk_major_version">${system_config['hardware']['fri_client_sdk']['major_version']}</param>
+                    <param name="fri_client_sdk_minor_version">${system_config['hardware']['fri_client_sdk']['minor_version']}</param>
+                    <param name="client_command_mode">${system_config['hardware']['client_command_mode']}</param>
+                    <param name="port_id">${system_config['hardware']['port_id']}</param>
+                    <param name="remote_host">${system_config['hardware']['remote_host']}</param>
+                    <param name="rt_prio">${system_config['hardware']['rt_prio']}</param>
+                    <param name="pid_p">${system_config['hardware']['pid_p']}</param>
+                    <param name="pid_i">${system_config['hardware']['pid_i']}</param>
+                    <param name="pid_d">${system_config['hardware']['pid_d']}</param>
+                    <param name="pid_i_max">${system_config['hardware']['pid_i_max']}</param>
+                    <param name="pid_i_min">${system_config['hardware']['pid_i_min']}</param>
+                    <param name="pid_antiwindup">${system_config['hardware']['pid_antiwindup']}</param>
+                    <param name="command_guard_variant">${system_config['hardware']['command_guard_variant']}</param>
+                    <param name="external_torque_cutoff_frequency">${system_config['hardware']['external_torque_cutoff_frequency']}</param>
+                    <param name="measured_torque_cutoff_frequency">${system_config['hardware']['measured_torque_cutoff_frequency']}</param>
+                    <param name="open_loop">${system_config['hardware']['open_loop']}</param>
                 </hardware>
             </xacro:if>
 
@@ -61,21 +61,26 @@
 
                 <sensor
                     name="estimated_ft_sensor">
-                    <param name="chain_root">${system_parameters['estimated_ft_sensor']['chain_root']}</param>
-                    <param name="chain_tip">${system_parameters['estimated_ft_sensor']['chain_tip']}</param>
-                    <param name="damping">${system_parameters['estimated_ft_sensor']['damping']}</param>
-                    <param name="force_x_th">${system_parameters['estimated_ft_sensor']['force_x_th']}</param>
-                    <param name="force_y_th">${system_parameters['estimated_ft_sensor']['force_y_th']}</param>
-                    <param name="force_z_th">${system_parameters['estimated_ft_sensor']['force_z_th']}</param>
-                    <param name="torque_x_th">${system_parameters['estimated_ft_sensor']['torque_x_th']}</param>
-                    <param name="torque_y_th">${system_parameters['estimated_ft_sensor']['torque_y_th']}</param>
-                    <param name="torque_z_th">${system_parameters['estimated_ft_sensor']['torque_z_th']}</param>
-                    <state_interface name="force.x" />
-                    <state_interface name="force.y" />
-                    <state_interface name="force.z" />
-                    <state_interface name="torque.x" />
-                    <state_interface name="torque.y" />
-                    <state_interface name="torque.z" />
+                    <param name="enabled">${system_config['estimated_ft_sensor']['enabled']}</param>
+                    <param name="update_rate">${system_config['estimated_ft_sensor']['update_rate']}</param>
+                    <param name="rt_prio">${system_config['estimated_ft_sensor']['rt_prio']}</param>
+                    <param name="chain_root">${system_config['estimated_ft_sensor']['chain_root']}</param>
+                    <param name="chain_tip">${system_config['estimated_ft_sensor']['chain_tip']}</param>
+                    <param name="damping">${system_config['estimated_ft_sensor']['damping']}</param>
+                    <param name="force_x_th">${system_config['estimated_ft_sensor']['force_x_th']}</param>
+                    <param name="force_y_th">${system_config['estimated_ft_sensor']['force_y_th']}</param>
+                    <param name="force_z_th">${system_config['estimated_ft_sensor']['force_z_th']}</param>
+                    <param name="torque_x_th">${system_config['estimated_ft_sensor']['torque_x_th']}</param>
+                    <param name="torque_y_th">${system_config['estimated_ft_sensor']['torque_y_th']}</param>
+                    <param name="torque_z_th">${system_config['estimated_ft_sensor']['torque_z_th']}</param>
+                    <xacro:if value="${system_config['estimated_ft_sensor']['enabled']}">
+                        <state_interface name="force.x" />
+                        <state_interface name="force.y" />
+                        <state_interface name="force.z" />
+                        <state_interface name="torque.x" />
+                        <state_interface name="torque.y" />
+                        <state_interface name="torque.z" />
+                    </xacro:if>
                 </sensor>
 
                 <!-- FRI Cartesian impedance control mode -->
@@ -114,7 +119,8 @@
                         <param name="max_position">${max_position}</param>
                         <param name="max_velocity">${max_velocity}</param>
                         <param name="max_torque">${max_torque}</param>
-                        <xacro:if value="${system_parameters['hardware']['fri_client_sdk']['major_version'] == 1}">
+                        <xacro:if
+                            value="${system_config['hardware']['fri_client_sdk']['major_version'] == 1}">
                             <state_interface name="commanded_joint_position" />
                         </xacro:if>
                         <state_interface name="commanded_torque" />
@@ -124,43 +130,43 @@
                 </joint>
             </xacro:macro>
 
-            <xacro:joint_interface name="A1"
+            <xacro:joint_interface name="${robot_name}_A1"
                 min_position="${joint_limits['A1']['lower'] * PI / 180}"
                 max_position="${joint_limits['A1']['upper'] * PI / 180}"
                 max_velocity="${joint_limits['A1']['velocity'] * PI / 180}"
                 max_torque="${joint_limits['A1']['effort']}"
                 mode="${mode}" />
-            <xacro:joint_interface name="A2"
+            <xacro:joint_interface name="${robot_name}_A2"
                 min_position="${joint_limits['A2']['lower'] * PI / 180}"
                 max_position="${joint_limits['A2']['upper'] * PI / 180}"
                 max_velocity="${joint_limits['A2']['velocity'] * PI / 180}"
                 max_torque="${joint_limits['A2']['effort']}"
                 mode="${mode}" />
-            <xacro:joint_interface name="A3"
+            <xacro:joint_interface name="${robot_name}_A3"
                 min_position="${joint_limits['A3']['lower'] * PI / 180}"
                 max_position="${joint_limits['A3']['upper'] * PI / 180}"
                 max_velocity="${joint_limits['A3']['velocity'] * PI / 180}"
                 max_torque="${joint_limits['A3']['effort']}"
                 mode="${mode}" />
-            <xacro:joint_interface name="A4"
+            <xacro:joint_interface name="${robot_name}_A4"
                 min_position="${joint_limits['A4']['lower'] * PI / 180}"
                 max_position="${joint_limits['A4']['upper'] * PI / 180}"
                 max_velocity="${joint_limits['A4']['velocity'] * PI / 180}"
                 max_torque="${joint_limits['A4']['effort']}"
                 mode="${mode}" />
-            <xacro:joint_interface name="A5"
+            <xacro:joint_interface name="${robot_name}_A5"
                 min_position="${joint_limits['A5']['lower'] * PI / 180}"
                 max_position="${joint_limits['A5']['upper'] * PI / 180}"
                 max_velocity="${joint_limits['A5']['velocity'] * PI / 180}"
                 max_torque="${joint_limits['A5']['effort']}"
                 mode="${mode}" />
-            <xacro:joint_interface name="A6"
+            <xacro:joint_interface name="${robot_name}_A6"
                 min_position="${joint_limits['A6']['lower'] * PI / 180}"
                 max_position="${joint_limits['A6']['upper'] * PI / 180}"
                 max_velocity="${joint_limits['A6']['velocity'] * PI / 180}"
                 max_torque="${joint_limits['A6']['effort']}"
                 mode="${mode}" />
-            <xacro:joint_interface name="A7"
+            <xacro:joint_interface name="${robot_name}_A7"
                 min_position="${joint_limits['A7']['lower'] * PI / 180}"
                 max_position="${joint_limits['A7']['upper'] * PI / 180}"
                 max_velocity="${joint_limits['A7']['velocity'] * PI / 180}"

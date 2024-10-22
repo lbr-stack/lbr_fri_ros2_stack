@@ -29,20 +29,20 @@
         </xacro:macro>
 
         <!-- references -->
-        <xacro:gazebo_link_reference name="link_0" />
-        <xacro:gazebo_joint_reference name="A1" />
-        <xacro:gazebo_link_reference name="link_1" />
-        <xacro:gazebo_joint_reference name="A2" />
-        <xacro:gazebo_link_reference name="link_2" />
-        <xacro:gazebo_joint_reference name="A3" />
-        <xacro:gazebo_link_reference name="link_3" />
-        <xacro:gazebo_joint_reference name="A4" />
-        <xacro:gazebo_link_reference name="link_4" />
-        <xacro:gazebo_joint_reference name="A5" />
-        <xacro:gazebo_link_reference name="link_5" />
-        <xacro:gazebo_joint_reference name="A6" />
-        <xacro:gazebo_link_reference name="link_6" />
-        <xacro:gazebo_joint_reference name="A7" />
-        <xacro:gazebo_link_reference name="link_7" />
+        <xacro:gazebo_link_reference name="${robot_name}_link_0" />
+        <xacro:gazebo_joint_reference name="${robot_name}_A1" />
+        <xacro:gazebo_link_reference name="${robot_name}_link_1" />
+        <xacro:gazebo_joint_reference name="${robot_name}_A2" />
+        <xacro:gazebo_link_reference name="${robot_name}_link_2" />
+        <xacro:gazebo_joint_reference name="${robot_name}_A3" />
+        <xacro:gazebo_link_reference name="${robot_name}_link_3" />
+        <xacro:gazebo_joint_reference name="${robot_name}_A4" />
+        <xacro:gazebo_link_reference name="${robot_name}_link_4" />
+        <xacro:gazebo_joint_reference name="${robot_name}_A5" />
+        <xacro:gazebo_link_reference name="${robot_name}_link_5" />
+        <xacro:gazebo_joint_reference name="${robot_name}_A6" />
+        <xacro:gazebo_link_reference name="${robot_name}_link_6" />
+        <xacro:gazebo_joint_reference name="${robot_name}_A7" />
+        <xacro:gazebo_link_reference name="${robot_name}_link_7" />
     </xacro:macro>
 </robot>

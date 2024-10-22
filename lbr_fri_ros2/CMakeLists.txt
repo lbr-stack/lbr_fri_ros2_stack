@@ -35,6 +35,8 @@ add_library(lbr_fri_ros2
     src/command_guard.cpp
     src/filters.cpp
     src/ft_estimator.cpp
+    src/kinematics.cpp
+    src/worker.cpp
 )
 
 target_include_directories(lbr_fri_ros2

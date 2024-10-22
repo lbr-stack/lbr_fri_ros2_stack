@@ -2,7 +2,7 @@
 
 namespace lbr_fri_ros2 {
 CommandGuard::CommandGuard(const CommandGuardParameters &command_guard_parameters)
-    : parameters_(command_guard_parameters), prev_measured_joint_position_init_(false){};
+    : parameters_(command_guard_parameters), prev_measured_joint_position_init_(false) {};
 
 bool CommandGuard::is_valid_command(const_idl_command_t_ref lbr_command,
                                     const_idl_state_t_ref lbr_state) {

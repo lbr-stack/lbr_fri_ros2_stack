@@ -78,8 +78,8 @@ Full documentation available on [Read the Docs](https://lbr-stack.readthedocs.io
     ```shell
     source install/setup.bash
     ros2 launch lbr_bringup rviz.launch.py \
-        rviz_config_pkg:=lbr_bringup \
-        rviz_config:=config/mock.rviz
+        rviz_cfg_pkg:=lbr_bringup \
+        rviz_cfg:=config/mock.rviz
     ```
 
 Now, run the [demos](https://lbr-stack.readthedocs.io/en/latest/lbr_fri_ros2_stack/lbr_demos/doc/lbr_demos.html). To get started with the real robot, checkout the [Hardware Setup](https://lbr-stack.readthedocs.io/en/latest/lbr_fri_ros2_stack/lbr_fri_ros2_stack/doc/hardware_setup.html).

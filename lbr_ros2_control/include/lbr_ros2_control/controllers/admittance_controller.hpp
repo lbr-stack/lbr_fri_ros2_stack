@@ -14,12 +14,13 @@
 #include "rclcpp/rclcpp.hpp"
 
 #include "friLBRState.h"
+#include "lbr_fri_ros2/types.hpp"
 #include "lbr_ros2_control/system_interface_type_values.hpp"
 
 namespace lbr_ros2_control {
 class Admittance {
-
-}
+  // implement an addmittance...
+};
 
 class AdmittanceController : public controller_interface::ControllerInterface {
   static constexpr uint8_t CARTESIAN_DOF = 6;
@@ -50,9 +51,9 @@ protected:
   bool reference_state_interfaces_();
   void clear_command_interfaces_();
   void clear_state_interfaces_();
+  void configure_joint_names_();
 
-  std::array<std::string, KUKA::FRI::LBRState::NUMBER_OF_JOINTS> joint_names_ = {
-      "A1", "A2", "A3", "A4", "A5", "A6", "A7"};
+  lbr_fri_ros2::jnt_name_array_t joint_names_;
 
   std::vector<std::reference_wrapper<hardware_interface::LoanedCommandInterface>>
       joint_position_command_interfaces_;

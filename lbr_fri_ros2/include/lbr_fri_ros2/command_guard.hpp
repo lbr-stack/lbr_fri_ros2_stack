@@ -17,13 +17,10 @@
 #include "lbr_fri_idl/msg/lbr_command.hpp"
 #include "lbr_fri_idl/msg/lbr_state.hpp"
 #include "lbr_fri_ros2/formatting.hpp"
+#include "lbr_fri_ros2/types.hpp"
 
 namespace lbr_fri_ros2 {
 struct CommandGuardParameters {
-  // ROS IDL types
-  using jnt_array_t = std::array<double, KUKA::FRI::LBRState::NUMBER_OF_JOINTS>;
-  using jnt_name_array_t = std::array<std::string, KUKA::FRI::LBRState::NUMBER_OF_JOINTS>;
-
   jnt_name_array_t joint_names;                           /**< Joint names.*/
   jnt_array_t min_positions{0., 0., 0., 0., 0., 0., 0.};  /**< Minimum joint positions [rad].*/
   jnt_array_t max_positions{0., 0., 0., 0., 0., 0., 0.};  /**< Maximum joint positions [rad].*/
@@ -34,14 +31,6 @@ struct CommandGuardParameters {
 class CommandGuard {
 protected:
   static constexpr char LOGGER_NAME[] = "lbr_fri_ros2::CommandGuard";
-
-  // ROS IDL types
-  using idl_command_t = lbr_fri_idl::msg::LBRCommand;
-  using const_idl_command_t_ref = const idl_command_t &;
-  using idl_state_t = lbr_fri_idl::msg::LBRState;
-  using const_idl_state_t_ref = const idl_state_t &;
-  using jnt_array_t = idl_command_t::_joint_position_type;
-  using const_jnt_array_t_ref = const jnt_array_t &;
 
 public:
   CommandGuard() = default;

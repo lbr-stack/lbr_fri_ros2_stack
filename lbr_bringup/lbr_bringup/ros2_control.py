@@ -35,7 +35,24 @@ class LBRROS2ControlMixin:
                 "lbr_joint_position_command_controller",
                 "lbr_torque_command_controller",
                 "lbr_wrench_command_controller",
+                "twist_controller",
             ],
+        )
+
+    @staticmethod
+    def arg_sys_cfg_pkg() -> DeclareLaunchArgument:
+        return DeclareLaunchArgument(
+            name="sys_cfg_pkg",
+            default_value="lbr_description",
+            description="Package containing the lbr_system_config.yaml file for FRI configurations.",
+        )
+
+    @staticmethod
+    def arg_sys_cfg() -> DeclareLaunchArgument:
+        return DeclareLaunchArgument(
+            name="sys_cfg",
+            default_value="ros2_control/lbr_system_config.yaml",
+            description="The relative path from sys_cfg_pkg to the lbr_system_config.yaml file.",
         )
 
     @staticmethod
@@ -122,10 +139,6 @@ class LBRROS2ControlMixin:
             parameters=[
                 robot_description,
                 {"use_sim_time": use_sim_time},
-                # use robot name as frame prefix
-                {
-                    "frame_prefix": PathJoinSubstitution([robot_name, ""])
-                },  # neat hack to add trailing slash, which is required by frame_prefix
             ],
             namespace=robot_name,
             **kwargs,

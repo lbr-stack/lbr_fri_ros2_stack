@@ -27,6 +27,7 @@
 #include "lbr_fri_ros2/formatting.hpp"
 #include "lbr_fri_ros2/ft_estimator.hpp"
 #include "lbr_fri_ros2/interfaces/state.hpp"
+#include "lbr_fri_ros2/types.hpp"
 #include "lbr_ros2_control/system_interface_type_values.hpp"
 
 namespace lbr_ros2_control {
@@ -55,8 +56,11 @@ struct SystemInterfaceParameters {
 };
 
 struct EstimatedFTSensorParameters {
-  std::string chain_root{"link_0"};
-  std::string chain_tip{"link_ee"};
+  bool enabled{true};
+  std::uint16_t update_rate{100};
+  int32_t rt_prio{30};
+  std::string chain_root{"lbr_link_0"};
+  std::string chain_tip{"lbr_link_ee"};
   double damping{0.2};
   double force_x_th{2.0};
   double force_y_th{2.0};
@@ -160,7 +164,8 @@ protected:
   void compute_hw_velocity_();
 
   // additional force-torque state interface
-  lbr_fri_ros2::FTEstimator::cart_array_t hw_ft_;
+  lbr_fri_ros2::cart_array_t hw_ft_;
+  std::shared_ptr<lbr_fri_ros2::FTEstimatorImpl> ft_estimator_impl_ptr_;
   std::unique_ptr<lbr_fri_ros2::FTEstimator> ft_estimator_ptr_;
 
   // exposed command interfaces

@@ -12,6 +12,7 @@
 #include "friLBRClient.h"
 
 #include "lbr_fri_idl/msg/lbr_state.hpp"
+#include "lbr_fri_ros2/types.hpp"
 
 namespace lbr_fri_ros2 {
 class ExponentialFilter {
@@ -96,12 +97,10 @@ protected:
 };
 
 class JointExponentialFilterArray {
-  using value_array_t = std::array<double, KUKA::FRI::LBRState::NUMBER_OF_JOINTS>;
-
 public:
   JointExponentialFilterArray() = default;
 
-  void compute(const double *const current, value_array_t &previous);
+  void compute(const double *const current, jnt_array_t_ref previous);
   void initialize(const double &cutoff_frequency, const double &sample_time);
   inline const bool &is_initialized() const { return initialized_; };
 
@@ -122,17 +121,16 @@ struct PIDParameters {
 class JointPIDArray {
 protected:
   static constexpr char LOGGER_NAME[] = "lbr_fri_ros2::JointPIDArray";
-  using value_array_t = std::array<double, KUKA::FRI::LBRState::NUMBER_OF_JOINTS>;
-  using pid_array_t = std::array<control_toolbox::Pid, KUKA::FRI::LBRState::NUMBER_OF_JOINTS>;
+  using pid_array_t = std::array<control_toolbox::Pid, N_JNTS>;
 
 public:
   JointPIDArray() = delete;
   JointPIDArray(const PIDParameters &pid_parameters);
 
-  void compute(const value_array_t &command_target, const value_array_t &state,
-               const std::chrono::nanoseconds &dt, value_array_t &command);
-  void compute(const value_array_t &command_target, const double *state,
-               const std::chrono::nanoseconds &dt, value_array_t &command);
+  void compute(const_jnt_array_t_ref command_target, const_jnt_array_t_ref state,
+               const std::chrono::nanoseconds &dt, jnt_array_t_ref command);
+  void compute(const_jnt_array_t_ref command_target, const double *state,
+               const std::chrono::nanoseconds &dt, jnt_array_t_ref command);
   void log_info() const;
 
 protected:
