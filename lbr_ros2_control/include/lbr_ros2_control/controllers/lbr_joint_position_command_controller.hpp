@@ -15,6 +15,7 @@
 #include "friLBRState.h"
 
 #include "lbr_fri_idl/msg/lbr_joint_position_command.hpp"
+#include "lbr_fri_ros2/types.hpp"
 
 namespace lbr_ros2_control {
 class LBRJointPositionCommandController : public controller_interface::ControllerInterface {
@@ -42,7 +43,7 @@ public:
 protected:
   void configure_joint_names_();
 
-  std::array<std::string, KUKA::FRI::LBRState::NUMBER_OF_JOINTS> joint_names_;
+  lbr_fri_ros2::jnt_name_array_t joint_names_;
 
   realtime_tools::RealtimeBuffer<lbr_fri_idl::msg::LBRJointPositionCommand::SharedPtr>
       rt_lbr_joint_position_command_ptr_;

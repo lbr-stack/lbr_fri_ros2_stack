@@ -8,8 +8,8 @@ FTEstimator::FTEstimator(const std::string &robot_description, const std::string
   reset();
 }
 
-void FTEstimator::compute(const_jnt_pos_array_t_ref measured_joint_position,
-                          const_ext_tau_array_t_ref external_torque, cart_array_t_ref f_ext,
+void FTEstimator::compute(const_jnt_array_t_ref measured_joint_position,
+                          const_jnt_array_t_ref external_torque, cart_array_t_ref f_ext,
                           const double &damping) {
   tau_ext_ = Eigen::Map<const Eigen::Matrix<double, KUKA::FRI::LBRState::NUMBER_OF_JOINTS, 1>>(
       external_torque.data());
@@ -22,7 +22,7 @@ void FTEstimator::compute(const_jnt_pos_array_t_ref measured_joint_position,
   f_ext_.topRows(3) = Eigen::Matrix3d::Map(chain_tip_frame.M.data) * f_ext_.topRows(3);
   f_ext_.bottomRows(3) = Eigen::Matrix3d::Map(chain_tip_frame.M.data) * f_ext_.bottomRows(3);
 
-  Eigen::Map<Eigen::Matrix<double, Kinematics::CARTESIAN_DOF, 1>>(f_ext.data()) = f_ext_;
+  Eigen::Map<Eigen::Matrix<double, CARTESIAN_DOF, 1>>(f_ext.data()) = f_ext_;
 
   // threshold force-torque
   std::transform(f_ext.begin(), f_ext.end(), f_ext_th_.begin(), f_ext.begin(),

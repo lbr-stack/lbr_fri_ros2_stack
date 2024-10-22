@@ -29,7 +29,7 @@ double ExponentialFilter::compute_alpha_(const double &cutoff_frequency,
 
 bool ExponentialFilter::validate_alpha_(const double &alpha) { return alpha <= 1. && alpha >= 0.; }
 
-void JointExponentialFilterArray::compute(const double *const current, value_array_t &previous) {
+void JointExponentialFilterArray::compute(const double *const current, jnt_array_t_ref previous) {
   std::for_each(current, current + KUKA::FRI::LBRState::NUMBER_OF_JOINTS,
                 [&, i = 0](const auto &current_i) mutable {
                   previous[i] = exponential_filter_.compute(current_i, previous[i]);
@@ -54,16 +54,16 @@ JointPIDArray::JointPIDArray(const PIDParameters &pid_parameters)
   });
 }
 
-void JointPIDArray::compute(const value_array_t &command_target, const value_array_t &state,
-                            const std::chrono::nanoseconds &dt, value_array_t &command) {
+void JointPIDArray::compute(const_jnt_array_t_ref command_target, const_jnt_array_t_ref state,
+                            const std::chrono::nanoseconds &dt, jnt_array_t_ref command) {
   std::for_each(command.begin(), command.end(), [&, i = 0](double &command_i) mutable {
     command_i += pid_controllers_[i].computeCommand(command_target[i] - state[i], dt.count());
     ++i;
   });
 }
 
-void JointPIDArray::compute(const value_array_t &command_target, const double *state,
-                            const std::chrono::nanoseconds &dt, value_array_t &command) {
+void JointPIDArray::compute(const_jnt_array_t_ref command_target, const double *state,
+                            const std::chrono::nanoseconds &dt, jnt_array_t_ref command) {
   std::for_each(command.begin(), command.end(), [&, i = 0](double &command_i) mutable {
     command_i += pid_controllers_[i].computeCommand(command_target[i] - state[i], dt.count());
     ++i;

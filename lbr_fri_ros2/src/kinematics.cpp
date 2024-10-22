@@ -25,7 +25,7 @@ Kinematics::Kinematics(const std::string &robot_description, const std::string &
   q_.data.setZero();
 }
 
-const KDL::Jacobian &Kinematics::compute_jacobian(const_jnt_pos_array_t_ref q) {
+const KDL::Jacobian &Kinematics::compute_jacobian(const_jnt_array_t_ref q) {
   q_.data =
       Eigen::Map<const Eigen::Matrix<double, KUKA::FRI::LBRState::NUMBER_OF_JOINTS, 1>>(q.data());
   jacobian_solver_->JntToJac(q_, jacobian_);
@@ -44,7 +44,7 @@ const KDL::Jacobian &Kinematics::compute_jacobian(const std::vector<double> &q) 
   return jacobian_;
 }
 
-const KDL::Frame &Kinematics::compute_fk(const_jnt_pos_array_t_ref q) {
+const KDL::Frame &Kinematics::compute_fk(const_jnt_array_t_ref q) {
   q_.data =
       Eigen::Map<const Eigen::Matrix<double, KUKA::FRI::LBRState::NUMBER_OF_JOINTS, 1>>(q.data());
   fk_solver_->JntToCart(q_, chain_tip_frame_);

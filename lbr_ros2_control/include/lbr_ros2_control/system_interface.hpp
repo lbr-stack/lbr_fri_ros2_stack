@@ -27,6 +27,7 @@
 #include "lbr_fri_ros2/formatting.hpp"
 #include "lbr_fri_ros2/ft_estimator.hpp"
 #include "lbr_fri_ros2/interfaces/state.hpp"
+#include "lbr_fri_ros2/types.hpp"
 #include "lbr_ros2_control/system_interface_type_values.hpp"
 
 namespace lbr_ros2_control {
@@ -160,7 +161,7 @@ protected:
   void compute_hw_velocity_();
 
   // additional force-torque state interface
-  lbr_fri_ros2::FTEstimator::cart_array_t hw_ft_;
+  lbr_fri_ros2::cart_array_t hw_ft_;
   std::unique_ptr<lbr_fri_ros2::FTEstimator> ft_estimator_ptr_;
 
   // exposed command interfaces

@@ -4,11 +4,12 @@ namespace lbr_ros2_control {
 AdmittanceController::AdmittanceController() {}
 
 controller_interface::InterfaceConfiguration
-AdmittanceController::command_interface_configuration() {
+AdmittanceController::command_interface_configuration() const {
   // reference joint position command interface
 }
 
-controller_interface::InterfaceConfiguration AdmittanceController::state_interface_configuration() {
+controller_interface::InterfaceConfiguration
+AdmittanceController::state_interface_configuration() const {
   // retrieve estimated ft state interface
 }
 

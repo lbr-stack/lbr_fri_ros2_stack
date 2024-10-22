@@ -11,7 +11,7 @@ SystemInterface::on_init(const hardware_interface::HardwareInfo &system_info) {
     return ret;
   }
 
-  // parameters_ from lbr_system_interface.xacro (located in
+  // parameters_ from lbr_system_interface.xacro (default configurations located in
   // lbr_description/ros2_control/lbr_system_interface.xacro)
   if (!parse_parameters_(system_info)) {
     return controller_interface::CallbackReturn::ERROR;
@@ -72,7 +72,7 @@ SystemInterface::on_init(const hardware_interface::HardwareInfo &system_info) {
   ft_parameters_.torque_z_th = std::stod(info_.sensors[1].parameters.at("torque_z_th"));
   ft_estimator_ptr_ = std::make_unique<lbr_fri_ros2::FTEstimator>(
       info_.original_xml, ft_parameters_.chain_root, ft_parameters_.chain_tip,
-      lbr_fri_ros2::FTEstimator::cart_array_t{
+      lbr_fri_ros2::cart_array_t{
           ft_parameters_.force_x_th,
           ft_parameters_.force_y_th,
           ft_parameters_.force_z_th,
@@ -371,11 +371,13 @@ bool SystemInterface::parse_parameters_(const hardware_interface::HardwareInfo &
     parameters_.rt_prio = std::stoul(info_.hardware_parameters["rt_prio"]);
     std::transform(info_.hardware_parameters["open_loop"].begin(),
                    info_.hardware_parameters["open_loop"].end(),
-                   info_.hardware_parameters["open_loop"].begin(), ::tolower);
+                   info_.hardware_parameters["open_loop"].begin(),
+                   ::tolower); // convert to lower case
     parameters_.open_loop = info_.hardware_parameters["open_loop"] == "true";
     std::transform(info_.hardware_parameters["pid_antiwindup"].begin(),
                    info_.hardware_parameters["pid_antiwindup"].end(),
-                   info_.hardware_parameters["pid_antiwindup"].begin(), ::tolower);
+                   info_.hardware_parameters["pid_antiwindup"].begin(),
+                   ::tolower); // convert to lower case
     parameters_.pid_p = std::stod(info_.hardware_parameters["pid_p"]);
     parameters_.pid_i = std::stod(info_.hardware_parameters["pid_i"]);
     parameters_.pid_d = std::stod(info_.hardware_parameters["pid_d"]);

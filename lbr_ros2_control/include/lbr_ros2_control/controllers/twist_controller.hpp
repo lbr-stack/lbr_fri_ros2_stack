@@ -1,5 +1,5 @@
-#ifndef LBR_ROS2_CONTROL__LBR_TWIST_CONTROLLER_HPP_
-#define LBR_ROS2_CONTROL__LBR_TWIST_CONTROLLER_HPP_
+#ifndef LBR_ROS2_CONTROL__TWIST_CONTROLLER_HPP_
+#define LBR_ROS2_CONTROL__TWIST_CONTROLLER_HPP_
 
 #include <algorithm>
 #include <array>
@@ -22,6 +22,7 @@
 
 #include "lbr_fri_ros2/kinematics.hpp"
 #include "lbr_fri_ros2/pinv.hpp"
+#include "lbr_fri_ros2/types.hpp"
 #include "lbr_ros2_control/system_interface_type_values.hpp"
 
 namespace lbr_ros2_control {
@@ -38,18 +39,16 @@ public:
   TwistImpl(const std::string &robot_description, const TwistParameters &parameters);
 
   void compute(const geometry_msgs::msg::Twist::SharedPtr &twist_target,
-               lbr_fri_ros2::Kinematics::const_jnt_pos_array_t_ref q,
-               lbr_fri_ros2::Kinematics::jnt_pos_array_t &dq);
+               lbr_fri_ros2::const_jnt_array_t_ref q, lbr_fri_ros2::jnt_array_t_ref dq);
 
 protected:
   TwistParameters parameters_;
 
-  lbr_fri_ros2::Kinematics::jnt_pos_array_t q_;
+  lbr_fri_ros2::jnt_array_t q_;
   std::unique_ptr<lbr_fri_ros2::Kinematics> kinematics_ptr_;
-  Eigen::Matrix<double, KUKA::FRI::LBRState::NUMBER_OF_JOINTS,
-                lbr_fri_ros2::Kinematics::CARTESIAN_DOF>
+  Eigen::Matrix<double, KUKA::FRI::LBRState::NUMBER_OF_JOINTS, lbr_fri_ros2::CARTESIAN_DOF>
       jacobian_inv_;
-  Eigen::Matrix<double, lbr_fri_ros2::Kinematics::CARTESIAN_DOF, 1> twist_target_;
+  Eigen::Matrix<double, lbr_fri_ros2::CARTESIAN_DOF, 1> twist_target_;
 };
 
 class TwistController : public controller_interface::ControllerInterface {
@@ -87,10 +86,10 @@ protected:
 
   // joint veloctiy computation
   std::unique_ptr<TwistImpl> twist_impl_ptr_;
-  lbr_fri_ros2::Kinematics::jnt_pos_array_t q_, dq_;
+  lbr_fri_ros2::jnt_array_t q_, dq_;
 
   // interfaces
-  std::array<std::string, KUKA::FRI::LBRState::NUMBER_OF_JOINTS> joint_names_;
+  lbr_fri_ros2::jnt_name_array_t joint_names_;
   std::vector<std::reference_wrapper<hardware_interface::LoanedStateInterface>>
       joint_position_state_interfaces_;
   std::unique_ptr<std::reference_wrapper<hardware_interface::LoanedStateInterface>>
@@ -103,4 +102,4 @@ protected:
   rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr twist_subscription_ptr_;
 };
 } // namespace lbr_ros2_control
-#endif // LBR_ROS2_CONTROL__LBR_TWIST_CONTROLLER_HPP_
+#endif // LBR_ROS2_CONTROL__TWIST_CONTROLLER_HPP_

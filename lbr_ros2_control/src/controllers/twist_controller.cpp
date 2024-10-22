@@ -8,8 +8,7 @@ TwistImpl::TwistImpl(const std::string &robot_description, const TwistParameters
 }
 
 void TwistImpl::compute(const geometry_msgs::msg::Twist::SharedPtr &twist_target,
-                        lbr_fri_ros2::Kinematics::const_jnt_pos_array_t_ref q,
-                        lbr_fri_ros2::Kinematics::jnt_pos_array_t &dq) {
+                        lbr_fri_ros2::const_jnt_array_t_ref q, lbr_fri_ros2::jnt_array_t_ref dq) {
   // twist to Eigen
   twist_target_[0] = twist_target->linear.x;
   twist_target_[1] = twist_target->linear.y;

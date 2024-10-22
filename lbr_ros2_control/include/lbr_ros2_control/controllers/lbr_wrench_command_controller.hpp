@@ -17,6 +17,7 @@
 #include "friLBRState.h"
 
 #include "lbr_fri_idl/msg/lbr_wrench_command.hpp"
+#include "lbr_fri_ros2/types.hpp"
 #include "lbr_ros2_control/system_interface_type_values.hpp"
 
 namespace lbr_ros2_control {
@@ -49,7 +50,7 @@ protected:
   void clear_command_interfaces_();
   void configure_joint_names_();
 
-  std::array<std::string, KUKA::FRI::LBRState::NUMBER_OF_JOINTS> joint_names_;
+  lbr_fri_ros2::jnt_name_array_t joint_names_;
 
   std::vector<std::reference_wrapper<hardware_interface::LoanedCommandInterface>>
       joint_position_command_interfaces_, wrench_command_interfaces_;

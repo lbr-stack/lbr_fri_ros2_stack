@@ -15,6 +15,7 @@
 #include "friLBRState.h"
 
 #include "lbr_fri_idl/msg/lbr_state.hpp"
+#include "lbr_fri_ros2/types.hpp"
 
 namespace lbr_fri_ros2 {
 class Kinematics {
@@ -22,19 +23,15 @@ protected:
   static constexpr char LOGGER_NAME[] = "lbr_fri_ros2::Kinematics";
 
 public:
-  static constexpr uint8_t CARTESIAN_DOF = 6;
-  using jnt_pos_array_t = lbr_fri_idl::msg::LBRState::_measured_joint_position_type;
-  using const_jnt_pos_array_t_ref = const jnt_pos_array_t &;
-
   Kinematics(const std::string &robot_description, const std::string &chain_root = "lbr_link_0",
              const std::string &chain_tip = "lbr_link_ee");
 
   // internally computes the jacobian and return a reference to it
-  const KDL::Jacobian &compute_jacobian(const_jnt_pos_array_t_ref q);
+  const KDL::Jacobian &compute_jacobian(const_jnt_array_t_ref q);
   const KDL::Jacobian &compute_jacobian(const std::vector<double> &q);
 
   // forward kinematics
-  const KDL::Frame &compute_fk(const_jnt_pos_array_t_ref q);
+  const KDL::Frame &compute_fk(const_jnt_array_t_ref q);
   const KDL::Frame &compute_fk(const std::vector<double> &q);
 
 protected:
