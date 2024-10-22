@@ -2,8 +2,7 @@
 
 namespace lbr_fri_ros2 {
 App::App(const std::shared_ptr<AsyncClient> async_client_ptr)
-    : should_stop_(true), running_(false), async_client_ptr_(nullptr), connection_ptr_(nullptr),
-      app_ptr_(nullptr) {
+    : async_client_ptr_(nullptr), connection_ptr_(nullptr), app_ptr_(nullptr) {
   async_client_ptr_ = async_client_ptr;
   connection_ptr_ = std::make_unique<KUKA::FRI::UdpConnection>();
   app_ptr_ = std::make_unique<KUKA::FRI::ClientApplication>(*connection_ptr_, *async_client_ptr_);
@@ -83,48 +82,24 @@ void App::run_async(int rt_prio) {
                         ColorScheme::ERROR << "App not configured" << ColorScheme::ENDC);
     return;
   }
-  if (running_) {
-    RCLCPP_WARN_STREAM(rclcpp::get_logger(LOGGER_NAME),
-                       ColorScheme::WARNING << "App already running" << ColorScheme::ENDC);
-    return;
-  }
-  run_thread_ = std::thread([this, rt_prio]() {
-    if (!realtime_tools::configure_sched_fifo(rt_prio)) {
-      RCLCPP_WARN_STREAM(rclcpp::get_logger(LOGGER_NAME),
-                         ColorScheme::WARNING
-                             << "Failed to set FIFO realtime scheduling policy. Refer to "
-                                "[https://control.ros.org/master/doc/ros2_control/"
-                                "controller_manager/doc/userdoc.html]."
-                             << ColorScheme::ENDC);
-    } else {
-      RCLCPP_INFO_STREAM(rclcpp::get_logger(LOGGER_NAME),
-                         ColorScheme::OKGREEN
-                             << "Realtime scheduling policy set to FIFO with priority '" << rt_prio
-                             << "'" << ColorScheme::ENDC);
-    }
 
-    RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "Starting run thread");
-    should_stop_ = false;
-    bool success = true;
-    while (rclcpp::ok() && success && !should_stop_) {
-      success = app_ptr_->step(); // stuck if never connected, we thus detach the thread as join may
-                                  // never return
-      running_ = true;
-      if (async_client_ptr_->robotState().getSessionState() == KUKA::FRI::ESessionState::IDLE) {
-        RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "LBR in session state idle, exiting");
-        break;
-      }
-    }
-    async_client_ptr_->get_state_interface()->uninitialize();
-    running_ = false;
-    RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "Exiting run thread");
-  });
+  // call base class run_async post checks
+  Worker::run_async(rt_prio);
   run_thread_.detach();
 }
 
-void App::request_stop() {
-  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "Requesting run thread stop");
-  should_stop_ = true;
+void App::perform_work_() {
+  bool success = true;
+  while (rclcpp::ok() && success && !should_stop_) {
+    success = app_ptr_->step(); // stuck if never connected, we thus detach the run_thread_ as join
+                                // may never return
+    running_ = true;
+    if (async_client_ptr_->robotState().getSessionState() == KUKA::FRI::ESessionState::IDLE) {
+      RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "LBR in session state idle, exiting");
+      break;
+    }
+  }
+  async_client_ptr_->get_state_interface()->uninitialize();
 }
 
 bool App::valid_port_(const int &port_id) {
