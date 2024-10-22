@@ -2,6 +2,7 @@
 #define LBR_FRI_ROS2__APP_HPP_
 
 #include <memory>
+#include <string>
 
 #include "rclcpp/logger.hpp"
 #include "rclcpp/logging.hpp"
@@ -22,9 +23,6 @@ class App : public Worker {
    * KUKA::FRI::ClientApplication::step() (this is by KUKA's design).
    *
    */
-protected:
-  static constexpr char LOGGER_NAME[] = "lbr_fri_ros2::App";
-
 public:
   App(const std::shared_ptr<AsyncClient> async_client_ptr);
   ~App();
@@ -32,6 +30,8 @@ public:
   bool open_udp_socket(const int &port_id = 30200, const char *const remote_host = NULL);
   bool close_udp_socket();
   void run_async(int rt_prio = 80) override;
+
+  inline std::string LOGGER_NAME() const override { return "lbr_fri_ros2::App"; };
 
 protected:
   void perform_work_() override;

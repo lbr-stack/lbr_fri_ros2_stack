@@ -56,6 +56,9 @@ struct SystemInterfaceParameters {
 };
 
 struct EstimatedFTSensorParameters {
+  bool enabled{true};
+  std::uint16_t update_rate{100};
+  int32_t rt_prio{30};
   std::string chain_root{"lbr_link_0"};
   std::string chain_tip{"lbr_link_ee"};
   double damping{0.2};
@@ -162,6 +165,7 @@ protected:
 
   // additional force-torque state interface
   lbr_fri_ros2::cart_array_t hw_ft_;
+  std::shared_ptr<lbr_fri_ros2::FTEstimatorImpl> ft_estimator_impl_ptr_;
   std::unique_ptr<lbr_fri_ros2::FTEstimator> ft_estimator_ptr_;
 
   // exposed command interfaces

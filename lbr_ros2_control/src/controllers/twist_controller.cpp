@@ -73,8 +73,10 @@ controller_interface::CallbackReturn TwistController::on_init() {
     this->get_node()->declare_parameter("damping", 0.2);
     this->get_node()->declare_parameter("max_linear_velocity", 0.1);
     this->get_node()->declare_parameter("max_angular_velocity", 0.1);
+    this->get_node()->declare_parameter("timeout", 0.2);
     configure_joint_names_();
     configure_twist_impl_();
+    timeout_ = this->get_node()->get_parameter("timeout").as_double();
   } catch (const std::exception &e) {
     RCLCPP_ERROR(this->get_node()->get_logger(), "Failed to initialize twist controller with: %s.",
                  e.what());
@@ -98,11 +100,9 @@ controller_interface::return_type TwistController::update(const rclcpp::Time & /
       KUKA::FRI::ESessionState::COMMANDING_ACTIVE) {
     return controller_interface::return_type::OK;
   }
-  if (updates_since_last_command_ >
-      static_cast<int>(max_time_without_command_ / period.seconds())) {
+  if (updates_since_last_command_ > static_cast<int>(timeout_ / period.seconds())) {
     RCLCPP_ERROR(this->get_node()->get_logger(),
-                 "No twist command received within time %f. Stopping the controller.",
-                 max_time_without_command_);
+                 "No twist command received within %.3f s. Stopping the controller.", timeout_);
     return controller_interface::return_type::ERROR;
   }
 

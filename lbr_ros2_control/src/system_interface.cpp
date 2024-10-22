@@ -61,6 +61,13 @@ SystemInterface::on_init(const hardware_interface::HardwareInfo &system_info) {
   nan_last_hw_states_();
 
   // setup force-torque estimator
+  std::transform(info_.sensors[1].parameters.at("enabled").begin(),
+                 info_.sensors[1].parameters.at("enabled").end(),
+                 info_.sensors[1].parameters.at("enabled").begin(),
+                 ::tolower); // convert to lower case
+  ft_parameters_.enabled = info_.sensors[1].parameters.at("enabled") == "true";
+  ft_parameters_.update_rate = std::stoul(info_.sensors[1].parameters.at("update_rate"));
+  ft_parameters_.rt_prio = std::stoi(info_.sensors[1].parameters.at("rt_prio"));
   ft_parameters_.chain_root = info_.sensors[1].parameters.at("chain_root");
   ft_parameters_.chain_tip = info_.sensors[1].parameters.at("chain_tip");
   ft_parameters_.damping = std::stod(info_.sensors[1].parameters.at("damping"));
@@ -70,16 +77,20 @@ SystemInterface::on_init(const hardware_interface::HardwareInfo &system_info) {
   ft_parameters_.torque_x_th = std::stod(info_.sensors[1].parameters.at("torque_x_th"));
   ft_parameters_.torque_y_th = std::stod(info_.sensors[1].parameters.at("torque_y_th"));
   ft_parameters_.torque_z_th = std::stod(info_.sensors[1].parameters.at("torque_z_th"));
-  ft_estimator_ptr_ = std::make_unique<lbr_fri_ros2::FTEstimator>(
-      info_.original_xml, ft_parameters_.chain_root, ft_parameters_.chain_tip,
-      lbr_fri_ros2::cart_array_t{
-          ft_parameters_.force_x_th,
-          ft_parameters_.force_y_th,
-          ft_parameters_.force_z_th,
-          ft_parameters_.torque_x_th,
-          ft_parameters_.torque_y_th,
-          ft_parameters_.torque_z_th,
-      });
+  if (ft_parameters_.enabled) {
+    ft_estimator_impl_ptr_ = std::make_shared<lbr_fri_ros2::FTEstimatorImpl>(
+        info_.original_xml, ft_parameters_.chain_root, ft_parameters_.chain_tip,
+        lbr_fri_ros2::cart_array_t{
+            ft_parameters_.force_x_th,
+            ft_parameters_.force_y_th,
+            ft_parameters_.force_z_th,
+            ft_parameters_.torque_x_th,
+            ft_parameters_.torque_y_th,
+            ft_parameters_.torque_z_th,
+        });
+    ft_estimator_ptr_ = std::make_unique<lbr_fri_ros2::FTEstimator>(ft_estimator_impl_ptr_,
+                                                                    ft_parameters_.update_rate);
+  }
 
   if (!verify_number_of_joints_()) {
     return controller_interface::CallbackReturn::ERROR;
@@ -155,14 +166,16 @@ std::vector<hardware_interface::StateInterface> SystemInterface::export_state_in
   state_interfaces.emplace_back(auxiliary_sensor.name, HW_IF_TIME_STAMP_NANO_SEC,
                                 &hw_time_stamp_nano_sec_);
 
-  // additional force-torque state interface
-  const auto &estimated_ft_sensor = info_.sensors[1];
-  state_interfaces.emplace_back(estimated_ft_sensor.name, HW_IF_FORCE_X, &hw_ft_[0]);
-  state_interfaces.emplace_back(estimated_ft_sensor.name, HW_IF_FORCE_Y, &hw_ft_[1]);
-  state_interfaces.emplace_back(estimated_ft_sensor.name, HW_IF_FORCE_Z, &hw_ft_[2]);
-  state_interfaces.emplace_back(estimated_ft_sensor.name, HW_IF_TORQUE_X, &hw_ft_[3]);
-  state_interfaces.emplace_back(estimated_ft_sensor.name, HW_IF_TORQUE_Y, &hw_ft_[4]);
-  state_interfaces.emplace_back(estimated_ft_sensor.name, HW_IF_TORQUE_Z, &hw_ft_[5]);
+  // additional force-torque state interface (if enabled)
+  if (ft_parameters_.enabled) {
+    const auto &estimated_ft_sensor = info_.sensors[1];
+    state_interfaces.emplace_back(estimated_ft_sensor.name, HW_IF_FORCE_X, &hw_ft_[0]);
+    state_interfaces.emplace_back(estimated_ft_sensor.name, HW_IF_FORCE_Y, &hw_ft_[1]);
+    state_interfaces.emplace_back(estimated_ft_sensor.name, HW_IF_FORCE_Z, &hw_ft_[2]);
+    state_interfaces.emplace_back(estimated_ft_sensor.name, HW_IF_TORQUE_X, &hw_ft_[3]);
+    state_interfaces.emplace_back(estimated_ft_sensor.name, HW_IF_TORQUE_Y, &hw_ft_[4]);
+    state_interfaces.emplace_back(estimated_ft_sensor.name, HW_IF_TORQUE_Z, &hw_ft_[5]);
+  }
 
   return state_interfaces;
 }
@@ -250,6 +263,18 @@ controller_interface::CallbackReturn SystemInterface::on_activate(const rclcpp_l
     }
     std::this_thread::sleep_for(std::chrono::seconds(1));
   }
+
+  // ft sensor
+  if (!ft_estimator_ptr_ && ft_parameters_.enabled) {
+    RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME),
+                        lbr_fri_ros2::ColorScheme::ERROR
+                            << "Failed to instantiate FTEstimator despite user request."
+                            << lbr_fri_ros2::ColorScheme::ENDC);
+    return controller_interface::CallbackReturn::ERROR;
+  }
+  if (ft_estimator_ptr_) {
+    ft_estimator_ptr_->run_async(ft_parameters_.rt_prio);
+  }
   return controller_interface::CallbackReturn::SUCCESS;
 }
 
@@ -257,6 +282,9 @@ controller_interface::CallbackReturn
 SystemInterface::on_deactivate(const rclcpp_lifecycle::State &) {
   app_ptr_->request_stop();
   app_ptr_->close_udp_socket();
+  if (ft_estimator_ptr_) {
+    ft_estimator_ptr_->request_stop();
+  }
   return controller_interface::CallbackReturn::SUCCESS;
 }
 
@@ -285,6 +313,7 @@ hardware_interface::return_type SystemInterface::read(const rclcpp::Time & /*tim
                             << lbr_fri_ros2::ColorScheme::ENDC);
     app_ptr_->request_stop();
     app_ptr_->close_udp_socket();
+    ft_estimator_ptr_->request_stop();
     return hardware_interface::return_type::ERROR;
   }
 
@@ -305,8 +334,13 @@ hardware_interface::return_type SystemInterface::read(const rclcpp::Time & /*tim
   update_last_hw_states_();
 
   // additional force-torque state interface
-  ft_estimator_ptr_->compute(hw_lbr_state_.measured_joint_position, hw_lbr_state_.external_torque,
-                             hw_ft_, ft_parameters_.damping);
+  if (ft_parameters_.enabled) {
+    // note that (if enabled) the computation is performed asynchronously to not block the main
+    // thread
+    ft_estimator_impl_ptr_->set_q(hw_lbr_state_.measured_joint_position);
+    ft_estimator_impl_ptr_->set_tau_ext(hw_lbr_state_.external_torque);
+    ft_estimator_impl_ptr_->get_f_ext_tf(hw_ft_);
+  }
   return hardware_interface::return_type::OK;
 }
 
@@ -526,8 +560,10 @@ bool SystemInterface::verify_sensors_() {
   if (!verify_auxiliary_sensor_()) {
     return false;
   }
-  if (!verify_estimated_ft_sensor_()) {
-    return false;
+  if (ft_parameters_.enabled) {
+    if (!verify_estimated_ft_sensor_()) {
+      return false;
+    }
   }
   return true;
 }

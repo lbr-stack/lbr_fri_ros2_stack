@@ -101,3 +101,4 @@
     damping: 0.2 # damping factor for the pseudo-inverse of the Jacobian
     max_linear_velocity: 0.1 # maximum linear velocity
     max_angular_velocity: 0.1 # maximum linear acceleration
+    timeout: 0.2 # stop controller if no command is received within this time [s]
