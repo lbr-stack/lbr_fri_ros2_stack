@@ -13,52 +13,48 @@ Kinematics::Kinematics(const std::string &robot_description, const std::string &
     RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME), err.c_str());
     throw std::runtime_error(err);
   }
-  if (chain_.getNrOfJoints() != KUKA::FRI::LBRState::NUMBER_OF_JOINTS) {
+  if (chain_.getNrOfJoints() != N_JNTS) {
     std::string err = "Invalid number of joints in chain.";
     RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME), err.c_str());
     throw std::runtime_error(err);
   }
   jacobian_solver_ = std::make_unique<KDL::ChainJntToJacSolver>(chain_);
   fk_solver_ = std::make_unique<KDL::ChainFkSolverPos_recursive>(chain_);
-  jacobian_.resize(KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
-  q_.resize(KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
+  jacobian_.resize(N_JNTS);
+  q_.resize(N_JNTS);
   q_.data.setZero();
 }
 
 const KDL::Jacobian &Kinematics::compute_jacobian(const_jnt_array_t_ref q) {
-  q_.data =
-      Eigen::Map<const Eigen::Matrix<double, KUKA::FRI::LBRState::NUMBER_OF_JOINTS, 1>>(q.data());
+  q_.data = Eigen::Map<const Eigen::Matrix<double, N_JNTS, 1>>(q.data());
   jacobian_solver_->JntToJac(q_, jacobian_);
   return jacobian_;
 }
 
 const KDL::Jacobian &Kinematics::compute_jacobian(const std::vector<double> &q) {
-  if (q.size() != KUKA::FRI::LBRState::NUMBER_OF_JOINTS) {
+  if (q.size() != N_JNTS) {
     std::string err = "Invalid number of joint positions.";
     RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME), err.c_str());
     throw std::runtime_error(err);
   }
-  q_.data =
-      Eigen::Map<const Eigen::Matrix<double, KUKA::FRI::LBRState::NUMBER_OF_JOINTS, 1>>(q.data());
+  q_.data = Eigen::Map<const Eigen::Matrix<double, N_JNTS, 1>>(q.data());
   jacobian_solver_->JntToJac(q_, jacobian_);
   return jacobian_;
 }
 
 const KDL::Frame &Kinematics::compute_fk(const_jnt_array_t_ref q) {
-  q_.data =
-      Eigen::Map<const Eigen::Matrix<double, KUKA::FRI::LBRState::NUMBER_OF_JOINTS, 1>>(q.data());
+  q_.data = Eigen::Map<const Eigen::Matrix<double, N_JNTS, 1>>(q.data());
   fk_solver_->JntToCart(q_, chain_tip_frame_);
   return chain_tip_frame_;
 }
 
 const KDL::Frame &Kinematics::compute_fk(const std::vector<double> &q) {
-  if (q.size() != KUKA::FRI::LBRState::NUMBER_OF_JOINTS) {
+  if (q.size() != N_JNTS) {
     std::string err = "Invalid number of joint positions.";
     RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME), err.c_str());
     throw std::runtime_error(err);
   }
-  q_.data =
-      Eigen::Map<const Eigen::Matrix<double, KUKA::FRI::LBRState::NUMBER_OF_JOINTS, 1>>(q.data());
+  q_.data = Eigen::Map<const Eigen::Matrix<double, N_JNTS, 1>>(q.data());
   fk_solver_->JntToCart(q_, chain_tip_frame_);
   return chain_tip_frame_;
 }

@@ -30,11 +30,10 @@ double ExponentialFilter::compute_alpha_(const double &cutoff_frequency,
 bool ExponentialFilter::validate_alpha_(const double &alpha) { return alpha <= 1. && alpha >= 0.; }
 
 void JointExponentialFilterArray::compute(const double *const current, jnt_array_t_ref previous) {
-  std::for_each(current, current + KUKA::FRI::LBRState::NUMBER_OF_JOINTS,
-                [&, i = 0](const auto &current_i) mutable {
-                  previous[i] = exponential_filter_.compute(current_i, previous[i]);
-                  ++i;
-                });
+  std::for_each(current, current + N_JNTS, [&, i = 0](const auto &current_i) mutable {
+    previous[i] = exponential_filter_.compute(current_i, previous[i]);
+    ++i;
+  });
 }
 
 void JointExponentialFilterArray::initialize(const double &cutoff_frequency,

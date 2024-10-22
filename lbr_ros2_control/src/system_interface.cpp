@@ -438,12 +438,11 @@ void SystemInterface::nan_state_interfaces_() {
 }
 
 bool SystemInterface::verify_number_of_joints_() {
-  if (info_.joints.size() != KUKA::FRI::LBRState::NUMBER_OF_JOINTS) {
+  if (info_.joints.size() != lbr_fri_ros2::N_JNTS) {
     RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME),
                         lbr_fri_ros2::ColorScheme::ERROR
-                            << "Expected '" << KUKA::FRI::LBRState::NUMBER_OF_JOINTS
-                            << "' joints in URDF, got '" << info_.joints.size() << "'"
-                            << lbr_fri_ros2::ColorScheme::ENDC);
+                            << "Expected '" << lbr_fri_ros2::N_JNTS << "' joints in URDF, got '"
+                            << info_.joints.size() << "'" << lbr_fri_ros2::ColorScheme::ENDC);
     return false;
   }
   return true;

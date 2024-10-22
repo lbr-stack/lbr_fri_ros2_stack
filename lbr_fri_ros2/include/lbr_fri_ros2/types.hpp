@@ -11,20 +11,23 @@
 #include "lbr_fri_idl/msg/lbr_state.hpp"
 
 namespace lbr_fri_ros2 {
+// joint DoF alias
+constexpr std::uint8_t N_JNTS = KUKA::FRI::LBRState::NUMBER_OF_JOINTS;
+
 // joint positions, velocities, accelerations, torques etc.
-using jnt_array_t = std::array<double, KUKA::FRI::LBRState::NUMBER_OF_JOINTS>;
+using jnt_array_t = std::array<double, N_JNTS>;
 using jnt_array_t_ref = jnt_array_t &;
 using const_jnt_array_t_ref = const jnt_array_t &;
 
 // joint names
-using jnt_name_array_t = std::array<std::string, KUKA::FRI::LBRState::NUMBER_OF_JOINTS>;
+using jnt_name_array_t = std::array<std::string, N_JNTS>;
 using jnt_name_array_t_ref = jnt_name_array_t &;
 using const_jnt_name_array_t_ref = const jnt_name_array_t &;
 
-// Cartesian dof
+// Cartesian DoF
 constexpr std::uint8_t CARTESIAN_DOF = 6;
 
-// Cartesian positions, velocities, accelerations, torques etc.
+// Cartesian positions, velocities, accelerations, wrenches etc.
 using cart_array_t = std::array<double, CARTESIAN_DOF>;
 using cart_array_t_ref = cart_array_t &;
 using const_cart_array_t_ref = const cart_array_t &;

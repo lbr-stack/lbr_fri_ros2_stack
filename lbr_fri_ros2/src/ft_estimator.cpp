@@ -11,8 +11,7 @@ FTEstimator::FTEstimator(const std::string &robot_description, const std::string
 void FTEstimator::compute(const_jnt_array_t_ref measured_joint_position,
                           const_jnt_array_t_ref external_torque, cart_array_t_ref f_ext,
                           const double &damping) {
-  tau_ext_ = Eigen::Map<const Eigen::Matrix<double, KUKA::FRI::LBRState::NUMBER_OF_JOINTS, 1>>(
-      external_torque.data());
+  tau_ext_ = Eigen::Map<const Eigen::Matrix<double, N_JNTS, 1>>(external_torque.data());
   auto jacobian = kinematics_ptr_->compute_jacobian(measured_joint_position);
   jacobian_inv_ = pinv(jacobian.data, damping);
   f_ext_ = jacobian_inv_.transpose() * tau_ext_;

@@ -151,15 +151,15 @@ void LBRStateBroadcaster::init_state_msg_() {
 }
 
 void LBRStateBroadcaster::configure_joint_names_() {
-  if (joint_names_.size() != KUKA::FRI::LBRState::NUMBER_OF_JOINTS) {
+  if (joint_names_.size() != lbr_fri_ros2::N_JNTS) {
     RCLCPP_ERROR(
         this->get_node()->get_logger(),
         "Number of joint names (%ld) does not match the number of joints in the robot (%d).",
-        joint_names_.size(), KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
+        joint_names_.size(), lbr_fri_ros2::N_JNTS);
     throw std::runtime_error("Failed to configure joint names.");
   }
   std::string robot_name = this->get_node()->get_parameter("robot_name").as_string();
-  for (int i = 0; i < KUKA::FRI::LBRState::NUMBER_OF_JOINTS; i++) {
+  for (int i = 0; i < lbr_fri_ros2::N_JNTS; ++i) {
     joint_names_[i] = robot_name + "_A" + std::to_string(i + 1);
   }
 }

@@ -46,8 +46,7 @@ protected:
 
   lbr_fri_ros2::jnt_array_t q_;
   std::unique_ptr<lbr_fri_ros2::Kinematics> kinematics_ptr_;
-  Eigen::Matrix<double, KUKA::FRI::LBRState::NUMBER_OF_JOINTS, lbr_fri_ros2::CARTESIAN_DOF>
-      jacobian_inv_;
+  Eigen::Matrix<double, lbr_fri_ros2::N_JNTS, lbr_fri_ros2::CARTESIAN_DOF> jacobian_inv_;
   Eigen::Matrix<double, lbr_fri_ros2::CARTESIAN_DOF, 1> twist_target_;
 };
 

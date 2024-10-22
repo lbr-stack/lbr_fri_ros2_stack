@@ -51,7 +51,7 @@ LBRWrenchCommandController::update(const rclcpp::Time & /*time*/,
   if (!lbr_wrench_command || !(*lbr_wrench_command)) {
     return controller_interface::return_type::OK;
   }
-  for (std::size_t idx = 0; idx < KUKA::FRI::LBRState::NUMBER_OF_JOINTS; ++idx) {
+  for (std::size_t idx = 0; idx < lbr_fri_ros2::N_JNTS; ++idx) {
     joint_position_command_interfaces_[idx].get().set_value(
         (*lbr_wrench_command)->joint_position[idx]);
   }
@@ -89,12 +89,12 @@ bool LBRWrenchCommandController::reference_command_interfaces_() {
       wrench_command_interfaces_.emplace_back(std::ref(command_interface));
     }
   }
-  if (joint_position_command_interfaces_.size() != KUKA::FRI::LBRState::NUMBER_OF_JOINTS) {
+  if (joint_position_command_interfaces_.size() != lbr_fri_ros2::N_JNTS) {
     RCLCPP_ERROR(
         this->get_node()->get_logger(),
         "Number of joint position command interfaces '%ld' does not match the number of joints "
         "in the robot '%d'.",
-        joint_position_command_interfaces_.size(), KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
+        joint_position_command_interfaces_.size(), lbr_fri_ros2::N_JNTS);
     return false;
   }
   if (wrench_command_interfaces_.size() != CARTESIAN_DOF) {
@@ -112,15 +112,15 @@ void LBRWrenchCommandController::clear_command_interfaces_() {
 }
 
 void LBRWrenchCommandController::configure_joint_names_() {
-  if (joint_names_.size() != KUKA::FRI::LBRState::NUMBER_OF_JOINTS) {
+  if (joint_names_.size() != lbr_fri_ros2::N_JNTS) {
     RCLCPP_ERROR(
         this->get_node()->get_logger(),
         "Number of joint names (%ld) does not match the number of joints in the robot (%d).",
-        joint_names_.size(), KUKA::FRI::LBRState::NUMBER_OF_JOINTS);
+        joint_names_.size(), lbr_fri_ros2::N_JNTS);
     throw std::runtime_error("Failed to configure joint names.");
   }
   std::string robot_name = this->get_node()->get_parameter("robot_name").as_string();
-  for (int i = 0; i < KUKA::FRI::LBRState::NUMBER_OF_JOINTS; i++) {
+  for (int i = 0; i < lbr_fri_ros2::N_JNTS; ++i) {
     joint_names_[i] = robot_name + "_A" + std::to_string(i + 1);
   }
 }

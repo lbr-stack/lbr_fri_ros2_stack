@@ -121,7 +121,7 @@ struct PIDParameters {
 class JointPIDArray {
 protected:
   static constexpr char LOGGER_NAME[] = "lbr_fri_ros2::JointPIDArray";
-  using pid_array_t = std::array<control_toolbox::Pid, KUKA::FRI::LBRState::NUMBER_OF_JOINTS>;
+  using pid_array_t = std::array<control_toolbox::Pid, N_JNTS>;
 
 public:
   JointPIDArray() = delete;
