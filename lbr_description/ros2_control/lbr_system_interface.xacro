@@ -6,7 +6,7 @@
         <xacro:property name="system_config"
             value="${xacro.load_yaml(system_config_path)}" />
 
-        <ros2_control name="lbr_system_interface" type="system">
+        <ros2_control name="${robot_name}_system_interface" type="system">
             <!-- load plugin depending on mode -->
             <xacro:if value="${mode == 'mock'}">
                 <hardware>
