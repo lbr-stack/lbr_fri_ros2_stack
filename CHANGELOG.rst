@@ -1,6 +1,42 @@
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Changelog for package LBR FRI ROS 2 Stack
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Humble v2.2.1 (2025-03-26)
+--------------------------
+* ``lbr_bringup``: Removed static broadcasters from launch files: https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/264
+* ``lbr_description``:
+
+  * Decimate collision meshes for faster Gazebo simulation: https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/262
+  * Added world link to ``xacro`` files (fixes robot to Gazebo world): https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/264
+* ``lbr_demos_cpp``: Added missing robot name prefix to joint names: https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/258
+* ``lbr_demos_py``: Added missing robot name prefix to joint names: https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/259
+* ``lbr_ros2_control``: Update deprecated headers https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/267, https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/269
+* ``lbr_fri_ros2``: Fixes for compliant control modes.
+
+  * Fixed a bug that wouldn't forward torques / wrenches: https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/233
+  * Enforce ``open_loop=false`` (position) for compliant controllers: https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/237 
+* ``lbr_fri_ros2_stack``: Repositories file for FRI 2.6: https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/248
+
+Humble v2.2.0 (2024-11-20)
+--------------------------
+This release backports new ``rolling`` features to ``humble``. Following has changed:
+
+* Related PRs:
+
+  * https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/213 and https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/214
+
+    * Joints and links are now prefixed with ``lbr_`` (i.e. the robot name)
+    * Robot state publisher has no ``lbr/`` prefix anymore
+    * Asynchronous + deactivateable force-torque estimation from external torques (previously synchronous)
+    * Issue with setting real-time priority fixed
+    * Modifiable source for ``lbr_system_config.yaml`` in launch files
+
+  * https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/220
+
+    * PID on joint position commands replaced by simpler exponential filter (please test robot in T1 mode as this will affect your control)
+    * Introduction of twist and admittance controllers
+    * Configurations from ``lbr_ros2_control`` now in ``lbr_description`` (for stand alone URDF use)
+
 Humble v2.1.2 (2024-10-18)
 --------------------------
 * Adds MoveIt Servo demo, related to https://github.com/lbr-stack/lbr_fri_ros2_stack/issues/50 and https://github.com/lbr-stack/lbr_fri_ros2_stack/issues/211
