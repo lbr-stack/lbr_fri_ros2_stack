@@ -14,7 +14,7 @@
 #include "hardware_interface/loaned_state_interface.hpp"
 #include "hardware_interface/types/hardware_interface_type_values.hpp"
 #include "rclcpp/rclcpp.hpp"
-#include "realtime_tools/realtime_buffer.h"
+#include "realtime_tools/realtime_buffer.hpp"
 
 #include "friLBRState.h"
 
