@@ -13,7 +13,7 @@
         default="$(find lbr_description)/ros2_control/lbr_system_config.yaml" />
 
     <!-- KDL requires a link without inertia / Gazebo requires a connection to world link or robot
-    will tipple: https://github.com/lbr-stack/lbr_fri_ros2_stack/issues/230 -->
+    will tipple https://github.com/lbr-stack/lbr_fri_ros2_stack/issues/230 -->
     <link name="world" />
 
     <!--joint
