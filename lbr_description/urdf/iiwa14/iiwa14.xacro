@@ -12,18 +12,14 @@
         name="system_config_path"
         default="$(find lbr_description)/ros2_control/lbr_system_config.yaml" />
 
-    <!-- KDL requires a link without inertia -->
-    <link name="$(arg robot_name)_floating_link" />
+    <!-- KDL requires a link without inertia / Gazebo requires a connection to world link or robot
+    will tipple: https://github.com/lbr-stack/lbr_fri_ros2_stack/issues/230 -->
     <link name="world" />
-    <joint name="$world_to_base" type="fixed">
-        <parent link="world" />
-        <child link="$(arg robot_name)_floating_link" />
-    </joint>
 
     <!--joint
-        between <robot_name>_floating_link and robot_name_link_0-->
-    <joint name="$(arg robot_name)_floating_joint" type="fixed">
-        <parent link="$(arg robot_name)_floating_link" />
+        between <robot_name>_world_link and robot_name_link_0-->
+    <joint name="$(arg robot_name)_world_joint" type="fixed">
+        <parent link="world" />
         <child link="$(arg robot_name)_link_0" />
     </joint>
 

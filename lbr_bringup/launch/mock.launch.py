@@ -1,7 +1,7 @@
 from launch import LaunchDescription
 from launch.actions import RegisterEventHandler
 from launch.event_handlers import OnProcessStart
-from launch.substitutions import LaunchConfiguration, PythonExpression
+from launch.substitutions import LaunchConfiguration
 from lbr_bringup.description import LBRDescriptionMixin
 from lbr_bringup.ros2_control import LBRROS2ControlMixin
 
@@ -15,17 +15,6 @@ def generate_launch_description() -> LaunchDescription:
     ld.add_action(LBRROS2ControlMixin.arg_ctrl_cfg_pkg())
     ld.add_action(LBRROS2ControlMixin.arg_ctrl_cfg())
     ld.add_action(LBRROS2ControlMixin.arg_ctrl())
-
-    # static transform world -> <robot_name>_floating_link
-    ld.add_action(
-        LBRDescriptionMixin.node_static_tf(
-            tf=[0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-            parent="world",
-            child=PythonExpression(
-                ["'", LaunchConfiguration("robot_name"), "' + '_floating_link'"]
-            ),
-        )
-    )
 
     # robot description
     robot_description = LBRDescriptionMixin.param_robot_description(mode="mock")
