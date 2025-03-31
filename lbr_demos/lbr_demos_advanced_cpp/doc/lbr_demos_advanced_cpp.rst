@@ -43,7 +43,7 @@ This demo uses the twist controller.
             geometry_msgs/msg/Twist \
             "{linear: {x: 0.0, y: 0.0, z: 0.05}, angular: {x: 0.0, y: 0.0, z: 0.0}}"
 
-#. If you ``Ctrl+C`` the publisher, the ``twist_controller`` throws an error as it expects a continuous stream of twist commands.
+#. If you ``Ctrl+C`` the publisher, the ``twist_controller`` sets the joint velocity to zero, as it expects a continuous stream of twist commands.
 
 Admittance Controller
 ---------------------
