@@ -50,6 +50,7 @@ protected:
   bool reference_state_interfaces_();
   void clear_state_interfaces_();
   void reset_command_buffer_();
+  void zero_joint_velocity_command_();
   void configure_joint_names_();
   void configure_inv_jac_ctrl_impl_();
   void log_info_() const;

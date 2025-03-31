@@ -73,11 +73,6 @@ controller_interface::return_type TwistController::update(const rclcpp::Time & /
       KUKA::FRI::ESessionState::COMMANDING_ACTIVE) {
     return controller_interface::return_type::OK;
   }
-  if (updates_since_last_command_ > static_cast<int>(timeout_ / period.seconds())) {
-    RCLCPP_ERROR(this->get_node()->get_logger(),
-                 "No twist command received within %.3f s. Stopping the controller.", timeout_);
-    return controller_interface::return_type::ERROR;
-  }
 
   // pass joint positions to q_
   std::for_each(q_.begin(), q_.end(), [&, i = 0](double &q_i) mutable {
@@ -85,8 +80,12 @@ controller_interface::return_type TwistController::update(const rclcpp::Time & /
     ++i;
   });
 
-  // compute the joint velocity from the twist command target
-  inv_jac_ctrl_impl_ptr_->compute(*twist_command, q_, dq_);
+  if (updates_since_last_command_ > static_cast<int>(timeout_ / period.seconds())) {
+    zero_joint_velocity_command_();
+  } else {
+    // compute the joint velocity from the twist command target
+    inv_jac_ctrl_impl_ptr_->compute(*twist_command, q_, dq_);
+  }
 
   // pass joint positions to hardware
   std::for_each(q_.begin(), q_.end(), [&, i = 0](const double &q_i) mutable {
@@ -111,6 +110,7 @@ TwistController::on_activate(const rclcpp_lifecycle::State & /*previous_state*/)
     return controller_interface::CallbackReturn::ERROR;
   }
   reset_command_buffer_();
+  zero_joint_velocity_command_();
   return controller_interface::CallbackReturn::SUCCESS;
 }
 
@@ -118,6 +118,7 @@ controller_interface::CallbackReturn
 TwistController::on_deactivate(const rclcpp_lifecycle::State & /*previous_state*/) {
   clear_state_interfaces_();
   reset_command_buffer_();
+  zero_joint_velocity_command_();
   return controller_interface::CallbackReturn::SUCCESS;
 }
 
@@ -154,6 +155,10 @@ void TwistController::reset_command_buffer_() {
   rt_twist_ptr_ =
       realtime_tools::RealtimeBuffer<std::shared_ptr<geometry_msgs::msg::Twist>>(nullptr);
 };
+
+void TwistController::zero_joint_velocity_command_() {
+  std::for_each(dq_.begin(), dq_.end(), [](double &dq_i) { dq_i = 0.0; });
+}
 
 void TwistController::configure_joint_names_() {
   if (joint_names_.size() != lbr_fri_ros2::N_JNTS) {
