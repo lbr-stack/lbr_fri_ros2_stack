@@ -3,6 +3,7 @@
 
 #include <array>
 #include <functional>
+#include <limits>
 #include <memory>
 #include <stdexcept>
 #include <string>
@@ -16,6 +17,7 @@
 #include "hardware_interface/types/hardware_interface_type_values.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include "realtime_tools/realtime_buffer.hpp"
+#include "semantic_components/force_torque_sensor.hpp"
 
 #include "friLBRState.h"
 
@@ -72,9 +74,17 @@ protected:
 
   lbr_fri_ros2::jnt_name_array_t joint_names_;
 
-  // state interfaces
+  // referenced by state interfaces
+  lbr_fri_ros2::jnt_array_t joint_position_states_;
+  lbr_fri_ros2::jnt_array_t joint_velocity_states_;
+
+  // state interfaces, consider access to external force interface for safety checking....
   std::vector<std::reference_wrapper<hardware_interface::LoanedStateInterface>>
       joint_position_state_interfaces_, joint_velocity_state_interfaces_;
+
+  // make use of the estimated force-torque sensor state interface to read externally applied
+  // forces. The forces are used to verify the robot's load data was calibrated
+  std::unique_ptr<semantic_components::ForceTorqueSensor> estimated_ft_sensor_ptr_;
 
   // command interfaces
   std::vector<std::reference_wrapper<hardware_interface::LoanedCommandInterface>>

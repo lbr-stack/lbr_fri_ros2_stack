@@ -25,9 +25,14 @@ controller_interface::InterfaceConfiguration
 LBRWrenchCommandController::state_interface_configuration() const {
   controller_interface::InterfaceConfiguration interface_configuration;
   interface_configuration.type = controller_interface::interface_configuration_type::INDIVIDUAL;
+  // joint position and joint velocity interfaces
   for (const auto &joint_name : joint_names_) {
     interface_configuration.names.push_back(joint_name + "/" + hardware_interface::HW_IF_POSITION);
     interface_configuration.names.push_back(joint_name + "/" + hardware_interface::HW_IF_VELOCITY);
+  }
+  // estimated force-torque sensor interface
+  for (const auto &interface_name : estimated_ft_sensor_ptr_->get_state_interface_names()) {
+    interface_configuration.names.push_back(interface_name);
   }
   return interface_configuration;
 }
@@ -49,14 +54,25 @@ controller_interface::CallbackReturn LBRWrenchCommandController::on_init() {
 std::vector<hardware_interface::StateInterface>
 LBRWrenchCommandController::on_export_state_interfaces() {
   std::vector<hardware_interface::StateInterface> state_interfaces;
+  for (std::size_t i = 0; i < lbr_fri_ros2::N_JNTS; ++i) {
+    state_interfaces.emplace_back(std::string(get_node()->get_name()) + "/" + joint_names_[i],
+                                  hardware_interface::HW_IF_POSITION, &joint_position_states_[i]);
+    state_interfaces.emplace_back(std::string(get_node()->get_name()) + "/" + joint_names_[i],
+                                  hardware_interface::HW_IF_VELOCITY, &joint_velocity_states_[i]);
+  }
   return state_interfaces;
 }
 
 std::vector<hardware_interface::CommandInterface>
 LBRWrenchCommandController::on_export_reference_interfaces() {
-  std::vector<hardware_interface::CommandInterface> command_interfaces;
-  return command_interfaces; // allow other controllers to write join positions.... i.e. write to
-                             // joint_position_command_interfaces_
+  std::vector<hardware_interface::CommandInterface> reference_interfaces;
+  reference_interfaces_.resize(lbr_fri_ros2::N_JNTS, std::numeric_limits<double>::quiet_NaN());
+  for (std::size_t i = 0; i < lbr_fri_ros2::N_JNTS; ++i) {
+    reference_interfaces.emplace_back(std::string(get_node()->get_name()) + "/" + joint_names_[i],
+                                      hardware_interface::HW_IF_POSITION,
+                                      &reference_interfaces_[i]);
+  }
+  return reference_interfaces;
 }
 
 bool LBRWrenchCommandController::on_set_chained_mode(bool chained_mode) {
@@ -83,13 +99,12 @@ LBRWrenchCommandController::update_reference_from_subscribers(const rclcpp::Time
   if (!lbr_wrench_command || !(*lbr_wrench_command)) {
     return controller_interface::return_type::OK;
   }
-  // for (std::size_t idx = 0; idx < lbr_fri_ros2::N_JNTS; ++idx) {
-  //   joint_position_command_interfaces_[idx].get().set_value(
-  //       (*lbr_wrench_command)->joint_position[idx]);
-  // }
-  // for (std::size_t idx = 0; idx < CARTESIAN_DOF; ++idx) {
-  //   wrench_command_interfaces_[idx].get().set_value((*lbr_wrench_command)->wrench[idx]);
-  // }
+  for (std::size_t i = 0; i < lbr_fri_ros2::N_JNTS; ++i) {
+    reference_interfaces_[i] = (*lbr_wrench_command)->joint_position[i];
+  }
+  for (std::size_t i = 0; i < CARTESIAN_DOF; ++i) {
+    wrench_command_interfaces_[i].get().set_value((*lbr_wrench_command)->wrench[i]);
+  }
   return controller_interface::return_type::OK;
 }
 
@@ -97,16 +112,44 @@ LBRWrenchCommandController::update_reference_from_subscribers(const rclcpp::Time
 controller_interface::return_type
 LBRWrenchCommandController::update_and_write_commands(const rclcpp::Time & /*time*/,
                                                       const rclcpp::Duration & /*period*/) {
+  if (is_in_chained_mode()) {
+    auto wrench_command = rt_wrench_command_ptr_.readFromRT();
+    if (!wrench_command || !(*wrench_command)) {
+      return controller_interface::return_type::OK;
+    }
+    wrench_command_interfaces_[0].get().set_value((*wrench_command)->force.x);
+    wrench_command_interfaces_[1].get().set_value((*wrench_command)->force.y);
+    wrench_command_interfaces_[2].get().set_value((*wrench_command)->force.z);
+    wrench_command_interfaces_[3].get().set_value((*wrench_command)->torque.x);
+    wrench_command_interfaces_[4].get().set_value((*wrench_command)->torque.y);
+    wrench_command_interfaces_[5].get().set_value((*wrench_command)->torque.z);
+  }
+  // pass joint position and velocity states through to next controller
+  for (std::size_t i = 0; i < lbr_fri_ros2::N_JNTS; ++i) {
+    joint_position_states_[i] = joint_position_state_interfaces_[i].get().get_value();
+    joint_velocity_states_[i] = joint_velocity_state_interfaces_[i].get().get_value();
+  }
+  for (std::size_t i = 0; i < lbr_fri_ros2::N_JNTS; ++i) {
+    joint_position_command_interfaces_[i].get().set_value(reference_interfaces_[i]);
+  }
   return controller_interface::return_type::OK;
 }
 
 controller_interface::CallbackReturn
 LBRWrenchCommandController::on_configure(const rclcpp_lifecycle::State & /*previous_state*/) {
+  estimated_ft_sensor_ptr_ = std::make_unique<semantic_components::ForceTorqueSensor>(
+      std::string(HW_IF_ESTIMATED_FT_PREFIX) + "/" + HW_IF_FORCE_X,
+      std::string(HW_IF_ESTIMATED_FT_PREFIX) + "/" + HW_IF_FORCE_Y,
+      std::string(HW_IF_ESTIMATED_FT_PREFIX) + "/" + HW_IF_FORCE_Z,
+      std::string(HW_IF_ESTIMATED_FT_PREFIX) + "/" + HW_IF_TORQUE_X,
+      std::string(HW_IF_ESTIMATED_FT_PREFIX) + "/" + HW_IF_TORQUE_Y,
+      std::string(HW_IF_ESTIMATED_FT_PREFIX) + "/" + HW_IF_TORQUE_Z);
   return controller_interface::CallbackReturn::SUCCESS;
 }
 
 controller_interface::CallbackReturn
 LBRWrenchCommandController::on_activate(const rclcpp_lifecycle::State & /*previous_state*/) {
+  reference_interfaces_.assign(lbr_fri_ros2::N_JNTS, std::numeric_limits<double>::quiet_NaN());
   if (!reference_state_interfaces_()) {
     return controller_interface::CallbackReturn::ERROR;
   }
@@ -131,6 +174,11 @@ bool LBRWrenchCommandController::reference_state_interfaces_() {
     if (state_interface.get_interface_name() == hardware_interface::HW_IF_VELOCITY) {
       joint_velocity_state_interfaces_.emplace_back(std::ref(state_interface));
     }
+  }
+  if (!estimated_ft_sensor_ptr_->assign_loaned_state_interfaces(state_interfaces_)) {
+    RCLCPP_ERROR(this->get_node()->get_logger(),
+                 "Failed to assign estimated force torque state interfaces.");
+    return false;
   }
   if (joint_position_state_interfaces_.size() != lbr_fri_ros2::N_JNTS) {
     RCLCPP_ERROR(
@@ -180,6 +228,7 @@ bool LBRWrenchCommandController::reference_command_interfaces_() {
 void LBRWrenchCommandController::clear_state_interfaces_() {
   joint_position_state_interfaces_.clear();
   joint_velocity_state_interfaces_.clear();
+  estimated_ft_sensor_ptr_->release_interfaces();
 }
 
 void LBRWrenchCommandController::clear_command_interfaces_() {
