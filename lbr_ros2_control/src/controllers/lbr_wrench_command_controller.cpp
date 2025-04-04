@@ -268,14 +268,13 @@ void LBRWrenchCommandController::init_wrench_command_subscription_() {
 }
 
 void LBRWrenchCommandController::reset_lbr_wrench_command_subscription_() {
-  if (wrench_command_subscription_ptr_) {
-    wrench_command_subscription_ptr_.reset();
+  if (lbr_wrench_command_subscription_ptr_) {
+    lbr_wrench_command_subscription_ptr_.reset();
   }
 }
 void LBRWrenchCommandController::reset_wrench_command_subscription_() {
-
-  if (lbr_wrench_command_subscription_ptr_) {
-    lbr_wrench_command_subscription_ptr_.reset();
+  if (wrench_command_subscription_ptr_) {
+    wrench_command_subscription_ptr_.reset();
   }
 }
 } // namespace lbr_ros2_control
