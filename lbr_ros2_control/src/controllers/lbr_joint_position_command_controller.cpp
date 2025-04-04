@@ -25,7 +25,7 @@ controller_interface::CallbackReturn LBRJointPositionCommandController::on_init(
   try {
     lbr_joint_position_command_subscription_ptr_ =
         this->get_node()->create_subscription<lbr_fri_idl::msg::LBRJointPositionCommand>(
-            "command/joint_position", 1,
+            "command/lbr_joint_position_command", 1,
             [this](const lbr_fri_idl::msg::LBRJointPositionCommand::SharedPtr msg) {
               rt_lbr_joint_position_command_ptr_.writeFromNonRT(msg);
             });

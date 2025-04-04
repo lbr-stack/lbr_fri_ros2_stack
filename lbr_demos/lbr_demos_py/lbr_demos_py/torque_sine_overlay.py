@@ -18,9 +18,9 @@ class TorqueSineOverlayNode(Node):
         self._phase = 0.0
         self._lbr_torque_command = LBRTorqueCommand()
 
-        # create publisher to command/torque
+        # create publisher to command/lbr_torque_command
         self._lbr_torque_command_pub = self.create_publisher(
-            LBRTorqueCommand, "command/torque", 1
+            LBRTorqueCommand, "command/lbr_torque_command", 1
         )
 
         # create subscription to state

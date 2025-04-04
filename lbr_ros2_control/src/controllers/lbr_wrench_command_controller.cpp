@@ -262,7 +262,7 @@ void LBRWrenchCommandController::init_lbr_wrench_command_subscription_() {
 void LBRWrenchCommandController::init_wrench_command_subscription_() {
   wrench_command_subscription_ptr_ =
       this->get_node()->create_subscription<geometry_msgs::msg::Wrench>(
-          "command/wrench", 1, [this](const geometry_msgs::msg::Wrench::SharedPtr msg) {
+          "command/lbr_wrench_command", 1, [this](const geometry_msgs::msg::Wrench::SharedPtr msg) {
             rt_wrench_command_ptr_.writeFromNonRT(msg);
           });
 }
