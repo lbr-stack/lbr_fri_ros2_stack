@@ -1,4 +1,4 @@
-#include "lbr_fri_ros2/command_guard.hpp"
+#include "lbr_fri_ros2/guards/command_guard.hpp"
 
 namespace lbr_fri_ros2 {
 CommandGuard::CommandGuard(const CommandGuardParameters &command_guard_parameters)

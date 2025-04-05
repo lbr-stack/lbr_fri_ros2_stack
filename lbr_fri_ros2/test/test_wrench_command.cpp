@@ -7,7 +7,7 @@
 
 #include "lbr_fri_ros2/app.hpp"
 #include "lbr_fri_ros2/async_client.hpp"
-#include "lbr_fri_ros2/command_guard.hpp"
+#include "lbr_fri_ros2/guards/command_guard.hpp"
 
 int main() {
   rclcpp::init(0, nullptr);

@@ -12,9 +12,9 @@
 #include "friClientVersion.h"
 
 #include "lbr_fri_idl/msg/lbr_command.hpp"
-#include "lbr_fri_ros2/command_guard.hpp"
 #include "lbr_fri_ros2/filters.hpp"
 #include "lbr_fri_ros2/formatting.hpp"
+#include "lbr_fri_ros2/guards/command_guard.hpp"
 #include "lbr_fri_ros2/types.hpp"
 
 namespace lbr_fri_ros2 {

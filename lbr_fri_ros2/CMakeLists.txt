@@ -25,6 +25,7 @@ find_package(urdf REQUIRED)
 # lbr_fri_ros2
 add_library(lbr_fri_ros2
   SHARED
+    src/guards/command_guard.cpp
     src/interfaces/base_command.cpp
     src/interfaces/position_command.cpp
     src/interfaces/state.cpp
@@ -32,7 +33,6 @@ add_library(lbr_fri_ros2
     src/interfaces/wrench_command.cpp
     src/app.cpp
     src/async_client.cpp
-    src/command_guard.cpp
     src/control.cpp
     src/filters.cpp
     src/ft_estimator.cpp
