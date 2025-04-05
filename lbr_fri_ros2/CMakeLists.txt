@@ -26,6 +26,7 @@ find_package(urdf REQUIRED)
 add_library(lbr_fri_ros2
   SHARED
     src/guards/command_guard.cpp
+    src/guards/state_guard.cpp
     src/interfaces/base_command.cpp
     src/interfaces/position_command.cpp
     src/interfaces/state.cpp

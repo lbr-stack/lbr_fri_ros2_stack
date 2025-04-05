@@ -11,7 +11,13 @@ hardware:
   #   set tau > robot sample time for more smoothing on the commands
   #   set tau << robot sample time for no smoothing on the commands
   joint_position_tau: 0.04
-  command_guard_variant: default # if requested position / velocities beyond limits, CommandGuard will be triggered and shut the connection. Available: [default, safe_stop]
+  command_guard:
+    variant: default # if requested position / velocities beyond limits, CommandGuard will be triggered and shut the connection. Available: [default, safe_stop]
+  state_guard:
+    # enable / disable the load data safety check in compliant control modes [CARTESIAN_IMPEDANCE, IMPEDANCE]
+    # in POSITION control mode, safety check is not performed
+    external_torque_safety_check: true
+    external_torque_limit: 2.0 # maximum allowed external joint torque on activation of compliant control modes [Nm]
   # exponential moving average time constant for external joint torque measurements [s]:
   #   set tau > robot sample time for more smoothing on the external torque measurements
   #   set tau << robot sample time for no smoothing on the external torque measurements

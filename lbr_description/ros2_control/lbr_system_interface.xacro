@@ -28,7 +28,9 @@
                     <param name="remote_host">${system_config['hardware']['remote_host']}</param>
                     <param name="rt_prio">${system_config['hardware']['rt_prio']}</param>
                     <param name="joint_position_tau">${system_config['hardware']['joint_position_tau']}</param>
-                    <param name="command_guard_variant">${system_config['hardware']['command_guard_variant']}</param>
+                    <param name="command_guard_variant">${system_config['hardware']['command_guard']['variant']}</param>
+                    <param name="state_guard_external_torque_safety_check">${system_config['hardware']['state_guard']['external_torque_safety_check']}</param>
+                    <param name="state_guard_external_torque_limit">${system_config['hardware']['state_guard']['external_torque_limit']}</param>
                     <param name="external_torque_tau">${system_config['hardware']['external_torque_tau']}</param>
                     <param name="measured_torque_tau">${system_config['hardware']['measured_torque_tau']}</param>
                     <param name="open_loop">${system_config['hardware']['open_loop']}</param>

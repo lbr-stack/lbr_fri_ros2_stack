@@ -20,6 +20,7 @@ SystemInterface::on_init(const hardware_interface::HardwareInfo &system_info) {
 
   // setup driver
   lbr_fri_ros2::CommandGuardParameters command_guard_parameters;
+  lbr_fri_ros2::StateGuardParameters state_guard_parameters;
   lbr_fri_ros2::StateInterfaceParameters state_interface_parameters;
   for (std::size_t idx = 0; idx < info_.joints.size(); ++idx) {
     command_guard_parameters.joint_names[idx] = info_.joints[idx].name;
@@ -31,14 +32,22 @@ SystemInterface::on_init(const hardware_interface::HardwareInfo &system_info) {
         std::stod(info_.joints[idx].parameters.at("max_velocity"));
     command_guard_parameters.max_torques[idx] =
         std::stod(info_.joints[idx].parameters.at("max_torque"));
+
+    // currently, only check external torque limits on enter commanding active with fixed limit, see
+    // https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/271#issuecomment-2780642918
+    state_guard_parameters.joint_names[idx] = info_.joints[idx].name;
+    state_guard_parameters.max_external_torque[idx] = parameters_.state_guard_external_torque_limit;
   }
+  state_guard_parameters.external_torque_safety_check =
+      parameters_.state_guard_external_torque_safety_check;
   state_interface_parameters.external_torque_tau = parameters_.external_torque_tau;
   state_interface_parameters.measured_torque_tau = parameters_.measured_torque_tau;
 
   try {
     async_client_ptr_ = std::make_shared<lbr_fri_ros2::AsyncClient>(
         parameters_.client_command_mode, parameters_.joint_position_tau, command_guard_parameters,
-        parameters_.command_guard_variant, state_interface_parameters, parameters_.open_loop);
+        parameters_.command_guard_variant, state_guard_parameters, state_interface_parameters,
+        parameters_.open_loop);
     app_ptr_ = std::make_unique<lbr_fri_ros2::App>(async_client_ptr_);
   } catch (const std::exception &e) {
     RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME),
@@ -378,6 +387,14 @@ bool SystemInterface::parse_parameters_() {
     parameters_.rt_prio = std::stoul(info_.hardware_parameters.at("rt_prio"));
     parameters_.joint_position_tau = std::stod(info_.hardware_parameters.at("joint_position_tau"));
     parameters_.command_guard_variant = info_.hardware_parameters.at("command_guard_variant");
+    std::transform(info_.hardware_parameters.at("state_guard_external_torque_safety_check").begin(),
+                   info_.hardware_parameters.at("state_guard_external_torque_safety_check").end(),
+                   info_.hardware_parameters.at("state_guard_external_torque_safety_check").begin(),
+                   ::tolower); // convert to lower case
+    parameters_.state_guard_external_torque_safety_check =
+        info_.hardware_parameters.at("state_guard_external_torque_safety_check") == "true";
+    parameters_.state_guard_external_torque_limit =
+        std::stod(info_.hardware_parameters.at("state_guard_external_torque_limit"));
     parameters_.external_torque_tau =
         std::stod(info_.hardware_parameters.at("external_torque_tau"));
     parameters_.measured_torque_tau =
