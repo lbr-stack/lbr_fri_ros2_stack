@@ -44,6 +44,9 @@ public:
   void command() override;
 
 protected:
+  void on_enter_commanding_active_();
+
+protected:
   std::shared_ptr<BaseCommandInterface> command_interface_ptr_;
   std::shared_ptr<StateInterface> state_interface_ptr_;
 
