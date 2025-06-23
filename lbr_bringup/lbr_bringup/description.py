@@ -35,6 +35,18 @@ class LBRDescriptionMixin:
                 ),
             ]
         ),
+        initial_positions_path: Optional[
+            Union[LaunchConfiguration, str]
+        ] = PathJoinSubstitution(
+            [
+                FindPackageShare(
+                    LaunchConfiguration("sys_cfg_pkg", default="lbr_description")
+                ),
+                LaunchConfiguration(
+                    "inital_positions", default="ros2_control/initial_positions.yaml"
+                ),
+            ]
+        ),
     ) -> Dict[str, str]:
         robot_description = {
             "robot_description": Command(
@@ -56,6 +68,8 @@ class LBRDescriptionMixin:
                     mode,
                     " system_config_path:=",
                     system_config_path,
+                    " initial_positions_path:=",
+                    initial_positions_path,
                 ]
             )
         }
