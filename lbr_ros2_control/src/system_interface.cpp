@@ -371,7 +371,7 @@ bool SystemInterface::parse_parameters_(const hardware_interface::HardwareInfo &
           rclcpp::get_logger(LOGGER_NAME),
           lbr_fri_ros2::ColorScheme::ERROR
               << "Expected client_command_mode 'position', 'torque' or 'wrench', got '"
-              << lbr_fri_ros2::ColorScheme::BOLD << parameters_.client_command_mode << "'"
+              << lbr_fri_ros2::ColorScheme::BOLD << client_command_mode << "'"
               << lbr_fri_ros2::ColorScheme::ENDC);
       return false;
     }
