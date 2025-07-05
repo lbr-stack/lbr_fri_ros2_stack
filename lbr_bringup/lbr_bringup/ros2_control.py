@@ -57,6 +57,14 @@ class LBRROS2ControlMixin:
         )
 
     @staticmethod
+    def arg_initial_positions() -> DeclareLaunchArgument:
+        return DeclareLaunchArgument(
+            name="initial_positions",
+            default_value="ros2_control/initial_positions.yaml",
+            description="The relative path from sys_cfg_pkg to the initial_positions.yaml file.",
+        )
+
+    @staticmethod
     def arg_use_sim_time() -> DeclareLaunchArgument:
         return DeclareLaunchArgument(
             name="use_sim_time",

@@ -11,6 +11,7 @@ def generate_launch_description() -> LaunchDescription:
     # launch arguments
     ld.add_action(LBRDescriptionMixin.arg_model())
     ld.add_action(LBRDescriptionMixin.arg_robot_name())
+    ld.add_action(LBRROS2ControlMixin.arg_initial_positions())
     ld.add_action(
         LBRROS2ControlMixin.arg_ctrl()
     )  # Gazebo loads controller configuration through lbr_description/gazebo/*.xacro from lbr_description/ros2_control/lbr_controllers.yaml
