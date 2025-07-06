@@ -15,6 +15,7 @@ def generate_launch_description() -> LaunchDescription:
     ld.add_action(LBRROS2ControlMixin.arg_ctrl_cfg_pkg())
     ld.add_action(LBRROS2ControlMixin.arg_ctrl_cfg())
     ld.add_action(LBRROS2ControlMixin.arg_ctrl())
+    ld.add_action(LBRROS2ControlMixin.arg_init_jnt_pos())
 
     # robot description
     robot_description = LBRDescriptionMixin.param_robot_description(mode="mock")
