@@ -1,14 +1,14 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
     <xacro:macro name="lbr_system_interface"
-        params="robot_name mode joint_limits system_config_path initial_positions_path">
+        params="robot_name mode joint_limits system_config_path initial_joint_positions_path">
         <!-- load system parameters via yaml -->
         <xacro:property name="system_config"
             value="${xacro.load_yaml(system_config_path)}" />
         
-          <!-- load initial positions via yaml for mock/gazebo simulation -->
-        <xacro:property name="initial_positions"
-            value="${xacro.load_yaml(initial_positions_path)}" />
+        <!-- load initial positions via yaml for mock/gazebo simulation -->
+        <xacro:property name="initial_joint_positions"
+            value="${xacro.load_yaml(initial_joint_positions_path)}" />
         
         <ros2_control name="${robot_name}_system_interface" type="system">
             <!-- load plugin depending on mode -->
@@ -137,49 +137,49 @@
                 max_velocity="${joint_limits['A1']['velocity'] * PI / 180}"
                 max_torque="${joint_limits['A1']['effort']}"
                 mode="${mode}" 
-                initial_position="${initial_positions['A1'] * PI / 180}" />
+                initial_position="${initial_joint_positions['A1'] * PI / 180}" />
             <xacro:joint_interface name="${robot_name}_A2"
                 min_position="${joint_limits['A2']['lower'] * PI / 180}"
                 max_position="${joint_limits['A2']['upper'] * PI / 180}"
                 max_velocity="${joint_limits['A2']['velocity'] * PI / 180}"
                 max_torque="${joint_limits['A2']['effort']}"
                 mode="${mode}" 
-                initial_position="${initial_positions['A2'] * PI / 180}" />
+                initial_position="${initial_joint_positions['A2'] * PI / 180}" />
             <xacro:joint_interface name="${robot_name}_A3"
                 min_position="${joint_limits['A3']['lower'] * PI / 180}"
                 max_position="${joint_limits['A3']['upper'] * PI / 180}"
                 max_velocity="${joint_limits['A3']['velocity'] * PI / 180}"
                 max_torque="${joint_limits['A3']['effort']}"
                 mode="${mode}" 
-                initial_position="${initial_positions['A3'] * PI / 180}" />
+                initial_position="${initial_joint_positions['A3'] * PI / 180}" />
             <xacro:joint_interface name="${robot_name}_A4"
                 min_position="${joint_limits['A4']['lower'] * PI / 180}"
                 max_position="${joint_limits['A4']['upper'] * PI / 180}"
                 max_velocity="${joint_limits['A4']['velocity'] * PI / 180}"
                 max_torque="${joint_limits['A4']['effort']}"
                 mode="${mode}" 
-                initial_position="${initial_positions['A4'] * PI / 180}"/>
+                initial_position="${initial_joint_positions['A4'] * PI / 180}"/>
             <xacro:joint_interface name="${robot_name}_A5"
                 min_position="${joint_limits['A5']['lower'] * PI / 180}"
                 max_position="${joint_limits['A5']['upper'] * PI / 180}"
                 max_velocity="${joint_limits['A5']['velocity'] * PI / 180}"
                 max_torque="${joint_limits['A5']['effort']}"
                 mode="${mode}" 
-                initial_position="${initial_positions['A5'] * PI / 180}"/>
+                initial_position="${initial_joint_positions['A5'] * PI / 180}"/>
             <xacro:joint_interface name="${robot_name}_A6"
                 min_position="${joint_limits['A6']['lower'] * PI / 180}"
                 max_position="${joint_limits['A6']['upper'] * PI / 180}"
                 max_velocity="${joint_limits['A6']['velocity'] * PI / 180}"
                 max_torque="${joint_limits['A6']['effort']}"
                 mode="${mode}" 
-                initial_position="${initial_positions['A6'] * PI / 180}" />
+                initial_position="${initial_joint_positions['A6'] * PI / 180}" />
             <xacro:joint_interface name="${robot_name}_A7"
                 min_position="${joint_limits['A7']['lower'] * PI / 180}"
                 max_position="${joint_limits['A7']['upper'] * PI / 180}"
                 max_velocity="${joint_limits['A7']['velocity'] * PI / 180}"
                 max_torque="${joint_limits['A7']['effort']}"
                 mode="${mode}" 
-                initial_position="${initial_positions['A7'] * PI / 180}" />
+                initial_position="${initial_joint_positions['A7'] * PI / 180}" />
         </ros2_control>
     </xacro:macro>
 </robot>

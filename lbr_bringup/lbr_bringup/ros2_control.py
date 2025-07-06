@@ -57,11 +57,11 @@ class LBRROS2ControlMixin:
         )
 
     @staticmethod
-    def arg_initial_positions() -> DeclareLaunchArgument:
+    def arg_init_jnt_pos() -> DeclareLaunchArgument:
         return DeclareLaunchArgument(
-            name="initial_positions",
-            default_value="ros2_control/initial_positions.yaml",
-            description="The relative path from sys_cfg_pkg to the initial_positions.yaml file.",
+            name="init_jnt_pos",
+            default_value="ros2_control/initial_joint_positions.yaml",
+            description="The relative path from sys_cfg_pkg to the initial_joint_positions.yaml file.",
         )
 
     @staticmethod

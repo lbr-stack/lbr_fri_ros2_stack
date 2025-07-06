@@ -35,7 +35,7 @@ class LBRDescriptionMixin:
                 ),
             ]
         ),
-        initial_positions_path: Optional[
+        initial_joint_positions_path: Optional[
             Union[LaunchConfiguration, str]
         ] = PathJoinSubstitution(
             [
@@ -43,7 +43,7 @@ class LBRDescriptionMixin:
                     LaunchConfiguration("sys_cfg_pkg", default="lbr_description")
                 ),
                 LaunchConfiguration(
-                    "inital_positions", default="ros2_control/initial_positions.yaml"
+                    "init_jnt_pos", default="ros2_control/initial_joint_positions.yaml"
                 ),
             ]
         ),
@@ -68,8 +68,8 @@ class LBRDescriptionMixin:
                     mode,
                     " system_config_path:=",
                     system_config_path,
-                    " initial_positions_path:=",
-                    initial_positions_path,
+                    " initial_joint_positions_path:=",
+                    initial_joint_positions_path,
                 ]
             )
         }
