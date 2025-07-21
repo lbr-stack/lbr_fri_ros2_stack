@@ -85,6 +85,17 @@ Full documentation available on [Read the Docs](https://lbr-stack.readthedocs.io
 
 Now, run the [demos](https://lbr-stack.readthedocs.io/en/latest/lbr_fri_ros2_stack/lbr_demos/doc/lbr_demos.html). To get started with the real robot, checkout the [Hardware Setup](https://lbr-stack.readthedocs.io/en/latest/lbr_fri_ros2_stack/lbr_fri_ros2_stack/doc/hardware_setup.html).
 
+## Repositories Using This Project
+- [KUKA ROS2 controllers](https://github.com/idra-lab/kuka_lbr_control) — A repository for controlling KUKA LBR iiwa and med robots using various control algorithms.
+
+<div align="center">
+
+| Kinematics Control | Gravity compensation | Impedance Control |
+| :----------------- | :--------------------| :---------------- |
+| <img src='https://raw.githubusercontent.com/idra-lab/kuka_lbr_control/main/assets/videos/kin.gif' width=240/> | <img src='https://raw.githubusercontent.com/idra-lab/kuka_lbr_control/main/assets/videos/grav.gif' width=240/> | <img src='https://raw.githubusercontent.com/idra-lab/kuka_lbr_control/main/assets/videos/imp.gif' width=240/> |
+
+</div>
+
 ## Citation
 If you enjoyed using this repository for your work, we would really appreciate ❤️ if you could leave a ⭐ and / or cite it, as it helps us to continue offering support.
 
