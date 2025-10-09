@@ -16,6 +16,7 @@
 #include "lbr_fri_ros2/interfaces/position_command.hpp"
 #include "lbr_fri_ros2/interfaces/state.hpp"
 #include "lbr_fri_ros2/interfaces/torque_command.hpp"
+#include "lbr_fri_ros2/interfaces/torque_only_command.hpp"
 #include "lbr_fri_ros2/interfaces/wrench_command.hpp"
 
 namespace lbr_fri_ros2 {
@@ -30,7 +31,8 @@ public:
               const CommandGuardParameters &command_guard_parameters,
               const std::string &command_guard_variant,
               const StateInterfaceParameters &state_interface_parameters = {0.04, 0.04},
-              const bool &open_loop = true);
+              const bool &open_loop = true,
+              bool joint_position_loop = false);
 
   inline std::shared_ptr<BaseCommandInterface> get_command_interface() {
     return command_interface_ptr_;

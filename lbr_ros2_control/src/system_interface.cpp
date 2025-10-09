@@ -37,7 +37,8 @@ SystemInterface::on_init(const hardware_interface::HardwareInfo &system_info) {
   try {
     async_client_ptr_ = std::make_shared<lbr_fri_ros2::AsyncClient>(
         parameters_.client_command_mode, parameters_.joint_position_tau, command_guard_parameters,
-        parameters_.command_guard_variant, state_interface_parameters, parameters_.open_loop);
+        parameters_.command_guard_variant, state_interface_parameters, parameters_.open_loop,
+        parameters_.joint_position_loop);
     app_ptr_ = std::make_unique<lbr_fri_ros2::App>(async_client_ptr_);
   } catch (const std::exception &e) {
     RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME),
@@ -364,13 +365,16 @@ bool SystemInterface::parse_parameters_(const hardware_interface::HardwareInfo &
 #endif
     } else if (client_command_mode == "torque") {
       parameters_.client_command_mode = KUKA::FRI::EClientCommandMode::TORQUE;
+    } else if (client_command_mode == "torque_only") {
+      parameters_.client_command_mode = KUKA::FRI::EClientCommandMode::TORQUE;
+      parameters_.joint_position_loop = true;
     } else if (client_command_mode == "wrench") {
       parameters_.client_command_mode = KUKA::FRI::EClientCommandMode::WRENCH;
     } else {
       RCLCPP_ERROR_STREAM(
           rclcpp::get_logger(LOGGER_NAME),
           lbr_fri_ros2::ColorScheme::ERROR
-              << "Expected client_command_mode 'position', 'torque' or 'wrench', got '"
+              << "Expected client_command_mode 'position', 'torque', 'torque_only' or 'wrench', got '"
               << lbr_fri_ros2::ColorScheme::BOLD << client_command_mode << "'"
               << lbr_fri_ros2::ColorScheme::ENDC);
       return false;

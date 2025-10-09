@@ -39,6 +39,7 @@ struct SystemInterfaceParameters {
 #if FRI_CLIENT_VERSION_MAJOR >= 2
   KUKA::FRI::EClientCommandMode client_command_mode{KUKA::FRI::EClientCommandMode::JOINT_POSITION};
 #endif
+  bool joint_position_loop{false}; // for torque_only mode
   int32_t port_id{30200};
   const char *remote_host{nullptr};
   int32_t rt_prio{80};

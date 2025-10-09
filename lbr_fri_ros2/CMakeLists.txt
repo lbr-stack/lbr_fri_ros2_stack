@@ -29,6 +29,7 @@ add_library(lbr_fri_ros2
     src/interfaces/position_command.cpp
     src/interfaces/state.cpp
     src/interfaces/torque_command.cpp
+    src/interfaces/torque_only_command.cpp
     src/interfaces/wrench_command.cpp
     src/app.cpp
     src/async_client.cpp

@@ -4,9 +4,9 @@ namespace lbr_fri_ros2 {
 AsyncClient::AsyncClient(const KUKA::FRI::EClientCommandMode &client_command_mode,
                          const double &joint_position_tau,
                          const CommandGuardParameters &command_guard_parameters,
-                         const std::string &command_guard_variant,
-                         const StateInterfaceParameters &state_interface_parameters,
-                         const bool &open_loop)
+                         const std::string &command_guard_variant,const StateInterfaceParameters &state_interface_parameters,
+                         const bool &open_loop,
+                         bool joint_position_loop)
     : open_loop_(open_loop) {
   RCLCPP_INFO_STREAM(rclcpp::get_logger(LOGGER_NAME),
                      ColorScheme::OKBLUE << "Configuring client" << ColorScheme::ENDC);
@@ -15,6 +15,11 @@ AsyncClient::AsyncClient(const KUKA::FRI::EClientCommandMode &client_command_mod
   RCLCPP_INFO_STREAM(rclcpp::get_logger(LOGGER_NAME),
                      "Client command mode: '"
                          << EnumMaps::client_command_mode_map(client_command_mode).c_str() << "'");
+  assert(!joint_position_loop || client_command_mode == KUKA::FRI::EClientCommandMode::TORQUE);
+  if (joint_position_loop)
+    RCLCPP_INFO_STREAM(rclcpp::get_logger(LOGGER_NAME),
+      "Command interface: torque only");
+
   RCLCPP_INFO_STREAM(rclcpp::get_logger(LOGGER_NAME),
                      "Command guard variant '" << command_guard_variant.c_str() << "'");
   switch (client_command_mode) {
@@ -30,6 +35,11 @@ AsyncClient::AsyncClient(const KUKA::FRI::EClientCommandMode &client_command_mod
     break;
   }
   case KUKA::FRI::EClientCommandMode::TORQUE:
+    if ( joint_position_loop) {
+      command_interface_ptr_ = std::make_shared<TorqueOnlyCommandInterface>(
+        joint_position_tau, command_guard_parameters, command_guard_variant);
+      break;
+    }
     command_interface_ptr_ = std::make_shared<TorqueCommandInterface>(
         joint_position_tau, command_guard_parameters, command_guard_variant);
     break;
