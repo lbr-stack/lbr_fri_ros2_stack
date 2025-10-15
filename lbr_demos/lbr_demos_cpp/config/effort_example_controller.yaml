@@ -1,0 +1,23 @@
+# Use of /** so that the configurations hold for controller
+# managers regardless of their namespace. Usefull in multi-robot setups.
+/**/controller_manager:
+  ros__parameters:
+    update_rate: 1000
+
+# ROS2 effort control example controller
+/effort_example_controller:
+  ros__parameters:
+    type: EffortExampleController
+
+    robot_name: lbr
+    dq_filt_alpha: 0.8
+    report_period: 0.1
+    init_pos: [0.0, 0.3, 0.0, -0.3, 0.0, 0.0, 0.0]
+    init_time: 8.0
+    k_gains: [150.0, 240.0, 150.0, 240.0, 50.0, 50.0, 0.0]
+    d_gains: [5.0, 5.0, 5.0, 5.0, 0.0, 0.0, 0.0]
+
+    amplitudes: [0.0, 0.2, 0.0, -0.2, 0.0, 0.0, 0.0]
+    periods: [5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0]
+    effort_max: [10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0]
+

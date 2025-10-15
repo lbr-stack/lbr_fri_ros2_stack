@@ -19,6 +19,9 @@ find_package(rclcpp REQUIRED)
 find_package(rclcpp_action REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(trajectory_msgs REQUIRED)
+find_package(pluginlib REQUIRED)
+find_package(controller_interface REQUIRED)
+find_package(std_srvs REQUIRED)
 
 # joint sine overlay
 add_executable(joint_sine_overlay
@@ -82,12 +85,35 @@ target_link_libraries(wrench_sine_overlay
   FRIClient::FRIClient
 )
 
+# effort example controller
+add_library(lbr_demos_cpp
+  SHARED
+  src/effort_example_controller.cpp
+)
+
+ament_target_dependencies(lbr_demos_cpp
+  controller_interface
+  hardware_interface
+  pluginlib
+  rclcpp
+  rclcpp_lifecycle
+  std_srvs
+  lbr_fri_idl
+  lbr_fri_ros2
+)
+
+pluginlib_export_plugin_description_file(
+  controller_interface effort_example_controller.xml)
+
 install(TARGETS
   joint_sine_overlay
   joint_trajectory_client
   torque_sine_overlay
   wrench_sine_overlay
+  lbr_demos_cpp
   DESTINATION lib/${PROJECT_NAME}
 )
+
+install(DIRECTORY config DESTINATION share/${PROJECT_NAME})
 
 ament_package()

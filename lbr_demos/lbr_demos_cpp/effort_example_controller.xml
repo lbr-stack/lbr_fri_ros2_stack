@@ -1,0 +1,10 @@
+<library path="lbr_demos_cpp">
+    <class name="EffortExampleController"
+           type="EffortExampleController"
+           base_class_type="controller_interface::ControllerInterface">
+        <description>
+            Example controller that generates sine trajectory on joints and
+            controls the LBR via torque_only interface.
+        </description>
+    </class>
+</library>
