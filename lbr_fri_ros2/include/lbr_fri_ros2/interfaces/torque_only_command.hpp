@@ -14,7 +14,12 @@ private:
                      // 1 - the first run,
                      // 2 - no control received yet,
                      // 0 - accepting torque control inputs
-    double init_pos[7]; // initial joint pos held by internal P-controller when init_state > 0
+
+  lbr_fri_idl::msg::LBRCommand::_joint_position_type init_pos;
+  // initial joint pos held by internal P-controller when init_state > 0
+
+  lbr_fri_idl::msg::LBRCommand::_joint_position_type last_pos;
+  lbr_fri_idl::msg::LBRCommand::_joint_position_type velocity;
 
 public:
   TorqueOnlyCommandInterface() = delete;
