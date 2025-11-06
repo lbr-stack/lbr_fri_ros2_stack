@@ -78,12 +78,6 @@ int main() {
     // command.joint_position[6] += 0.001;
     // client->get_command_interface()->buffer_command_target(command);
 
-    // // 3. test the interfaced for safe interaction
-
-    // auto command_target = client->get_command_interface()->get_command_target();
-    // command_target.joint_position[6] += 0.001; // must not change internal value!
-    // command_target = client->get_command_interface()->get_command_target();
-
     // RCLCPP_INFO(node->get_logger(), "Command joint position: %f %f %f %f %f %f %f",
     //             command_target.joint_position[0], command_target.joint_position[1],
     //             command_target.joint_position[2], command_target.joint_position[3],

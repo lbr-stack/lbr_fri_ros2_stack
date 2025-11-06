@@ -8,6 +8,7 @@ WrenchCommandInterface::WrenchCommandInterface(
 
 void WrenchCommandInterface::buffered_command_to_fri(fri_command_t_ref command,
                                                      const_idl_state_t_ref state) {
+  std::lock_guard<std::mutex> lock(command_mutex_);
   if (state.client_command_mode != KUKA::FRI::EClientCommandMode::WRENCH) {
     std::string err = "Expected robot in '" +
                       EnumMaps::client_command_mode_map(KUKA::FRI::EClientCommandMode::WRENCH) +

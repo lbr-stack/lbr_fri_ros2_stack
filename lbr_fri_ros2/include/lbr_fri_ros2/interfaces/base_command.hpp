@@ -3,6 +3,7 @@
 
 #include <chrono>
 #include <memory>
+#include <mutex>
 #include <stdexcept>
 #include <string>
 
@@ -29,15 +30,21 @@ public:
                        const std::string &command_guard_variant = "default");
 
   virtual void buffered_command_to_fri(fri_command_t_ref command, const_idl_state_t_ref state) = 0;
-  inline void buffer_command_target(const_idl_command_t_ref command) { command_target_ = command; }
+  void buffer_command_target(const_idl_command_t_ref command) {
+    std::lock_guard<std::mutex> lock(command_mutex_);
+    command_target_ = command;
+  }
   void init_command(const_idl_state_t_ref state);
 
-  inline const_idl_command_t_ref get_command() const { return command_; }
-  inline const_idl_command_t_ref get_command_target() const { return command_target_; }
+  idl_command_t get_command() const {
+    std::lock_guard<std::mutex> lock(command_mutex_);
+    return command_;
+  }
 
   void log_info() const;
 
 protected:
+  mutable std::mutex command_mutex_;
   bool command_initialized_;
   std::unique_ptr<CommandGuard> command_guard_;
   JointExponentialFilterArray joint_position_filter_;

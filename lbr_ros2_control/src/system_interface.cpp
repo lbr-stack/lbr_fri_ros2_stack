@@ -225,21 +225,20 @@ controller_interface::CallbackReturn SystemInterface::on_activate(const rclcpp_l
   RCLCPP_INFO_STREAM(rclcpp::get_logger(LOGGER_NAME), lbr_fri_ros2::ColorScheme::OKGREEN
                                                           << "Robot connected"
                                                           << lbr_fri_ros2::ColorScheme::ENDC);
-  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "Sample time %.3f s / %.1f Hz",
-              async_client_ptr_->get_state_interface()->get_state().sample_time,
-              1. / async_client_ptr_->get_state_interface()->get_state().sample_time);
-  while (!(async_client_ptr_->get_state_interface()->get_state().session_state >=
-           KUKA::FRI::ESessionState::COMMANDING_WAIT)) {
-    RCLCPP_INFO_STREAM(
-        rclcpp::get_logger(LOGGER_NAME),
-        "Awaiting '" << lbr_fri_ros2::ColorScheme::BOLD << lbr_fri_ros2::ColorScheme::OKBLUE
-                     << lbr_fri_ros2::EnumMaps::session_state_map(
-                            KUKA::FRI::ESessionState::COMMANDING_WAIT)
-                     << lbr_fri_ros2::ColorScheme::ENDC << "' state. Current state '"
-                     << lbr_fri_ros2::ColorScheme::BOLD << lbr_fri_ros2::ColorScheme::OKBLUE
-                     << lbr_fri_ros2::EnumMaps::session_state_map(
-                            async_client_ptr_->get_state_interface()->get_state().session_state)
-                     << lbr_fri_ros2::ColorScheme::ENDC << "'.");
+  auto state = async_client_ptr_->get_state_interface()->get_state();
+  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "Sample time %.3f s / %.1f Hz", state.sample_time,
+              1. / state.sample_time);
+  while (!(state.session_state >= KUKA::FRI::ESessionState::COMMANDING_WAIT)) {
+    state = async_client_ptr_->get_state_interface()->get_state();
+    RCLCPP_INFO_STREAM(rclcpp::get_logger(LOGGER_NAME),
+                       "Awaiting '"
+                           << lbr_fri_ros2::ColorScheme::BOLD << lbr_fri_ros2::ColorScheme::OKBLUE
+                           << lbr_fri_ros2::EnumMaps::session_state_map(
+                                  KUKA::FRI::ESessionState::COMMANDING_WAIT)
+                           << lbr_fri_ros2::ColorScheme::ENDC << "' state. Current state '"
+                           << lbr_fri_ros2::ColorScheme::BOLD << lbr_fri_ros2::ColorScheme::OKBLUE
+                           << lbr_fri_ros2::EnumMaps::session_state_map(state.session_state)
+                           << lbr_fri_ros2::ColorScheme::ENDC << "'.");
     if (!rclcpp::ok()) {
       return controller_interface::CallbackReturn::ERROR;
     }
@@ -271,20 +270,12 @@ SystemInterface::on_deactivate(const rclcpp_lifecycle::State &) {
 }
 
 hardware_interface::return_type SystemInterface::read(const rclcpp::Time & /*time*/,
-                                                      const rclcpp::Duration &period) {
+                                                      const rclcpp::Duration & /*period*/) {
   if (!async_client_ptr_->get_state_interface()->is_initialized()) {
     return hardware_interface::return_type::OK;
   }
 
   hw_lbr_state_ = async_client_ptr_->get_state_interface()->get_state();
-
-  if (period.seconds() - hw_lbr_state_.sample_time * 0.2 > hw_lbr_state_.sample_time) {
-    RCLCPP_WARN_STREAM(rclcpp::get_logger(LOGGER_NAME),
-                       lbr_fri_ros2::ColorScheme::WARNING
-                           << "Increase update_rate parameter for controller_manager to "
-                           << std::to_string(static_cast<int>(1. / hw_lbr_state_.sample_time))
-                           << " Hz or more" << lbr_fri_ros2::ColorScheme::ENDC);
-  }
 
   // exit once robot exits COMMANDING_ACTIVE (for safety)
   if (exit_commanding_active_(static_cast<KUKA::FRI::ESessionState>(hw_session_state_),
