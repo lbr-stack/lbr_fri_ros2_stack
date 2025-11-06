@@ -49,7 +49,7 @@ protected:
   std::atomic_bool state_initialized_;
   idl_state_t state_;
   StateInterfaceParameters parameters_;
-  JointExponentialFilterArray external_torque_filter_, measured_torque_filter_;
+  ExponentialFilterArray<N_JNTS> external_torque_filter_, measured_torque_filter_;
 };
 } // namespace lbr_fri_ros2
 #endif // LBR_FRI_ROS2__INTERFACES__STATE_HPP_

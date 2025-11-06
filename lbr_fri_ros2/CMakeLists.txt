@@ -38,6 +38,7 @@ add_library(lbr_fri_ros2
     src/filters.cpp
     src/ft_estimator.cpp
     src/kinematics.cpp
+    src/math.cpp
     src/worker.cpp
 )
 

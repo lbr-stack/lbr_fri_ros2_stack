@@ -21,11 +21,11 @@ hardware:
   # exponential moving average time constant for external joint torque measurements [s]:
   #   set tau > robot sample time for more smoothing on the external torque measurements
   #   set tau << robot sample time for no smoothing on the external torque measurements
-  external_torque_tau: 0.04
+  external_torque_tau: 0.1
   # exponential moving average time constant for joint torque measurements [s]:
   #   set tau > robot sample time for more smoothing on the raw torque measurements
   #   set tau << robot sample time for no smoothing on the raw torque measurements
-  measured_torque_tau: 0.04
+  measured_torque_tau: 0.1
   # for position control, LBR works best in open_loop control mode
   # note that open_loop is overridden to false if LBR is in impedance or Cartesian impedance control mode
   open_loop: true

@@ -129,8 +129,8 @@ void AsyncClient::on_enter_commanding_active_() {
     if (!on_enter_commanding_active_state_guard_.is_valid_state(
             state_interface_ptr_->get_state())) {
       std::string err =
-          "External torque limits exceeded. Perform load data calibration or disable the check"
-          " in lbr_system_config.yaml.";
+          "External torque limits exceeded. Perform load data calibration! Alternatively, disable "
+          "the check in lbr_system_config.yaml. Please be careful when disabling the check!";
       RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME),
                           ColorScheme::ERROR << err.c_str() << ColorScheme::ENDC);
       throw std::runtime_error(err);

@@ -32,33 +32,4 @@ void ExponentialFilter::initialize(const double &tau, const double &sample_time)
 }
 
 bool ExponentialFilter::validate_alpha_(const double &alpha) { return alpha <= 1. && alpha >= 0.; }
-
-JointExponentialFilterArray::JointExponentialFilterArray(const double &tau)
-    : exponential_filter_(tau) {}
-
-void JointExponentialFilterArray::compute(const double *const current, jnt_array_t_ref previous) {
-  std::for_each(current, current + N_JNTS, [&, i = 0](const auto &current_i) mutable {
-    previous[i] = exponential_filter_.compute(current_i, previous[i]);
-    ++i;
-  });
-}
-
-void JointExponentialFilterArray::compute(const_jnt_array_t_ref current, jnt_array_t_ref previous) {
-  compute(current.data(), previous);
-}
-
-void JointExponentialFilterArray::initialize(const double &sample_time) {
-  exponential_filter_.initialize(sample_time);
-  initialized_ = true;
-}
-
-void JointExponentialFilterArray::initialize(const double &tau, const double &sample_time) {
-  exponential_filter_.initialize(tau, sample_time);
-  initialized_ = true;
-}
-
-void JointExponentialFilterArray::log_info() const {
-  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "*** Parameters:");
-  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "*   tau: %.5f s", exponential_filter_.get_tau());
-}
 } // namespace lbr_fri_ros2

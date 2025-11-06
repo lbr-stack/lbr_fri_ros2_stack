@@ -47,7 +47,7 @@ protected:
   mutable std::mutex command_mutex_;
   bool command_initialized_;
   std::unique_ptr<CommandGuard> command_guard_;
-  JointExponentialFilterArray joint_position_filter_;
+  ExponentialFilterArray<N_JNTS> joint_position_filter_;
   idl_command_t command_, command_target_;
 };
 } // namespace lbr_fri_ros2
