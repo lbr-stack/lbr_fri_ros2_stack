@@ -17,17 +17,20 @@
 #include "hardware_interface/types/hardware_interface_type_values.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include "realtime_tools/realtime_buffer.hpp"
-#include "semantic_components/force_torque_sensor.hpp"
 
 #include "friLBRState.h"
 
 #include "lbr_fri_idl/msg/lbr_wrench_command.hpp"
+#include "lbr_fri_ros2/math.hpp"
 #include "lbr_fri_ros2/types.hpp"
 #include "lbr_ros2_control/system_interface_type_values.hpp"
 
 namespace lbr_ros2_control {
 class LBRWrenchCommandController : public controller_interface::ChainableControllerInterface {
-  static constexpr uint8_t CARTESIAN_DOF = 6;
+  struct LBRWrenchCommandControllerParameters {
+    double max_force_command_norm{10.0};
+    double max_torque_command_norm{10.0};
+  };
 
 public:
   LBRWrenchCommandController();
@@ -67,10 +70,19 @@ protected:
   void clear_state_interfaces_();
   void clear_command_interfaces_();
   void configure_joint_names_();
+  void configure_parameters_();
+  void zero_wrench_commands_();
   void init_lbr_wrench_command_subscription_();
   void init_wrench_command_subscription_();
   void reset_lbr_wrench_command_subscription_();
   void reset_wrench_command_subscription_();
+
+  // command limit verifcation
+  bool command_in_wrench_limits_(const double &f0, const double &f1, const double &f2,
+                                 const double &max_force_norm, const double &t0, const double &t1,
+                                 const double &t2, const double &max_torque) const;
+
+  LBRWrenchCommandControllerParameters parameters_;
 
   lbr_fri_ros2::jnt_name_array_t joint_names_;
 
@@ -81,10 +93,6 @@ protected:
   // state interfaces, consider access to external force interface for safety checking....
   std::vector<std::reference_wrapper<hardware_interface::LoanedStateInterface>>
       joint_position_state_interfaces_, joint_velocity_state_interfaces_;
-
-  // make use of the estimated force-torque sensor state interface to read externally applied
-  // forces. The forces are used to verify the robot's load data was calibrated
-  std::unique_ptr<semantic_components::ForceTorqueSensor> estimated_ft_sensor_ptr_;
 
   // command interfaces
   std::vector<std::reference_wrapper<hardware_interface::LoanedCommandInterface>>

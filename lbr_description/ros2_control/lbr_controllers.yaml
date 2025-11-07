@@ -92,6 +92,8 @@
 /**/lbr_wrench_command_controller:
   ros__parameters:
     robot_name: lbr
+    max_force_command_norm: 10.0
+    max_torque_command_norm: 10.0
 
 /**/admittance_controller:
   ros__parameters:
