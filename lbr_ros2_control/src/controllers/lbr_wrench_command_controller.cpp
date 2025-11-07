@@ -317,12 +317,12 @@ bool LBRWrenchCommandController::command_in_wrench_limits_(
     const double &t0, const double &t1, const double &t2, const double &max_torque_norm) const {
   // check if force and torque norms are within limits
   if (!lbr_fri_ros2::norm_in_bounds(f0, f1, f2, max_force_norm)) {
-    RCLCPP_ERROR(this->get_node()->get_logger(), "Force command exceeds limit of %:.3f N.",
+    RCLCPP_ERROR(this->get_node()->get_logger(), "Force command exceeds limit of %.3f N.",
                  max_force_norm);
     return false;
   }
   if (!lbr_fri_ros2::norm_in_bounds(t0, t1, t2, max_torque_norm)) {
-    RCLCPP_ERROR(this->get_node()->get_logger(), "Torque command exceeds limit of %:.3f Nm.",
+    RCLCPP_ERROR(this->get_node()->get_logger(), "Torque command exceeds limit of %.3f Nm.",
                  max_torque_norm);
     return false;
   }
