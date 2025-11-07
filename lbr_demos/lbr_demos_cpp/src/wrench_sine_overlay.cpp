@@ -21,9 +21,9 @@ class WrenchSineOverlay {
 
 public:
   WrenchSineOverlay(const rclcpp::Node::SharedPtr node) : node_(node), phase_x_(0.), phase_y_(0.) {
-    // create publisher to command/wrench
-    lbr_wrench_command_pub_ =
-        node_->create_publisher<lbr_fri_idl::msg::LBRWrenchCommand>("command/wrench", 1);
+    // create publisher to command/lbr_wrench_command
+    lbr_wrench_command_pub_ = node_->create_publisher<lbr_fri_idl::msg::LBRWrenchCommand>(
+        "command/lbr_wrench_command", 1);
 
     // create subscription to state
     lbr_state_sub_ = node_->create_subscription<lbr_fri_idl::msg::LBRState>(

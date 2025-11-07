@@ -8,12 +8,18 @@ PositionCommandInterface::PositionCommandInterface(
 
 void PositionCommandInterface::buffered_command_to_fri(fri_command_t_ref command,
                                                        const_idl_state_t_ref state) {
+  std::lock_guard<std::mutex> lock(command_mutex_);
 #if FRI_CLIENT_VERSION_MAJOR == 1
   if (state.client_command_mode != KUKA::FRI::EClientCommandMode::POSITION) {
-    std::string err = "Expected robot in '" +
-                      EnumMaps::client_command_mode_map(KUKA::FRI::EClientCommandMode::POSITION) +
-                      "' command mode got '" +
-                      EnumMaps::client_command_mode_map(state.client_command_mode) + "'";
+    std::string err =
+        "Client side (configured via hardware.client_command_mode in lbr_system_config.yaml) "
+        "expected robot in '" +
+        EnumMaps::client_command_mode_map(KUKA::FRI::EClientCommandMode::POSITION) +
+        "' command mode, but robot was in '" +
+        EnumMaps::client_command_mode_map(state.client_command_mode) +
+        "' command mode. Correct the configurations or run the robot in '" +
+        EnumMaps::client_command_mode_map(KUKA::FRI::EClientCommandMode::POSITION) +
+        "' command mode.";
     RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME()),
                         ColorScheme::ERROR << err.c_str() << ColorScheme::ENDC);
     throw std::runtime_error(err);
@@ -22,10 +28,16 @@ void PositionCommandInterface::buffered_command_to_fri(fri_command_t_ref command
 #if FRI_CLIENT_VERSION_MAJOR >= 2
   if (state.client_command_mode != KUKA::FRI::EClientCommandMode::JOINT_POSITION) {
     std::string err =
-        "Expected robot in " +
+        "Client side (configured via hardware.client_command_mode in lbr_system_config.yaml) "
+        "expected robot in '" +
         EnumMaps::client_command_mode_map(KUKA::FRI::EClientCommandMode::JOINT_POSITION) +
-        " command mode.";
-    RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME()), err.c_str());
+        " command mode, but robot was in '" +
+        EnumMaps::client_command_mode_map(state.client_command_mode) +
+        "' command mode. Correct the configurations or run the robot in '" +
+        EnumMaps::client_command_mode_map(KUKA::FRI::EClientCommandMode::JOINT_POSITION) +
+        "' command mode.";
+    RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME()),
+                        ColorScheme::ERROR << err.c_str() << ColorScheme::ENDC);
     throw std::runtime_error(err);
   }
 #endif

@@ -2,6 +2,7 @@
 #define LBR_ROS2_CONTROL__ADMITTANCE_CONTROLLER_HPP_
 
 #include <array>
+#include <chrono>
 #include <functional>
 #include <memory>
 #include <stdexcept>
@@ -18,6 +19,9 @@
 
 #include "friLBRState.h"
 #include "lbr_fri_ros2/control.hpp"
+#include "lbr_fri_ros2/filters.hpp"
+#include "lbr_fri_ros2/formatting.hpp"
+#include "lbr_fri_ros2/math.hpp"
 #include "lbr_fri_ros2/types.hpp"
 #include "lbr_ros2_control/system_interface_type_values.hpp"
 
@@ -50,7 +54,11 @@ protected:
   void configure_joint_names_();
   void configure_admittance_impl_();
   void configure_inv_jac_ctrl_impl_();
+  void configure_filters_();
   void zero_all_values_();
+  void init_filters_with_update_rate_();
+  bool any_external_force_torques_on_horizon_(
+      const std::chrono::milliseconds &horizon = std::chrono::milliseconds(200)) const;
   void log_info_() const;
 
   // admittance
@@ -65,12 +73,14 @@ protected:
   lbr_fri_ros2::jnt_array_t q_, dq_;
   Eigen::Matrix<double, lbr_fri_ros2::CARTESIAN_DOF, 1> twist_command_;
 
+  // velocity command smoothing
+  lbr_fri_ros2::jnt_array_t dq_filtered_;
+  std::unique_ptr<lbr_fri_ros2::ExponentialFilterArray<lbr_fri_ros2::N_JNTS>> dq_filter_ptr_;
+
   // interfaces
   lbr_fri_ros2::jnt_name_array_t joint_names_;
   std::vector<std::reference_wrapper<hardware_interface::LoanedStateInterface>>
       joint_position_state_interfaces_;
-  std::unique_ptr<std::reference_wrapper<hardware_interface::LoanedStateInterface>>
-      sample_time_state_interface_ptr_;
   std::unique_ptr<std::reference_wrapper<hardware_interface::LoanedStateInterface>>
       session_state_interface_ptr_;
   std::unique_ptr<semantic_components::ForceTorqueSensor> estimated_ft_sensor_ptr_;

@@ -18,9 +18,9 @@ class WrenchSineOverlayNode(Node):
         self._phase_x, self._phase_y = 0.0, 0.0
         self._lbr_wrench_command = LBRWrenchCommand()
 
-        # create publisher to command/wrench
+        # create publisher to command/lbr_wrench_command
         self._lbr_wrench_command_pub = self.create_publisher(
-            LBRWrenchCommand, "command/wrench", 1
+            LBRWrenchCommand, "command/lbr_wrench_command", 1
         )
 
         # create subscription to state

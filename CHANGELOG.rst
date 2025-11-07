@@ -1,6 +1,25 @@
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Changelog for package LBR FRI ROS 2 Stack
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Humble v2.3.0 (2025-11-07)
+--------------------------
+* ``lbr_fri_ros2``:
+
+    * Interfaces now default to return by value for simplicity.
+    * Added a new ``StateGuard`` that tests for load data calibration on activation in compliant control modes and shuts the connection otherwise.
+* ``lbr_ros2_control``:
+
+  * Removed the default error from ``AdmittanceController`` with the introduction of load data checks. Also now supports the default ``lbr_system_config.yaml``.
+  * WARN: KUKA's Cartesian impedance controller seems quite prone to singularities, and should thus be used with caution and only in ``T1`` mode.
+
+    * ``LBRWrenchCommandController`` (uses Cartesian impedance) is now a ``ChainableControllerInterface`` to support separate wrench and joint position commands: https://github.com/lbr-stack/lbr_fri_ros2_stack/issues/250
+    * Future releases will chain the ``LBRTorqueCommandController``, which uses KUKA's joint impedance controller without singularity issues.
+    * Topics were updated to reflect the chained controller structure:
+
+      * ``/lbr/wrench`` -> ``/lbr/lbr_wrench_command``
+      * ``/lbr/torque`` -> ``/lbr/lbr_torque_command``
+      * ``/lbr/joint_position`` -> ``/lbr/lbr_joint_position_command`` (for consitency)
+
 Humble v2.2.1 (2025-03-26)
 --------------------------
 * ``lbr_bringup``: Removed static broadcasters from launch files: https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/264

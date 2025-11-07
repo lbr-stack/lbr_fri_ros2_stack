@@ -63,14 +63,14 @@ Exposes the robot command in ``POSITION`` client command mode as ``LBRJointPosit
   - ``POSITION_CONTROL``
   - ``JOINT_IMPEDANCE_CONTROL``
   - ``CARTESIAN_IMPEDANCE_CONTROL``
-- Topic: ``command/joint_position``
+- Topic: ``command/lbr_joint_position_command``
 
 lbr_fri_ros2::LBRTorqueCommandController
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Expose the robot command in ``TORQUE`` client command mode as ``LBRTorqueCommand`` message.
 
 - Supported control modes: ``TORQUE_CONTROL`` 
-- Topic: ``command/torque``
+- Topic: ``command/lbr_torque_command``
 
 
 lbr_fri_ros2::LBRWrenchCommandController
@@ -78,7 +78,7 @@ lbr_fri_ros2::LBRWrenchCommandController
 Expose the robot command in ``WRENCH`` client command mode as ``LBRWrenchCommand`` message.
 
 - Supported control modes: ``CARTESIAN_IMPEDANCE_CONTROL`` 
-- Topic: ``command/wrench``
+- Topic: ``command/lbr_wrench_command``
 
 lbr_fri_ros2::LBRStateBroadcaster
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -92,6 +92,8 @@
 /**/lbr_wrench_command_controller:
   ros__parameters:
     robot_name: lbr
+    max_force_command_norm: 10.0
+    max_torque_command_norm: 10.0
 
 /**/admittance_controller:
   ros__parameters:
@@ -108,6 +110,8 @@
       max_angular_velocity: 2.0 # maximum linear acceleration
       joint_gains: [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0] # joint gains
       cartesian_gains: [1.0, 1.0, 1.0, 1.0, 1.0, 1.0] # cartesian gains
+    filter:
+      joint_velocity_tau: 0.4 # exponential moving average time constant for joint velocity commands [s]
 
 /**/twist_controller:
   ros__parameters:
@@ -121,4 +125,4 @@
       max_angular_velocity: 0.1 # maximum linear acceleration
       joint_gains: [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0] # joint gains
       cartesian_gains: [1.0, 1.0, 1.0, 1.0, 1.0, 1.0] # cartesian gains
-    timeout: 0.2 # stop controller if no command is received within this time [s]
+    timeout: 0.2 # zeros the twist command when no command is received within timeout [s]

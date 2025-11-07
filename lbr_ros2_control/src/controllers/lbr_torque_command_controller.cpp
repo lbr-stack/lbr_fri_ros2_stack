@@ -25,7 +25,8 @@ controller_interface::CallbackReturn LBRTorqueCommandController::on_init() {
   try {
     lbr_torque_command_subscription_ptr_ =
         this->get_node()->create_subscription<lbr_fri_idl::msg::LBRTorqueCommand>(
-            "command/torque", 1, [this](const lbr_fri_idl::msg::LBRTorqueCommand::SharedPtr msg) {
+            "command/lbr_torque_command", 1,
+            [this](const lbr_fri_idl::msg::LBRTorqueCommand::SharedPtr msg) {
               rt_lbr_torque_command_ptr_.writeFromNonRT(msg);
             });
     this->get_node()->declare_parameter("robot_name", "lbr");

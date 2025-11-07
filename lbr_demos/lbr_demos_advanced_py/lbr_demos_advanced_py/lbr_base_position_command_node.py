@@ -34,7 +34,7 @@ class LBRBasePositionCommandNode(Node):
         )
         self._lbr_joint_position_command_pub = self.create_publisher(
             LBRJointPositionCommand,
-            "command/joint_position",
+            "command/lbr_joint_position_command",
             1,
         )
 

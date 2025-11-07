@@ -3,7 +3,8 @@
 namespace lbr_ros2_control {
 controller_interface::CallbackReturn
 SystemInterface::on_init(const hardware_interface::HardwareInfo &system_info) {
-  auto ret = hardware_interface::SystemInterface::on_init(system_info);
+  auto ret =
+      hardware_interface::SystemInterface::on_init(system_info); // parses system_info to info_
   if (ret != controller_interface::CallbackReturn::SUCCESS) {
     RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME),
                         lbr_fri_ros2::ColorScheme::ERROR << "Failed to initialize SystemInterface"
@@ -13,31 +14,40 @@ SystemInterface::on_init(const hardware_interface::HardwareInfo &system_info) {
 
   // parameters_ from lbr_system_interface.xacro (default configurations located in
   // lbr_description/ros2_control/lbr_system_interface.xacro)
-  if (!parse_parameters_(system_info)) {
+  if (!parse_parameters_()) {
     return controller_interface::CallbackReturn::ERROR;
   }
 
   // setup driver
   lbr_fri_ros2::CommandGuardParameters command_guard_parameters;
+  lbr_fri_ros2::StateGuardParameters state_guard_parameters;
   lbr_fri_ros2::StateInterfaceParameters state_interface_parameters;
-  for (std::size_t idx = 0; idx < system_info.joints.size(); ++idx) {
-    command_guard_parameters.joint_names[idx] = system_info.joints[idx].name;
+  for (std::size_t idx = 0; idx < info_.joints.size(); ++idx) {
+    command_guard_parameters.joint_names[idx] = info_.joints[idx].name;
     command_guard_parameters.max_positions[idx] =
-        std::stod(system_info.joints[idx].parameters.at("max_position"));
+        std::stod(info_.joints[idx].parameters.at("max_position"));
     command_guard_parameters.min_positions[idx] =
-        std::stod(system_info.joints[idx].parameters.at("min_position"));
+        std::stod(info_.joints[idx].parameters.at("min_position"));
     command_guard_parameters.max_velocities[idx] =
-        std::stod(system_info.joints[idx].parameters.at("max_velocity"));
+        std::stod(info_.joints[idx].parameters.at("max_velocity"));
     command_guard_parameters.max_torques[idx] =
-        std::stod(system_info.joints[idx].parameters.at("max_torque"));
+        std::stod(info_.joints[idx].parameters.at("max_torque"));
+
+    // currently, only check external torque limits on enter commanding active with fixed limit, see
+    // https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/271#issuecomment-2780642918
+    state_guard_parameters.joint_names[idx] = info_.joints[idx].name;
+    state_guard_parameters.max_external_torque[idx] = parameters_.state_guard_external_torque_limit;
   }
+  state_guard_parameters.external_torque_safety_check =
+      parameters_.state_guard_external_torque_safety_check;
   state_interface_parameters.external_torque_tau = parameters_.external_torque_tau;
   state_interface_parameters.measured_torque_tau = parameters_.measured_torque_tau;
 
   try {
     async_client_ptr_ = std::make_shared<lbr_fri_ros2::AsyncClient>(
         parameters_.client_command_mode, parameters_.joint_position_tau, command_guard_parameters,
-        parameters_.command_guard_variant, state_interface_parameters, parameters_.open_loop);
+        parameters_.command_guard_variant, state_guard_parameters, state_interface_parameters,
+        parameters_.open_loop);
     app_ptr_ = std::make_unique<lbr_fri_ros2::App>(async_client_ptr_);
   } catch (const std::exception &e) {
     RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME),
@@ -52,22 +62,9 @@ SystemInterface::on_init(const hardware_interface::HardwareInfo &system_info) {
   nan_last_hw_states_();
 
   // setup force-torque estimator
-  std::transform(info_.sensors[1].parameters.at("enabled").begin(),
-                 info_.sensors[1].parameters.at("enabled").end(),
-                 info_.sensors[1].parameters.at("enabled").begin(),
-                 ::tolower); // convert to lower case
-  ft_parameters_.enabled = info_.sensors[1].parameters.at("enabled") == "true";
-  ft_parameters_.update_rate = std::stoul(info_.sensors[1].parameters.at("update_rate"));
-  ft_parameters_.rt_prio = std::stoi(info_.sensors[1].parameters.at("rt_prio"));
-  ft_parameters_.chain_root = info_.sensors[1].parameters.at("chain_root");
-  ft_parameters_.chain_tip = info_.sensors[1].parameters.at("chain_tip");
-  ft_parameters_.damping = std::stod(info_.sensors[1].parameters.at("damping"));
-  ft_parameters_.force_x_th = std::stod(info_.sensors[1].parameters.at("force_x_th"));
-  ft_parameters_.force_y_th = std::stod(info_.sensors[1].parameters.at("force_y_th"));
-  ft_parameters_.force_z_th = std::stod(info_.sensors[1].parameters.at("force_z_th"));
-  ft_parameters_.torque_x_th = std::stod(info_.sensors[1].parameters.at("torque_x_th"));
-  ft_parameters_.torque_y_th = std::stod(info_.sensors[1].parameters.at("torque_y_th"));
-  ft_parameters_.torque_z_th = std::stod(info_.sensors[1].parameters.at("torque_z_th"));
+  if (!parse_ft_parameters_()) {
+    return controller_interface::CallbackReturn::ERROR;
+  }
   if (ft_parameters_.enabled) {
     ft_estimator_impl_ptr_ = std::make_shared<lbr_fri_ros2::FTEstimatorImpl>(
         info_.original_xml, ft_parameters_.chain_root, ft_parameters_.chain_tip,
@@ -228,21 +225,20 @@ controller_interface::CallbackReturn SystemInterface::on_activate(const rclcpp_l
   RCLCPP_INFO_STREAM(rclcpp::get_logger(LOGGER_NAME), lbr_fri_ros2::ColorScheme::OKGREEN
                                                           << "Robot connected"
                                                           << lbr_fri_ros2::ColorScheme::ENDC);
-  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "Sample time %.3f s / %.1f Hz",
-              async_client_ptr_->get_state_interface()->get_state().sample_time,
-              1. / async_client_ptr_->get_state_interface()->get_state().sample_time);
-  while (!(async_client_ptr_->get_state_interface()->get_state().session_state >=
-           KUKA::FRI::ESessionState::COMMANDING_WAIT)) {
-    RCLCPP_INFO_STREAM(
-        rclcpp::get_logger(LOGGER_NAME),
-        "Awaiting '" << lbr_fri_ros2::ColorScheme::BOLD << lbr_fri_ros2::ColorScheme::OKBLUE
-                     << lbr_fri_ros2::EnumMaps::session_state_map(
-                            KUKA::FRI::ESessionState::COMMANDING_WAIT)
-                     << lbr_fri_ros2::ColorScheme::ENDC << "' state. Current state '"
-                     << lbr_fri_ros2::ColorScheme::BOLD << lbr_fri_ros2::ColorScheme::OKBLUE
-                     << lbr_fri_ros2::EnumMaps::session_state_map(
-                            async_client_ptr_->get_state_interface()->get_state().session_state)
-                     << lbr_fri_ros2::ColorScheme::ENDC << "'.");
+  auto state = async_client_ptr_->get_state_interface()->get_state();
+  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "Sample time %.3f s / %.1f Hz", state.sample_time,
+              1. / state.sample_time);
+  while (!(state.session_state >= KUKA::FRI::ESessionState::COMMANDING_WAIT)) {
+    state = async_client_ptr_->get_state_interface()->get_state();
+    RCLCPP_INFO_STREAM(rclcpp::get_logger(LOGGER_NAME),
+                       "Awaiting '"
+                           << lbr_fri_ros2::ColorScheme::BOLD << lbr_fri_ros2::ColorScheme::OKBLUE
+                           << lbr_fri_ros2::EnumMaps::session_state_map(
+                                  KUKA::FRI::ESessionState::COMMANDING_WAIT)
+                           << lbr_fri_ros2::ColorScheme::ENDC << "' state. Current state '"
+                           << lbr_fri_ros2::ColorScheme::BOLD << lbr_fri_ros2::ColorScheme::OKBLUE
+                           << lbr_fri_ros2::EnumMaps::session_state_map(state.session_state)
+                           << lbr_fri_ros2::ColorScheme::ENDC << "'.");
     if (!rclcpp::ok()) {
       return controller_interface::CallbackReturn::ERROR;
     }
@@ -338,12 +334,12 @@ hardware_interface::return_type SystemInterface::write(const rclcpp::Time & /*ti
   return hardware_interface::return_type::OK;
 }
 
-bool SystemInterface::parse_parameters_(const hardware_interface::HardwareInfo &system_info) {
+bool SystemInterface::parse_parameters_() {
   try {
     parameters_.fri_client_sdk_major_version =
-        std::stoul(system_info.hardware_parameters.at("fri_client_sdk_major_version"));
+        std::stoul(info_.hardware_parameters.at("fri_client_sdk_major_version"));
     parameters_.fri_client_sdk_minor_version =
-        std::stoul(system_info.hardware_parameters.at("fri_client_sdk_minor_version"));
+        std::stoul(info_.hardware_parameters.at("fri_client_sdk_minor_version"));
     if (parameters_.fri_client_sdk_major_version != FRI_CLIENT_VERSION_MAJOR) {
       RCLCPP_ERROR_STREAM(
           rclcpp::get_logger(LOGGER_NAME),
@@ -354,7 +350,7 @@ bool SystemInterface::parse_parameters_(const hardware_interface::HardwareInfo &
               << lbr_fri_ros2::ColorScheme::ENDC);
       return false;
     }
-    std::string client_command_mode = system_info.hardware_parameters.at("client_command_mode");
+    std::string client_command_mode = info_.hardware_parameters.at("client_command_mode");
     if (client_command_mode == "position") {
 #if FRI_CLIENT_VERSION_MAJOR == 1
       parameters_.client_command_mode = KUKA::FRI::EClientCommandMode::POSITION;
@@ -375,7 +371,7 @@ bool SystemInterface::parse_parameters_(const hardware_interface::HardwareInfo &
               << lbr_fri_ros2::ColorScheme::ENDC);
       return false;
     }
-    parameters_.port_id = std::stoul(info_.hardware_parameters["port_id"]);
+    parameters_.port_id = std::stoul(info_.hardware_parameters.at("port_id"));
     if (parameters_.port_id < 30200 || parameters_.port_id > 30209) {
       RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME),
                           lbr_fri_ros2::ColorScheme::ERROR
@@ -384,23 +380,62 @@ bool SystemInterface::parse_parameters_(const hardware_interface::HardwareInfo &
                               << lbr_fri_ros2::ColorScheme::ENDC);
       return false;
     }
-    info_.hardware_parameters["remote_host"] == "INADDR_ANY"
+    info_.hardware_parameters.at("remote_host") == "INADDR_ANY"
         ? parameters_.remote_host = NULL
-        : parameters_.remote_host = info_.hardware_parameters["remote_host"].c_str();
-    parameters_.rt_prio = std::stoul(info_.hardware_parameters["rt_prio"]);
-    std::transform(info_.hardware_parameters["open_loop"].begin(),
-                   info_.hardware_parameters["open_loop"].end(),
-                   info_.hardware_parameters["open_loop"].begin(),
+        : parameters_.remote_host = info_.hardware_parameters.at("remote_host").c_str();
+    parameters_.rt_prio = std::stoul(info_.hardware_parameters.at("rt_prio"));
+    parameters_.joint_position_tau = std::stod(info_.hardware_parameters.at("joint_position_tau"));
+    parameters_.command_guard_variant = info_.hardware_parameters.at("command_guard_variant");
+    std::transform(info_.hardware_parameters.at("state_guard_external_torque_safety_check").begin(),
+                   info_.hardware_parameters.at("state_guard_external_torque_safety_check").end(),
+                   info_.hardware_parameters.at("state_guard_external_torque_safety_check").begin(),
                    ::tolower); // convert to lower case
-    parameters_.open_loop = info_.hardware_parameters["open_loop"] == "true";
-    parameters_.joint_position_tau = std::stod(info_.hardware_parameters["joint_position_tau"]);
-    parameters_.command_guard_variant = system_info.hardware_parameters.at("command_guard_variant");
-    parameters_.external_torque_tau = std::stod(info_.hardware_parameters["external_torque_tau"]);
-    parameters_.measured_torque_tau = std::stod(info_.hardware_parameters["measured_torque_tau"]);
+    parameters_.state_guard_external_torque_safety_check =
+        info_.hardware_parameters.at("state_guard_external_torque_safety_check") == "true";
+    parameters_.state_guard_external_torque_limit =
+        std::stod(info_.hardware_parameters.at("state_guard_external_torque_limit"));
+    parameters_.external_torque_tau =
+        std::stod(info_.hardware_parameters.at("external_torque_tau"));
+    parameters_.measured_torque_tau =
+        std::stod(info_.hardware_parameters.at("measured_torque_tau"));
+    std::transform(info_.hardware_parameters.at("open_loop").begin(),
+                   info_.hardware_parameters.at("open_loop").end(),
+                   info_.hardware_parameters.at("open_loop").begin(),
+                   ::tolower); // convert to lower case
+    parameters_.open_loop = info_.hardware_parameters.at("open_loop") == "true";
   } catch (const std::out_of_range &e) {
     RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME),
                         lbr_fri_ros2::ColorScheme::ERROR
                             << "Failed to parse hardware parameters with: " << e.what()
+                            << lbr_fri_ros2::ColorScheme::ENDC);
+    return false;
+  }
+  return true;
+}
+
+bool SystemInterface::parse_ft_parameters_() {
+  try {
+    std::transform(info_.sensors[1].parameters.at("enabled").begin(),
+                   info_.sensors[1].parameters.at("enabled").end(),
+                   info_.sensors[1].parameters.at("enabled").begin(),
+                   ::tolower); // convert to lower case
+    const auto &estimated_ft_sensor = info_.sensors[1];
+    ft_parameters_.enabled = estimated_ft_sensor.parameters.at("enabled") == "true";
+    ft_parameters_.update_rate = std::stoul(estimated_ft_sensor.parameters.at("update_rate"));
+    ft_parameters_.rt_prio = std::stoi(estimated_ft_sensor.parameters.at("rt_prio"));
+    ft_parameters_.chain_root = estimated_ft_sensor.parameters.at("chain_root");
+    ft_parameters_.chain_tip = estimated_ft_sensor.parameters.at("chain_tip");
+    ft_parameters_.damping = std::stod(estimated_ft_sensor.parameters.at("damping"));
+    ft_parameters_.force_x_th = std::stod(estimated_ft_sensor.parameters.at("force_x_th"));
+    ft_parameters_.force_y_th = std::stod(estimated_ft_sensor.parameters.at("force_y_th"));
+    ft_parameters_.force_z_th = std::stod(estimated_ft_sensor.parameters.at("force_z_th"));
+    ft_parameters_.torque_x_th = std::stod(estimated_ft_sensor.parameters.at("torque_x_th"));
+    ft_parameters_.torque_y_th = std::stod(estimated_ft_sensor.parameters.at("torque_y_th"));
+    ft_parameters_.torque_z_th = std::stod(estimated_ft_sensor.parameters.at("torque_z_th"));
+  } catch (const std::out_of_range &e) {
+    RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME),
+                        lbr_fri_ros2::ColorScheme::ERROR
+                            << "Failed to parse force-torque sensor parameters with: " << e.what()
                             << lbr_fri_ros2::ColorScheme::ENDC);
     return false;
   }

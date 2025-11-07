@@ -12,6 +12,8 @@
 #include "friLBRClient.h"
 
 #include "lbr_fri_ros2/formatting.hpp"
+#include "lbr_fri_ros2/guards/command_guard.hpp"
+#include "lbr_fri_ros2/guards/state_guard.hpp"
 #include "lbr_fri_ros2/interfaces/base_command.hpp"
 #include "lbr_fri_ros2/interfaces/position_command.hpp"
 #include "lbr_fri_ros2/interfaces/state.hpp"
@@ -29,6 +31,7 @@ public:
               const double &joint_position_tau,
               const CommandGuardParameters &command_guard_parameters,
               const std::string &command_guard_variant,
+              const StateGuardParameters &state_guard_parameters,
               const StateInterfaceParameters &state_interface_parameters = {0.04, 0.04},
               const bool &open_loop = true);
 
@@ -44,8 +47,15 @@ public:
   void command() override;
 
 protected:
+  void on_enter_commanding_active_();
+
+protected:
   std::shared_ptr<BaseCommandInterface> command_interface_ptr_;
   std::shared_ptr<StateInterface> state_interface_ptr_;
+
+  // currently, only check external torque limits on enter commanding active with fixed limit, see
+  // https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/271#issuecomment-2780642918
+  StateGuard on_enter_commanding_active_state_guard_;
 
   bool open_loop_;
 };

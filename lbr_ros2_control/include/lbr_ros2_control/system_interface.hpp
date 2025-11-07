@@ -22,9 +22,10 @@
 #include "lbr_fri_idl/msg/lbr_state.hpp"
 #include "lbr_fri_ros2/app.hpp"
 #include "lbr_fri_ros2/async_client.hpp"
-#include "lbr_fri_ros2/command_guard.hpp"
 #include "lbr_fri_ros2/formatting.hpp"
 #include "lbr_fri_ros2/ft_estimator.hpp"
+#include "lbr_fri_ros2/guards/command_guard.hpp"
+#include "lbr_fri_ros2/guards/state_guard.hpp"
 #include "lbr_fri_ros2/interfaces/state.hpp"
 #include "lbr_fri_ros2/types.hpp"
 #include "lbr_ros2_control/system_interface_type_values.hpp"
@@ -42,11 +43,13 @@ struct SystemInterfaceParameters {
   int32_t port_id{30200};
   const char *remote_host{nullptr};
   int32_t rt_prio{80};
-  bool open_loop{true};
   double joint_position_tau{0.04};
   std::string command_guard_variant{"default"};
+  bool state_guard_external_torque_safety_check{true};
+  double state_guard_external_torque_limit{2.0};
   double external_torque_tau{0.04};
   double measured_torque_tau{0.04};
+  bool open_loop{true};
 };
 
 struct EstimatedFTSensorParameters {
@@ -105,7 +108,8 @@ public:
 
 protected:
   // setup
-  bool parse_parameters_(const hardware_interface::HardwareInfo &info);
+  bool parse_parameters_();
+  bool parse_ft_parameters_();
   void nan_command_interfaces_();
   void nan_state_interfaces_();
   bool verify_number_of_joints_();

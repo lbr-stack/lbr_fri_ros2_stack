@@ -30,25 +30,11 @@ AdmittanceController::state_interface_configuration() const {
 
   // additional state interfaces
   interface_configuration.names.push_back(std::string(HW_IF_AUXILIARY_PREFIX) + "/" +
-                                          HW_IF_SAMPLE_TIME);
-  interface_configuration.names.push_back(std::string(HW_IF_AUXILIARY_PREFIX) + "/" +
                                           HW_IF_SESSION_STATE);
   return interface_configuration;
 }
 
 controller_interface::CallbackReturn AdmittanceController::on_init() {
-  RCLCPP_ERROR(
-      this->get_node()->get_logger(),
-      "The admittance controller currently requires custom lbr_system_config.yaml configurations. "
-      "Therefore, only experienced users should use it, then remove this error and strictly "
-      "follow "
-      "https://lbr-stack.readthedocs.io/en/latest/lbr_fri_ros2_stack/lbr_demos/"
-      "lbr_demos_advanced_cpp/doc/lbr_demos_advanced_cpp.html#admittance-controller. "
-      "This error can be removed when a) the controller works with default system configurations "
-      "and b) the "
-      "controller checks that load data was successfully calibrated.");
-  return controller_interface::CallbackReturn::ERROR;
-
   try {
     this->get_node()->declare_parameter("robot_name", "lbr");
     this->get_node()->declare_parameter("admittance.mass",
@@ -66,9 +52,11 @@ controller_interface::CallbackReturn AdmittanceController::on_init() {
                                         std::vector<double>(lbr_fri_ros2::N_JNTS, 0.0));
     this->get_node()->declare_parameter("inv_jac_ctrl.cartesian_gains",
                                         std::vector<double>(lbr_fri_ros2::CARTESIAN_DOF, 0.0));
+    this->get_node()->declare_parameter("filter.joint_velocity_tau", 0.4);
     configure_joint_names_();
     configure_admittance_impl_();
     configure_inv_jac_ctrl_impl_();
+    configure_filters_();
     log_info_();
   } catch (const std::exception &e) {
     RCLCPP_ERROR(this->get_node()->get_logger(),
@@ -79,8 +67,8 @@ controller_interface::CallbackReturn AdmittanceController::on_init() {
   return controller_interface::CallbackReturn::SUCCESS;
 }
 
-controller_interface::return_type AdmittanceController::update(const rclcpp::Time & /*time*/,
-                                                               const rclcpp::Duration &period) {
+controller_interface::return_type
+AdmittanceController::update(const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/) {
   // get estimated force-torque sensor values
   f_ext_.head(3) =
       Eigen::Map<Eigen::Matrix<double, 3, 1>>(estimated_ft_sensor_ptr_->get_forces().data());
@@ -108,8 +96,15 @@ controller_interface::return_type AdmittanceController::update(const rclcpp::Tim
   }
 
   // compute translational delta and velocity
+  auto update_rate = static_cast<double>(get_update_rate());
+  if (update_rate <= 0.0) {
+    RCLCPP_ERROR(this->get_node()->get_logger(), "Update rate should be greater than zero, got %f.",
+                 update_rate);
+    return controller_interface::return_type::ERROR;
+  }
+  auto dt = 1. / update_rate;
   delta_x_.head(3) = (t_ - t_init_);
-  dx_.head(3) = (t_ - t_prev_) / period.seconds();
+  dx_.head(3) = (t_ - t_prev_) / dt;
 
   // compute rotational delta and veloctity
   Eigen::AngleAxisd deltaa(r_.inverse() * r_init_);
@@ -129,7 +124,7 @@ controller_interface::return_type AdmittanceController::update(const rclcpp::Tim
   admittance_impl_ptr_->compute(f_ext_, delta_x_, dx_, ddx_);
 
   // integrate ddx_ to command velocity
-  twist_command_ = ddx_ * period.seconds();
+  twist_command_ = ddx_ * dt;
 
   if (!inv_jac_ctrl_impl_ptr_) {
     RCLCPP_ERROR(this->get_node()->get_logger(), "Inverse Jacobian controller not initialized.");
@@ -143,10 +138,12 @@ controller_interface::return_type AdmittanceController::update(const rclcpp::Tim
   // compute the joint velocity from the twist command target
   inv_jac_ctrl_impl_ptr_->compute(twist_command_, q_, dq_);
 
+  // filter the joint velocities
+  dq_filter_ptr_->compute(dq_.data(), dq_filtered_.data());
+
   // pass joint positions to hardware
   std::for_each(q_.begin(), q_.end(), [&, i = 0](const double &q_i) mutable {
-    this->command_interfaces_[i].set_value(
-        q_i + dq_[i] * sample_time_state_interface_ptr_->get().get_value());
+    this->command_interfaces_[i].set_value(q_i + dq_filtered_[i] * dt);
     ++i;
   });
 
@@ -170,7 +167,27 @@ AdmittanceController::on_activate(const rclcpp_lifecycle::State & /*previous_sta
   if (!reference_state_interfaces_()) {
     return controller_interface::CallbackReturn::ERROR;
   }
+  init_filters_with_update_rate_();
   zero_all_values_();
+  try {
+    if (any_external_force_torques_on_horizon_()) {
+      RCLCPP_ERROR_STREAM(
+          this->get_node()->get_logger(),
+          lbr_fri_ros2::ColorScheme::ERROR
+              << "External force-torques detected during admittance controller activation. "
+                 "Please make sure load data was calibrated."
+              << lbr_fri_ros2::ColorScheme::ENDC);
+      return controller_interface::CallbackReturn::ERROR;
+    }
+  } catch (const std::exception &e) {
+    RCLCPP_ERROR_STREAM(
+        this->get_node()->get_logger(),
+        lbr_fri_ros2::ColorScheme::ERROR
+            << "Failed to check external force-torques during admittance controller activation "
+               "with: "
+            << e.what() << lbr_fri_ros2::ColorScheme::ENDC);
+    return controller_interface::CallbackReturn::ERROR;
+  }
   return controller_interface::CallbackReturn::SUCCESS;
 }
 
@@ -184,11 +201,6 @@ bool AdmittanceController::reference_state_interfaces_() {
   for (auto &state_interface : state_interfaces_) {
     if (state_interface.get_interface_name() == hardware_interface::HW_IF_POSITION) {
       joint_position_state_interfaces_.emplace_back(std::ref(state_interface));
-    }
-    if (state_interface.get_interface_name() == HW_IF_SAMPLE_TIME) {
-      sample_time_state_interface_ptr_ =
-          std::make_unique<std::reference_wrapper<hardware_interface::LoanedStateInterface>>(
-              std::ref(state_interface));
     }
     if (state_interface.get_interface_name() == HW_IF_SESSION_STATE) {
       session_state_interface_ptr_ =
@@ -320,18 +332,71 @@ void AdmittanceController::configure_inv_jac_ctrl_impl_() {
           joint_gains_array, cartesian_gains_array});
 }
 
+void AdmittanceController::configure_filters_() {
+  auto joint_velocity_tau =
+      this->get_node()->get_parameter("filter.joint_velocity_tau").as_double();
+  if (joint_velocity_tau < 0.4) {
+    RCLCPP_ERROR_STREAM(this->get_node()->get_logger(),
+                        lbr_fri_ros2::ColorScheme::ERROR
+                            << "Joint velocity filter time constant too small ("
+                            << joint_velocity_tau
+                            << "s). Currently enforced to be at least 0.4s for proper smoothing."
+                            << lbr_fri_ros2::ColorScheme::ENDC);
+    throw std::runtime_error("Invalid joint velocity filter time constant.");
+  }
+  dq_filter_ptr_ = std::make_unique<lbr_fri_ros2::ExponentialFilterArray<lbr_fri_ros2::N_JNTS>>(
+      joint_velocity_tau);
+}
+
+void AdmittanceController::init_filters_with_update_rate_() {
+  dq_filter_ptr_->initialize(1. / static_cast<double>(this->get_update_rate()));
+}
+
 void AdmittanceController::zero_all_values_() {
   f_ext_.setZero();
   delta_x_.setZero();
   dx_.setZero();
   ddx_.setZero();
   std::fill(dq_.begin(), dq_.end(), 0.0);
+  std::fill(dq_filtered_.begin(), dq_filtered_.end(), 0.0);
   twist_command_.setZero();
+}
+
+bool AdmittanceController::any_external_force_torques_on_horizon_(
+    const std::chrono::milliseconds &horizon) const {
+  if (!estimated_ft_sensor_ptr_) {
+    RCLCPP_ERROR(this->get_node()->get_logger(),
+                 "Estimated force-torque sensor not initialized for external force-torque check.");
+    throw std::runtime_error("Estimated force-torque sensor not initialized.");
+  }
+  if (horizon.count() < 100) {
+    RCLCPP_ERROR_STREAM(this->get_node()->get_logger(), lbr_fri_ros2::ColorScheme::ERROR
+                                                            << "Horizon must at least be 100 ms."
+                                                            << lbr_fri_ros2::ColorScheme::ENDC);
+    throw std::runtime_error("Invalid horizon for external force-torque check.");
+  }
+  auto forces = this->estimated_ft_sensor_ptr_->get_forces();
+  auto torques = this->estimated_ft_sensor_ptr_->get_torques();
+  auto start_time = std::chrono::steady_clock::now();
+  while (std::chrono::steady_clock::now() - start_time < horizon) {
+    if (!(lbr_fri_ros2::norm_in_bounds(forces, 0.) && lbr_fri_ros2::norm_in_bounds(torques, 0.))) {
+      RCLCPP_INFO_STREAM(this->get_node()->get_logger(),
+                         "External force-torques detected: forces = ["
+                             << forces[0] << ", " << forces[1] << ", " << forces[2]
+                             << "], torques = [" << torques[0] << ", " << torques[1] << ", "
+                             << torques[2] << "].");
+      return true;
+    }
+    forces = this->estimated_ft_sensor_ptr_->get_forces();
+    torques = this->estimated_ft_sensor_ptr_->get_torques();
+  }
+  return false;
 }
 
 void AdmittanceController::log_info_() const {
   admittance_impl_ptr_->log_info();
   inv_jac_ctrl_impl_ptr_->log_info();
+  dq_filter_ptr_->log_info();
 }
 } // namespace lbr_ros2_control
 

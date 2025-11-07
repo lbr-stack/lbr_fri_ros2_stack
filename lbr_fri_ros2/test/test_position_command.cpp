@@ -7,7 +7,7 @@
 
 #include "lbr_fri_ros2/app.hpp"
 #include "lbr_fri_ros2/async_client.hpp"
-#include "lbr_fri_ros2/command_guard.hpp"
+#include "lbr_fri_ros2/guards/command_guard.hpp"
 
 int main() {
   rclcpp::init(0, nullptr);
@@ -77,12 +77,6 @@ int main() {
     // command.joint_position = state.measured_joint_position;
     // command.joint_position[6] += 0.001;
     // client->get_command_interface()->buffer_command_target(command);
-
-    // // 3. test the interfaced for safe interaction
-
-    // auto command_target = client->get_command_interface()->get_command_target();
-    // command_target.joint_position[6] += 0.001; // must not change internal value!
-    // command_target = client->get_command_interface()->get_command_target();
 
     // RCLCPP_INFO(node->get_logger(), "Command joint position: %f %f %f %f %f %f %f",
     //             command_target.joint_position[0], command_target.joint_position[1],

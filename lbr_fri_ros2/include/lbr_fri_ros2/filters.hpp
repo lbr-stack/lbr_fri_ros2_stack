@@ -98,21 +98,42 @@ protected:
   double alpha_;       /**< Smoothing parameter in [0, 1].*/
 };
 
-class JointExponentialFilterArray {
+template <std::size_t N> class ExponentialFilterArray {
+public:
+  using array_t = std::array<double, N>;
+  using array_t_ref = array_t &;
+  using const_array_t_ref = const array_t &;
+
 protected:
-  static constexpr char LOGGER_NAME[] = "lbr_fri_ros2::JointExponentialFilterArray";
+  static constexpr char LOGGER_NAME[] = "lbr_fri_ros2::ExponentialFilterArray";
 
 public:
-  JointExponentialFilterArray() = default;
-  JointExponentialFilterArray(const double &tau);
+  ExponentialFilterArray() = default;
+  ExponentialFilterArray(const double &tau) : exponential_filter_(tau) {};
 
-  void compute(const double *const current, jnt_array_t_ref previous);
-  void compute(const_jnt_array_t_ref current, jnt_array_t_ref previous);
-  void initialize(const double &sample_time);
-  void initialize(const double &tau, const double &sample_time);
-  inline const bool &is_initialized() const { return initialized_; };
-
-  void log_info() const;
+  void compute(const double *current, double *const previous) {
+    for (std::size_t i = 0; i < N; ++i)
+      previous[i] = exponential_filter_.compute(current[i], previous[i]);
+  }
+  void compute(const double *const current, array_t_ref previous) {
+    compute(current, previous.data());
+  }
+  void compute(const_array_t_ref current, array_t_ref previous) {
+    compute(current.data(), previous.data());
+  }
+  void initialize(const double &sample_time) {
+    exponential_filter_.initialize(sample_time);
+    initialized_ = true;
+  }
+  void initialize(const double &tau, const double &sample_time) {
+    exponential_filter_.initialize(tau, sample_time);
+    initialized_ = true;
+  }
+  inline const bool &is_initialized() const { return initialized_; }
+  void log_info() const {
+    RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "*** Parameters:");
+    RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "*   tau: %.5f s", exponential_filter_.get_tau());
+  }
 
 protected:
   bool initialized_{false};              /**< True if initialized.*/
