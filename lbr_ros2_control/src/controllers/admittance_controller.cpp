@@ -96,7 +96,13 @@ AdmittanceController::update(const rclcpp::Time & /*time*/, const rclcpp::Durati
   }
 
   // compute translational delta and velocity
-  auto dt = 1. / static_cast<double>(get_update_rate());
+  auto update_rate = static_cast<double>(get_update_rate());
+  if (update_rate <= 0.0) {
+    RCLCPP_ERROR(this->get_node()->get_logger(), "Update rate should be greater than zero, got %f.",
+                 update_rate);
+    return controller_interface::return_type::ERROR;
+  }
+  auto dt = 1. / update_rate;
   delta_x_.head(3) = (t_ - t_init_);
   dx_.head(3) = (t_ - t_prev_) / dt;
 
