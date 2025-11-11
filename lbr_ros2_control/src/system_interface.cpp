@@ -2,9 +2,8 @@
 
 namespace lbr_ros2_control {
 controller_interface::CallbackReturn
-SystemInterface::on_init(const hardware_interface::HardwareInfo &system_info) {
-  auto ret =
-      hardware_interface::SystemInterface::on_init(system_info); // parses system_info to info_
+SystemInterface::on_init(const hardware_interface::HardwareComponentInterfaceParams &params) {
+  auto ret = hardware_interface::SystemInterface::on_init(params); // parses params to info_
   if (ret != controller_interface::CallbackReturn::SUCCESS) {
     RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME),
                         lbr_fri_ros2::ColorScheme::ERROR << "Failed to initialize SystemInterface"
