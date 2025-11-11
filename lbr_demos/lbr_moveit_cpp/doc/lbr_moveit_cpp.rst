@@ -18,14 +18,13 @@ Simulation
     .. code-block:: bash
 
         ros2 launch lbr_bringup mock.launch.py \
-            moveit:=true \
             model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
 
 #. Run MoveIt:
 
     .. code-block:: bash
 
-        ros2 launch lbr_moveit_cpp move_group.launch.py \
+        ros2 launch lbr_bringup move_group.launch.py \
             mode:=mock \
             model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
 
