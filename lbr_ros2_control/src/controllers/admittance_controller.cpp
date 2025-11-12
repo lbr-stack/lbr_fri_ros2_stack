@@ -76,10 +76,17 @@ AdmittanceController::update(const rclcpp::Time & /*time*/, const rclcpp::Durati
       Eigen::Map<Eigen::Matrix<double, 3, 1>>(estimated_ft_sensor_ptr_->get_torques().data());
 
   // get joint positions
-  std::for_each(q_.begin(), q_.end(), [&, i = 0](double &q_i) mutable {
-    q_i = this->state_interfaces_[i].get_value();
-    ++i;
-  });
+  for (std::size_t i = 0; i < lbr_fri_ros2::N_JNTS; ++i) {
+    auto q_i = this->joint_position_state_interfaces_[i].get().get_optional();
+    if (!q_i.has_value()) {
+      RCLCPP_WARN_STREAM(this->get_node()->get_logger(),
+                         lbr_fri_ros2::ColorScheme::WARNING
+                             << "Failed to get joint position for joint " << i << "."
+                             << lbr_fri_ros2::ColorScheme::ENDC);
+      return controller_interface::return_type::OK;
+    }
+    q_[i] = *q_i;
+  }
 
   // compute forward kinematics
   auto chain_tip_frame = inv_jac_ctrl_impl_ptr_->get_kinematics_ptr()->compute_fk(q_);
@@ -130,8 +137,16 @@ AdmittanceController::update(const rclcpp::Time & /*time*/, const rclcpp::Durati
     RCLCPP_ERROR(this->get_node()->get_logger(), "Inverse Jacobian controller not initialized.");
     return controller_interface::return_type::ERROR;
   }
-  if (static_cast<int>(session_state_interface_ptr_->get().get_value()) !=
-      KUKA::FRI::ESessionState::COMMANDING_ACTIVE) {
+
+  // check for robot session state
+  auto session_state = session_state_interface_ptr_->get().get_optional();
+  if (!session_state.has_value()) {
+    RCLCPP_WARN_STREAM(this->get_node()->get_logger(), lbr_fri_ros2::ColorScheme::WARNING
+                                                           << "Failed to get session state."
+                                                           << lbr_fri_ros2::ColorScheme::ENDC);
+    return controller_interface::return_type::OK;
+  }
+  if (static_cast<int>(*session_state) != KUKA::FRI::ESessionState::COMMANDING_ACTIVE) {
     return controller_interface::return_type::OK;
   }
 

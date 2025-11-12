@@ -24,8 +24,10 @@ controller_interface::CallbackReturn LBRStateBroadcaster::on_init() {
     this->get_node()->declare_parameter("robot_name", "lbr");
     configure_joint_names_();
   } catch (const std::exception &e) {
-    RCLCPP_ERROR(this->get_node()->get_logger(),
-                 "Failed to initialize LBR state broadcaster with: %s.", e.what());
+    RCLCPP_ERROR_STREAM(this->get_node()->get_logger(),
+                        lbr_fri_ros2::ColorScheme::ERROR
+                            << "Failed to initialize LBR state broadcaster with: " << e.what()
+                            << "." << lbr_fri_ros2::ColorScheme::ENDC);
     return controller_interface::CallbackReturn::ERROR;
   }
 
@@ -35,8 +37,17 @@ controller_interface::CallbackReturn LBRStateBroadcaster::on_init() {
 controller_interface::return_type LBRStateBroadcaster::update(const rclcpp::Time & /*time*/,
                                                               const rclcpp::Duration & /*period*/) {
   for (const auto &state_interface : state_interfaces_) {
+    auto state = state_interface.get_optional();
+    if (!state.has_value()) {
+      RCLCPP_WARN_STREAM(this->get_node()->get_logger(),
+                         lbr_fri_ros2::ColorScheme::WARNING
+                             << "Failed to get state interface value for '"
+                             << state_interface.get_name() << "'."
+                             << lbr_fri_ros2::ColorScheme::ENDC);
+      return controller_interface::return_type::OK;
+    }
     state_interface_map_[state_interface.get_prefix_name()][state_interface.get_interface_name()] =
-        state_interface.get_value();
+        *state;
   }
   // check any for nan
   if (std::isnan(state_interface_map_[joint_names_[0]][hardware_interface::HW_IF_POSITION])) {
@@ -152,10 +163,11 @@ void LBRStateBroadcaster::init_state_msg_() {
 
 void LBRStateBroadcaster::configure_joint_names_() {
   if (joint_names_.size() != lbr_fri_ros2::N_JNTS) {
-    RCLCPP_ERROR(
-        this->get_node()->get_logger(),
-        "Number of joint names (%ld) does not match the number of joints in the robot (%d).",
-        joint_names_.size(), lbr_fri_ros2::N_JNTS);
+    RCLCPP_ERROR_STREAM(this->get_node()->get_logger(),
+                        lbr_fri_ros2::ColorScheme::ERROR
+                            << "Number of joint names '" << joint_names_.size()
+                            << "' does not match the number of joints in the robot '"
+                            << lbr_fri_ros2::N_JNTS << "'." << lbr_fri_ros2::ColorScheme::ENDC);
     throw std::runtime_error("Failed to configure joint names.");
   }
   std::string robot_name = this->get_node()->get_parameter("robot_name").as_string();

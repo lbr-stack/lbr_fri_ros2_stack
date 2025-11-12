@@ -21,6 +21,7 @@
 #include "friLBRState.h"
 
 #include "lbr_fri_idl/msg/lbr_wrench_command.hpp"
+#include "lbr_fri_ros2/formatting.hpp"
 #include "lbr_fri_ros2/math.hpp"
 #include "lbr_fri_ros2/types.hpp"
 #include "lbr_ros2_control/system_interface_type_values.hpp"

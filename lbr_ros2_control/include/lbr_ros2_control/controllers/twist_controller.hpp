@@ -19,6 +19,7 @@
 #include "friLBRState.h"
 
 #include "lbr_fri_ros2/control.hpp"
+#include "lbr_fri_ros2/formatting.hpp"
 #include "lbr_fri_ros2/kinematics.hpp"
 #include "lbr_fri_ros2/types.hpp"
 #include "lbr_ros2_control/system_interface_type_values.hpp"
@@ -67,8 +68,6 @@ protected:
   lbr_fri_ros2::jnt_name_array_t joint_names_;
   std::vector<std::reference_wrapper<hardware_interface::LoanedStateInterface>>
       joint_position_state_interfaces_;
-  std::unique_ptr<std::reference_wrapper<hardware_interface::LoanedStateInterface>>
-      sample_time_state_interface_ptr_;
   std::unique_ptr<std::reference_wrapper<hardware_interface::LoanedStateInterface>>
       session_state_interface_ptr_;
 

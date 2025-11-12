@@ -69,16 +69,31 @@ controller_interface::return_type TwistController::update(const rclcpp::Time & /
     RCLCPP_ERROR(this->get_node()->get_logger(), "Inverse Jacobian controller not initialized.");
     return controller_interface::return_type::ERROR;
   }
-  if (static_cast<int>(session_state_interface_ptr_->get().get_value()) !=
-      KUKA::FRI::ESessionState::COMMANDING_ACTIVE) {
+
+  // check for robot session state
+  auto session_state = session_state_interface_ptr_->get().get_optional();
+  if (!session_state.has_value()) {
+    RCLCPP_WARN_STREAM(this->get_node()->get_logger(), lbr_fri_ros2::ColorScheme::WARNING
+                                                           << "Failed to get session state."
+                                                           << lbr_fri_ros2::ColorScheme::ENDC);
+    return controller_interface::return_type::OK;
+  }
+  if (static_cast<int>(*session_state) != KUKA::FRI::ESessionState::COMMANDING_ACTIVE) {
     return controller_interface::return_type::OK;
   }
 
-  // pass joint positions to q_
-  std::for_each(q_.begin(), q_.end(), [&, i = 0](double &q_i) mutable {
-    q_i = this->state_interfaces_[i].get_value();
-    ++i;
-  });
+  // get joint positions
+  for (std::size_t i = 0; i < lbr_fri_ros2::N_JNTS; ++i) {
+    auto q_i = this->joint_position_state_interfaces_[i].get().get_optional();
+    if (!q_i.has_value()) {
+      RCLCPP_WARN_STREAM(this->get_node()->get_logger(),
+                         lbr_fri_ros2::ColorScheme::WARNING
+                             << "Failed to get joint position for joint " << i << "."
+                             << lbr_fri_ros2::ColorScheme::ENDC);
+      return controller_interface::return_type::OK;
+    }
+    q_[i] = *q_i;
+  }
 
   if (updates_since_last_command_ > static_cast<int>(timeout_ / period.seconds())) {
     zero_joint_velocity_command_();
@@ -88,9 +103,15 @@ controller_interface::return_type TwistController::update(const rclcpp::Time & /
   }
 
   // pass joint positions to hardware
+  auto update_rate = static_cast<double>(get_update_rate());
+  if (update_rate <= 0.0) {
+    RCLCPP_ERROR(this->get_node()->get_logger(), "Update rate should be greater than zero, got %f.",
+                 update_rate);
+    return controller_interface::return_type::ERROR;
+  }
+  auto dt = 1. / update_rate;
   std::for_each(q_.begin(), q_.end(), [&, i = 0](const double &q_i) mutable {
-    this->command_interfaces_[i].set_value(
-        q_i + dq_[i] * sample_time_state_interface_ptr_->get().get_value());
+    this->command_interfaces_[i].set_value(q_i + dq_[i] * dt);
     ++i;
   });
 
@@ -126,11 +147,6 @@ bool TwistController::reference_state_interfaces_() {
   for (auto &state_interface : state_interfaces_) {
     if (state_interface.get_interface_name() == hardware_interface::HW_IF_POSITION) {
       joint_position_state_interfaces_.emplace_back(std::ref(state_interface));
-    }
-    if (state_interface.get_interface_name() == HW_IF_SAMPLE_TIME) {
-      sample_time_state_interface_ptr_ =
-          std::make_unique<std::reference_wrapper<hardware_interface::LoanedStateInterface>>(
-              std::ref(state_interface));
     }
     if (state_interface.get_interface_name() == HW_IF_SESSION_STATE) {
       session_state_interface_ptr_ =

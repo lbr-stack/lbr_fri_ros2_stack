@@ -19,6 +19,7 @@
 #include "friLBRState.h"
 
 #include "lbr_fri_idl/msg/lbr_state.hpp"
+#include "lbr_fri_ros2/formatting.hpp"
 #include "lbr_fri_ros2/types.hpp"
 #include "lbr_ros2_control/system_interface_type_values.hpp"
 

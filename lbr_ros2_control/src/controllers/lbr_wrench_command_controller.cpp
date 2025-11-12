@@ -124,8 +124,24 @@ LBRWrenchCommandController::update_and_write_commands(const rclcpp::Time & /*tim
                                                       const rclcpp::Duration & /*period*/) {
   // pass joint position and velocity states through to next controller
   for (std::size_t i = 0; i < lbr_fri_ros2::N_JNTS; ++i) {
-    joint_position_states_[i] = joint_position_state_interfaces_[i].get().get_value();
-    joint_velocity_states_[i] = joint_velocity_state_interfaces_[i].get().get_value();
+    auto q_i = joint_position_state_interfaces_[i].get().get_optional();
+    auto dq_i = joint_velocity_state_interfaces_[i].get().get_optional();
+    if (!q_i.has_value()) {
+      RCLCPP_WARN_STREAM(this->get_node()->get_logger(),
+                         lbr_fri_ros2::ColorScheme::WARNING
+                             << "Failed to get joint position for joint '" << i << "'."
+                             << lbr_fri_ros2::ColorScheme::ENDC);
+      return controller_interface::return_type::OK;
+    }
+    if (!dq_i.has_value()) {
+      RCLCPP_WARN_STREAM(this->get_node()->get_logger(),
+                         lbr_fri_ros2::ColorScheme::WARNING
+                             << "Failed to get joint velocity for joint '" << i << "'."
+                             << lbr_fri_ros2::ColorScheme::ENDC);
+      return controller_interface::return_type::OK;
+    }
+    joint_position_states_[i] = *q_i;
+    joint_velocity_states_[i] = *dq_i;
   }
   for (std::size_t i = 0; i < lbr_fri_ros2::N_JNTS; ++i) {
     joint_position_command_interfaces_[i].get().set_value(reference_interfaces_[i]);
