@@ -42,8 +42,10 @@ controller_interface::CallbackReturn LBRWrenchCommandController::on_init() {
     configure_joint_names_();
     configure_parameters_();
   } catch (const std::exception &e) {
-    RCLCPP_ERROR(this->get_node()->get_logger(),
-                 "Failed to initialize LBR wrench command controller with: %s.", e.what());
+    RCLCPP_ERROR_STREAM(this->get_node()->get_logger(),
+                        lbr_fri_ros2::ColorScheme::ERROR
+                            << "Failed to initialize LBR wrench command controller with: "
+                            << e.what() << "." << lbr_fri_ros2::ColorScheme::ENDC);
     return controller_interface::CallbackReturn::ERROR;
   }
 
@@ -84,8 +86,10 @@ bool LBRWrenchCommandController::on_set_chained_mode(bool chained_mode) {
       init_lbr_wrench_command_subscription_();
     }
   } catch (const std::exception &e) {
-    RCLCPP_ERROR(this->get_node()->get_logger(), "Failed to switch to chained mode with: %s.",
-                 e.what());
+    RCLCPP_ERROR_STREAM(this->get_node()->get_logger(),
+                        lbr_fri_ros2::ColorScheme::ERROR
+                            << "Failed to switch to chained mode with: " << e.what() << "."
+                            << lbr_fri_ros2::ColorScheme::ENDC);
     return false;
   }
   return true;
@@ -108,13 +112,22 @@ LBRWrenchCommandController::update_reference_from_subscribers(const rclcpp::Time
           (*lbr_wrench_command)->wrench[2], parameters_.max_force_command_norm,
           (*lbr_wrench_command)->wrench[3], (*lbr_wrench_command)->wrench[4],
           (*lbr_wrench_command)->wrench[5], parameters_.max_torque_command_norm)) {
-    zero_wrench_commands_();
+    if (!zero_wrench_commands_()) {
+      return controller_interface::return_type::ERROR;
+    }
     return controller_interface::return_type::OK;
   }
 
   // set wrenches from command
   for (std::size_t i = 0; i < lbr_fri_ros2::CARTESIAN_DOF; ++i) {
-    wrench_command_interfaces_[i].get().set_value((*lbr_wrench_command)->wrench[i]);
+
+    if (!wrench_command_interfaces_[i].get().set_value((*lbr_wrench_command)->wrench[i])) {
+      RCLCPP_ERROR_STREAM(this->get_node()->get_logger(), lbr_fri_ros2::ColorScheme::ERROR
+                                                              << "Failed to set wrench for '" << i
+                                                              << "-axis'."
+                                                              << lbr_fri_ros2::ColorScheme::ENDC);
+      return controller_interface::return_type::ERROR;
+    }
   }
   return controller_interface::return_type::OK;
 }
@@ -144,7 +157,13 @@ LBRWrenchCommandController::update_and_write_commands(const rclcpp::Time & /*tim
     joint_velocity_states_[i] = *dq_i;
   }
   for (std::size_t i = 0; i < lbr_fri_ros2::N_JNTS; ++i) {
-    joint_position_command_interfaces_[i].get().set_value(reference_interfaces_[i]);
+    if (!joint_position_command_interfaces_[i].get().set_value(reference_interfaces_[i])) {
+      RCLCPP_ERROR_STREAM(this->get_node()->get_logger(),
+                          lbr_fri_ros2::ColorScheme::ERROR
+                              << "Failed to set joint position for joint '" << joint_names_[i]
+                              << "'." << lbr_fri_ros2::ColorScheme::ENDC);
+      return controller_interface::return_type::ERROR;
+    }
   }
   if (!is_in_chained_mode()) {
     return controller_interface::return_type::OK;
@@ -153,7 +172,9 @@ LBRWrenchCommandController::update_and_write_commands(const rclcpp::Time & /*tim
   // read wrench command in chained mode
   auto wrench_command = rt_wrench_command_ptr_.readFromRT();
   if (!wrench_command || !(*wrench_command)) {
-    zero_wrench_commands_();
+    if (!zero_wrench_commands_()) {
+      return controller_interface::return_type::ERROR;
+    }
     return controller_interface::return_type::OK;
   }
 
@@ -163,17 +184,49 @@ LBRWrenchCommandController::update_and_write_commands(const rclcpp::Time & /*tim
                                  (*wrench_command)->torque.x, (*wrench_command)->torque.y,
                                  (*wrench_command)->torque.z,
                                  parameters_.max_torque_command_norm)) {
-    zero_wrench_commands_();
+    if (!zero_wrench_commands_()) {
+      return controller_interface::return_type::ERROR;
+    }
     return controller_interface::return_type::OK;
   }
 
   // set wrenches from command
-  wrench_command_interfaces_[0].get().set_value((*wrench_command)->force.x);
-  wrench_command_interfaces_[1].get().set_value((*wrench_command)->force.y);
-  wrench_command_interfaces_[2].get().set_value((*wrench_command)->force.z);
-  wrench_command_interfaces_[3].get().set_value((*wrench_command)->torque.x);
-  wrench_command_interfaces_[4].get().set_value((*wrench_command)->torque.y);
-  wrench_command_interfaces_[5].get().set_value((*wrench_command)->torque.z);
+  if (!wrench_command_interfaces_[0].get().set_value((*wrench_command)->force.x)) {
+    RCLCPP_ERROR_STREAM(this->get_node()->get_logger(), lbr_fri_ros2::ColorScheme::ERROR
+                                                            << "Failed to set force for 'x-axis'."
+                                                            << lbr_fri_ros2::ColorScheme::ENDC);
+    return controller_interface::return_type::ERROR;
+  }
+  if (!wrench_command_interfaces_[1].get().set_value((*wrench_command)->force.y)) {
+    RCLCPP_ERROR_STREAM(this->get_node()->get_logger(), lbr_fri_ros2::ColorScheme::ERROR
+                                                            << "Failed to set force for 'y-axis'."
+                                                            << lbr_fri_ros2::ColorScheme::ENDC);
+    return controller_interface::return_type::ERROR;
+  }
+  if (!wrench_command_interfaces_[2].get().set_value((*wrench_command)->force.z)) {
+    RCLCPP_ERROR_STREAM(this->get_node()->get_logger(), lbr_fri_ros2::ColorScheme::ERROR
+                                                            << "Failed to set force for 'z-axis'."
+                                                            << lbr_fri_ros2::ColorScheme::ENDC);
+    return controller_interface::return_type::ERROR;
+  }
+  if (!wrench_command_interfaces_[3].get().set_value((*wrench_command)->torque.x)) {
+    RCLCPP_ERROR_STREAM(this->get_node()->get_logger(), lbr_fri_ros2::ColorScheme::ERROR
+                                                            << "Failed to set torque for 'x-axis'."
+                                                            << lbr_fri_ros2::ColorScheme::ENDC);
+    return controller_interface::return_type::ERROR;
+  }
+  if (!wrench_command_interfaces_[4].get().set_value((*wrench_command)->torque.y)) {
+    RCLCPP_ERROR_STREAM(this->get_node()->get_logger(), lbr_fri_ros2::ColorScheme::ERROR
+                                                            << "Failed to set torque for 'y-axis'."
+                                                            << lbr_fri_ros2::ColorScheme::ENDC);
+    return controller_interface::return_type::ERROR;
+  }
+  if (!wrench_command_interfaces_[5].get().set_value((*wrench_command)->torque.z)) {
+    RCLCPP_ERROR_STREAM(this->get_node()->get_logger(), lbr_fri_ros2::ColorScheme::ERROR
+                                                            << "Failed to set torque for 'z-axis'."
+                                                            << lbr_fri_ros2::ColorScheme::ENDC);
+    return controller_interface::return_type::ERROR;
+  }
   return controller_interface::return_type::OK;
 }
 
@@ -211,19 +264,23 @@ bool LBRWrenchCommandController::reference_state_interfaces_() {
     }
   }
   if (joint_position_state_interfaces_.size() != lbr_fri_ros2::N_JNTS) {
-    RCLCPP_ERROR(
-        this->get_node()->get_logger(),
-        "Number of joint position state interfaces '%ld' does not match the number of joints "
-        "in the robot '%d'.",
-        joint_position_state_interfaces_.size(), lbr_fri_ros2::N_JNTS);
+    RCLCPP_ERROR_STREAM(this->get_node()->get_logger(),
+                        lbr_fri_ros2::ColorScheme::ERROR
+                            << "Number of joint position state interfaces '"
+                            << joint_position_state_interfaces_.size()
+                            << "' does not match the number of joints "
+                               "in the robot '"
+                            << lbr_fri_ros2::N_JNTS << "'." << lbr_fri_ros2::ColorScheme::ENDC);
     return false;
   }
   if (joint_velocity_state_interfaces_.size() != lbr_fri_ros2::N_JNTS) {
-    RCLCPP_ERROR(
-        this->get_node()->get_logger(),
-        "Number of joint velocity state interfaces '%ld' does not match the number of joints "
-        "in the robot '%d'.",
-        joint_velocity_state_interfaces_.size(), lbr_fri_ros2::N_JNTS);
+    RCLCPP_ERROR_STREAM(this->get_node()->get_logger(),
+                        lbr_fri_ros2::ColorScheme::ERROR
+                            << "Number of joint velocity state interfaces '"
+                            << joint_velocity_state_interfaces_.size()
+                            << "' does not match the number of joints "
+                               "in the robot '"
+                            << lbr_fri_ros2::N_JNTS << "'." << lbr_fri_ros2::ColorScheme::ENDC);
     return false;
   }
   return true;
@@ -239,17 +296,22 @@ bool LBRWrenchCommandController::reference_command_interfaces_() {
     }
   }
   if (joint_position_command_interfaces_.size() != lbr_fri_ros2::N_JNTS) {
-    RCLCPP_ERROR(
-        this->get_node()->get_logger(),
-        "Number of joint position command interfaces '%ld' does not match the number of joints "
-        "in the robot '%d'.",
-        joint_position_command_interfaces_.size(), lbr_fri_ros2::N_JNTS);
+    RCLCPP_ERROR_STREAM(this->get_node()->get_logger(),
+                        lbr_fri_ros2::ColorScheme::ERROR
+                            << "Number of joint position command interfaces '"
+                            << joint_position_command_interfaces_.size()
+                            << "' does not match the number of joints "
+                               "in the robot '"
+                            << lbr_fri_ros2::N_JNTS << "'." << lbr_fri_ros2::ColorScheme::ENDC);
     return false;
   }
   if (wrench_command_interfaces_.size() != lbr_fri_ros2::CARTESIAN_DOF) {
-    RCLCPP_ERROR(this->get_node()->get_logger(),
-                 "Number of wrench command interfaces '%ld' does not equal %d.",
-                 wrench_command_interfaces_.size(), lbr_fri_ros2::CARTESIAN_DOF);
+    RCLCPP_ERROR_STREAM(this->get_node()->get_logger(),
+                        lbr_fri_ros2::ColorScheme::ERROR << "Number of wrench command interfaces '"
+                                                         << wrench_command_interfaces_.size()
+                                                         << "' does not equal '"
+                                                         << lbr_fri_ros2::CARTESIAN_DOF << "'."
+                                                         << lbr_fri_ros2::ColorScheme::ENDC);
     return false;
   }
   return true;
@@ -267,10 +329,11 @@ void LBRWrenchCommandController::clear_command_interfaces_() {
 
 void LBRWrenchCommandController::configure_joint_names_() {
   if (joint_names_.size() != lbr_fri_ros2::N_JNTS) {
-    RCLCPP_ERROR(
-        this->get_node()->get_logger(),
-        "Number of joint names (%ld) does not match the number of joints in the robot (%d).",
-        joint_names_.size(), lbr_fri_ros2::N_JNTS);
+    RCLCPP_ERROR_STREAM(this->get_node()->get_logger(),
+                        lbr_fri_ros2::ColorScheme::ERROR
+                            << "Number of joint names '" << joint_names_.size()
+                            << "' does not match the number of joints in the robot '"
+                            << lbr_fri_ros2::N_JNTS << "'." << lbr_fri_ros2::ColorScheme::ENDC);
     throw std::runtime_error("Failed to configure joint names.");
   }
   std::string robot_name = this->get_node()->get_parameter("robot_name").as_string();
@@ -281,24 +344,35 @@ void LBRWrenchCommandController::configure_joint_names_() {
 
 void LBRWrenchCommandController::configure_parameters_() {
   if (this->get_node()->get_parameter("max_force_command_norm").as_double() < 0.0) {
-    RCLCPP_ERROR(this->get_node()->get_logger(),
-                 "Max force command norm parameter must be positive.");
+    RCLCPP_ERROR_STREAM(this->get_node()->get_logger(),
+                        lbr_fri_ros2::ColorScheme::ERROR
+                            << "Max force command norm parameter must be positive."
+                            << lbr_fri_ros2::ColorScheme::ENDC);
     throw std::runtime_error("Failed to configure max force parameter.");
   }
   if (this->get_node()->get_parameter("max_torque_command_norm").as_double() < 0.0) {
-    RCLCPP_ERROR(this->get_node()->get_logger(),
-                 "Max torque command norm parameter must be positive.");
+    RCLCPP_ERROR_STREAM(this->get_node()->get_logger(),
+                        lbr_fri_ros2::ColorScheme::ERROR
+                            << "Max torque command norm parameter must be positive."
+                            << lbr_fri_ros2::ColorScheme::ENDC);
     throw std::runtime_error("Failed to configure max torque parameter.");
   }
   this->get_node()->get_parameter("max_force_command_norm", parameters_.max_force_command_norm);
   this->get_node()->get_parameter("max_torque_command_norm", parameters_.max_torque_command_norm);
 }
 
-void LBRWrenchCommandController::zero_wrench_commands_() {
+bool LBRWrenchCommandController::zero_wrench_commands_() {
   for (std::size_t i = 0; i < lbr_fri_ros2::CARTESIAN_DOF; ++i) {
-    wrench_command_interfaces_[i].get().set_value(0.0);
+    if (!wrench_command_interfaces_[i].get().set_value(0.0)) {
+      RCLCPP_ERROR_STREAM(this->get_node()->get_logger(), lbr_fri_ros2::ColorScheme::ERROR
+                                                              << "Failed to zero wrench for '" << i
+                                                              << "-axis'."
+                                                              << lbr_fri_ros2::ColorScheme::ENDC);
+      return false;
+    }
   }
-};
+  return true;
+}
 
 void LBRWrenchCommandController::init_lbr_wrench_command_subscription_() {
   lbr_wrench_command_subscription_ptr_ =
@@ -333,13 +407,17 @@ bool LBRWrenchCommandController::command_in_wrench_limits_(
     const double &t0, const double &t1, const double &t2, const double &max_torque_norm) const {
   // check if force and torque norms are within limits
   if (!lbr_fri_ros2::norm_in_bounds(f0, f1, f2, max_force_norm)) {
-    RCLCPP_ERROR(this->get_node()->get_logger(), "Force command exceeds limit of %.3f N.",
-                 max_force_norm);
+    RCLCPP_ERROR_STREAM(this->get_node()->get_logger(), lbr_fri_ros2::ColorScheme::ERROR
+                                                            << "Force command exceeds limit of "
+                                                            << max_force_norm << "N."
+                                                            << lbr_fri_ros2::ColorScheme::ENDC);
     return false;
   }
   if (!lbr_fri_ros2::norm_in_bounds(t0, t1, t2, max_torque_norm)) {
-    RCLCPP_ERROR(this->get_node()->get_logger(), "Torque command exceeds limit of %.3f Nm.",
-                 max_torque_norm);
+    RCLCPP_ERROR_STREAM(this->get_node()->get_logger(), lbr_fri_ros2::ColorScheme::ERROR
+                                                            << "Torque command exceeds limit of "
+                                                            << max_torque_norm << "Nm."
+                                                            << lbr_fri_ros2::ColorScheme::ENDC);
     return false;
   }
   return true;

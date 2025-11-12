@@ -32,8 +32,10 @@ controller_interface::CallbackReturn LBRTorqueCommandController::on_init() {
     this->get_node()->declare_parameter("robot_name", "lbr");
     configure_joint_names_();
   } catch (const std::exception &e) {
-    RCLCPP_ERROR(this->get_node()->get_logger(),
-                 "Failed to initialize LBR torque command controller with: %s.", e.what());
+    RCLCPP_ERROR_STREAM(this->get_node()->get_logger(),
+                        lbr_fri_ros2::ColorScheme::ERROR
+                            << "Failed to initialize LBR torque command controller with: "
+                            << e.what() << "." << lbr_fri_ros2::ColorScheme::ENDC);
     return controller_interface::CallbackReturn::ERROR;
   }
 
@@ -47,10 +49,22 @@ LBRTorqueCommandController::update(const rclcpp::Time & /*time*/,
   if (!lbr_torque_command || !(*lbr_torque_command)) {
     return controller_interface::return_type::OK;
   }
-  for (std::size_t idx = 0; idx < lbr_fri_ros2::N_JNTS; ++idx) {
-    joint_position_command_interfaces_[idx].get().set_value(
-        (*lbr_torque_command)->joint_position[idx]);
-    torque_command_interfaces_[idx].get().set_value((*lbr_torque_command)->torque[idx]);
+  for (std::size_t i = 0; i < lbr_fri_ros2::N_JNTS; ++i) {
+    if (!joint_position_command_interfaces_[i].get().set_value(
+            (*lbr_torque_command)->joint_position[i])) {
+      RCLCPP_ERROR_STREAM(this->get_node()->get_logger(),
+                          lbr_fri_ros2::ColorScheme::ERROR
+                              << "Failed to set joint position for joint '" << joint_names_[i]
+                              << "'." << lbr_fri_ros2::ColorScheme::ENDC);
+      return controller_interface::return_type::ERROR;
+    }
+    if (!torque_command_interfaces_[i].get().set_value((*lbr_torque_command)->torque[i])) {
+      RCLCPP_ERROR_STREAM(this->get_node()->get_logger(),
+                          lbr_fri_ros2::ColorScheme::ERROR
+                              << "Failed to set joint troque for joint '" << joint_names_[i] << "'."
+                              << lbr_fri_ros2::ColorScheme::ENDC);
+      return controller_interface::return_type::ERROR;
+    }
   }
   return controller_interface::return_type::OK;
 }
@@ -84,18 +98,23 @@ bool LBRTorqueCommandController::reference_command_interfaces_() {
     }
   }
   if (joint_position_command_interfaces_.size() != lbr_fri_ros2::N_JNTS) {
-    RCLCPP_ERROR(
-        this->get_node()->get_logger(),
-        "Number of joint position command interfaces '%ld' does not match the number of joints "
-        "in the robot '%d'.",
-        joint_position_command_interfaces_.size(), lbr_fri_ros2::N_JNTS);
+    RCLCPP_ERROR_STREAM(this->get_node()->get_logger(),
+                        lbr_fri_ros2::ColorScheme::ERROR
+                            << "Number of joint position command interfaces '"
+                            << joint_position_command_interfaces_.size()
+                            << "' does not match the number of joints "
+                               "in the robot '"
+                            << lbr_fri_ros2::N_JNTS << "'." << lbr_fri_ros2::ColorScheme::ENDC);
     return false;
   }
   if (torque_command_interfaces_.size() != lbr_fri_ros2::N_JNTS) {
-    RCLCPP_ERROR(this->get_node()->get_logger(),
-                 "Number of torque command interfaces '%ld' does not match the number of joints "
-                 "in the robot '%d'.",
-                 torque_command_interfaces_.size(), lbr_fri_ros2::N_JNTS);
+    RCLCPP_ERROR_STREAM(this->get_node()->get_logger(),
+                        lbr_fri_ros2::ColorScheme::ERROR << "Number of torque command interfaces '"
+                                                         << torque_command_interfaces_.size()
+                                                         << "' does not match the number of joints "
+                                                            "in the robot '"
+                                                         << lbr_fri_ros2::N_JNTS << "'."
+                                                         << lbr_fri_ros2::ColorScheme::ENDC);
     return false;
   }
   return true;
@@ -108,10 +127,11 @@ void LBRTorqueCommandController::clear_command_interfaces_() {
 
 void LBRTorqueCommandController::configure_joint_names_() {
   if (joint_names_.size() != lbr_fri_ros2::N_JNTS) {
-    RCLCPP_ERROR(
-        this->get_node()->get_logger(),
-        "Number of joint names (%ld) does not match the number of joints in the robot (%d).",
-        joint_names_.size(), lbr_fri_ros2::N_JNTS);
+    RCLCPP_ERROR_STREAM(this->get_node()->get_logger(),
+                        lbr_fri_ros2::ColorScheme::ERROR
+                            << "Number of joint names '" << joint_names_.size()
+                            << "' does not match the number of joints in the robot '"
+                            << lbr_fri_ros2::N_JNTS << "'." << lbr_fri_ros2::ColorScheme::ENDC);
     throw std::runtime_error("Failed to configure joint names.");
   }
   std::string robot_name = this->get_node()->get_parameter("robot_name").as_string();

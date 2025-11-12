@@ -81,8 +81,8 @@ AdmittanceController::update(const rclcpp::Time & /*time*/, const rclcpp::Durati
     if (!q_i.has_value()) {
       RCLCPP_WARN_STREAM(this->get_node()->get_logger(),
                          lbr_fri_ros2::ColorScheme::WARNING
-                             << "Failed to get joint position for joint " << i << "."
-                             << lbr_fri_ros2::ColorScheme::ENDC);
+                             << "Failed to get joint position for joint '" << joint_names_[i]
+                             << "'." << lbr_fri_ros2::ColorScheme::ENDC);
       return controller_interface::return_type::OK;
     }
     q_[i] = *q_i;
@@ -157,11 +157,15 @@ AdmittanceController::update(const rclcpp::Time & /*time*/, const rclcpp::Durati
   dq_filter_ptr_->compute(dq_.data(), dq_filtered_.data());
 
   // pass joint positions to hardware
-  std::for_each(q_.begin(), q_.end(), [&, i = 0](const double &q_i) mutable {
-    this->command_interfaces_[i].set_value(q_i + dq_filtered_[i] * dt);
-    ++i;
-  });
-
+  for (std::size_t i = 0; i < lbr_fri_ros2::N_JNTS; ++i) {
+    if (!this->command_interfaces_[i].set_value(q_[i] + dq_filtered_[i] * dt)) {
+      RCLCPP_ERROR_STREAM(this->get_node()->get_logger(),
+                          lbr_fri_ros2::ColorScheme::ERROR
+                              << "Failed to set joint position for joint '" << joint_names_[i]
+                              << "'." << lbr_fri_ros2::ColorScheme::ENDC);
+      return controller_interface::return_type::ERROR;
+    };
+  }
   return controller_interface::return_type::OK;
 }
 

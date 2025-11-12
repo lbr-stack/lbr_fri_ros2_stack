@@ -30,7 +30,7 @@ void FTEstimatorImpl::compute() {
 }
 
 void FTEstimatorImpl::reset() {
-  std::for_each(q_.begin(), q_.end(), [](double &q_i) { q_i = 0.; });
+  std::fill(q_.begin(), q_.end(), 0.0);
   tau_ext_.setZero();
   f_ext_raw_.setZero();
   f_ext_.setZero();

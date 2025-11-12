@@ -72,7 +72,7 @@ protected:
   void clear_command_interfaces_();
   void configure_joint_names_();
   void configure_parameters_();
-  void zero_wrench_commands_();
+  bool zero_wrench_commands_();
   void init_lbr_wrench_command_subscription_();
   void init_wrench_command_subscription_();
   void reset_lbr_wrench_command_subscription_();

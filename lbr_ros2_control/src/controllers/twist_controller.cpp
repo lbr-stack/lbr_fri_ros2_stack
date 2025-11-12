@@ -88,8 +88,8 @@ controller_interface::return_type TwistController::update(const rclcpp::Time & /
     if (!q_i.has_value()) {
       RCLCPP_WARN_STREAM(this->get_node()->get_logger(),
                          lbr_fri_ros2::ColorScheme::WARNING
-                             << "Failed to get joint position for joint " << i << "."
-                             << lbr_fri_ros2::ColorScheme::ENDC);
+                             << "Failed to get joint position for joint '" << joint_names_[i]
+                             << "'." << lbr_fri_ros2::ColorScheme::ENDC);
       return controller_interface::return_type::OK;
     }
     q_[i] = *q_i;
@@ -110,10 +110,15 @@ controller_interface::return_type TwistController::update(const rclcpp::Time & /
     return controller_interface::return_type::ERROR;
   }
   auto dt = 1. / update_rate;
-  std::for_each(q_.begin(), q_.end(), [&, i = 0](const double &q_i) mutable {
-    this->command_interfaces_[i].set_value(q_i + dq_[i] * dt);
-    ++i;
-  });
+  for (std::size_t i = 0; i < lbr_fri_ros2::N_JNTS; ++i) {
+    if (!this->command_interfaces_[i].set_value(q_[i] + dq_[i] * dt)) {
+      RCLCPP_ERROR_STREAM(this->get_node()->get_logger(),
+                          lbr_fri_ros2::ColorScheme::ERROR
+                              << "Failed to set joint position for joint '" << joint_names_[i]
+                              << "'." << lbr_fri_ros2::ColorScheme::ENDC);
+      return controller_interface::return_type::ERROR;
+    };
+  }
 
   ++updates_since_last_command_;
 
@@ -172,9 +177,7 @@ void TwistController::reset_command_buffer_() {
       realtime_tools::RealtimeBuffer<std::shared_ptr<geometry_msgs::msg::Twist>>(nullptr);
 };
 
-void TwistController::zero_joint_velocity_command_() {
-  std::for_each(dq_.begin(), dq_.end(), [](double &dq_i) { dq_i = 0.0; });
-}
+void TwistController::zero_joint_velocity_command_() { std::fill(dq_.begin(), dq_.end(), 0.0); }
 
 void TwistController::configure_joint_names_() {
   if (joint_names_.size() != lbr_fri_ros2::N_JNTS) {
