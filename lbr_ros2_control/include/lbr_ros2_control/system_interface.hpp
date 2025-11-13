@@ -70,8 +70,6 @@ struct EstimatedFTSensorParameters {
 
 class SystemInterface : public hardware_interface::SystemInterface {
 protected:
-  static constexpr char LOGGER_NAME[] = "lbr_ros2_control::SystemInterface";
-
 #if FRI_CLIENT_VERSION_MAJOR == 1
   static constexpr uint8_t LBR_FRI_STATE_INTERFACE_SIZE = 7;
 #endif
