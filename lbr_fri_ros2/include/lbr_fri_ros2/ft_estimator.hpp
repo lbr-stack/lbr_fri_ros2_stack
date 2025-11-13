@@ -11,6 +11,7 @@
 #include "eigen3/Eigen/Core"
 #include "rclcpp/logger.hpp"
 #include "rclcpp/logging.hpp"
+#include "rclcpp/utilities.hpp"
 
 #include "friLBRState.h"
 

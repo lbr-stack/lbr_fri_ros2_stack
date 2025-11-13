@@ -6,6 +6,7 @@
 
 #include "rclcpp/logger.hpp"
 #include "rclcpp/logging.hpp"
+#include "rclcpp/utilities.hpp"
 
 #include "friClientApplication.h"
 #include "friUdpConnection.h"
