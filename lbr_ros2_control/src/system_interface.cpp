@@ -194,7 +194,8 @@ SystemInterface::prepare_command_mode_switch(const std::vector<std::string> & /*
   return hardware_interface::return_type::OK;
 }
 
-controller_interface::CallbackReturn SystemInterface::on_activate(const rclcpp_lifecycle::State &) {
+controller_interface::CallbackReturn
+SystemInterface::on_configure(const rclcpp_lifecycle::State &) {
   if (!async_client_ptr_) {
     RCLCPP_ERROR_STREAM(get_node()->get_logger(), lbr_fri_ros2::ColorScheme::ERROR
                                                       << "AsyncClient not configured"
@@ -204,6 +205,10 @@ controller_interface::CallbackReturn SystemInterface::on_activate(const rclcpp_l
   if (!app_ptr_->open_udp_socket(parameters_.port_id, parameters_.remote_host)) {
     return controller_interface::CallbackReturn::ERROR;
   }
+  return controller_interface::CallbackReturn::SUCCESS;
+}
+
+controller_interface::CallbackReturn SystemInterface::on_activate(const rclcpp_lifecycle::State &) {
   app_ptr_->run_async(parameters_.rt_prio);
   int attempt = 0;
   while (!async_client_ptr_->get_state_interface()->is_initialized()) {
@@ -261,10 +266,14 @@ controller_interface::CallbackReturn SystemInterface::on_activate(const rclcpp_l
 controller_interface::CallbackReturn
 SystemInterface::on_deactivate(const rclcpp_lifecycle::State &) {
   app_ptr_->request_stop();
-  app_ptr_->close_udp_socket();
   if (ft_estimator_ptr_) {
     ft_estimator_ptr_->request_stop();
   }
+  return controller_interface::CallbackReturn::SUCCESS;
+}
+
+controller_interface::CallbackReturn SystemInterface::on_cleanup(const rclcpp_lifecycle::State &) {
+  app_ptr_->close_udp_socket();
   return controller_interface::CallbackReturn::SUCCESS;
 }
 

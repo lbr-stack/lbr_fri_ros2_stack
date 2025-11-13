@@ -96,9 +96,13 @@ public:
       const std::vector<std::string> &stop_interfaces) override; // not supported in FRI
 
   controller_interface::CallbackReturn
+  on_configure(const rclcpp_lifecycle::State &previous_state) override;
+  controller_interface::CallbackReturn
   on_activate(const rclcpp_lifecycle::State &previous_state) override;
   controller_interface::CallbackReturn
   on_deactivate(const rclcpp_lifecycle::State &previous_state) override;
+  controller_interface::CallbackReturn
+  on_cleanup(const rclcpp_lifecycle::State &previous_state) override;
 
   hardware_interface::return_type read(const rclcpp::Time &time,
                                        const rclcpp::Duration &period) override;
