@@ -88,8 +88,6 @@ public:
   // hardware interface
   controller_interface::CallbackReturn
   on_init(const hardware_interface::HardwareComponentInterfaceParams &params) override;
-  std::vector<hardware_interface::StateInterface> export_state_interfaces() override;
-  std::vector<hardware_interface::CommandInterface> export_command_interfaces() override;
 
   hardware_interface::return_type prepare_command_mode_switch(
       const std::vector<std::string> &start_interfaces,
@@ -135,42 +133,22 @@ protected:
   std::shared_ptr<lbr_fri_ros2::AsyncClient> async_client_ptr_;
   std::unique_ptr<lbr_fri_ros2::App> app_ptr_;
 
-  // exposed state interfaces (ideally these are taken from async_client_ptr_ but
-  // ros2_control ReadOnlyHandle does not allow for const pointers, refer
-  // https://github.com/ros-controls/ros2_control/issues/1196)
-  lbr_fri_idl::msg::LBRState hw_lbr_state_;
-
-  // exposed state interfaces that require casting
-  double hw_session_state_;
-  double hw_connection_quality_;
-  double hw_safety_state_;
-  double hw_operation_mode_;
-  double hw_drive_state_;
-  double hw_client_command_mode_;
-  double hw_overlay_type_;
-  double hw_control_mode_;
-  double hw_time_stamp_sec_;
-  double hw_time_stamp_nano_sec_;
-
-  // additional velocity state interface
-  lbr_fri_idl::msg::LBRState::_measured_joint_position_type last_hw_measured_joint_position_;
-  double last_hw_time_stamp_sec_;
-  double last_hw_time_stamp_nano_sec_;
-  lbr_fri_idl::msg::LBRState::_measured_joint_position_type hw_velocity_;
+  // velocity computation
+  lbr_fri_idl::msg::LBRState::_measured_joint_position_type last_measured_joint_position_,
+      velocity_;
+  double last_time_stamp_sec_;
+  double last_time_stamp_nano_sec_;
 
   // compute velocity for state interface
   double time_stamps_to_sec_(const double &sec, const double &nano_sec) const;
-  void nan_last_hw_states_();
-  void update_last_hw_states_();
-  void compute_hw_velocity_();
+  void nan_last_states_();
+  void update_last_states_();
+  void compute_velocity_();
 
   // additional force-torque state interface
-  lbr_fri_ros2::cart_array_t hw_ft_;
+  lbr_fri_ros2::cart_array_t ft_;
   std::shared_ptr<lbr_fri_ros2::FTEstimatorImpl> ft_estimator_impl_ptr_;
   std::unique_ptr<lbr_fri_ros2::FTEstimator> ft_estimator_ptr_;
-
-  // exposed command interfaces
-  lbr_fri_idl::msg::LBRCommand hw_lbr_command_;
 };
 } // namespace lbr_ros2_control
 #endif // LBR_ROS2_CONTROL__SYSTEM_INTERFACE_HPP_
