@@ -218,6 +218,10 @@ protected:
   std::shared_ptr<lbr_fri_ros2::FTEstimatorImpl> ft_estimator_impl_ptr_;
   std::unique_ptr<lbr_fri_ros2::FTEstimator> ft_estimator_ptr_;
 
+  // command and state buffers
+  lbr_fri_idl::msg::LBRCommand lbr_command_;
+  lbr_fri_idl::msg::LBRState lbr_state_;
+
   // keys for command / state interfaces
   CommandKeys command_keys_;
   StateKeys state_keys_;

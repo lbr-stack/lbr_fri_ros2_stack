@@ -205,20 +205,20 @@ hardware_interface::return_type SystemInterface::read(const rclcpp::Time & /*tim
     return hardware_interface::return_type::OK;
   }
 
-  auto lbr_state = async_client_ptr_->get_state_interface()->get_state();
+  lbr_state_ = async_client_ptr_->get_state_interface()->get_state();
 
-  if (period.seconds() - lbr_state.sample_time * 0.2 > lbr_state.sample_time) {
+  if (period.seconds() - lbr_state_.sample_time * 0.2 > lbr_state_.sample_time) {
     RCLCPP_WARN_STREAM(get_node()->get_logger(),
                        lbr_fri_ros2::ColorScheme::WARNING
                            << "Increase update_rate parameter for controller_manager to "
-                           << std::to_string(static_cast<int>(1. / lbr_state.sample_time))
+                           << std::to_string(static_cast<int>(1. / lbr_state_.sample_time))
                            << " Hz or more" << lbr_fri_ros2::ColorScheme::ENDC);
   }
 
   // exit once robot exits COMMANDING_ACTIVE (for safety)
   if (exit_commanding_active_(
           static_cast<KUKA::FRI::ESessionState>(get_state(state_keys_.session_state)),
-          static_cast<KUKA::FRI::ESessionState>(lbr_state.session_state))) {
+          static_cast<KUKA::FRI::ESessionState>(lbr_state_.session_state))) {
     RCLCPP_ERROR_STREAM(get_node()->get_logger(),
                         lbr_fri_ros2::ColorScheme::ERROR
                             << "LBR left COMMANDING_ACTIVE. Please re-run lbr_bringup"
@@ -232,31 +232,31 @@ hardware_interface::return_type SystemInterface::read(const rclcpp::Time & /*tim
   // set the joint state interfaces
   for (std::size_t i = 0; i < lbr_fri_ros2::N_JNTS; ++i) {
 #if FRI_CLIENT_VERSION_MAJOR == 1
-    set_state(state_keys_.commanded_joint_position[i], lbr_state.commanded_joint_position[i]);
+    set_state(state_keys_.commanded_joint_position[i], lbr_state_.commanded_joint_position[i]);
 #endif
-    set_state(state_keys_.commanded_torque[i], lbr_state.commanded_torque[i]);
-    set_state(state_keys_.ipo_joint_position[i], lbr_state.ipo_joint_position[i]);
-    set_state(state_keys_.position[i], lbr_state.measured_joint_position[i]);
-    set_state(state_keys_.external_torque[i], lbr_state.external_torque[i]);
-    set_state(state_keys_.effort[i], lbr_state.measured_torque[i]);
+    set_state(state_keys_.commanded_torque[i], lbr_state_.commanded_torque[i]);
+    set_state(state_keys_.ipo_joint_position[i], lbr_state_.ipo_joint_position[i]);
+    set_state(state_keys_.position[i], lbr_state_.measured_joint_position[i]);
+    set_state(state_keys_.external_torque[i], lbr_state_.external_torque[i]);
+    set_state(state_keys_.effort[i], lbr_state_.measured_torque[i]);
     set_state(state_keys_.velocity[i], velocity_[i]);
   }
 
   // state interfaces without
-  set_state(state_keys_.sample_time, lbr_state.sample_time);
-  set_state(state_keys_.tracking_performance, lbr_state.tracking_performance);
+  set_state(state_keys_.sample_time, lbr_state_.sample_time);
+  set_state(state_keys_.tracking_performance, lbr_state_.tracking_performance);
 
   // state interfaces with cast
-  set_state(state_keys_.session_state, static_cast<double>(lbr_state.session_state));
-  set_state(state_keys_.connection_quality, static_cast<double>(lbr_state.connection_quality));
-  set_state(state_keys_.safety_state, static_cast<double>(lbr_state.safety_state));
-  set_state(state_keys_.operation_mode, static_cast<double>(lbr_state.operation_mode));
-  set_state(state_keys_.drive_state, static_cast<double>(lbr_state.drive_state));
-  set_state(state_keys_.client_command_mode, static_cast<double>(lbr_state.client_command_mode));
-  set_state(state_keys_.overlay_type, static_cast<double>(lbr_state.overlay_type));
-  set_state(state_keys_.control_mode, static_cast<double>(lbr_state.control_mode));
-  set_state(state_keys_.time_stamp_sec, static_cast<double>(lbr_state.time_stamp_sec));
-  set_state(state_keys_.time_stamp_nano_sec, static_cast<double>(lbr_state.time_stamp_nano_sec));
+  set_state(state_keys_.session_state, static_cast<double>(lbr_state_.session_state));
+  set_state(state_keys_.connection_quality, static_cast<double>(lbr_state_.connection_quality));
+  set_state(state_keys_.safety_state, static_cast<double>(lbr_state_.safety_state));
+  set_state(state_keys_.operation_mode, static_cast<double>(lbr_state_.operation_mode));
+  set_state(state_keys_.drive_state, static_cast<double>(lbr_state_.drive_state));
+  set_state(state_keys_.client_command_mode, static_cast<double>(lbr_state_.client_command_mode));
+  set_state(state_keys_.overlay_type, static_cast<double>(lbr_state_.overlay_type));
+  set_state(state_keys_.control_mode, static_cast<double>(lbr_state_.control_mode));
+  set_state(state_keys_.time_stamp_sec, static_cast<double>(lbr_state_.time_stamp_sec));
+  set_state(state_keys_.time_stamp_nano_sec, static_cast<double>(lbr_state_.time_stamp_nano_sec));
 
   // additional velocity state interface
   compute_velocity_();
@@ -266,8 +266,8 @@ hardware_interface::return_type SystemInterface::read(const rclcpp::Time & /*tim
   if (ft_parameters_.enabled) {
     // note that (if enabled) the computation is performed asynchronously to not block the main
     // thread
-    ft_estimator_impl_ptr_->set_q(lbr_state.measured_joint_position);
-    ft_estimator_impl_ptr_->set_tau_ext(lbr_state.external_torque);
+    ft_estimator_impl_ptr_->set_q(lbr_state_.measured_joint_position);
+    ft_estimator_impl_ptr_->set_tau_ext(lbr_state_.external_torque);
     ft_estimator_impl_ptr_->get_f_ext_tf(ft_);
     for (std::size_t i = 0; i < lbr_fri_ros2::CARTESIAN_DOF; ++i) {
       set_state(state_keys_.estimated_ft[i], ft_[i]);
@@ -284,16 +284,15 @@ hardware_interface::return_type SystemInterface::write(const rclcpp::Time & /*ti
   }
 
   // populate command message
-  lbr_fri_idl::msg::LBRCommand lbr_command;
   for (std::size_t i = 0; i < lbr_fri_ros2::N_JNTS; ++i) {
-    lbr_command.joint_position[i] = get_command(command_keys_.joint_position[i]);
-    lbr_command.torque[i] = get_command(command_keys_.torque[i]);
+    lbr_command_.joint_position[i] = get_command(command_keys_.joint_position[i]);
+    lbr_command_.torque[i] = get_command(command_keys_.torque[i]);
   }
   for (std::size_t i = 0; i < lbr_fri_ros2::CARTESIAN_DOF; ++i) {
-    lbr_command.wrench[i] = get_command(command_keys_.wrench[i]);
+    lbr_command_.wrench[i] = get_command(command_keys_.wrench[i]);
   }
 
-  async_client_ptr_->get_command_interface()->buffer_command_target(lbr_command);
+  async_client_ptr_->get_command_interface()->buffer_command_target(lbr_command_);
   return hardware_interface::return_type::OK;
 }
 
