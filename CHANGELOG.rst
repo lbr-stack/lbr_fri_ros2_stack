@@ -1,7 +1,7 @@
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Changelog for package LBR FRI ROS 2 Stack
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Humble v2.3.0 (2025-11-07)
+Jazzy v2.3.0 (2025-11-17)
 --------------------------
 * ``lbr_fri_ros2``:
 
@@ -9,6 +9,7 @@ Humble v2.3.0 (2025-11-07)
     * Added a new ``StateGuard`` that tests for load data calibration on activation in compliant control modes and shuts the connection otherwise.
 * ``lbr_ros2_control``:
 
+  * Migrated to Jazzy following guidelines at https://control.ros.org/jazzy/doc/ros2_control/doc/migration.html#migration-of-command-stateinterfaces.
   * Removed the default error from ``AdmittanceController`` with the introduction of load data checks. Also now supports the default ``lbr_system_config.yaml``.
   * WARN: KUKA's Cartesian impedance controller seems quite prone to singularities, and should thus be used with caution and only in ``T1`` mode.
 
