@@ -115,7 +115,7 @@ protected:
         velocity[i] = joint_name + "/" + hardware_interface::HW_IF_VELOCITY;
       }
 
-      sample_time = std::string(HW_IF_AUXILIARY_PREFIX) + "/" + HW_IF_TRACKING_PERFORMANCE;
+      sample_time = std::string(HW_IF_AUXILIARY_PREFIX) + "/" + HW_IF_SAMPLE_TIME;
       session_state = std::string(HW_IF_AUXILIARY_PREFIX) + "/" + HW_IF_SESSION_STATE;
       connection_quality = std::string(HW_IF_AUXILIARY_PREFIX) + "/" + HW_IF_CONNECTION_QUALITY;
       safety_state = std::string(HW_IF_AUXILIARY_PREFIX) + "/" + HW_IF_SAFETY_STATE;
