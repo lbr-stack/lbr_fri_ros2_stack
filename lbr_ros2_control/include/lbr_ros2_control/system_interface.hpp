@@ -32,43 +32,111 @@
 #include "lbr_ros2_control/system_interface_type_values.hpp"
 
 namespace lbr_ros2_control {
-struct SystemInterfaceParameters {
-  uint8_t fri_client_sdk_major_version{1};
-  uint8_t fri_client_sdk_minor_version{15};
+class SystemInterface : public hardware_interface::SystemInterface {
+protected:
+  struct SystemInterfaceParameters {
+    uint8_t fri_client_sdk_major_version{1};
+    uint8_t fri_client_sdk_minor_version{15};
 #if FRI_CLIENT_VERSION_MAJOR == 1
-  KUKA::FRI::EClientCommandMode client_command_mode{KUKA::FRI::EClientCommandMode::POSITION};
+    KUKA::FRI::EClientCommandMode client_command_mode{KUKA::FRI::EClientCommandMode::POSITION};
 #endif
 #if FRI_CLIENT_VERSION_MAJOR >= 2
-  KUKA::FRI::EClientCommandMode client_command_mode{KUKA::FRI::EClientCommandMode::JOINT_POSITION};
+    KUKA::FRI::EClientCommandMode client_command_mode{
+        KUKA::FRI::EClientCommandMode::JOINT_POSITION};
 #endif
-  int32_t port_id{30200};
-  const char *remote_host{nullptr};
-  int32_t rt_prio{80};
-  double joint_position_tau{0.04};
-  std::string command_guard_variant{"default"};
-  bool state_guard_external_torque_safety_check{true};
-  double state_guard_external_torque_limit{2.0};
-  double external_torque_tau{0.04};
-  double measured_torque_tau{0.04};
-  bool open_loop{true};
-};
+    int32_t port_id{30200};
+    const char *remote_host{nullptr};
+    int32_t rt_prio{80};
+    double joint_position_tau{0.04};
+    std::string command_guard_variant{"default"};
+    bool state_guard_external_torque_safety_check{true};
+    double state_guard_external_torque_limit{2.0};
+    double external_torque_tau{0.04};
+    double measured_torque_tau{0.04};
+    bool open_loop{true};
+  };
 
-struct EstimatedFTSensorParameters {
-  bool enabled{true};
-  std::uint16_t update_rate{100};
-  int32_t rt_prio{30};
-  std::string chain_root{"lbr_link_0"};
-  std::string chain_tip{"lbr_link_ee"};
-  double damping{0.2};
-  double force_x_th{2.0};
-  double force_y_th{2.0};
-  double force_z_th{2.0};
-  double torque_x_th{0.5};
-  double torque_y_th{0.5};
-  double torque_z_th{0.5};
-};
+  struct EstimatedFTSensorParameters {
+    bool enabled{true};
+    std::uint16_t update_rate{100};
+    int32_t rt_prio{30};
+    std::string chain_root{"lbr_link_0"};
+    std::string chain_tip{"lbr_link_ee"};
+    double damping{0.2};
+    double force_x_th{2.0};
+    double force_y_th{2.0};
+    double force_z_th{2.0};
+    double torque_x_th{0.5};
+    double torque_y_th{0.5};
+    double torque_z_th{0.5};
+  };
 
-class SystemInterface : public hardware_interface::SystemInterface {
+  struct CommandKeys {
+    lbr_fri_ros2::jnt_name_array_t joint_position, torque;
+    lbr_fri_ros2::cart_name_array_t wrench;
+
+    void populate_keys(const hardware_interface::HardwareInfo &info) {
+      for (std::size_t i = 0; i < lbr_fri_ros2::N_JNTS; ++i) {
+        auto joint_name = info.joints[i].name;
+        joint_position[i] = joint_name + "/" + hardware_interface::HW_IF_POSITION;
+        torque[i] = joint_name + "/" + hardware_interface::HW_IF_EFFORT;
+      }
+      wrench[0] = std::string(HW_IF_WRENCH_PREFIX) + "/" + HW_IF_FORCE_X;
+      wrench[1] = std::string(HW_IF_WRENCH_PREFIX) + "/" + HW_IF_FORCE_Y;
+      wrench[2] = std::string(HW_IF_WRENCH_PREFIX) + "/" + HW_IF_FORCE_Z;
+      wrench[3] = std::string(HW_IF_WRENCH_PREFIX) + "/" + HW_IF_TORQUE_X;
+      wrench[4] = std::string(HW_IF_WRENCH_PREFIX) + "/" + HW_IF_TORQUE_Y;
+      wrench[5] = std::string(HW_IF_WRENCH_PREFIX) + "/" + HW_IF_TORQUE_Z;
+    }
+  };
+
+  struct StateKeys {
+#if FRI_CLIENT_VERSION_MAJOR == 1
+    lbr_fri_ros2::jnt_name_array_t commanded_joint_position;
+#endif
+    lbr_fri_ros2::jnt_name_array_t commanded_torque, ipo_joint_position, position, external_torque,
+        effort, velocity;
+    std::string sample_time, session_state, connection_quality, safety_state, operation_mode,
+        drive_state, client_command_mode, overlay_type, control_mode, time_stamp_sec,
+        time_stamp_nano_sec, tracking_performance;
+    lbr_fri_ros2::cart_name_array_t estimated_ft;
+
+    void populate_keys(const hardware_interface::HardwareInfo &info) {
+      for (std::size_t i = 0; i < lbr_fri_ros2::N_JNTS; ++i) {
+        auto joint_name = info.joints[i].name;
+#if FRI_CLIENT_VERSION_MAJOR == 1
+        commanded_joint_position[i] = joint_name + "/" + HW_IF_COMMANDED_JOINT_POSITION;
+#endif
+        commanded_torque[i] = joint_name + "/" + HW_IF_COMMANDED_TORQUE;
+        ipo_joint_position[i] = joint_name + "/" + HW_IF_IPO_JOINT_POSITION;
+        position[i] = joint_name + "/" + hardware_interface::HW_IF_POSITION;
+        external_torque[i] = joint_name + "/" + HW_IF_EXTERNAL_TORQUE;
+        effort[i] = joint_name + "/" + hardware_interface::HW_IF_EFFORT;
+        velocity[i] = joint_name + "/" + hardware_interface::HW_IF_VELOCITY;
+      }
+
+      sample_time = std::string(HW_IF_AUXILIARY_PREFIX) + "/" + HW_IF_SAMPLE_TIME;
+      session_state = std::string(HW_IF_AUXILIARY_PREFIX) + "/" + HW_IF_SESSION_STATE;
+      connection_quality = std::string(HW_IF_AUXILIARY_PREFIX) + "/" + HW_IF_CONNECTION_QUALITY;
+      safety_state = std::string(HW_IF_AUXILIARY_PREFIX) + "/" + HW_IF_SAFETY_STATE;
+      operation_mode = std::string(HW_IF_AUXILIARY_PREFIX) + "/" + HW_IF_OPERATION_MODE;
+      drive_state = std::string(HW_IF_AUXILIARY_PREFIX) + "/" + HW_IF_DRIVE_STATE;
+      client_command_mode = std::string(HW_IF_AUXILIARY_PREFIX) + "/" + HW_IF_CLIENT_COMMAND_MODE;
+      overlay_type = std::string(HW_IF_AUXILIARY_PREFIX) + "/" + HW_IF_OVERLAY_TYPE;
+      control_mode = std::string(HW_IF_AUXILIARY_PREFIX) + "/" + HW_IF_CONTROL_MODE;
+      time_stamp_sec = std::string(HW_IF_AUXILIARY_PREFIX) + "/" + HW_IF_TIME_STAMP_SEC;
+      time_stamp_nano_sec = std::string(HW_IF_AUXILIARY_PREFIX) + "/" + HW_IF_TIME_STAMP_NANO_SEC;
+      tracking_performance = std::string(HW_IF_AUXILIARY_PREFIX) + "/" + HW_IF_TRACKING_PERFORMANCE;
+
+      estimated_ft[0] = std::string(HW_IF_ESTIMATED_FT_PREFIX) + "/" + HW_IF_FORCE_X;
+      estimated_ft[1] = std::string(HW_IF_ESTIMATED_FT_PREFIX) + "/" + HW_IF_FORCE_Y;
+      estimated_ft[2] = std::string(HW_IF_ESTIMATED_FT_PREFIX) + "/" + HW_IF_FORCE_Z;
+      estimated_ft[3] = std::string(HW_IF_ESTIMATED_FT_PREFIX) + "/" + HW_IF_TORQUE_X;
+      estimated_ft[4] = std::string(HW_IF_ESTIMATED_FT_PREFIX) + "/" + HW_IF_TORQUE_Y;
+      estimated_ft[5] = std::string(HW_IF_ESTIMATED_FT_PREFIX) + "/" + HW_IF_TORQUE_Z;
+    }
+  };
+
 protected:
 #if FRI_CLIENT_VERSION_MAJOR == 1
   static constexpr uint8_t LBR_FRI_STATE_INTERFACE_SIZE = 7;
@@ -88,8 +156,6 @@ public:
   // hardware interface
   controller_interface::CallbackReturn
   on_init(const hardware_interface::HardwareComponentInterfaceParams &params) override;
-  std::vector<hardware_interface::StateInterface> export_state_interfaces() override;
-  std::vector<hardware_interface::CommandInterface> export_command_interfaces() override;
 
   hardware_interface::return_type prepare_command_mode_switch(
       const std::vector<std::string> &start_interfaces,
@@ -135,42 +201,30 @@ protected:
   std::shared_ptr<lbr_fri_ros2::AsyncClient> async_client_ptr_;
   std::unique_ptr<lbr_fri_ros2::App> app_ptr_;
 
-  // exposed state interfaces (ideally these are taken from async_client_ptr_ but
-  // ros2_control ReadOnlyHandle does not allow for const pointers, refer
-  // https://github.com/ros-controls/ros2_control/issues/1196)
-  lbr_fri_idl::msg::LBRState hw_lbr_state_;
-
-  // exposed state interfaces that require casting
-  double hw_session_state_;
-  double hw_connection_quality_;
-  double hw_safety_state_;
-  double hw_operation_mode_;
-  double hw_drive_state_;
-  double hw_client_command_mode_;
-  double hw_overlay_type_;
-  double hw_control_mode_;
-  double hw_time_stamp_sec_;
-  double hw_time_stamp_nano_sec_;
-
-  // additional velocity state interface
-  lbr_fri_idl::msg::LBRState::_measured_joint_position_type last_hw_measured_joint_position_;
-  double last_hw_time_stamp_sec_;
-  double last_hw_time_stamp_nano_sec_;
-  lbr_fri_idl::msg::LBRState::_measured_joint_position_type hw_velocity_;
+  // velocity computation
+  lbr_fri_idl::msg::LBRState::_measured_joint_position_type last_measured_joint_position_,
+      velocity_;
+  double last_time_stamp_sec_;
+  double last_time_stamp_nano_sec_;
 
   // compute velocity for state interface
   double time_stamps_to_sec_(const double &sec, const double &nano_sec) const;
-  void nan_last_hw_states_();
-  void update_last_hw_states_();
-  void compute_hw_velocity_();
+  void nan_last_states_();
+  void update_last_states_();
+  void compute_velocity_();
 
   // additional force-torque state interface
-  lbr_fri_ros2::cart_array_t hw_ft_;
+  lbr_fri_ros2::cart_array_t ft_;
   std::shared_ptr<lbr_fri_ros2::FTEstimatorImpl> ft_estimator_impl_ptr_;
   std::unique_ptr<lbr_fri_ros2::FTEstimator> ft_estimator_ptr_;
 
-  // exposed command interfaces
-  lbr_fri_idl::msg::LBRCommand hw_lbr_command_;
+  // command and state buffers
+  lbr_fri_idl::msg::LBRCommand lbr_command_;
+  lbr_fri_idl::msg::LBRState lbr_state_;
+
+  // keys for command / state interfaces
+  CommandKeys command_keys_;
+  StateKeys state_keys_;
 };
 } // namespace lbr_ros2_control
 #endif // LBR_ROS2_CONTROL__SYSTEM_INTERFACE_HPP_

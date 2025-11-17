@@ -56,10 +56,6 @@ SystemInterface::on_init(const hardware_interface::HardwareComponentInterfacePar
     return controller_interface::CallbackReturn::ERROR;
   }
 
-  nan_command_interfaces_();
-  nan_state_interfaces_();
-  nan_last_hw_states_();
-
   // setup force-torque estimator
   if (!parse_ft_parameters_()) {
     return controller_interface::CallbackReturn::ERROR;
@@ -79,6 +75,11 @@ SystemInterface::on_init(const hardware_interface::HardwareComponentInterfacePar
                                                                     ft_parameters_.update_rate);
   }
 
+  // populate the keys
+  command_keys_.populate_keys(info_);
+  state_keys_.populate_keys(info_);
+
+  // perform verifications
   if (!verify_number_of_joints_()) {
     return controller_interface::CallbackReturn::ERROR;
   }
@@ -102,92 +103,6 @@ SystemInterface::on_init(const hardware_interface::HardwareComponentInterfacePar
   return controller_interface::CallbackReturn::SUCCESS;
 }
 
-std::vector<hardware_interface::StateInterface> SystemInterface::export_state_interfaces() {
-  std::vector<hardware_interface::StateInterface> state_interfaces;
-  // state interfaces of type double
-  for (std::size_t i = 0; i < info_.joints.size(); ++i) {
-    state_interfaces.emplace_back(info_.joints[i].name, hardware_interface::HW_IF_POSITION,
-                                  &hw_lbr_state_.measured_joint_position[i]);
-
-#if FRI_CLIENT_VERSION_MAJOR == 1
-    state_interfaces.emplace_back(info_.joints[i].name, HW_IF_COMMANDED_JOINT_POSITION,
-                                  &hw_lbr_state_.commanded_joint_position[i]);
-#endif
-
-    state_interfaces.emplace_back(info_.joints[i].name, hardware_interface::HW_IF_EFFORT,
-                                  &hw_lbr_state_.measured_torque[i]);
-
-    state_interfaces.emplace_back(info_.joints[i].name, HW_IF_COMMANDED_TORQUE,
-                                  &hw_lbr_state_.commanded_torque[i]);
-
-    state_interfaces.emplace_back(info_.joints[i].name, HW_IF_EXTERNAL_TORQUE,
-                                  &hw_lbr_state_.external_torque[i]);
-
-    state_interfaces.emplace_back(info_.joints[i].name, HW_IF_IPO_JOINT_POSITION,
-                                  &hw_lbr_state_.ipo_joint_position[i]);
-
-    // additional velocity state interface
-    state_interfaces.emplace_back(info_.joints[i].name, hardware_interface::HW_IF_VELOCITY,
-                                  &hw_velocity_[i]);
-  }
-
-  const auto &auxiliary_sensor = info_.sensors[0];
-  state_interfaces.emplace_back(auxiliary_sensor.name, HW_IF_SAMPLE_TIME,
-                                &hw_lbr_state_.sample_time);
-  state_interfaces.emplace_back(auxiliary_sensor.name, HW_IF_TRACKING_PERFORMANCE,
-                                &hw_lbr_state_.tracking_performance);
-
-  // state interfaces that require cast
-  state_interfaces.emplace_back(auxiliary_sensor.name, HW_IF_SESSION_STATE, &hw_session_state_);
-  state_interfaces.emplace_back(auxiliary_sensor.name, HW_IF_CONNECTION_QUALITY,
-                                &hw_connection_quality_);
-  state_interfaces.emplace_back(auxiliary_sensor.name, HW_IF_SAFETY_STATE, &hw_safety_state_);
-  state_interfaces.emplace_back(auxiliary_sensor.name, HW_IF_OPERATION_MODE, &hw_operation_mode_);
-  state_interfaces.emplace_back(auxiliary_sensor.name, HW_IF_DRIVE_STATE, &hw_drive_state_);
-  state_interfaces.emplace_back(auxiliary_sensor.name, HW_IF_CLIENT_COMMAND_MODE,
-                                &hw_client_command_mode_);
-  state_interfaces.emplace_back(auxiliary_sensor.name, HW_IF_OVERLAY_TYPE, &hw_overlay_type_);
-  state_interfaces.emplace_back(auxiliary_sensor.name, HW_IF_CONTROL_MODE, &hw_control_mode_);
-
-  state_interfaces.emplace_back(auxiliary_sensor.name, HW_IF_TIME_STAMP_SEC, &hw_time_stamp_sec_);
-  state_interfaces.emplace_back(auxiliary_sensor.name, HW_IF_TIME_STAMP_NANO_SEC,
-                                &hw_time_stamp_nano_sec_);
-
-  // additional force-torque state interface (if enabled)
-  if (ft_parameters_.enabled) {
-    const auto &estimated_ft_sensor = info_.sensors[1];
-    state_interfaces.emplace_back(estimated_ft_sensor.name, HW_IF_FORCE_X, &hw_ft_[0]);
-    state_interfaces.emplace_back(estimated_ft_sensor.name, HW_IF_FORCE_Y, &hw_ft_[1]);
-    state_interfaces.emplace_back(estimated_ft_sensor.name, HW_IF_FORCE_Z, &hw_ft_[2]);
-    state_interfaces.emplace_back(estimated_ft_sensor.name, HW_IF_TORQUE_X, &hw_ft_[3]);
-    state_interfaces.emplace_back(estimated_ft_sensor.name, HW_IF_TORQUE_Y, &hw_ft_[4]);
-    state_interfaces.emplace_back(estimated_ft_sensor.name, HW_IF_TORQUE_Z, &hw_ft_[5]);
-  }
-
-  return state_interfaces;
-}
-
-std::vector<hardware_interface::CommandInterface> SystemInterface::export_command_interfaces() {
-  std::vector<hardware_interface::CommandInterface> command_interfaces;
-  for (std::size_t i = 0; i < info_.joints.size(); ++i) {
-    command_interfaces.emplace_back(info_.joints[i].name, hardware_interface::HW_IF_POSITION,
-                                    &hw_lbr_command_.joint_position[i]);
-
-    command_interfaces.emplace_back(info_.joints[i].name, hardware_interface::HW_IF_EFFORT,
-                                    &hw_lbr_command_.torque[i]);
-  }
-
-  // Cartesian impedance control command interfaces
-  const auto &wrench = info_.gpios[0];
-  command_interfaces.emplace_back(wrench.name, HW_IF_FORCE_X, &hw_lbr_command_.wrench[0]);
-  command_interfaces.emplace_back(wrench.name, HW_IF_FORCE_Y, &hw_lbr_command_.wrench[1]);
-  command_interfaces.emplace_back(wrench.name, HW_IF_FORCE_Z, &hw_lbr_command_.wrench[2]);
-  command_interfaces.emplace_back(wrench.name, HW_IF_TORQUE_X, &hw_lbr_command_.wrench[3]);
-  command_interfaces.emplace_back(wrench.name, HW_IF_TORQUE_Y, &hw_lbr_command_.wrench[4]);
-  command_interfaces.emplace_back(wrench.name, HW_IF_TORQUE_Z, &hw_lbr_command_.wrench[5]);
-  return command_interfaces;
-}
-
 hardware_interface::return_type
 SystemInterface::prepare_command_mode_switch(const std::vector<std::string> & /*start_interfaces*/,
                                              const std::vector<std::string> & /*stop_interfaces*/) {
@@ -209,6 +124,13 @@ SystemInterface::on_configure(const rclcpp_lifecycle::State &) {
 }
 
 controller_interface::CallbackReturn SystemInterface::on_activate(const rclcpp_lifecycle::State &) {
+  // nan all command and state interfaces (this might be removed in the future with ros2_control
+  // handling them now)
+  nan_command_interfaces_();
+  nan_state_interfaces_();
+  nan_last_states_();
+
+  // run the FRI app
   app_ptr_->run_async(parameters_.rt_prio);
   int attempt = 0;
   while (!async_client_ptr_->get_state_interface()->is_initialized()) {
@@ -283,19 +205,20 @@ hardware_interface::return_type SystemInterface::read(const rclcpp::Time & /*tim
     return hardware_interface::return_type::OK;
   }
 
-  hw_lbr_state_ = async_client_ptr_->get_state_interface()->get_state();
+  lbr_state_ = async_client_ptr_->get_state_interface()->get_state();
 
-  if (period.seconds() - hw_lbr_state_.sample_time * 0.2 > hw_lbr_state_.sample_time) {
+  if (period.seconds() - lbr_state_.sample_time * 0.2 > lbr_state_.sample_time) {
     RCLCPP_WARN_STREAM(get_node()->get_logger(),
                        lbr_fri_ros2::ColorScheme::WARNING
                            << "Increase update_rate parameter for controller_manager to "
-                           << std::to_string(static_cast<int>(1. / hw_lbr_state_.sample_time))
+                           << std::to_string(static_cast<int>(1. / lbr_state_.sample_time))
                            << " Hz or more" << lbr_fri_ros2::ColorScheme::ENDC);
   }
 
   // exit once robot exits COMMANDING_ACTIVE (for safety)
-  if (exit_commanding_active_(static_cast<KUKA::FRI::ESessionState>(hw_session_state_),
-                              static_cast<KUKA::FRI::ESessionState>(hw_lbr_state_.session_state))) {
+  if (exit_commanding_active_(
+          static_cast<KUKA::FRI::ESessionState>(get_state(state_keys_.session_state)),
+          static_cast<KUKA::FRI::ESessionState>(lbr_state_.session_state))) {
     RCLCPP_ERROR_STREAM(get_node()->get_logger(),
                         lbr_fri_ros2::ColorScheme::ERROR
                             << "LBR left COMMANDING_ACTIVE. Please re-run lbr_bringup"
@@ -306,39 +229,70 @@ hardware_interface::return_type SystemInterface::read(const rclcpp::Time & /*tim
     return hardware_interface::return_type::ERROR;
   }
 
-  // state interfaces that require cast
-  hw_session_state_ = static_cast<double>(hw_lbr_state_.session_state);
-  hw_connection_quality_ = static_cast<double>(hw_lbr_state_.connection_quality);
-  hw_safety_state_ = static_cast<double>(hw_lbr_state_.safety_state);
-  hw_operation_mode_ = static_cast<double>(hw_lbr_state_.operation_mode);
-  hw_drive_state_ = static_cast<double>(hw_lbr_state_.drive_state);
-  hw_client_command_mode_ = static_cast<double>(hw_lbr_state_.client_command_mode);
-  hw_overlay_type_ = static_cast<double>(hw_lbr_state_.overlay_type);
-  hw_control_mode_ = static_cast<double>(hw_lbr_state_.control_mode);
-  hw_time_stamp_sec_ = static_cast<double>(hw_lbr_state_.time_stamp_sec);
-  hw_time_stamp_nano_sec_ = static_cast<double>(hw_lbr_state_.time_stamp_nano_sec);
+  // set the joint state interfaces
+  for (std::size_t i = 0; i < lbr_fri_ros2::N_JNTS; ++i) {
+#if FRI_CLIENT_VERSION_MAJOR == 1
+    set_state(state_keys_.commanded_joint_position[i], lbr_state_.commanded_joint_position[i]);
+#endif
+    set_state(state_keys_.commanded_torque[i], lbr_state_.commanded_torque[i]);
+    set_state(state_keys_.ipo_joint_position[i], lbr_state_.ipo_joint_position[i]);
+    set_state(state_keys_.position[i], lbr_state_.measured_joint_position[i]);
+    set_state(state_keys_.external_torque[i], lbr_state_.external_torque[i]);
+    set_state(state_keys_.effort[i], lbr_state_.measured_torque[i]);
+    set_state(state_keys_.velocity[i], velocity_[i]);
+  }
+
+  // state interfaces without
+  set_state(state_keys_.sample_time, lbr_state_.sample_time);
+  set_state(state_keys_.tracking_performance, lbr_state_.tracking_performance);
+
+  // state interfaces with cast
+  set_state(state_keys_.session_state, static_cast<double>(lbr_state_.session_state));
+  set_state(state_keys_.connection_quality, static_cast<double>(lbr_state_.connection_quality));
+  set_state(state_keys_.safety_state, static_cast<double>(lbr_state_.safety_state));
+  set_state(state_keys_.operation_mode, static_cast<double>(lbr_state_.operation_mode));
+  set_state(state_keys_.drive_state, static_cast<double>(lbr_state_.drive_state));
+  set_state(state_keys_.client_command_mode, static_cast<double>(lbr_state_.client_command_mode));
+  set_state(state_keys_.overlay_type, static_cast<double>(lbr_state_.overlay_type));
+  set_state(state_keys_.control_mode, static_cast<double>(lbr_state_.control_mode));
+  set_state(state_keys_.time_stamp_sec, static_cast<double>(lbr_state_.time_stamp_sec));
+  set_state(state_keys_.time_stamp_nano_sec, static_cast<double>(lbr_state_.time_stamp_nano_sec));
 
   // additional velocity state interface
-  compute_hw_velocity_();
-  update_last_hw_states_();
+  compute_velocity_();
+  update_last_states_();
 
   // additional force-torque state interface
   if (ft_parameters_.enabled) {
     // note that (if enabled) the computation is performed asynchronously to not block the main
     // thread
-    ft_estimator_impl_ptr_->set_q(hw_lbr_state_.measured_joint_position);
-    ft_estimator_impl_ptr_->set_tau_ext(hw_lbr_state_.external_torque);
-    ft_estimator_impl_ptr_->get_f_ext_tf(hw_ft_);
+    ft_estimator_impl_ptr_->set_q(lbr_state_.measured_joint_position);
+    ft_estimator_impl_ptr_->set_tau_ext(lbr_state_.external_torque);
+    ft_estimator_impl_ptr_->get_f_ext_tf(ft_);
+    for (std::size_t i = 0; i < lbr_fri_ros2::CARTESIAN_DOF; ++i) {
+      set_state(state_keys_.estimated_ft[i], ft_[i]);
+    }
   }
   return hardware_interface::return_type::OK;
 }
 
 hardware_interface::return_type SystemInterface::write(const rclcpp::Time & /*time*/,
                                                        const rclcpp::Duration & /*period*/) {
-  if (hw_session_state_ != KUKA::FRI::COMMANDING_ACTIVE) {
+  if (static_cast<KUKA::FRI::ESessionState>(get_state(state_keys_.session_state)) !=
+      KUKA::FRI::COMMANDING_ACTIVE) {
     return hardware_interface::return_type::OK;
   }
-  async_client_ptr_->get_command_interface()->buffer_command_target(hw_lbr_command_);
+
+  // populate command message
+  for (std::size_t i = 0; i < lbr_fri_ros2::N_JNTS; ++i) {
+    lbr_command_.joint_position[i] = get_command(command_keys_.joint_position[i]);
+    lbr_command_.torque[i] = get_command(command_keys_.torque[i]);
+  }
+  for (std::size_t i = 0; i < lbr_fri_ros2::CARTESIAN_DOF; ++i) {
+    lbr_command_.wrench[i] = get_command(command_keys_.wrench[i]);
+  }
+
+  async_client_ptr_->get_command_interface()->buffer_command_target(lbr_command_);
   return hardware_interface::return_type::OK;
 }
 
@@ -451,41 +405,50 @@ bool SystemInterface::parse_ft_parameters_() {
 }
 
 void SystemInterface::nan_command_interfaces_() {
-  hw_lbr_command_.joint_position.fill(std::numeric_limits<double>::quiet_NaN());
-  hw_lbr_command_.torque.fill(std::numeric_limits<double>::quiet_NaN());
-  hw_lbr_command_.wrench.fill(std::numeric_limits<double>::quiet_NaN());
+  for (std::size_t i = 0; i < lbr_fri_ros2::N_JNTS; ++i) {
+    set_command(command_keys_.joint_position[i], std::numeric_limits<double>::quiet_NaN());
+    set_command(command_keys_.torque[i], std::numeric_limits<double>::quiet_NaN());
+  }
+  for (std::size_t i = 0; i < lbr_fri_ros2::CARTESIAN_DOF; ++i) {
+    set_command(command_keys_.wrench[i], std::numeric_limits<double>::quiet_NaN());
+  }
 }
 
 void SystemInterface::nan_state_interfaces_() {
-  // state interfaces of type double
-  hw_lbr_state_.measured_joint_position.fill(std::numeric_limits<double>::quiet_NaN());
+  // joint state interfaces
+  for (std::size_t i = 0; i < lbr_fri_ros2::N_JNTS; ++i) {
+    set_state(state_keys_.position[i], std::numeric_limits<double>::quiet_NaN());
 #if FRI_CLIENT_VERSION_MAJOR == 1
-  hw_lbr_state_.commanded_joint_position.fill(std::numeric_limits<double>::quiet_NaN());
+    set_state(state_keys_.commanded_joint_position[i], std::numeric_limits<double>::quiet_NaN());
 #endif
-  hw_lbr_state_.measured_torque.fill(std::numeric_limits<double>::quiet_NaN());
-  hw_lbr_state_.commanded_torque.fill(std::numeric_limits<double>::quiet_NaN());
-  hw_lbr_state_.external_torque.fill(std::numeric_limits<double>::quiet_NaN());
-  hw_lbr_state_.ipo_joint_position.fill(std::numeric_limits<double>::quiet_NaN());
-  hw_lbr_state_.sample_time = std::numeric_limits<double>::quiet_NaN();
-  hw_lbr_state_.tracking_performance = std::numeric_limits<double>::quiet_NaN();
+    set_state(state_keys_.effort[i], std::numeric_limits<double>::quiet_NaN());
+    set_state(state_keys_.commanded_torque[i], std::numeric_limits<double>::quiet_NaN());
+    set_state(state_keys_.external_torque[i], std::numeric_limits<double>::quiet_NaN());
+    set_state(state_keys_.ipo_joint_position[i], std::numeric_limits<double>::quiet_NaN());
+    set_state(state_keys_.velocity[i], std::numeric_limits<double>::quiet_NaN());
+  }
 
-  // state interfaces that require cast
-  hw_session_state_ = std::numeric_limits<double>::quiet_NaN();
-  hw_connection_quality_ = std::numeric_limits<double>::quiet_NaN();
-  hw_safety_state_ = std::numeric_limits<double>::quiet_NaN();
-  hw_operation_mode_ = std::numeric_limits<double>::quiet_NaN();
-  hw_drive_state_ = std::numeric_limits<double>::quiet_NaN();
-  hw_client_command_mode_ = std::numeric_limits<double>::quiet_NaN();
-  hw_overlay_type_ = std::numeric_limits<double>::quiet_NaN();
-  hw_control_mode_ = std::numeric_limits<double>::quiet_NaN();
-  hw_time_stamp_sec_ = std::numeric_limits<double>::quiet_NaN();
-  hw_time_stamp_nano_sec_ = std::numeric_limits<double>::quiet_NaN();
+  // state interface without cast
+  set_state(state_keys_.sample_time, std::numeric_limits<double>::quiet_NaN());
+  set_state(state_keys_.tracking_performance, std::numeric_limits<double>::quiet_NaN());
+
+  // state interfaces with cast
+  set_state(state_keys_.session_state, std::numeric_limits<double>::quiet_NaN());
+  set_state(state_keys_.connection_quality, std::numeric_limits<double>::quiet_NaN());
+  set_state(state_keys_.safety_state, std::numeric_limits<double>::quiet_NaN());
+  set_state(state_keys_.operation_mode, std::numeric_limits<double>::quiet_NaN());
+  set_state(state_keys_.drive_state, std::numeric_limits<double>::quiet_NaN());
+  set_state(state_keys_.client_command_mode, std::numeric_limits<double>::quiet_NaN());
+  set_state(state_keys_.overlay_type, std::numeric_limits<double>::quiet_NaN());
+  set_state(state_keys_.control_mode, std::numeric_limits<double>::quiet_NaN());
+  set_state(state_keys_.time_stamp_sec, std::numeric_limits<double>::quiet_NaN());
+  set_state(state_keys_.time_stamp_nano_sec, std::numeric_limits<double>::quiet_NaN());
 
   // additional velocity state interface
-  hw_velocity_.fill(std::numeric_limits<double>::quiet_NaN());
+  velocity_.fill(std::numeric_limits<double>::quiet_NaN());
 
   // additional force-torque state interface
-  hw_ft_.fill(std::numeric_limits<double>::quiet_NaN());
+  ft_.fill(std::numeric_limits<double>::quiet_NaN());
 }
 
 bool SystemInterface::verify_number_of_joints_() {
@@ -679,13 +642,13 @@ bool SystemInterface::verify_gpios_() {
                                                       << lbr_fri_ros2::ColorScheme::ENDC);
     return false;
   }
-  if (info_.gpios[0].command_interfaces.size() != hw_lbr_command_.wrench.size()) {
+  if (info_.gpios[0].command_interfaces.size() != lbr_fri_ros2::CARTESIAN_DOF) {
     RCLCPP_ERROR_STREAM(get_node()->get_logger(),
                         lbr_fri_ros2::ColorScheme::ERROR
                             << "GPIO '" << info_.gpios[0].name.c_str()
                             << "' received invalid number of command interfaces. Received '"
                             << info_.gpios[0].command_interfaces.size() << "', expected '"
-                            << hw_lbr_command_.wrench.size() << "'"
+                            << lbr_fri_ros2::CARTESIAN_DOF << "'"
                             << lbr_fri_ros2::ColorScheme::ENDC);
     return false;
   }
@@ -706,37 +669,39 @@ double SystemInterface::time_stamps_to_sec_(const double &sec, const double &nan
   return sec + nano_sec / 1.e9;
 }
 
-void SystemInterface::nan_last_hw_states_() {
-  last_hw_measured_joint_position_.fill(std::numeric_limits<double>::quiet_NaN());
-  last_hw_time_stamp_sec_ = std::numeric_limits<double>::quiet_NaN();
-  last_hw_time_stamp_nano_sec_ = std::numeric_limits<double>::quiet_NaN();
+void SystemInterface::nan_last_states_() {
+  last_measured_joint_position_.fill(std::numeric_limits<double>::quiet_NaN());
+  last_time_stamp_sec_ = std::numeric_limits<double>::quiet_NaN();
+  last_time_stamp_nano_sec_ = std::numeric_limits<double>::quiet_NaN();
 }
 
-void SystemInterface::update_last_hw_states_() {
-  last_hw_measured_joint_position_ = hw_lbr_state_.measured_joint_position;
-  last_hw_time_stamp_sec_ = hw_time_stamp_sec_;
-  last_hw_time_stamp_nano_sec_ = hw_time_stamp_nano_sec_;
+void SystemInterface::update_last_states_() {
+  for (std::size_t i = 0; i < lbr_fri_ros2::N_JNTS; ++i) {
+    last_measured_joint_position_[i] = get_state(state_keys_.position[i]);
+  }
+  last_time_stamp_sec_ = get_state(state_keys_.time_stamp_sec);
+  last_time_stamp_nano_sec_ = get_state(state_keys_.time_stamp_nano_sec);
 }
 
-void SystemInterface::compute_hw_velocity_() {
+void SystemInterface::compute_velocity_() {
   // state uninitialized
-  if (std::isnan(last_hw_time_stamp_nano_sec_) || std::isnan(last_hw_measured_joint_position_[0])) {
+  if (std::isnan(last_time_stamp_nano_sec_) || std::isnan(last_measured_joint_position_[0])) {
     return;
   }
+
+  auto time_stamp_sec = get_state(state_keys_.time_stamp_sec);
+  auto time_stamp_nano_sec = get_state(state_keys_.time_stamp_nano_sec);
 
   // state wasn't updated
-  if (last_hw_time_stamp_sec_ == hw_time_stamp_sec_ &&
-      last_hw_time_stamp_nano_sec_ == hw_time_stamp_nano_sec_) {
+  if (last_time_stamp_sec_ == time_stamp_sec && last_time_stamp_nano_sec_ == time_stamp_nano_sec) {
     return;
   }
 
-  double dt = time_stamps_to_sec_(hw_time_stamp_sec_, hw_time_stamp_nano_sec_) -
-              time_stamps_to_sec_(last_hw_time_stamp_sec_, last_hw_time_stamp_nano_sec_);
-  std::size_t i = 0;
-  std::for_each(hw_velocity_.begin(), hw_velocity_.end(), [&](double &v) {
-    v = (hw_lbr_state_.measured_joint_position[i] - last_hw_measured_joint_position_[i]) / dt;
-    ++i;
-  });
+  double dt = time_stamps_to_sec_(time_stamp_sec, time_stamp_nano_sec) -
+              time_stamps_to_sec_(last_time_stamp_sec_, last_time_stamp_nano_sec_);
+  for (std::size_t i = 0; i < lbr_fri_ros2::N_JNTS; ++i) {
+    velocity_[i] = (get_state(state_keys_.position[i]) - last_measured_joint_position_[i]) / dt;
+  }
 }
 
 } // namespace lbr_ros2_control

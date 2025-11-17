@@ -32,6 +32,11 @@ using cart_array_t = std::array<double, CARTESIAN_DOF>;
 using cart_array_t_ref = cart_array_t &;
 using const_cart_array_t_ref = const cart_array_t &;
 
+// Cartesian names
+using cart_name_array_t = std::array<std::string, CARTESIAN_DOF>;
+using cart_name_array_t_ref = cart_name_array_t &;
+using const_cart_name_array_t_ref = const cart_name_array_t &;
+
 // FRI types
 using fri_command_t = KUKA::FRI::LBRCommand;
 using fri_command_t_ref = fri_command_t &;
