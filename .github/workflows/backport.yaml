@@ -30,5 +30,5 @@ jobs:
         uses: korthout/backport-action@v3
         with:
           label_pattern: ""
-          target_branches: humble
+          target_branches: jazzy
           merge_commits: skip
