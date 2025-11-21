@@ -12,7 +12,9 @@ hardware:
   #   set tau << robot sample time for no smoothing on the commands
   joint_position_tau: 0.04
   command_guard:
-    variant: default # if requested position / velocities beyond limits, CommandGuard will be triggered and shut the connection. Available: [default, safe_stop]
+    # if requested position / velocities beyond limits, CommandGuard will be triggered and the command will be overriden with the current state instead
+    # available: [default, safe_stop]
+    variant: default
   state_guard:
     # enable / disable the load data safety check in compliant control modes [CARTESIAN_IMPEDANCE, IMPEDANCE]
     # in POSITION control mode, safety check is not performed
