@@ -68,10 +68,10 @@ void PositionCommandInterface::buffered_command_to_fri(fri_command_t_ref command
 
   // validate
   if (!command_guard_->is_valid_command(command_, state)) {
-    std::string err = "Invalid command.";
-    RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME()),
-                        ColorScheme::ERROR << err.c_str() << ColorScheme::ENDC);
-    throw std::runtime_error(err);
+    std::string warn = "Overriding invalid command to neutral command.";
+    RCLCPP_WARN_STREAM(rclcpp::get_logger(LOGGER_NAME()),
+                       ColorScheme::WARNING << warn.c_str() << ColorScheme::ENDC);
+    neutralize_command_(state, command_);
   }
 
   // write joint position to output
