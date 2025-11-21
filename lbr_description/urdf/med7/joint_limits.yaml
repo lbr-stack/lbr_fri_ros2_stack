@@ -1,35 +1,49 @@
 A1:
-    lower: -170
-    upper: 170
-    velocity: 98
-    effort: 200
+  lower: -169 # each lower / upper limit is 1 degree stricter to avoid hard limits
+  upper: 169
+  velocity: 98
+  effort: 200
+  safety_position_margin: 5 # inside the URDF, we compute k_position=velocity/safety_position_margin
+  k_velocity: 0
 A2:
-    lower: -120
-    upper: 120
-    velocity: 98
-    effort: 200
+  lower: -119
+  upper: 119
+  velocity: 98
+  effort: 200
+  safety_position_margin: 5
+  k_velocity: 0
 A3:
-    lower: -170
-    upper: 170
-    velocity: 100
-    effort: 200
+  lower: -169
+  upper: 169
+  velocity: 100
+  effort: 200
+  safety_position_margin: 5
+  k_velocity: 0
 A4:
-    lower: -120
-    upper: 120
-    velocity: 130
-    effort: 200
+  lower: -119
+  upper: 119
+  velocity: 130
+  effort: 200
+  safety_position_margin: 5
+  k_velocity: 0
 A5:
-    lower: -170
-    upper: 170
-    velocity: 140
-    effort: 200
+  lower: -169
+  upper: 169
+  velocity: 140
+  effort: 200
+  safety_position_margin: 5
+  k_velocity: 0
 A6:
-    lower: -120
-    upper: 120
-    velocity: 180
-    effort: 200
+  lower: -119
+  upper: 119
+  velocity: 180
+  effort: 200
+  safety_position_margin: 5
+  k_velocity: 0
 A7:
-    lower: -175
-    upper: 175
-    velocity: 180
-    effort: 200
+  lower: -174
+  upper: 174
+  velocity: 180
+  effort: 200
+  safety_position_margin: 5
+  k_velocity: 0

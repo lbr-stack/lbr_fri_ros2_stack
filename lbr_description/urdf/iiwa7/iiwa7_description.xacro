@@ -59,6 +59,11 @@
                 lower="${joint_limits['A1']['lower'] * PI / 180}"
                 upper="${joint_limits['A1']['upper'] * PI / 180}"
                 velocity="${joint_limits['A1']['velocity'] * PI / 180}" />
+            <safety_controller
+                soft_lower_limit="${joint_limits['A1']['lower'] * PI / 180}"
+                soft_upper_limit="${joint_limits['A1']['upper'] * PI / 180}"
+                k_position="${joint_limits['A1']['velocity'] / joint_limits['A1']['safety_position_margin']}"
+                k_velocity="${joint_limits['A1']['k_velocity']}" />
             <dynamics damping="${joint_damping}" friction="${joint_friction}" />
         </joint>
 
@@ -93,6 +98,11 @@
                 lower="${joint_limits['A2']['lower'] * PI / 180}"
                 upper="${joint_limits['A2']['upper'] * PI / 180}"
                 velocity="${joint_limits['A2']['velocity'] * PI / 180}" />
+            <safety_controller
+                soft_lower_limit="${joint_limits['A2']['lower'] * PI / 180}"
+                soft_upper_limit="${joint_limits['A2']['upper'] * PI / 180}"
+                k_position="${joint_limits['A2']['velocity'] / joint_limits['A2']['safety_position_margin']}"
+                k_velocity="${joint_limits['A2']['k_velocity']}" />
             <dynamics damping="${joint_damping}" friction="${joint_friction}" />
         </joint>
 
@@ -127,6 +137,11 @@
                 lower="${joint_limits['A3']['lower'] * PI / 180}"
                 upper="${joint_limits['A3']['upper'] * PI / 180}"
                 velocity="${joint_limits['A3']['velocity'] * PI / 180}" />
+            <safety_controller
+                soft_lower_limit="${joint_limits['A3']['lower'] * PI / 180}"
+                soft_upper_limit="${joint_limits['A3']['upper'] * PI / 180}"
+                k_position="${joint_limits['A3']['velocity'] / joint_limits['A3']['safety_position_margin']}"
+                k_velocity="${joint_limits['A3']['k_velocity']}" />
             <dynamics damping="${joint_damping}" friction="${joint_friction}" />
         </joint>
 
@@ -161,6 +176,11 @@
                 lower="${joint_limits['A4']['lower'] * PI / 180}"
                 upper="${joint_limits['A4']['upper'] * PI / 180}"
                 velocity="${joint_limits['A4']['velocity'] * PI / 180}" />
+            <safety_controller
+                soft_lower_limit="${joint_limits['A4']['lower'] * PI / 180}"
+                soft_upper_limit="${joint_limits['A4']['upper'] * PI / 180}"
+                k_position="${joint_limits['A4']['velocity'] / joint_limits['A4']['safety_position_margin']}"
+                k_velocity="${joint_limits['A4']['k_velocity']}" />
             <dynamics damping="${joint_damping}" friction="${joint_friction}" />
         </joint>
 
@@ -195,6 +215,11 @@
                 lower="${joint_limits['A5']['lower'] * PI / 180}"
                 upper="${joint_limits['A5']['upper'] * PI / 180}"
                 velocity="${joint_limits['A5']['velocity'] * PI / 180}" />
+            <safety_controller
+                soft_lower_limit="${joint_limits['A5']['lower'] * PI / 180}"
+                soft_upper_limit="${joint_limits['A5']['upper'] * PI / 180}"
+                k_position="${joint_limits['A5']['velocity'] / joint_limits['A5']['safety_position_margin']}"
+                k_velocity="${joint_limits['A5']['k_velocity']}" />
             <dynamics damping="${joint_damping}" friction="${joint_friction}" />
         </joint>
 
@@ -229,6 +254,11 @@
                 lower="${joint_limits['A6']['lower'] * PI / 180}"
                 upper="${joint_limits['A6']['upper'] * PI / 180}"
                 velocity="${joint_limits['A6']['velocity'] * PI / 180}" />
+            <safety_controller
+                soft_lower_limit="${joint_limits['A6']['lower'] * PI / 180}"
+                soft_upper_limit="${joint_limits['A6']['upper'] * PI / 180}"
+                k_position="${joint_limits['A6']['velocity'] / joint_limits['A6']['safety_position_margin']}"
+                k_velocity="${joint_limits['A6']['k_velocity']}" />
             <dynamics damping="${joint_damping}" friction="${joint_friction}" />
         </joint>
 
@@ -264,6 +294,11 @@
                 lower="${joint_limits['A7']['lower'] * PI / 180}"
                 upper="${joint_limits['A7']['upper'] * PI / 180}"
                 velocity="${joint_limits['A7']['velocity'] * PI / 180}" />
+            <safety_controller
+                soft_lower_limit="${joint_limits['A7']['lower'] * PI / 180}"
+                soft_upper_limit="${joint_limits['A7']['upper'] * PI / 180}"
+                k_position="${joint_limits['A7']['velocity'] / joint_limits['A7']['safety_position_margin']}"
+                k_velocity="${joint_limits['A7']['k_velocity']}" />
             <dynamics damping="${joint_damping}" friction="${joint_friction}" />
         </joint>
 
