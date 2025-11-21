@@ -3,6 +3,7 @@
 /**/controller_manager:
   ros__parameters:
     update_rate: 100
+    enforce_command_limits: true # can be removed from Kilted onward
 
     # ROS 2 control broadcasters
     joint_state_broadcaster:

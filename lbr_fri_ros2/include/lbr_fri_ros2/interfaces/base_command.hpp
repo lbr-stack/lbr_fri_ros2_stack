@@ -44,6 +44,9 @@ public:
   void log_info() const;
 
 protected:
+  void neutralize_command_(const_idl_state_t_ref state, idl_command_t_ref command);
+
+protected:
   mutable std::mutex command_mutex_;
   bool command_initialized_;
   std::unique_ptr<CommandGuard> command_guard_;
