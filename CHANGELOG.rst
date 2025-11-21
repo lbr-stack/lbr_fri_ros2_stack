@@ -8,7 +8,7 @@ Jazzy v2.3.0 (2025-11-21)
   * Interfaces now default to return by value for simplicity.
   * Added a new ``StateGuard`` that tests for load data calibration on activation in compliant control modes and shuts the connection otherwise.
   * Instead of disconnecting on ``CommandGuard`` limits, ``CommandInterfaces`` now execute a neutral command.
-* ``lbr_description'':
+* ``lbr_description``:
 
   * Updated joint limits (upper / lower) to be 1 degree stricter to avoid hardware limits.
   * Added ``safety_controller`` tag to URDF files. Note, in Jazzy this is only utilised when ``enforce_command_limits:=true`` for the controller manager (default configured in ``lbr_controllers.yaml`` here). 
