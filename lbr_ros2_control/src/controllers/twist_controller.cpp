@@ -132,7 +132,8 @@ TwistController::on_configure(const rclcpp_lifecycle::State & /*previous_state*/
 
 controller_interface::CallbackReturn
 TwistController::on_activate(const rclcpp_lifecycle::State & /*previous_state*/) {
-  if (!reference_state_interfaces_()) {
+  if (!assign_state_interfaces_()) {
+    release_state_interfaces_();
     return controller_interface::CallbackReturn::ERROR;
   }
   reset_command_buffer_();
@@ -142,16 +143,16 @@ TwistController::on_activate(const rclcpp_lifecycle::State & /*previous_state*/)
 
 controller_interface::CallbackReturn
 TwistController::on_deactivate(const rclcpp_lifecycle::State & /*previous_state*/) {
-  clear_state_interfaces_();
+  release_state_interfaces_();
   reset_command_buffer_();
   zero_joint_velocity_command_();
   return controller_interface::CallbackReturn::SUCCESS;
 }
 
-bool TwistController::reference_state_interfaces_() {
+bool TwistController::assign_state_interfaces_() {
   for (auto &state_interface : state_interfaces_) {
     if (state_interface.get_interface_name() == hardware_interface::HW_IF_POSITION) {
-      joint_position_state_interfaces_.emplace_back(std::ref(state_interface));
+      joint_position_state_interfaces_.push_back(std::ref(state_interface));
     }
     if (state_interface.get_interface_name() == HW_IF_SESSION_STATE) {
       session_state_interface_ptr_ =
@@ -170,7 +171,10 @@ bool TwistController::reference_state_interfaces_() {
   return true;
 }
 
-void TwistController::clear_state_interfaces_() { joint_position_state_interfaces_.clear(); }
+void TwistController::release_state_interfaces_() {
+  joint_position_state_interfaces_.clear();
+  session_state_interface_ptr_.reset();
+}
 
 void TwistController::reset_command_buffer_() {
   rt_twist_ptr_ =
