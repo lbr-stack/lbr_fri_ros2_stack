@@ -76,7 +76,8 @@ LBRTorqueCommandController::on_configure(const rclcpp_lifecycle::State & /*previ
 
 controller_interface::CallbackReturn
 LBRTorqueCommandController::on_activate(const rclcpp_lifecycle::State & /*previous_state*/) {
-  if (!reference_command_interfaces_()) {
+  if (!assign_command_interfaces_()) {
+    release_command_interfaces_();
     return controller_interface::CallbackReturn::ERROR;
   }
   return controller_interface::CallbackReturn::SUCCESS;
@@ -84,17 +85,17 @@ LBRTorqueCommandController::on_activate(const rclcpp_lifecycle::State & /*previo
 
 controller_interface::CallbackReturn
 LBRTorqueCommandController::on_deactivate(const rclcpp_lifecycle::State & /*previous_state*/) {
-  clear_command_interfaces_();
+  release_command_interfaces_();
   return controller_interface::CallbackReturn::SUCCESS;
 }
 
-bool LBRTorqueCommandController::reference_command_interfaces_() {
+bool LBRTorqueCommandController::assign_command_interfaces_() {
   for (auto &command_interface : command_interfaces_) {
     if (command_interface.get_interface_name() == hardware_interface::HW_IF_POSITION) {
-      joint_position_command_interfaces_.emplace_back(std::ref(command_interface));
+      joint_position_command_interfaces_.push_back(std::ref(command_interface));
     }
     if (command_interface.get_interface_name() == hardware_interface::HW_IF_EFFORT) {
-      torque_command_interfaces_.emplace_back(std::ref(command_interface));
+      torque_command_interfaces_.push_back(std::ref(command_interface));
     }
   }
   if (joint_position_command_interfaces_.size() != lbr_fri_ros2::N_JNTS) {
@@ -120,7 +121,7 @@ bool LBRTorqueCommandController::reference_command_interfaces_() {
   return true;
 }
 
-void LBRTorqueCommandController::clear_command_interfaces_() {
+void LBRTorqueCommandController::release_command_interfaces_() {
   joint_position_command_interfaces_.clear();
   torque_command_interfaces_.clear();
 }

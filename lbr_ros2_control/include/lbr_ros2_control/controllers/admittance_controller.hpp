@@ -49,8 +49,8 @@ public:
   on_deactivate(const rclcpp_lifecycle::State &previous_state) override;
 
 protected:
-  bool reference_state_interfaces_();
-  void clear_state_interfaces_();
+  bool assign_state_interfaces_();
+  void release_state_interfaces_();
   void configure_joint_names_();
   void configure_admittance_impl_();
   void configure_inv_jac_ctrl_impl_();
