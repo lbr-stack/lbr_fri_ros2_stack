@@ -208,11 +208,11 @@ hardware_interface::return_type SystemInterface::read(const rclcpp::Time & /*tim
   lbr_state_ = async_client_ptr_->get_state_interface()->get_state();
 
   if (period.seconds() - lbr_state_.sample_time * 0.2 > lbr_state_.sample_time) {
-    RCLCPP_WARN_STREAM(get_node()->get_logger(),
-                       lbr_fri_ros2::ColorScheme::WARNING
-                           << "Increase update_rate parameter for controller_manager to "
-                           << std::to_string(static_cast<int>(1. / lbr_state_.sample_time))
-                           << " Hz or more" << lbr_fri_ros2::ColorScheme::ENDC);
+    RCLCPP_WARN_STREAM_THROTTLE(get_node()->get_logger(), *(get_node()->get_clock()), 500 /*ms*/,
+                                lbr_fri_ros2::ColorScheme::WARNING
+                                    << "Increase update_rate parameter for controller_manager to "
+                                    << std::to_string(static_cast<int>(1. / lbr_state_.sample_time))
+                                    << " Hz or more" << lbr_fri_ros2::ColorScheme::ENDC);
   }
 
   // exit once robot exits COMMANDING_ACTIVE (for safety)
