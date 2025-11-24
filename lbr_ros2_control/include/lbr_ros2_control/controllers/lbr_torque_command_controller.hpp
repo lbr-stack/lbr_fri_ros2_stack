@@ -44,8 +44,8 @@ public:
   on_deactivate(const rclcpp_lifecycle::State &previous_state) override;
 
 protected:
-  bool reference_command_interfaces_();
-  void clear_command_interfaces_();
+  bool assign_command_interfaces_();
+  void release_command_interfaces_();
   void configure_joint_names_();
 
   lbr_fri_ros2::jnt_name_array_t joint_names_;

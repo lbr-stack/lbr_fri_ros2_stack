@@ -48,8 +48,8 @@ public:
   on_deactivate(const rclcpp_lifecycle::State &previous_state) override;
 
 protected:
-  bool reference_state_interfaces_();
-  void clear_state_interfaces_();
+  bool assign_state_interfaces_();
+  void release_state_interfaces_();
   void reset_command_buffer_();
   void zero_joint_velocity_command_();
   void configure_joint_names_();

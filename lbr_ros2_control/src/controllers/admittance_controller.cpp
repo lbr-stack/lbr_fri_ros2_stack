@@ -183,7 +183,8 @@ AdmittanceController::on_configure(const rclcpp_lifecycle::State & /*previous_st
 
 controller_interface::CallbackReturn
 AdmittanceController::on_activate(const rclcpp_lifecycle::State & /*previous_state*/) {
-  if (!reference_state_interfaces_()) {
+  if (!assign_state_interfaces_()) {
+    release_state_interfaces_();
     return controller_interface::CallbackReturn::ERROR;
   }
   init_filters_with_update_rate_();
@@ -196,6 +197,7 @@ AdmittanceController::on_activate(const rclcpp_lifecycle::State & /*previous_sta
               << "External force-torques detected during admittance controller activation. "
                  "Please make sure load data was calibrated."
               << lbr_fri_ros2::ColorScheme::ENDC);
+      release_state_interfaces_();
       return controller_interface::CallbackReturn::ERROR;
     }
   } catch (const std::exception &e) {
@@ -205,6 +207,7 @@ AdmittanceController::on_activate(const rclcpp_lifecycle::State & /*previous_sta
             << "Failed to check external force-torques during admittance controller activation "
                "with: "
             << e.what() << lbr_fri_ros2::ColorScheme::ENDC);
+    release_state_interfaces_();
     return controller_interface::CallbackReturn::ERROR;
   }
   return controller_interface::CallbackReturn::SUCCESS;
@@ -212,14 +215,14 @@ AdmittanceController::on_activate(const rclcpp_lifecycle::State & /*previous_sta
 
 controller_interface::CallbackReturn
 AdmittanceController::on_deactivate(const rclcpp_lifecycle::State & /*previous_state*/) {
-  clear_state_interfaces_();
+  release_state_interfaces_();
   return controller_interface::CallbackReturn::SUCCESS;
 }
 
-bool AdmittanceController::reference_state_interfaces_() {
+bool AdmittanceController::assign_state_interfaces_() {
   for (auto &state_interface : state_interfaces_) {
     if (state_interface.get_interface_name() == hardware_interface::HW_IF_POSITION) {
-      joint_position_state_interfaces_.emplace_back(std::ref(state_interface));
+      joint_position_state_interfaces_.push_back(std::ref(state_interface));
     }
     if (state_interface.get_interface_name() == HW_IF_SESSION_STATE) {
       session_state_interface_ptr_ =
@@ -243,8 +246,9 @@ bool AdmittanceController::reference_state_interfaces_() {
   return true;
 }
 
-void AdmittanceController::clear_state_interfaces_() {
+void AdmittanceController::release_state_interfaces_() {
   joint_position_state_interfaces_.clear();
+  session_state_interface_ptr_.reset();
   estimated_ft_sensor_ptr_->release_interfaces();
 }
 
