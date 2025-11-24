@@ -238,10 +238,13 @@ LBRWrenchCommandController::on_configure(const rclcpp_lifecycle::State & /*previ
 controller_interface::CallbackReturn
 LBRWrenchCommandController::on_activate(const rclcpp_lifecycle::State & /*previous_state*/) {
   reference_interfaces_.assign(lbr_fri_ros2::N_JNTS, std::numeric_limits<double>::quiet_NaN());
-  if (!reference_state_interfaces_()) {
+  if (!assign_state_interfaces_()) {
+    release_state_interfaces_();
     return controller_interface::CallbackReturn::ERROR;
   }
-  if (!reference_command_interfaces_()) {
+  if (!assign_command_interfaces_()) {
+    release_state_interfaces_();
+    release_command_interfaces_();
     return controller_interface::CallbackReturn::ERROR;
   }
   return controller_interface::CallbackReturn::SUCCESS;
@@ -249,18 +252,18 @@ LBRWrenchCommandController::on_activate(const rclcpp_lifecycle::State & /*previo
 
 controller_interface::CallbackReturn
 LBRWrenchCommandController::on_deactivate(const rclcpp_lifecycle::State & /*previous_state*/) {
-  clear_state_interfaces_();
-  clear_command_interfaces_();
+  release_state_interfaces_();
+  release_command_interfaces_();
   return controller_interface::CallbackReturn::SUCCESS;
 }
 
-bool LBRWrenchCommandController::reference_state_interfaces_() {
+bool LBRWrenchCommandController::assign_state_interfaces_() {
   for (auto &state_interface : state_interfaces_) {
     if (state_interface.get_interface_name() == hardware_interface::HW_IF_POSITION) {
-      joint_position_state_interfaces_.emplace_back(std::ref(state_interface));
+      joint_position_state_interfaces_.push_back(std::ref(state_interface));
     }
     if (state_interface.get_interface_name() == hardware_interface::HW_IF_VELOCITY) {
-      joint_velocity_state_interfaces_.emplace_back(std::ref(state_interface));
+      joint_velocity_state_interfaces_.push_back(std::ref(state_interface));
     }
   }
   if (joint_position_state_interfaces_.size() != lbr_fri_ros2::N_JNTS) {
@@ -286,13 +289,13 @@ bool LBRWrenchCommandController::reference_state_interfaces_() {
   return true;
 }
 
-bool LBRWrenchCommandController::reference_command_interfaces_() {
+bool LBRWrenchCommandController::assign_command_interfaces_() {
   for (auto &command_interface : command_interfaces_) {
     if (command_interface.get_interface_name() == hardware_interface::HW_IF_POSITION) {
-      joint_position_command_interfaces_.emplace_back(std::ref(command_interface));
+      joint_position_command_interfaces_.push_back(std::ref(command_interface));
     }
     if (command_interface.get_prefix_name() == HW_IF_WRENCH_PREFIX) {
-      wrench_command_interfaces_.emplace_back(std::ref(command_interface));
+      wrench_command_interfaces_.push_back(std::ref(command_interface));
     }
   }
   if (joint_position_command_interfaces_.size() != lbr_fri_ros2::N_JNTS) {
@@ -317,12 +320,12 @@ bool LBRWrenchCommandController::reference_command_interfaces_() {
   return true;
 }
 
-void LBRWrenchCommandController::clear_state_interfaces_() {
+void LBRWrenchCommandController::release_state_interfaces_() {
   joint_position_state_interfaces_.clear();
   joint_velocity_state_interfaces_.clear();
 }
 
-void LBRWrenchCommandController::clear_command_interfaces_() {
+void LBRWrenchCommandController::release_command_interfaces_() {
   joint_position_command_interfaces_.clear();
   wrench_command_interfaces_.clear();
 }
