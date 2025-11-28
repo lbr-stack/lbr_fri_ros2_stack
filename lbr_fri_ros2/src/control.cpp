@@ -101,10 +101,10 @@ void AdmittanceImpl::log_info() const {
 
 void InvJacCtrlImpl::compute_impl_(const_jnt_array_t_ref q, jnt_array_t_ref dq) {
   // clip velocity
-  twist_target_.head(3).unaryExpr([&](double v) {
+  twist_target_.head(3) = twist_target_.head(3).unaryExpr([&](double v) {
     return std::clamp(v, -parameters_.max_linear_velocity, parameters_.max_linear_velocity);
   });
-  twist_target_.tail(3).unaryExpr([&](double v) {
+  twist_target_.tail(3) = twist_target_.tail(3).unaryExpr([&](double v) {
     return std::clamp(v, -parameters_.max_angular_velocity, parameters_.max_angular_velocity);
   });
 
