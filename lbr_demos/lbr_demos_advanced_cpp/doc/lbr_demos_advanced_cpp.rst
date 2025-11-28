@@ -62,14 +62,12 @@ This demo uses the admittance controller.
         - ``FRI control mode``: ``POSITION_CONTROL``
         - ``FRI client command mode``: ``POSITION``
 
-#. Launch the robot driver (please note that a different system configuration file is used with heavier smoothing!):
+#. Launch the robot driver:
 
     .. code-block:: bash
 
         ros2 launch lbr_bringup hardware.launch.py \
             ctrl:=admittance_controller \
-            sys_cfg_pkg:=lbr_demos_advanced_cpp \
-            sys_cfg:=config/lbr_system_config.yaml \
             model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
 
 #. Now gently move the robot at the end-effector.
