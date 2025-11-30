@@ -1,6 +1,10 @@
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Changelog for package LBR FRI ROS 2 Stack
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Humble v2.2.2 (2025-11-30)
+--------------------------
+* ``lbr_fri_ros2``: Fix the twist clipping bug: https://github.com/lbr-stack/lbr_fri_ros2_stack/issues/313
+
 Humble v2.2.1 (2025-03-26)
 --------------------------
 * ``lbr_bringup``: Removed static broadcasters from launch files: https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/264
