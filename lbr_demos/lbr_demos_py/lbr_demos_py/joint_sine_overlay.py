@@ -28,7 +28,7 @@ class JointSineOverlayNode(Node):
         # create subscription to state
         self._lbr_state = None
         self._lbr_state_sub_ = self.create_subscription(
-            LBRState, "state", self._on_lbr_state, 1
+            LBRState, "lbr_state", self._on_lbr_state, 1
         )
 
         # get control rate from controller_manager
