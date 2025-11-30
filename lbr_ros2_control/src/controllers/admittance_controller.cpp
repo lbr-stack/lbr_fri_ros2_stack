@@ -183,6 +183,7 @@ AdmittanceController::on_configure(const rclcpp_lifecycle::State & /*previous_st
 
 controller_interface::CallbackReturn
 AdmittanceController::on_activate(const rclcpp_lifecycle::State & /*previous_state*/) {
+  initialized_ = false;
   if (!assign_state_interfaces_()) {
     release_state_interfaces_();
     return controller_interface::CallbackReturn::ERROR;
@@ -256,12 +257,12 @@ void AdmittanceController::configure_joint_names_() {
   if (joint_names_.size() != lbr_fri_ros2::N_JNTS) {
     RCLCPP_ERROR(
         this->get_node()->get_logger(),
-        "Number of joint names (%ld) does not match the number of joints in the robot (%d).",
+        "Number of joint names '%ld' does not match the number of joints in the robot '%d'.",
         joint_names_.size(), lbr_fri_ros2::N_JNTS);
     throw std::runtime_error("Failed to configure joint names.");
   }
   std::string robot_name = this->get_node()->get_parameter("robot_name").as_string();
-  for (int i = 0; i < lbr_fri_ros2::N_JNTS; ++i) {
+  for (std::size_t i = 0; i < lbr_fri_ros2::N_JNTS; ++i) {
     joint_names_[i] = robot_name + "_A" + std::to_string(i + 1);
   }
 }
@@ -270,8 +271,8 @@ void AdmittanceController::configure_admittance_impl_() {
   if (this->get_node()->get_parameter("admittance.mass").as_double_array().size() !=
       lbr_fri_ros2::CARTESIAN_DOF) {
     RCLCPP_ERROR(this->get_node()->get_logger(),
-                 "Number of mass values (%ld) does not match the number of cartesian degrees of "
-                 "freedom (%d).",
+                 "Number of mass values '%ld' does not match the number of cartesian degrees of "
+                 "freedom '%d'.",
                  this->get_node()->get_parameter("admittance.mass").as_double_array().size(),
                  lbr_fri_ros2::CARTESIAN_DOF);
     throw std::runtime_error("Failed to configure admittance parameters.");
@@ -280,8 +281,8 @@ void AdmittanceController::configure_admittance_impl_() {
       lbr_fri_ros2::CARTESIAN_DOF) {
     RCLCPP_ERROR(
         this->get_node()->get_logger(),
-        "Number of damping values (%ld) does not match the number of cartesian degrees of freedom "
-        "(%d).",
+        "Number of damping values '%ld' does not match the number of cartesian degrees of freedom "
+        "'%d'.",
         this->get_node()->get_parameter("admittance.damping").as_double_array().size(),
         lbr_fri_ros2::CARTESIAN_DOF);
     throw std::runtime_error("Failed to configure admittance parameters.");
@@ -289,23 +290,23 @@ void AdmittanceController::configure_admittance_impl_() {
   if (this->get_node()->get_parameter("admittance.stiffness").as_double_array().size() !=
       lbr_fri_ros2::CARTESIAN_DOF) {
     RCLCPP_ERROR(this->get_node()->get_logger(),
-                 "Number of stiffness values (%ld) does not match the number of cartesian degrees "
+                 "Number of stiffness values '%ld' does not match the number of cartesian degrees "
                  "of freedom "
-                 "(%d).",
+                 "'%d'.",
                  this->get_node()->get_parameter("admittance.stiffness").as_double_array().size(),
                  lbr_fri_ros2::CARTESIAN_DOF);
     throw std::runtime_error("Failed to configure admittance parameters.");
   }
   lbr_fri_ros2::cart_array_t mass_array;
-  for (unsigned int i = 0; i < lbr_fri_ros2::CARTESIAN_DOF; ++i) {
+  for (std::size_t i = 0; i < lbr_fri_ros2::CARTESIAN_DOF; ++i) {
     mass_array[i] = this->get_node()->get_parameter("admittance.mass").as_double_array()[i];
   }
   lbr_fri_ros2::cart_array_t damping_array;
-  for (unsigned int i = 0; i < lbr_fri_ros2::CARTESIAN_DOF; ++i) {
+  for (std::size_t i = 0; i < lbr_fri_ros2::CARTESIAN_DOF; ++i) {
     damping_array[i] = this->get_node()->get_parameter("admittance.damping").as_double_array()[i];
   }
   lbr_fri_ros2::cart_array_t stiffness_array;
-  for (unsigned int i = 0; i < lbr_fri_ros2::CARTESIAN_DOF; ++i) {
+  for (std::size_t i = 0; i < lbr_fri_ros2::CARTESIAN_DOF; ++i) {
     stiffness_array[i] =
         this->get_node()->get_parameter("admittance.stiffness").as_double_array()[i];
   }
@@ -318,7 +319,7 @@ void AdmittanceController::configure_inv_jac_ctrl_impl_() {
       lbr_fri_ros2::N_JNTS) {
     RCLCPP_ERROR(
         this->get_node()->get_logger(),
-        "Number of joint gains (%ld) does not match the number of joints in the robot (%d).",
+        "Number of joint gains '%ld' does not match the number of joints in the robot '%d'.",
         this->get_node()->get_parameter("inv_jac_ctrl.joint_gains").as_double_array().size(),
         lbr_fri_ros2::N_JNTS);
     throw std::runtime_error("Failed to configure joint gains.");
@@ -327,19 +328,19 @@ void AdmittanceController::configure_inv_jac_ctrl_impl_() {
       lbr_fri_ros2::CARTESIAN_DOF) {
     RCLCPP_ERROR(
         this->get_node()->get_logger(),
-        "Number of cartesian gains (%ld) does not match the number of cartesian degrees of freedom "
-        "(%d).",
+        "Number of cartesian gains '%ld' does not match the number of cartesian degrees of freedom "
+        "'%d'.",
         this->get_node()->get_parameter("inv_jac_ctrl.cartesian_gains").as_double_array().size(),
         lbr_fri_ros2::CARTESIAN_DOF);
     throw std::runtime_error("Failed to configure cartesian gains.");
   }
   lbr_fri_ros2::jnt_array_t joint_gains_array;
-  for (unsigned int i = 0; i < lbr_fri_ros2::N_JNTS; ++i) {
+  for (std::size_t i = 0; i < lbr_fri_ros2::N_JNTS; ++i) {
     joint_gains_array[i] =
         this->get_node()->get_parameter("inv_jac_ctrl.joint_gains").as_double_array()[i];
   }
   lbr_fri_ros2::cart_array_t cartesian_gains_array;
-  for (unsigned int i = 0; i < lbr_fri_ros2::CARTESIAN_DOF; ++i) {
+  for (std::size_t i = 0; i < lbr_fri_ros2::CARTESIAN_DOF; ++i) {
     cartesian_gains_array[i] =
         this->get_node()->get_parameter("inv_jac_ctrl.cartesian_gains").as_double_array()[i];
   }
