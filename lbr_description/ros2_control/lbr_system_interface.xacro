@@ -60,30 +60,6 @@
                     <state_interface name="tracking_performance" />
                 </sensor>
 
-                <sensor
-                    name="estimated_ft_sensor">
-                    <param name="enabled">${system_config['estimated_ft_sensor']['enabled']}</param>
-                    <param name="update_rate">${system_config['estimated_ft_sensor']['update_rate']}</param>
-                    <param name="rt_prio">${system_config['estimated_ft_sensor']['rt_prio']}</param>
-                    <param name="chain_root">${system_config['estimated_ft_sensor']['chain_root']}</param>
-                    <param name="chain_tip">${system_config['estimated_ft_sensor']['chain_tip']}</param>
-                    <param name="damping">${system_config['estimated_ft_sensor']['damping']}</param>
-                    <param name="force_x_th">${system_config['estimated_ft_sensor']['force_x_th']}</param>
-                    <param name="force_y_th">${system_config['estimated_ft_sensor']['force_y_th']}</param>
-                    <param name="force_z_th">${system_config['estimated_ft_sensor']['force_z_th']}</param>
-                    <param name="torque_x_th">${system_config['estimated_ft_sensor']['torque_x_th']}</param>
-                    <param name="torque_y_th">${system_config['estimated_ft_sensor']['torque_y_th']}</param>
-                    <param name="torque_z_th">${system_config['estimated_ft_sensor']['torque_z_th']}</param>
-                    <xacro:if value="${system_config['estimated_ft_sensor']['enabled']}">
-                        <state_interface name="force.x" />
-                        <state_interface name="force.y" />
-                        <state_interface name="force.z" />
-                        <state_interface name="torque.x" />
-                        <state_interface name="torque.y" />
-                        <state_interface name="torque.z" />
-                    </xacro:if>
-                </sensor>
-
                 <!-- FRI Cartesian impedance control mode -->
                 <gpio
                     name="wrench">

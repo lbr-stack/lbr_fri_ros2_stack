@@ -37,18 +37,4 @@ void FTEstimatorImpl::reset() {
   f_ext_tf_.setZero();
   jacobian_inv_.setZero();
 }
-
-FTEstimator::FTEstimator(const std::shared_ptr<FTEstimatorImpl> ft_estimator_impl_ptr,
-                         const std::uint16_t &update_rate)
-    : ft_estimator_impl_ptr_(ft_estimator_impl_ptr), update_rate_(update_rate) {}
-
-void FTEstimator::perform_work_() {
-  running_ = true;
-  while (rclcpp::ok() && !should_stop_) {
-    auto start = std::chrono::high_resolution_clock::now();
-    ft_estimator_impl_ptr_->compute();
-    std::this_thread::sleep_until(start + std::chrono::nanoseconds(static_cast<int>(
-                                              1.e9 / static_cast<double>(update_rate_))));
-  }
-};
 } // namespace lbr_fri_ros2

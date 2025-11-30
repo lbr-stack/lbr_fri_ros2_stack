@@ -56,25 +56,6 @@ SystemInterface::on_init(const hardware_interface::HardwareComponentInterfacePar
     return controller_interface::CallbackReturn::ERROR;
   }
 
-  // setup force-torque estimator
-  if (!parse_ft_parameters_()) {
-    return controller_interface::CallbackReturn::ERROR;
-  }
-  if (ft_parameters_.enabled) {
-    ft_estimator_impl_ptr_ = std::make_shared<lbr_fri_ros2::FTEstimatorImpl>(
-        info_.original_xml, ft_parameters_.chain_root, ft_parameters_.chain_tip,
-        lbr_fri_ros2::cart_array_t{
-            ft_parameters_.force_x_th,
-            ft_parameters_.force_y_th,
-            ft_parameters_.force_z_th,
-            ft_parameters_.torque_x_th,
-            ft_parameters_.torque_y_th,
-            ft_parameters_.torque_z_th,
-        });
-    ft_estimator_ptr_ = std::make_unique<lbr_fri_ros2::FTEstimator>(ft_estimator_impl_ptr_,
-                                                                    ft_parameters_.update_rate);
-  }
-
   // populate the keys
   command_keys_.populate_keys(info_);
   state_keys_.populate_keys(info_);
@@ -170,27 +151,12 @@ controller_interface::CallbackReturn SystemInterface::on_activate(const rclcpp_l
     }
     std::this_thread::sleep_for(std::chrono::seconds(1));
   }
-
-  // ft sensor
-  if (!ft_estimator_ptr_ && ft_parameters_.enabled) {
-    RCLCPP_ERROR_STREAM(get_node()->get_logger(),
-                        lbr_fri_ros2::ColorScheme::ERROR
-                            << "Failed to instantiate FTEstimator despite user request."
-                            << lbr_fri_ros2::ColorScheme::ENDC);
-    return controller_interface::CallbackReturn::ERROR;
-  }
-  if (ft_estimator_ptr_) {
-    ft_estimator_ptr_->run_async(ft_parameters_.rt_prio);
-  }
   return controller_interface::CallbackReturn::SUCCESS;
 }
 
 controller_interface::CallbackReturn
 SystemInterface::on_deactivate(const rclcpp_lifecycle::State &) {
   app_ptr_->request_stop();
-  if (ft_estimator_ptr_) {
-    ft_estimator_ptr_->request_stop();
-  }
   return controller_interface::CallbackReturn::SUCCESS;
 }
 
@@ -225,7 +191,6 @@ hardware_interface::return_type SystemInterface::read(const rclcpp::Time & /*tim
                             << lbr_fri_ros2::ColorScheme::ENDC);
     app_ptr_->request_stop();
     app_ptr_->close_udp_socket();
-    ft_estimator_ptr_->request_stop();
     return hardware_interface::return_type::ERROR;
   }
 
@@ -261,18 +226,6 @@ hardware_interface::return_type SystemInterface::read(const rclcpp::Time & /*tim
   // additional velocity state interface
   compute_velocity_();
   update_last_states_();
-
-  // additional force-torque state interface
-  if (ft_parameters_.enabled) {
-    // note that (if enabled) the computation is performed asynchronously to not block the main
-    // thread
-    ft_estimator_impl_ptr_->set_q(lbr_state_.measured_joint_position);
-    ft_estimator_impl_ptr_->set_tau_ext(lbr_state_.external_torque);
-    ft_estimator_impl_ptr_->get_f_ext_tf(ft_);
-    for (std::size_t i = 0; i < lbr_fri_ros2::CARTESIAN_DOF; ++i) {
-      set_state(state_keys_.estimated_ft[i], ft_[i]);
-    }
-  }
   return hardware_interface::return_type::OK;
 }
 
@@ -375,35 +328,6 @@ bool SystemInterface::parse_parameters_() {
   return true;
 }
 
-bool SystemInterface::parse_ft_parameters_() {
-  try {
-    std::transform(info_.sensors[1].parameters.at("enabled").begin(),
-                   info_.sensors[1].parameters.at("enabled").end(),
-                   info_.sensors[1].parameters.at("enabled").begin(),
-                   ::tolower); // convert to lower case
-    const auto &estimated_ft_sensor = info_.sensors[1];
-    ft_parameters_.enabled = estimated_ft_sensor.parameters.at("enabled") == "true";
-    ft_parameters_.update_rate = std::stoul(estimated_ft_sensor.parameters.at("update_rate"));
-    ft_parameters_.rt_prio = std::stoi(estimated_ft_sensor.parameters.at("rt_prio"));
-    ft_parameters_.chain_root = estimated_ft_sensor.parameters.at("chain_root");
-    ft_parameters_.chain_tip = estimated_ft_sensor.parameters.at("chain_tip");
-    ft_parameters_.damping = std::stod(estimated_ft_sensor.parameters.at("damping"));
-    ft_parameters_.force_x_th = std::stod(estimated_ft_sensor.parameters.at("force_x_th"));
-    ft_parameters_.force_y_th = std::stod(estimated_ft_sensor.parameters.at("force_y_th"));
-    ft_parameters_.force_z_th = std::stod(estimated_ft_sensor.parameters.at("force_z_th"));
-    ft_parameters_.torque_x_th = std::stod(estimated_ft_sensor.parameters.at("torque_x_th"));
-    ft_parameters_.torque_y_th = std::stod(estimated_ft_sensor.parameters.at("torque_y_th"));
-    ft_parameters_.torque_z_th = std::stod(estimated_ft_sensor.parameters.at("torque_z_th"));
-  } catch (const std::out_of_range &e) {
-    RCLCPP_ERROR_STREAM(get_node()->get_logger(),
-                        lbr_fri_ros2::ColorScheme::ERROR
-                            << "Failed to parse force-torque sensor parameters with: " << e.what()
-                            << lbr_fri_ros2::ColorScheme::ENDC);
-    return false;
-  }
-  return true;
-}
-
 void SystemInterface::nan_command_interfaces_() {
   for (std::size_t i = 0; i < lbr_fri_ros2::N_JNTS; ++i) {
     set_command(command_keys_.joint_position[i], std::numeric_limits<double>::quiet_NaN());
@@ -446,9 +370,6 @@ void SystemInterface::nan_state_interfaces_() {
 
   // additional velocity state interface
   velocity_.fill(std::numeric_limits<double>::quiet_NaN());
-
-  // additional force-torque state interface
-  ft_.fill(std::numeric_limits<double>::quiet_NaN());
 }
 
 bool SystemInterface::verify_number_of_joints_() {
@@ -540,11 +461,6 @@ bool SystemInterface::verify_sensors_() {
   if (!verify_auxiliary_sensor_()) {
     return false;
   }
-  if (ft_parameters_.enabled) {
-    if (!verify_estimated_ft_sensor_()) {
-      return false;
-    }
-  }
   return true;
 }
 
@@ -583,41 +499,6 @@ bool SystemInterface::verify_auxiliary_sensor_() {
       RCLCPP_ERROR_STREAM(get_node()->get_logger(),
                           lbr_fri_ros2::ColorScheme::ERROR
                               << "Sensor '" << auxiliary_sensor.name.c_str()
-                              << "' received invalid state interface '" << si.name.c_str() << "'"
-                              << lbr_fri_ros2::ColorScheme::ENDC);
-      return false;
-    }
-  }
-  return true;
-}
-
-bool SystemInterface::verify_estimated_ft_sensor_() {
-  const auto &estimated_ft_sensor = info_.sensors[1];
-  if (estimated_ft_sensor.name != HW_IF_ESTIMATED_FT_PREFIX) {
-    RCLCPP_ERROR_STREAM(get_node()->get_logger(),
-                        lbr_fri_ros2::ColorScheme::ERROR
-                            << "Sensor '" << estimated_ft_sensor.name.c_str()
-                            << "' received invalid name. Expected '" << HW_IF_ESTIMATED_FT_PREFIX
-                            << "'" << lbr_fri_ros2::ColorScheme::ENDC);
-    return false;
-  }
-  if (estimated_ft_sensor.state_interfaces.size() != ESTIMATED_FT_SENSOR_SIZE) {
-    RCLCPP_ERROR_STREAM(get_node()->get_logger(),
-                        lbr_fri_ros2::ColorScheme::ERROR
-                            << "Sensor '" << estimated_ft_sensor.name.c_str()
-                            << "' received invalid number of state interfaces. Received '"
-                            << estimated_ft_sensor.state_interfaces.size() << "', expected '"
-                            << static_cast<int>(ESTIMATED_FT_SENSOR_SIZE) << "'"
-                            << lbr_fri_ros2::ColorScheme::ENDC);
-    return false;
-  }
-  // check only valid interfaces are defined
-  for (const auto &si : estimated_ft_sensor.state_interfaces) {
-    if (si.name != HW_IF_FORCE_X && si.name != HW_IF_FORCE_Y && si.name != HW_IF_FORCE_Z &&
-        si.name != HW_IF_TORQUE_X && si.name != HW_IF_TORQUE_Y && si.name != HW_IF_TORQUE_Z) {
-      RCLCPP_ERROR_STREAM(get_node()->get_logger(),
-                          lbr_fri_ros2::ColorScheme::ERROR
-                              << "Sensor '" << estimated_ft_sensor.name.c_str()
                               << "' received invalid state interface '" << si.name.c_str() << "'"
                               << lbr_fri_ros2::ColorScheme::ENDC);
       return false;

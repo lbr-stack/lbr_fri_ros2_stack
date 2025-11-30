@@ -70,23 +70,5 @@ protected:
   Eigen::Matrix<double, N_JNTS, 1> tau_ext_;
   Eigen::Matrix<double, CARTESIAN_DOF, 1> f_ext_raw_, f_ext_, f_ext_tf_;
 };
-
-class FTEstimator : public Worker {
-  /**
-   * @brief A simple class to run the FTEstimatorImpl asynchronously at a specified update rate.
-   *
-   */
-public:
-  FTEstimator(const std::shared_ptr<FTEstimatorImpl> ft_estimator,
-              const std::uint16_t &update_rate = 100);
-
-  inline std::string LOGGER_NAME() const override { return "lbr_fri_ros2::FTEstimator"; };
-
-protected:
-  void perform_work_() override;
-
-  std::shared_ptr<FTEstimatorImpl> ft_estimator_impl_ptr_;
-  std::uint16_t update_rate_;
-};
 } // namespace lbr_fri_ros2
 #endif // LBR_FRI_ROS2__FT_ESTIMATOR_HPP_
