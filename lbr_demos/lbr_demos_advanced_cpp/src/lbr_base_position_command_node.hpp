@@ -25,7 +25,7 @@ public:
         "command/lbr_joint_position_command", 1);
 
     lbr_state_sub_ = create_subscription<lbr_fri_idl::msg::LBRState>(
-        "state", 1,
+        "lbr_state", 1,
         std::bind(&LBRBasePositionCommandNode::on_lbr_state_, this, std::placeholders::_1));
   }
 
