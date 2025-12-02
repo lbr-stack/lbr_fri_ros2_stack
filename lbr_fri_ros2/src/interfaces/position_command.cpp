@@ -12,7 +12,7 @@ void PositionCommandInterface::buffered_command_to_fri(fri_command_t_ref command
 #if FRI_CLIENT_VERSION_MAJOR == 1
   if (state.client_command_mode != KUKA::FRI::EClientCommandMode::POSITION) {
     std::string err =
-        "Client side (configured via hardware.client_command_mode in lbr_system_config.yaml) "
+        "Client side (configured via client_command_mode in lbr_system_config.yaml) "
         "expected robot in '" +
         EnumMaps::client_command_mode_map(KUKA::FRI::EClientCommandMode::POSITION) +
         "' command mode, but robot was in '" +
@@ -28,7 +28,7 @@ void PositionCommandInterface::buffered_command_to_fri(fri_command_t_ref command
 #if FRI_CLIENT_VERSION_MAJOR >= 2
   if (state.client_command_mode != KUKA::FRI::EClientCommandMode::JOINT_POSITION) {
     std::string err =
-        "Client side (configured via hardware.client_command_mode in lbr_system_config.yaml) "
+        "Client side (configured via client_command_mode in lbr_system_config.yaml) "
         "expected robot in '" +
         EnumMaps::client_command_mode_map(KUKA::FRI::EClientCommandMode::JOINT_POSITION) +
         " command mode, but robot was in '" +
