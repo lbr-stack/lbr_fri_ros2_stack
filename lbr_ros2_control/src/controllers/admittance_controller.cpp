@@ -131,7 +131,8 @@ AdmittanceController::update(const rclcpp::Time & /*time*/, const rclcpp::Durati
   admittance_impl_ptr_->compute(f_ext_, delta_x_, dx_, ddx_);
 
   // integrate ddx_ to command velocity
-  twist_command_ = ddx_ * dt;
+  dx_ += ddx_ * dt;
+  twist_command_ = dx_;
 
   if (!inv_jac_ctrl_impl_ptr_) {
     RCLCPP_ERROR(this->get_node()->get_logger(), "Inverse Jacobian controller not initialized.");

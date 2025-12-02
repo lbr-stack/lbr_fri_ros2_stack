@@ -26,7 +26,7 @@ public:
 
     // create subscription to state
     lbr_state_sub_ = node_->create_subscription<lbr_fri_idl::msg::LBRState>(
-        "state", 1, std::bind(&JointSineOverlay::on_lbr_state_, this, std::placeholders::_1));
+        "lbr_state", 1, std::bind(&JointSineOverlay::on_lbr_state_, this, std::placeholders::_1));
 
     // get control rate from controller_manager
     auto update_rate =

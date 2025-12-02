@@ -165,6 +165,16 @@ controller_interface::CallbackReturn SystemInterface::on_activate(const rclcpp_l
                            << lbr_fri_ros2::ColorScheme::BOLD << lbr_fri_ros2::ColorScheme::OKBLUE
                            << lbr_fri_ros2::EnumMaps::session_state_map(state.session_state)
                            << lbr_fri_ros2::ColorScheme::ENDC << "'.");
+    if (state.session_state == KUKA::FRI::ESessionState::IDLE) {
+      RCLCPP_ERROR_STREAM(
+          get_node()->get_logger(),
+          lbr_fri_ros2::ColorScheme::ERROR
+              << "Robot in '"
+              << lbr_fri_ros2::EnumMaps::session_state_map(KUKA::FRI::ESessionState::IDLE)
+              << "' state. Please restart the FRI server." << lbr_fri_ros2::ColorScheme::ENDC);
+      app_ptr_->close_udp_socket(); // no need to request stop since already stopped when IDLE
+      return controller_interface::CallbackReturn::ERROR;
+    }
     if (!rclcpp::ok()) {
       return controller_interface::CallbackReturn::ERROR;
     }
