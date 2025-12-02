@@ -6,20 +6,12 @@
 #include <cmath>
 #include <memory>
 #include <string>
-#include <thread>
 
 #include "eigen3/Eigen/Core"
-#include "rclcpp/logger.hpp"
-#include "rclcpp/logging.hpp"
-#include "rclcpp/utilities.hpp"
 
-#include "friLBRState.h"
-
-#include "lbr_fri_idl/msg/lbr_state.hpp"
 #include "lbr_fri_ros2/kinematics.hpp"
 #include "lbr_fri_ros2/pinv.hpp"
 #include "lbr_fri_ros2/types.hpp"
-#include "lbr_fri_ros2/worker.hpp"
 
 namespace lbr_fri_ros2 {
 class FTEstimatorImpl {
@@ -29,9 +21,6 @@ class FTEstimatorImpl {
    * estimated force-torque.
    *
    */
-protected:
-  static constexpr char LOGGER_NAME[] = "lbr_fri_ros2::FTEstimatorImpl";
-
 public:
   FTEstimatorImpl(const std::string &robot_description,
                   const std::string &chain_root = "lbr_link_0",
@@ -69,24 +58,6 @@ protected:
   Eigen::Matrix<double, N_JNTS, CARTESIAN_DOF> jacobian_inv_;
   Eigen::Matrix<double, N_JNTS, 1> tau_ext_;
   Eigen::Matrix<double, CARTESIAN_DOF, 1> f_ext_raw_, f_ext_, f_ext_tf_;
-};
-
-class FTEstimator : public Worker {
-  /**
-   * @brief A simple class to run the FTEstimatorImpl asynchronously at a specified update rate.
-   *
-   */
-public:
-  FTEstimator(const std::shared_ptr<FTEstimatorImpl> ft_estimator,
-              const std::uint16_t &update_rate = 100);
-
-  inline std::string LOGGER_NAME() const override { return "lbr_fri_ros2::FTEstimator"; };
-
-protected:
-  void perform_work_() override;
-
-  std::shared_ptr<FTEstimatorImpl> ft_estimator_impl_ptr_;
-  std::uint16_t update_rate_;
 };
 } // namespace lbr_fri_ros2
 #endif // LBR_FRI_ROS2__FT_ESTIMATOR_HPP_
