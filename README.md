@@ -15,10 +15,18 @@ ROS 2 packages for the KUKA LBR, including communication to the real robot via t
             <th align="left" width="25%">LBR Med 14 R820</th>
         </tr>
         <tr>
-            <td align="center"><img src="https://raw.githubusercontent.com/lbr-stack/lbr_fri_ros2_stack/jazzy/lbr_fri_ros2_stack/doc/img/foxglove/iiwa7_r800.png" alt="LBR IIWA 7 R800"></td>
-            <td align="center"><img src="https://raw.githubusercontent.com/lbr-stack/lbr_fri_ros2_stack/jazzy/lbr_fri_ros2_stack/doc/img/foxglove/iiwa14_r820.png" alt="LBR IIWA 14 R820"></td>
-            <td align="center"><img src="https://raw.githubusercontent.com/lbr-stack/lbr_fri_ros2_stack/jazzy/lbr_fri_ros2_stack/doc/img/foxglove/med7_r800.png" alt="LBR Med 7 R800"></td>
-            <td align="center"><img src="https://raw.githubusercontent.com/lbr-stack/lbr_fri_ros2_stack/jazzy/lbr_fri_ros2_stack/doc/img/foxglove/med14_r820.png" alt="LBR Med 14 R820"></td>
+            <td align="center">
+                <img src="https://raw.githubusercontent.com/lbr-stack/lbr_fri_ros2_stack/jazzy/lbr_fri_ros2_stack/doc/img/foxglove/iiwa7_r800.png" alt="LBR IIWA 7 R800">
+            </td>
+            <td align="center">
+                <img src="https://raw.githubusercontent.com/lbr-stack/lbr_fri_ros2_stack/jazzy/lbr_fri_ros2_stack/doc/img/foxglove/iiwa14_r820.png" alt="LBR IIWA 14 R820">
+            </td>
+            <td align="center">
+                <img src="https://raw.githubusercontent.com/lbr-stack/lbr_fri_ros2_stack/jazzy/lbr_fri_ros2_stack/doc/img/foxglove/med7_r800.png" alt="LBR Med 7 R800">
+            </td>
+            <td align="center">
+                <img src="https://raw.githubusercontent.com/lbr-stack/lbr_fri_ros2_stack/jazzy/lbr_fri_ros2_stack/doc/img/foxglove/med14_r820.png" alt="LBR Med 14 R820">
+            </td>
         </tr>
     </table>
 </body>
@@ -86,15 +94,28 @@ Full documentation available on [Read the Docs](https://lbr-stack.readthedocs.io
 Now, run the [demos](https://lbr-stack.readthedocs.io/en/latest/lbr_fri_ros2_stack/lbr_demos/doc/lbr_demos.html). To get started with the real robot, checkout the [Hardware Setup](https://lbr-stack.readthedocs.io/en/latest/lbr_fri_ros2_stack/lbr_fri_ros2_stack/doc/hardware_setup.html).
 
 ## Repositories Using This Project
-- [KUKA ROS2 controllers](https://github.com/idra-lab/kuka_lbr_control) — A repository for controlling KUKA LBR iiwa and med robots using various control algorithms.
+- [KUKA ROS 2 Controllers](https://github.com/idra-lab/kuka_lbr_control): A repository for controlling KUKA LBR IIWA and Med robots using various control algorithms.
 
-<div align="center">
-
-| Kinematics Control | Gravity compensation | Impedance Control |
-| :----------------- | :--------------------| :---------------- |
-| <img src='https://raw.githubusercontent.com/idra-lab/kuka_lbr_control/main/assets/videos/kin.gif' width=360/> | <img src='https://raw.githubusercontent.com/idra-lab/kuka_lbr_control/main/assets/videos/grav.gif' width=360/> | <img src='https://raw.githubusercontent.com/idra-lab/kuka_lbr_control/main/assets/videos/imp.gif' width=360/> |
-
-</div>
+<body>
+    <table style="width:100%; table-layout:fixed;">
+        <tr>
+            <th  align="left" width="33%">Kinematics Control</th>
+            <th  align="left" width="33%">Gravity Compensation</th>
+            <th  align="left" width="33%">Impedance Control</th>
+        </tr>
+        <tr>
+            <td align="center">
+                <img src="https://raw.githubusercontent.com/idra-lab/kuka_lbr_control/main/assets/videos/kin.gif" alt="Kinematics Control">
+            </td>
+            <td align="center">
+                <img src="https://raw.githubusercontent.com/idra-lab/kuka_lbr_control/main/assets/videos/grav.gif" alt="Gravity Compensation">
+            </td>
+            <td align="center">
+                <img src="https://raw.githubusercontent.com/idra-lab/kuka_lbr_control/main/assets/videos/imp.gif" alt="Impedance Control">
+            </td>
+        </tr>
+    </table>
+</body>
 
 ## Citation
 If you enjoyed using this repository for your work, we would really appreciate ❤️ if you could leave a ⭐ and / or cite it, as it helps us to continue offering support.
