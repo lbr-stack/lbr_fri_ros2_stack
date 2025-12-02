@@ -1,6 +1,14 @@
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Changelog for package LBR FRI ROS 2 Stack
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Jazzy v2.4.0 (TBD)
+--------------------------
+* ``lbr_ros2_control``:
+
+  * ``/lbr/state`` -> ``/lbr/lbr_state`` consistent with https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/271.
+  * Fixes missing integration step in the admittance controller: https://github.com/lbr-stack/lbr_fri_ros2_stack/issues/320.
+  * Exit ``on_activate`` in ``lbr_ros2_control::SystemInterface`` with error on ``IDLE``: https://github.com/lbr-stack/lbr_fri_ros2_stack/issues/321.
+
 Jazzy v2.3.0 (2025-11-21)
 --------------------------
 * ``lbr_fri_ros2``:

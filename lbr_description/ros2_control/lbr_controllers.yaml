@@ -100,8 +100,8 @@
   ros__parameters:
     robot_name: lbr
     admittance:
-      mass: [0.01, 0.01, 0.01, 0.01, 0.01, 0.01]
-      damping: [1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+      mass: [0.05, 0.05, 0.05, 0.005, 0.005, 0.005]
+      damping: [1., 1., 1., 0.1, 0.1, 0.1]
       stiffness: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
     inv_jac_ctrl:
       chain_root: lbr_link_0
