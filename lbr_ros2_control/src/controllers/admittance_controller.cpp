@@ -53,10 +53,13 @@ controller_interface::CallbackReturn AdmittanceController::on_init() {
     this->get_node()->declare_parameter("inv_jac_ctrl.cartesian_gains",
                                         std::vector<double>(lbr_fri_ros2::CARTESIAN_DOF, 0.0));
     this->get_node()->declare_parameter("filter.joint_velocity_tau", 0.4);
+    this->get_node()->declare_parameter("on_activate.max_external_force", 0.0);
+    this->get_node()->declare_parameter("on_activate.max_external_torque", 0.0);
     configure_joint_names_();
     configure_admittance_impl_();
     configure_inv_jac_ctrl_impl_();
     configure_filters_();
+    configure_safety_checks_();
     log_info_();
   } catch (const std::exception &e) {
     RCLCPP_ERROR(this->get_node()->get_logger(),
@@ -192,7 +195,8 @@ AdmittanceController::on_activate(const rclcpp_lifecycle::State & /*previous_sta
   init_filters_with_update_rate_();
   zero_all_values_();
   try {
-    if (any_external_force_torques_on_horizon_()) {
+    if (any_external_force_torques_on_horizon_(max_external_force_on_activate_,
+                                               max_external_torque_on_activate_)) {
       RCLCPP_ERROR_STREAM(
           this->get_node()->get_logger(),
           lbr_fri_ros2::ColorScheme::ERROR
@@ -373,6 +377,29 @@ void AdmittanceController::configure_filters_() {
       joint_velocity_tau);
 }
 
+void AdmittanceController::configure_safety_checks_() {
+  max_external_force_on_activate_ =
+      this->get_node()->get_parameter("on_activate.max_external_force").as_double();
+  max_external_torque_on_activate_ =
+      this->get_node()->get_parameter("on_activate.max_external_torque").as_double();
+  if (max_external_force_on_activate_ < 0.0) {
+    RCLCPP_WARN_STREAM(
+        this->get_node()->get_logger(),
+        lbr_fri_ros2::ColorScheme::WARNING
+            << "Parameter 'on_activate.max_external_force' is negative, overriding to 0.0."
+            << lbr_fri_ros2::ColorScheme::ENDC);
+    max_external_force_on_activate_ = 0.0;
+  }
+  if (max_external_torque_on_activate_ < 0.0) {
+    RCLCPP_WARN_STREAM(
+        this->get_node()->get_logger(),
+        lbr_fri_ros2::ColorScheme::WARNING
+            << "Parameter 'on_activate.max_external_torque' is negative, overriding to 0.0."
+            << lbr_fri_ros2::ColorScheme::ENDC);
+    max_external_torque_on_activate_ = 0.0;
+  }
+}
+
 void AdmittanceController::init_filters_with_update_rate_() {
   dq_filter_ptr_->initialize(1. / static_cast<double>(this->get_update_rate()));
 }
@@ -388,7 +415,15 @@ void AdmittanceController::zero_all_values_() {
 }
 
 bool AdmittanceController::any_external_force_torques_on_horizon_(
+    const double &max_external_force, const double &max_external_torque,
     const std::chrono::milliseconds &horizon) const {
+  if (max_external_force < 0.0 || max_external_torque < 0.0) {
+    RCLCPP_ERROR_STREAM(this->get_node()->get_logger(),
+                        lbr_fri_ros2::ColorScheme::ERROR
+                            << "Maximum external force-torque limits must be non-negative."
+                            << lbr_fri_ros2::ColorScheme::ENDC);
+    throw std::runtime_error("Invalid maximum external force-torque limits.");
+  }
   if (!estimated_ft_sensor_ptr_) {
     RCLCPP_ERROR(this->get_node()->get_logger(),
                  "Estimated force-torque sensor not initialized for external force-torque check.");
@@ -404,7 +439,8 @@ bool AdmittanceController::any_external_force_torques_on_horizon_(
   auto torques = this->estimated_ft_sensor_ptr_->get_torques();
   auto start_time = std::chrono::steady_clock::now();
   while (std::chrono::steady_clock::now() - start_time < horizon) {
-    if (!(lbr_fri_ros2::norm_in_bounds(forces, 0.) && lbr_fri_ros2::norm_in_bounds(torques, 0.))) {
+    if (!(lbr_fri_ros2::norm_in_bounds(forces, max_external_force) &&
+          lbr_fri_ros2::norm_in_bounds(torques, max_external_torque))) {
       RCLCPP_INFO_STREAM(this->get_node()->get_logger(),
                          "External force-torques detected: forces = ["
                              << forces[0] << ", " << forces[1] << ", " << forces[2]
