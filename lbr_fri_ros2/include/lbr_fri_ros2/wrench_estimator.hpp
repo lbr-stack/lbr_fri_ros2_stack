@@ -1,5 +1,5 @@
-#ifndef LBR_FRI_ROS2__FT_ESTIMATOR_HPP_
-#define LBR_FRI_ROS2__FT_ESTIMATOR_HPP_
+#ifndef LBR_FRI_ROS2__WRENCH_ESTIMATOR_HPP_
+#define LBR_FRI_ROS2__WRENCH_ESTIMATOR_HPP_
 
 #include <algorithm>
 #include <array>
@@ -14,19 +14,35 @@
 #include "lbr_fri_ros2/types.hpp"
 
 namespace lbr_fri_ros2 {
-class FTEstimatorImpl {
+struct WrenchEstimatorParameters {
+  std::string chain_root{"lbr_link_0"};
+  std::string chain_tip{"lbr_link_ee"};
+  double damping{0.2};
+  double force_x_th{2.0};
+  double force_y_th{2.0};
+  double force_z_th{2.0};
+  double torque_x_th{0.5};
+  double torque_y_th{0.5};
+  double torque_z_th{0.5};
+
+  bool valid() const {
+    return !(chain_root.empty() || chain_tip.empty() || damping < 0.0 || force_x_th < 0.0 ||
+             force_y_th < 0.0 || force_z_th < 0.0 || torque_x_th < 0.0 || torque_y_th < 0.0 ||
+             torque_z_th < 0.0);
+  }
+};
+
+class WrenchEstimator {
   /**
-   * @brief A class to estimate force-torques from external joint torque readings. Note that only
+   * @brief A class to estimate wrenches from external joint torque readings. Note that only
    * forces beyond a specified threshold are returned. The specified threshold is removed from the
    * estimated force-torque.
    *
    */
 public:
-  FTEstimatorImpl(const std::string &robot_description,
-                  const std::string &chain_root = "lbr_link_0",
-                  const std::string &chain_tip = "lbr_link_ee",
-                  const_cart_array_t_ref f_ext_th = {2., 2., 2., 0.5, 0.5, 0.5},
-                  const double &damping = 0.2);
+  WrenchEstimator() = delete;
+  WrenchEstimator(const std::string &robot_description,
+                  const WrenchEstimatorParameters &parameters = WrenchEstimatorParameters());
   void compute();
   void reset();
 
@@ -60,4 +76,4 @@ protected:
   Eigen::Matrix<double, CARTESIAN_DOF, 1> f_ext_raw_, f_ext_, f_ext_tf_;
 };
 } // namespace lbr_fri_ros2
-#endif // LBR_FRI_ROS2__FT_ESTIMATOR_HPP_
+#endif // LBR_FRI_ROS2__WRENCH_ESTIMATOR_HPP_
