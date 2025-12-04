@@ -33,7 +33,7 @@
 namespace lbr_ros2_control {
 class SystemInterface : public hardware_interface::SystemInterface {
 protected:
-  struct SystemInterfaceParameters {
+  struct Parameters {
     uint8_t fri_client_sdk_major_version{1};
     uint8_t fri_client_sdk_minor_version{15};
 #if FRI_CLIENT_VERSION_MAJOR == 1
@@ -167,7 +167,7 @@ protected:
                                const KUKA::FRI::ESessionState &session_state);
 
   // robot parameters
-  SystemInterfaceParameters parameters_;
+  Parameters parameters_;
 
   // robot driver
   std::shared_ptr<lbr_fri_ros2::AsyncClient> async_client_ptr_;

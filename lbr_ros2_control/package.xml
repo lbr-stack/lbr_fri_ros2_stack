@@ -12,8 +12,11 @@
 
   <build_depend>eigen</build_depend>
 
+  <depend>controller_interface</depend>
   <depend>fri_client_sdk</depend>
   <depend>geometry_msgs</depend>
+  <depend>hardware_interface</depend>
+  <depend>kinematics_interface</depend>
   <depend>lbr_fri_idl</depend>
   <depend>lbr_fri_ros2</depend>
   <depend>pluginlib</depend>

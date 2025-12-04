@@ -7,6 +7,14 @@
         <description>A simple admittance controller.</description>
     </class>
 
+    <!-- Estimated wrench broadcaster plugin -->
+    <class name="lbr_ros2_control/EstimatedWrenchBroadcaster"
+        type="lbr_ros2_control::EstimatedWrenchBroadcaster"
+        base_class_type="controller_interface::ChainableControllerInterface">
+        <description>Broadcast or chain the estimated external wrenches using the external
+            joint torques.</description>
+    </class>
+
     <!-- LBR forward position command controller plugin -->
     <class name="lbr_ros2_control/LBRJointPositionCommandController"
         type="lbr_ros2_control::LBRJointPositionCommandController"

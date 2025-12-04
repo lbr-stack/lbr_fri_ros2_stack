@@ -36,10 +36,10 @@ add_library(lbr_fri_ros2
     src/async_client.cpp
     src/control.cpp
     src/filters.cpp
-    src/ft_estimator.cpp
     src/kinematics.cpp
     src/math.cpp
     src/worker.cpp
+    src/wrench_estimator.cpp
 )
 
 target_include_directories(lbr_fri_ros2

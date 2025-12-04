@@ -1,15 +1,24 @@
-#include "lbr_fri_ros2/ft_estimator.hpp"
+#include "lbr_fri_ros2/wrench_estimator.hpp"
 
 namespace lbr_fri_ros2 {
-FTEstimatorImpl::FTEstimatorImpl(const std::string &robot_description,
-                                 const std::string &chain_root, const std::string &chain_tip,
-                                 const_cart_array_t_ref f_ext_th, const double &damping)
-    : f_ext_th_(f_ext_th), damping_(damping) {
-  kinematics_ptr_ = std::make_unique<Kinematics>(robot_description, chain_root, chain_tip);
+WrenchEstimator::WrenchEstimator(const std::string &robot_description,
+                                 const WrenchEstimatorParameters &parameters) {
+  if (!parameters.valid()) {
+    throw std::invalid_argument("Invalid wrench estimator parameters.");
+  }
+  f_ext_th_[0] = parameters.force_x_th;
+  f_ext_th_[1] = parameters.force_y_th;
+  f_ext_th_[2] = parameters.force_z_th;
+  f_ext_th_[3] = parameters.torque_x_th;
+  f_ext_th_[4] = parameters.torque_y_th;
+  f_ext_th_[5] = parameters.torque_z_th;
+  damping_ = parameters.damping;
+  kinematics_ptr_ =
+      std::make_unique<Kinematics>(robot_description, parameters.chain_root, parameters.chain_tip);
   reset();
 }
 
-void FTEstimatorImpl::compute() {
+void WrenchEstimator::compute() {
   auto jacobian = kinematics_ptr_->compute_jacobian(q_);
   jacobian_inv_ = pinv(jacobian.data, damping_);
   f_ext_raw_ = jacobian_inv_.transpose() * tau_ext_;
@@ -29,7 +38,7 @@ void FTEstimatorImpl::compute() {
   f_ext_tf_.bottomRows(3) = Eigen::Matrix3d::Map(chain_tip_frame.M.data) * f_ext_.bottomRows(3);
 }
 
-void FTEstimatorImpl::reset() {
+void WrenchEstimator::reset() {
   std::fill(q_.begin(), q_.end(), 0.0);
   tau_ext_.setZero();
   f_ext_raw_.setZero();

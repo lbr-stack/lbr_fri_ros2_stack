@@ -13,6 +13,9 @@
       type: force_torque_sensor_broadcaster/ForceTorqueSensorBroadcaster
 
     # LBR ROS 2 control broadcasters
+    estimated_wrench_broadcaster:
+      type: lbr_ros2_control/EstimatedWrenchBroadcaster
+
     lbr_state_broadcaster:
       type: lbr_ros2_control/LBRStateBroadcaster
 
@@ -46,6 +49,20 @@
     sensor_name: estimated_ft_sensor
 
 # LBR ROS 2 control broadcasters
+/**/estimated_wrench_broadcaster:
+  ros__parameters:
+    robot_name: lbr
+    wrench_estimator_parameters:
+      chain_root: lbr_link_0
+      chain_tip: lbr_link_ee
+      damping: 0.2
+      force_x_th: 2.0
+      force_y_th: 2.0
+      force_z_th: 2.0
+      torque_x_th: 0.5
+      torque_y_th: 0.5
+      torque_z_th: 0.5
+
 /**/lbr_state_broadcaster:
   ros__parameters:
     robot_name: lbr
