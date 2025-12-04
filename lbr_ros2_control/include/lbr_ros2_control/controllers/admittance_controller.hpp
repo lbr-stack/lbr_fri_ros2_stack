@@ -55,11 +55,17 @@ protected:
   void configure_admittance_impl_();
   void configure_inv_jac_ctrl_impl_();
   void configure_filters_();
+  void configure_safety_checks_();
   void zero_all_values_();
   void init_filters_with_update_rate_();
   bool any_external_force_torques_on_horizon_(
+      const double &max_external_force = 0., const double &max_external_torque = 0.,
       const std::chrono::milliseconds &horizon = std::chrono::milliseconds(200)) const;
   void log_info_() const;
+
+  // safety checks
+  double max_external_force_on_activate_{0.};
+  double max_external_torque_on_activate_{0.};
 
   // admittance
   bool initialized_ = false;
