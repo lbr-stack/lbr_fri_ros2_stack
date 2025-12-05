@@ -35,8 +35,8 @@ def generate_launch_description() -> LaunchDescription:
     joint_state_broadcaster = LBRROS2ControlMixin.node_controller_spawner(
         controller="joint_state_broadcaster"
     )
-    estimated_wrench_broadcaster = LBRROS2ControlMixin.node_controller_spawner(
-        controller="estimated_wrench_broadcaster"
+    estimated_wrench_interface = LBRROS2ControlMixin.node_controller_spawner(
+        controller="estimated_wrench_interface"
     )
     lbr_state_broadcaster = LBRROS2ControlMixin.node_controller_spawner(
         controller="lbr_state_broadcaster"
@@ -47,14 +47,14 @@ def generate_launch_description() -> LaunchDescription:
             target_action=ros2_control_node,
             on_start=[
                 joint_state_broadcaster,
-                estimated_wrench_broadcaster,
+                estimated_wrench_interface,
                 lbr_state_broadcaster,
             ],
         )
     )
     ld.add_action(preceding_controllers_event_handler)
 
-    # controllers on estimated wrench broadcaster
+    # controllers on estimated wrench interface
     force_torque_broadcaster = LBRROS2ControlMixin.node_controller_spawner(
         controller="force_torque_broadcaster"
     )
@@ -64,7 +64,7 @@ def generate_launch_description() -> LaunchDescription:
 
     controller_event_handler = RegisterEventHandler(
         OnExecutionComplete(
-            target_action=estimated_wrench_broadcaster,  # estimated wrench broadcaster is chained and exposes external wrench estimate state interfaces
+            target_action=estimated_wrench_interface,  # estimated wrench interface is chained and exposes external wrench estimate state interfaces
             on_completion=[
                 force_torque_broadcaster,
                 controller,

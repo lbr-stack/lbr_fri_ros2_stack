@@ -1,17 +1,16 @@
-#ifndef LBR_ROS2_CONTROL__ESTIMATED_WRENCH_BROADCASTER_HPP_
-#define LBR_ROS2_CONTROL__ESTIMATED_WRENCH_BROADCASTER_HPP_
+#ifndef LBR_ROS2_CONTROL__ESTIMATED_WRENCH_INTERFACE_HPP_
+#define LBR_ROS2_CONTROL__ESTIMATED_WRENCH_INTERFACE_HPP_
 
+#include <limits>
 #include <memory>
 #include <stdexcept>
 #include <string>
 #include <vector>
 
 #include "controller_interface/chainable_controller_interface.hpp"
-#include "geometry_msgs/msg/wrench_stamped.hpp"
 #include "hardware_interface/loaned_state_interface.hpp"
 #include "hardware_interface/types/hardware_interface_type_values.hpp"
 #include "rclcpp/rclcpp.hpp"
-#include "realtime_tools/realtime_publisher.hpp"
 
 #include "lbr_fri_ros2/formatting.hpp"
 #include "lbr_fri_ros2/types.hpp"
@@ -19,9 +18,9 @@
 #include "lbr_ros2_control/system_interface_type_values.hpp"
 
 namespace lbr_ros2_control {
-class EstimatedWrenchBroadcaster : public controller_interface::ChainableControllerInterface {
+class EstimatedWrenchInterface : public controller_interface::ChainableControllerInterface {
 public:
-  EstimatedWrenchBroadcaster();
+  EstimatedWrenchInterface();
 
   controller_interface::InterfaceConfiguration command_interface_configuration() const override;
 
@@ -56,26 +55,25 @@ protected:
   void configure_joint_names_();
   void configure_parameters_();
   bool read_state_interfaces_();
+  bool valid_states_();
+  void nan_wrench_();
+  void nan_referenced_states_();
+  void estimate_wrench_();
 
   // force-torque estimation
   lbr_fri_ros2::WrenchEstimatorParameters wrench_estimator_parameters_;
   std::unique_ptr<lbr_fri_ros2::WrenchEstimator> wrench_estimator_ptr_;
-  lbr_fri_ros2::cart_array_t wrench_; // zero or fill with nans?
+  lbr_fri_ros2::cart_array_t wrench_;
 
   // joint names
   lbr_fri_ros2::jnt_name_array_t joint_names_;
 
   // referenced by state interfaces
-  lbr_fri_ros2::jnt_array_t joint_positions_, external_torques_; // fill with nans...
+  lbr_fri_ros2::jnt_array_t joint_positions_, external_torques_;
 
   // state interfaces (used by this controller to estimate wrenches)
   std::vector<std::reference_wrapper<hardware_interface::LoanedStateInterface>>
       joint_position_state_interfaces_, external_torque_state_interfaces_;
-
-  // force-torque publisher (in unchained mode)
-  rclcpp::Publisher<geometry_msgs::msg::WrenchStamped>::SharedPtr wrench_publisher_ptr_;
-  std::shared_ptr<realtime_tools::RealtimePublisher<geometry_msgs::msg::WrenchStamped>>
-      rt_wrench_publisher_ptr_;
 };
 } // namespace lbr_ros2_control
-#endif // LBR_ROS2_CONTROL__ESTIMATED_WRENCH_BROADCASTER_HPP_
+#endif // LBR_ROS2_CONTROL__ESTIMATED_WRENCH_INTERFACE_HPP_

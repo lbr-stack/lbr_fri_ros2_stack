@@ -37,6 +37,7 @@ AdmittanceController::state_interface_configuration() const {
 controller_interface::CallbackReturn AdmittanceController::on_init() {
   try {
     this->get_node()->declare_parameter("robot_name", "lbr");
+    this->get_node()->declare_parameter("ft_sensor_name", "estimated_wrench_interface");
     this->get_node()->declare_parameter("admittance.mass",
                                         std::vector<double>(lbr_fri_ros2::CARTESIAN_DOF, 1.0));
     this->get_node()->declare_parameter("admittance.damping",
@@ -175,13 +176,11 @@ AdmittanceController::update(const rclcpp::Time & /*time*/, const rclcpp::Durati
 
 controller_interface::CallbackReturn
 AdmittanceController::on_configure(const rclcpp_lifecycle::State & /*previous_state*/) {
+  ft_sensor_name_ = this->get_node()->get_parameter("ft_sensor_name").as_string();
   estimated_ft_sensor_ptr_ = std::make_unique<semantic_components::ForceTorqueSensor>(
-      std::string(HW_IF_ESTIMATED_FT_PREFIX) + "/" + HW_IF_FORCE_X,
-      std::string(HW_IF_ESTIMATED_FT_PREFIX) + "/" + HW_IF_FORCE_Y,
-      std::string(HW_IF_ESTIMATED_FT_PREFIX) + "/" + HW_IF_FORCE_Z,
-      std::string(HW_IF_ESTIMATED_FT_PREFIX) + "/" + HW_IF_TORQUE_X,
-      std::string(HW_IF_ESTIMATED_FT_PREFIX) + "/" + HW_IF_TORQUE_Y,
-      std::string(HW_IF_ESTIMATED_FT_PREFIX) + "/" + HW_IF_TORQUE_Z);
+      ft_sensor_name_ + "/" + HW_IF_FORCE_X, ft_sensor_name_ + "/" + HW_IF_FORCE_Y,
+      ft_sensor_name_ + "/" + HW_IF_FORCE_Z, ft_sensor_name_ + "/" + HW_IF_TORQUE_X,
+      ft_sensor_name_ + "/" + HW_IF_TORQUE_Y, ft_sensor_name_ + "/" + HW_IF_TORQUE_Z);
   return controller_interface::CallbackReturn::SUCCESS;
 }
 

@@ -89,6 +89,7 @@ protected:
       joint_position_state_interfaces_;
   std::unique_ptr<std::reference_wrapper<hardware_interface::LoanedStateInterface>>
       session_state_interface_ptr_;
+  std::string ft_sensor_name_;
   std::unique_ptr<semantic_components::ForceTorqueSensor> estimated_ft_sensor_ptr_;
 };
 } // namespace lbr_ros2_control
