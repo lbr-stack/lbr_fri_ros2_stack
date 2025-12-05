@@ -13,8 +13,8 @@
       type: force_torque_sensor_broadcaster/ForceTorqueSensorBroadcaster
 
     # LBR ROS 2 control broadcasters
-    estimated_wrench_broadcaster:
-      type: lbr_ros2_control/EstimatedWrenchBroadcaster
+    estimated_wrench_interface:
+      type: lbr_ros2_control/EstimatedWrenchInterface
 
     lbr_state_broadcaster:
       type: lbr_ros2_control/LBRStateBroadcaster
@@ -45,14 +45,14 @@
 # ROS 2 control broadcasters
 /**/force_torque_broadcaster:
   ros__parameters:
-    frame_id: lbr_link_ee # namespace: https://github.com/ros2/rviz/issues/1103
-    sensor_name: estimated_ft_sensor
+    frame_id: lbr_link_ee # note: frame_id must equal estimated_wrench_interface.wrench_estimator.chain_tip; namespace: https://github.com/ros2/rviz/issues/1103
+    sensor_name: estimated_wrench_interface # note: name must equal estimated_wrench_interface node name (chained)
 
 # LBR ROS 2 control broadcasters
-/**/estimated_wrench_broadcaster:
+/**/estimated_wrench_interface:
   ros__parameters:
     robot_name: lbr
-    wrench_estimator_parameters:
+    wrench_estimator:
       chain_root: lbr_link_0
       chain_tip: lbr_link_ee
       damping: 0.2
@@ -116,6 +116,7 @@
 /**/admittance_controller:
   ros__parameters:
     robot_name: lbr
+    ft_sensor_name: estimated_wrench_interface # should equal the estimated_wrench_interface node name above
     admittance:
       mass: [0.05, 0.05, 0.05, 0.005, 0.005, 0.005]
       damping: [1., 1., 1., 0.1, 0.1, 0.1]
