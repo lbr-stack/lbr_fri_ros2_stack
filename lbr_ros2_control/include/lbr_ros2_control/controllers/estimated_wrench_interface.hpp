@@ -55,10 +55,11 @@ protected:
   void configure_joint_names_();
   void configure_parameters_();
   bool read_state_interfaces_();
-  bool valid_states_();
+  bool valid_states_() const;
   void nan_wrench_();
   void nan_referenced_states_();
   void estimate_wrench_();
+  void log_info_() const;
 
   // force-torque estimation
   lbr_fri_ros2::WrenchEstimatorParameters wrench_estimator_parameters_;
