@@ -100,12 +100,12 @@ protected:
 
   // in external mode, wrench and joint position are commanded
   realtime_tools::RealtimeBuffer<lbr_fri_idl::msg::LBRWrenchCommand::SharedPtr>
-      rt_lbr_wrench_command_ptr_;
+      lbr_wrench_command_rt_buffer_;
   rclcpp::Subscription<lbr_fri_idl::msg::LBRWrenchCommand>::SharedPtr
       lbr_wrench_command_subscription_ptr_;
 
   // in chained mode, only wrench is commanded
-  realtime_tools::RealtimeBuffer<geometry_msgs::msg::Wrench::SharedPtr> rt_wrench_command_ptr_;
+  realtime_tools::RealtimeBuffer<geometry_msgs::msg::Wrench::SharedPtr> wrench_command_rt_buffer_;
   rclcpp::Subscription<geometry_msgs::msg::Wrench>::SharedPtr wrench_command_subscription_ptr_;
 };
 } // namespace lbr_ros2_control
