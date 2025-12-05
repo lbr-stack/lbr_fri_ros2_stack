@@ -2,8 +2,8 @@
 
 namespace lbr_ros2_control {
 LBRWrenchCommandController::LBRWrenchCommandController()
-    : rt_lbr_wrench_command_ptr_(nullptr), lbr_wrench_command_subscription_ptr_(nullptr),
-      rt_wrench_command_ptr_(nullptr), wrench_command_subscription_ptr_(nullptr) {}
+    : lbr_wrench_command_rt_buffer_(nullptr), lbr_wrench_command_subscription_ptr_(nullptr),
+      wrench_command_rt_buffer_(nullptr), wrench_command_subscription_ptr_(nullptr) {}
 
 controller_interface::InterfaceConfiguration
 LBRWrenchCommandController::command_interface_configuration() const {
@@ -98,7 +98,7 @@ bool LBRWrenchCommandController::on_set_chained_mode(bool chained_mode) {
 controller_interface::return_type
 LBRWrenchCommandController::update_reference_from_subscribers(const rclcpp::Time & /*time*/,
                                                               const rclcpp::Duration & /*period*/) {
-  auto lbr_wrench_command = rt_lbr_wrench_command_ptr_.readFromRT();
+  auto lbr_wrench_command = lbr_wrench_command_rt_buffer_.readFromRT();
   if (!lbr_wrench_command || !(*lbr_wrench_command)) {
     return controller_interface::return_type::OK;
   }
@@ -170,7 +170,7 @@ LBRWrenchCommandController::update_and_write_commands(const rclcpp::Time & /*tim
   }
 
   // read wrench command in chained mode
-  auto wrench_command = rt_wrench_command_ptr_.readFromRT();
+  auto wrench_command = wrench_command_rt_buffer_.readFromRT();
   if (!wrench_command || !(*wrench_command)) {
     if (!zero_wrench_commands_()) {
       return controller_interface::return_type::ERROR;
@@ -382,7 +382,7 @@ void LBRWrenchCommandController::init_lbr_wrench_command_subscription_() {
       this->get_node()->create_subscription<lbr_fri_idl::msg::LBRWrenchCommand>(
           "command/lbr_wrench_command", 1,
           [this](const lbr_fri_idl::msg::LBRWrenchCommand::SharedPtr msg) {
-            rt_lbr_wrench_command_ptr_.writeFromNonRT(msg);
+            lbr_wrench_command_rt_buffer_.writeFromNonRT(msg);
           });
 }
 
@@ -390,7 +390,7 @@ void LBRWrenchCommandController::init_wrench_command_subscription_() {
   wrench_command_subscription_ptr_ =
       this->get_node()->create_subscription<geometry_msgs::msg::Wrench>(
           "command/wrench", 1, [this](const geometry_msgs::msg::Wrench::SharedPtr msg) {
-            rt_wrench_command_ptr_.writeFromNonRT(msg);
+            wrench_command_rt_buffer_.writeFromNonRT(msg);
           });
 }
 
