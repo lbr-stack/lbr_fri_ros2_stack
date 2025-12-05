@@ -54,6 +54,7 @@ protected:
   lbr_fri_ros2::jnt_name_array_t joint_names_;
   std::unordered_map<std::string, std::unordered_map<std::string, double>> state_interface_map_;
 
+  lbr_fri_idl::msg::LBRState lbr_state_;
   rclcpp::Publisher<lbr_fri_idl::msg::LBRState>::SharedPtr state_publisher_ptr_;
   std::shared_ptr<realtime_tools::RealtimePublisher<lbr_fri_idl::msg::LBRState>>
       rt_state_publisher_ptr_;
