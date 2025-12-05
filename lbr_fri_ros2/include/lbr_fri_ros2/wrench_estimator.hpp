@@ -8,6 +8,8 @@
 #include <string>
 
 #include "eigen3/Eigen/Core"
+#include "rclcpp/logger.hpp"
+#include "rclcpp/logging.hpp"
 
 #include "lbr_fri_ros2/kinematics.hpp"
 #include "lbr_fri_ros2/pinv.hpp"
@@ -39,6 +41,9 @@ class WrenchEstimator {
    * estimated force-torque.
    *
    */
+protected:
+  static constexpr char LOGGER_NAME[] = "lbr_fri_ros2::WrenchEstimator";
+
 public:
   WrenchEstimator() = delete;
   WrenchEstimator(const std::string &robot_description,
@@ -56,6 +61,8 @@ public:
     tau_ext_ = Eigen::Map<const Eigen::Matrix<double, N_JNTS, 1>>(tau_ext.data());
   }
   inline void set_q(const_jnt_array_t_ref q) { q_ = q; }
+
+  void log_info() const;
 
 protected:
   // force threshold

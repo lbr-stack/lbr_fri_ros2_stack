@@ -38,6 +38,7 @@ controller_interface::CallbackReturn EstimatedWrenchInterface::on_init() {
     configure_parameters_();
     wrench_estimator_ptr_ = std::make_unique<lbr_fri_ros2::WrenchEstimator>(
         get_robot_description(), wrench_estimator_parameters_);
+    log_info_();
   } catch (const std::exception &e) {
     RCLCPP_ERROR_STREAM(get_node()->get_logger(),
                         lbr_fri_ros2::ColorScheme::ERROR
@@ -221,7 +222,7 @@ bool EstimatedWrenchInterface::read_state_interfaces_() {
   return true;
 }
 
-bool EstimatedWrenchInterface::valid_states_() {
+bool EstimatedWrenchInterface::valid_states_() const {
   for (size_t i = 0; i < lbr_fri_ros2::N_JNTS; ++i) {
     if (std::isnan(joint_positions_[i]) || std::isnan(external_torques_[i])) {
       return false;
@@ -245,6 +246,8 @@ void EstimatedWrenchInterface::estimate_wrench_() {
   wrench_estimator_ptr_->compute();
   wrench_estimator_ptr_->get_f_ext_tf(wrench_);
 }
+
+void EstimatedWrenchInterface::log_info_() const { wrench_estimator_ptr_->log_info(); }
 } // namespace lbr_ros2_control
 
 #include "pluginlib/class_list_macros.hpp"

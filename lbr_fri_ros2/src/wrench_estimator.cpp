@@ -46,4 +46,13 @@ void WrenchEstimator::reset() {
   f_ext_tf_.setZero();
   jacobian_inv_.setZero();
 }
+
+void WrenchEstimator::log_info() const {
+  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "*** Parameters:");
+  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "*   Damping: %.3f", damping_);
+  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "*   Force thresholds: [%.3f, %.3f, %.3f]",
+              f_ext_th_[0], f_ext_th_[1], f_ext_th_[2]);
+  RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "*   Torque thresholds: [%.3f, %.3f, %.3f]",
+              f_ext_th_[3], f_ext_th_[4], f_ext_th_[5]);
+}
 } // namespace lbr_fri_ros2
