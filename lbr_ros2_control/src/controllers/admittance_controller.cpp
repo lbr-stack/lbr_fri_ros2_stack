@@ -53,7 +53,7 @@ controller_interface::CallbackReturn AdmittanceController::on_init() {
                                         std::vector<double>(lbr_fri_ros2::N_JNTS, 0.0));
     this->get_node()->declare_parameter("inv_jac_ctrl.cartesian_gains",
                                         std::vector<double>(lbr_fri_ros2::CARTESIAN_DOF, 0.0));
-    this->get_node()->declare_parameter("filter.joint_velocity_tau", 0.4);
+    this->get_node()->declare_parameter("filter.f_ext_tau", 0.4);
     this->get_node()->declare_parameter("on_activate.max_external_force", 0.0);
     this->get_node()->declare_parameter("on_activate.max_external_torque", 0.0);
     configure_joint_names_();
@@ -131,8 +131,11 @@ AdmittanceController::update(const rclcpp::Time & /*time*/, const rclcpp::Durati
   f_ext_.head(3) = Eigen::Matrix3d::Map(chain_tip_frame.M.data).transpose() * f_ext_.head(3);
   f_ext_.tail(3) = Eigen::Matrix3d::Map(chain_tip_frame.M.data).transpose() * f_ext_.tail(3);
 
+  // filter the external forces
+  f_ext_filter_ptr_->compute(f_ext_.data(), f_ext_filtered_.data());
+
   // compute admittance
-  admittance_impl_ptr_->compute(f_ext_, delta_x_, dx_, ddx_);
+  admittance_impl_ptr_->compute(f_ext_filtered_, delta_x_, dx_, ddx_);
 
   // integrate ddx_ to command velocity
   dx_ += ddx_ * dt;
@@ -158,12 +161,9 @@ AdmittanceController::update(const rclcpp::Time & /*time*/, const rclcpp::Durati
   // compute the joint velocity from the twist command target
   inv_jac_ctrl_impl_ptr_->compute(twist_command_, q_, dq_);
 
-  // filter the joint velocities
-  dq_filter_ptr_->compute(dq_.data(), dq_filtered_.data());
-
   // pass joint positions to hardware
   for (std::size_t i = 0; i < lbr_fri_ros2::N_JNTS; ++i) {
-    if (!this->command_interfaces_[i].set_value(q_[i] + dq_filtered_[i] * dt)) {
+    if (!this->command_interfaces_[i].set_value(q_[i] + dq_[i] * dt)) {
       RCLCPP_ERROR_STREAM(this->get_node()->get_logger(),
                           lbr_fri_ros2::ColorScheme::ERROR
                               << "Failed to set joint position for joint '" << joint_names_[i]
@@ -361,19 +361,18 @@ void AdmittanceController::configure_inv_jac_ctrl_impl_() {
 }
 
 void AdmittanceController::configure_filters_() {
-  auto joint_velocity_tau =
-      this->get_node()->get_parameter("filter.joint_velocity_tau").as_double();
-  if (joint_velocity_tau < 0.4) {
+  auto f_ext_tau = this->get_node()->get_parameter("filter.f_ext_tau").as_double();
+  if (f_ext_tau < 0.2) {
     RCLCPP_ERROR_STREAM(this->get_node()->get_logger(),
                         lbr_fri_ros2::ColorScheme::ERROR
-                            << "Joint velocity filter time constant too small ("
-                            << joint_velocity_tau
-                            << "s). Currently enforced to be at least 0.4s for proper smoothing."
+                            << "External force filter time constant too small (" << f_ext_tau
+                            << "s). Currently enforced to be at least 0.2s for proper smoothing."
                             << lbr_fri_ros2::ColorScheme::ENDC);
-    throw std::runtime_error("Invalid joint velocity filter time constant.");
+    throw std::runtime_error("Invalid external force filter time constant.");
   }
-  dq_filter_ptr_ = std::make_unique<lbr_fri_ros2::ExponentialFilterArray<lbr_fri_ros2::N_JNTS>>(
-      joint_velocity_tau);
+  f_ext_filter_ptr_ =
+      std::make_unique<lbr_fri_ros2::ExponentialFilterArray<lbr_fri_ros2::CARTESIAN_DOF>>(
+          f_ext_tau);
 }
 
 void AdmittanceController::configure_safety_checks_() {
@@ -400,16 +399,16 @@ void AdmittanceController::configure_safety_checks_() {
 }
 
 void AdmittanceController::init_filters_with_update_rate_() {
-  dq_filter_ptr_->initialize(1. / static_cast<double>(this->get_update_rate()));
+  f_ext_filter_ptr_->initialize(1. / static_cast<double>(this->get_update_rate()));
 }
 
 void AdmittanceController::zero_all_values_() {
   f_ext_.setZero();
+  f_ext_filtered_.setZero();
   delta_x_.setZero();
   dx_.setZero();
   ddx_.setZero();
   std::fill(dq_.begin(), dq_.end(), 0.0);
-  std::fill(dq_filtered_.begin(), dq_filtered_.end(), 0.0);
   twist_command_.setZero();
 }
 
@@ -456,7 +455,7 @@ bool AdmittanceController::any_external_force_torques_on_horizon_(
 void AdmittanceController::log_info_() const {
   admittance_impl_ptr_->log_info();
   inv_jac_ctrl_impl_ptr_->log_info();
-  dq_filter_ptr_->log_info();
+  f_ext_filter_ptr_->log_info();
 }
 } // namespace lbr_ros2_control
 
