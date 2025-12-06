@@ -37,6 +37,5 @@ constexpr char HW_IF_TORQUE_Z[] = "torque.z";
 // additional LBR command interfaces, reference KUKA::FRI::LBRCommand
 constexpr char HW_IF_WRENCH_PREFIX[] = "wrench";
 constexpr char HW_IF_AUXILIARY_PREFIX[] = "auxiliary_sensor";
-constexpr char HW_IF_ESTIMATED_FT_PREFIX[] = "estimated_ft_sensor";
 } // namespace lbr_ros2_control
 #endif // LBR_ROS2_CONTROL__SYSTEM_INTERFACE_TYPE_VALUES_HPP_

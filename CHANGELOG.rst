@@ -1,33 +1,66 @@
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Changelog for package LBR FRI ROS 2 Stack
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Jazzy v2.4.0 (TBD)
+Jazzy v2.4.0 (2025-12-06)
 --------------------------
+This release removes the asynchronous force-torque estimation from the system interface (introduced in https://github.com/lbr-stack/lbr_fri_ros2_stack/releases/tag/humble-v2.2.0)
+and instead provides a synchronous estimation in the form of a chainable ROS 2 controller. It further adds some controller updates, API fixes, and safety improvements. 
+
+* ``lbr_bringup``: Added new chainable wrench interface controller to ``hardware.launch.py`` and added launch event handler for preceeding controllers 
+* ``lbr_demos``: Updated topics ``/lbr/state`` -> ``/lbr/lbr_state``
+* ``lbr_description``:
+
+  * Removed now redundant ``estimated_ft_sensor`` from ``lbr_system_config.yaml`` and removed thus unused ``hardware`` prefix
+  * Removed all ``hardware`` specifiers from ``lbr_system_interface.xacro``
+* ``lbr_fri_ros2``:
+
+  * Removed now redundant asynchronous ``lbr_fri_ros2::FTEstimator`` worker (also removed from ``lbr_ros2_control::SystemInterface``)
+  * Renamed ``lbr_fri_ros::FTEstimatorImpl`` -> ``lbr_fri_ros2::WrenchEstimator``
+  * Fixed twist clamping bug: https://github.com/lbr-stack/lbr_fri_ros2_stack/issues/313
 * ``lbr_ros2_control``:
 
-  * ``/lbr/state`` -> ``/lbr/lbr_state`` consistent with https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/271.
-  * Fixes missing integration step in the admittance controller: https://github.com/lbr-stack/lbr_fri_ros2_stack/issues/320.
-  * Exit ``on_activate`` in ``lbr_ros2_control::SystemInterface`` with error on ``IDLE``: https://github.com/lbr-stack/lbr_fri_ros2_stack/issues/321.
+  * Changes to ``lbr_ros2_control::SystemInterface``:
+
+    * Removed force-torque estimation from ``lbr_ros2_control::SystemInterface``
+    * Exit ``on_activate`` in ``lbr_ros2_control::SystemInterface`` with error on ``IDLE``: https://github.com/lbr-stack/lbr_fri_ros2_stack/issues/321
+  * Changes to controllers:  
+
+    * ``lbr_ros2_control::EstimatedWrenchInterface``: Added new chainable controller for synchronous force-torque estimation and state interface
+    * ``lbr_ros2_control::TwistController``: Stop twist controller on any joint limits: https://github.com/lbr-stack/lbr_fri_ros2_stack/issues/314
+    * ``lbr_ros2_control::LBRStateBroadcaster``:
+
+      * ``/lbr/state`` -> ``/lbr/lbr_state`` consistent with https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/271
+      * Removed deprecated ``trylock()`` from ``lbr_ros2_control::LBRStateBroadcaster``: https://github.com/ros-controls/realtime_tools/pull/323
+  * ``lbr_ros2_control::AdmittanceController``:
+
+    * Fixed missing integration step in the admittance controller: https://github.com/lbr-stack/lbr_fri_ros2_stack/issues/320
+    * Added an adjustable load data safety tolerance: https://github.com/lbr-stack/lbr_fri_ros2_stack/issues/325
+    * Replaced veloctiy command filtering with force state filtering: https://github.com/lbr-stack/lbr_fri_ros2_stack/issues/327
+* Related pull requests:
+
+  * Twist clamping and ``lbr_ros2_control::TwistController`` controller updates: https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/315
+  * ``lbr_ros2_control::AdmittanceController`` integration step and ``lbr_ros2_control::SystemInterface::on_activate`` exit: https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/322
+  * ``lbr_ros2_control::SystemInterface`` force-torque estimation removal (including new chainable controller): https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/324
 
 Jazzy v2.3.0 (2025-11-21)
 --------------------------
 * ``lbr_fri_ros2``:
 
   * Interfaces now default to return by value for simplicity.
-  * Added a new ``StateGuard`` that tests for load data calibration on activation in compliant control modes and shuts the connection otherwise.
-  * Instead of disconnecting on ``CommandGuard`` limits, ``CommandInterfaces`` now execute a neutral command.
+  * Added a new ``StateGuard`` that tests for load data calibration on activation in compliant control modes and shuts the connection otherwise
+  * Instead of disconnecting on ``CommandGuard`` limits, ``CommandInterfaces`` now execute a neutral command
 * ``lbr_description``:
 
   * Updated joint limits (upper / lower) to be 1 degree stricter to avoid hardware limits.
   * Added ``safety_controller`` tag to URDF files. Note, in Jazzy this is only utilised when ``enforce_command_limits:=true`` for the controller manager (default configured in ``lbr_controllers.yaml`` here). 
 * ``lbr_ros2_control``:
 
-  * Migrated to Jazzy following guidelines at https://control.ros.org/jazzy/doc/ros2_control/doc/migration.html#migration-of-command-stateinterfaces.
+  * Migrated to Jazzy following guidelines at https://control.ros.org/jazzy/doc/ros2_control/doc/migration.html#migration-of-command-stateinterfaces
   * Removed the default error from ``AdmittanceController`` with the introduction of load data checks. Also now supports the default ``lbr_system_config.yaml``.
-  * WARN: KUKA's Cartesian impedance controller seems quite prone to singularities, and should thus be used with caution and only in ``T1`` mode.
+  * WARN: KUKA's Cartesian impedance controller seems quite prone to singularities, and should thus be used with caution and only in ``T1`` mode
 
     * ``LBRWrenchCommandController`` (uses Cartesian impedance) is now a ``ChainableControllerInterface`` to support separate wrench and joint position commands: https://github.com/lbr-stack/lbr_fri_ros2_stack/issues/250
-    * Future releases will chain the ``LBRTorqueCommandController``, which uses KUKA's joint impedance controller without singularity issues.
+    * Future releases will chain the ``LBRTorqueCommandController``, which uses KUKA's joint impedance controller without singularity issues
     * Topics were updated to reflect the chained controller structure:
 
       * ``/lbr/wrench`` -> ``/lbr/lbr_wrench_command``
@@ -79,10 +112,10 @@ Humble v2.1.2 (2024-10-18)
 
 Humble v2.1.1 (2024-09-27)
 --------------------------
-* Adds support for the new Gazebo and removes support for Gazebo Classic (End-of-Life January 2025, refer https://community.gazebosim.org/t/gazebo-classic-end-of-life/2563).
+* Adds support for the new Gazebo and removes support for Gazebo Classic (End-of-Life January 2025, refer https://community.gazebosim.org/t/gazebo-classic-end-of-life/2563)
 
   * ``lbr_bringup``: Updated launch files and dependencies.
-  * ``lbr_description``: Updated ``<gazebo>`` tag to include Gazebo plugin (see https://github.com/ros-controls/gz_ros2_control/tree/humble). 
+  * ``lbr_description``: Updated ``<gazebo>`` tag to include Gazebo plugin (see https://github.com/ros-controls/gz_ros2_control/tree/humble)
   * ``lbr_ros2_control``: Changed ``gazebo_ros2_control/GazeboSystem`` -> ``ign_ros2_control/IgnitionSystem```
 
 Humble v2.1.0 (2024-09-10)
