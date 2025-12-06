@@ -25,19 +25,19 @@
             <xacro:if value="${mode == 'hardware'}">
                 <hardware>
                     <plugin>lbr_ros2_control::SystemInterface</plugin>
-                    <param name="fri_client_sdk_major_version">${system_config['hardware']['fri_client_sdk']['major_version']}</param>
-                    <param name="fri_client_sdk_minor_version">${system_config['hardware']['fri_client_sdk']['minor_version']}</param>
-                    <param name="client_command_mode">${system_config['hardware']['client_command_mode']}</param>
-                    <param name="port_id">${system_config['hardware']['port_id']}</param>
-                    <param name="remote_host">${system_config['hardware']['remote_host']}</param>
-                    <param name="rt_prio">${system_config['hardware']['rt_prio']}</param>
-                    <param name="joint_position_tau">${system_config['hardware']['joint_position_tau']}</param>
-                    <param name="command_guard_variant">${system_config['hardware']['command_guard']['variant']}</param>
-                    <param name="state_guard_external_torque_safety_check">${system_config['hardware']['state_guard']['external_torque_safety_check']}</param>
-                    <param name="state_guard_external_torque_limit">${system_config['hardware']['state_guard']['external_torque_limit']}</param>
-                    <param name="external_torque_tau">${system_config['hardware']['external_torque_tau']}</param>
-                    <param name="measured_torque_tau">${system_config['hardware']['measured_torque_tau']}</param>
-                    <param name="open_loop">${system_config['hardware']['open_loop']}</param>
+                    <param name="fri_client_sdk_major_version">${system_config['fri_client_sdk']['major_version']}</param>
+                    <param name="fri_client_sdk_minor_version">${system_config['fri_client_sdk']['minor_version']}</param>
+                    <param name="client_command_mode">${system_config['client_command_mode']}</param>
+                    <param name="port_id">${system_config['port_id']}</param>
+                    <param name="remote_host">${system_config['remote_host']}</param>
+                    <param name="rt_prio">${system_config['rt_prio']}</param>
+                    <param name="joint_position_tau">${system_config['joint_position_tau']}</param>
+                    <param name="command_guard_variant">${system_config['command_guard']['variant']}</param>
+                    <param name="state_guard_external_torque_safety_check">${system_config['state_guard']['external_torque_safety_check']}</param>
+                    <param name="state_guard_external_torque_limit">${system_config['state_guard']['external_torque_limit']}</param>
+                    <param name="external_torque_tau">${system_config['external_torque_tau']}</param>
+                    <param name="measured_torque_tau">${system_config['measured_torque_tau']}</param>
+                    <param name="open_loop">${system_config['open_loop']}</param>
                 </hardware>
             </xacro:if>
 
@@ -58,30 +58,6 @@
                     <state_interface name="time_stamp_sec" />
                     <state_interface name="time_stamp_nano_sec" />
                     <state_interface name="tracking_performance" />
-                </sensor>
-
-                <sensor
-                    name="estimated_ft_sensor">
-                    <param name="enabled">${system_config['estimated_ft_sensor']['enabled']}</param>
-                    <param name="update_rate">${system_config['estimated_ft_sensor']['update_rate']}</param>
-                    <param name="rt_prio">${system_config['estimated_ft_sensor']['rt_prio']}</param>
-                    <param name="chain_root">${system_config['estimated_ft_sensor']['chain_root']}</param>
-                    <param name="chain_tip">${system_config['estimated_ft_sensor']['chain_tip']}</param>
-                    <param name="damping">${system_config['estimated_ft_sensor']['damping']}</param>
-                    <param name="force_x_th">${system_config['estimated_ft_sensor']['force_x_th']}</param>
-                    <param name="force_y_th">${system_config['estimated_ft_sensor']['force_y_th']}</param>
-                    <param name="force_z_th">${system_config['estimated_ft_sensor']['force_z_th']}</param>
-                    <param name="torque_x_th">${system_config['estimated_ft_sensor']['torque_x_th']}</param>
-                    <param name="torque_y_th">${system_config['estimated_ft_sensor']['torque_y_th']}</param>
-                    <param name="torque_z_th">${system_config['estimated_ft_sensor']['torque_z_th']}</param>
-                    <xacro:if value="${system_config['estimated_ft_sensor']['enabled']}">
-                        <state_interface name="force.x" />
-                        <state_interface name="force.y" />
-                        <state_interface name="force.z" />
-                        <state_interface name="torque.x" />
-                        <state_interface name="torque.y" />
-                        <state_interface name="torque.z" />
-                    </xacro:if>
                 </sensor>
 
                 <!-- FRI Cartesian impedance control mode -->
@@ -123,7 +99,7 @@
                         <param name="max_velocity">${max_velocity}</param>
                         <param name="max_torque">${max_torque}</param>
                         <xacro:if
-                            value="${system_config['hardware']['fri_client_sdk']['major_version'] == 1}">
+                            value="${system_config['fri_client_sdk']['major_version'] == 1}">
                             <state_interface name="commanded_joint_position" />
                         </xacro:if>
                         <state_interface name="commanded_torque" />

@@ -11,7 +11,7 @@ void WrenchCommandInterface::buffered_command_to_fri(fri_command_t_ref command,
   std::lock_guard<std::mutex> lock(command_mutex_);
   if (state.client_command_mode != KUKA::FRI::EClientCommandMode::WRENCH) {
     std::string err =
-        "Client side (configured via hardware.client_command_mode in lbr_system_config.yaml) "
+        "Client side (configured via client_command_mode in lbr_system_config.yaml) "
         "expected robot in '" +
         EnumMaps::client_command_mode_map(KUKA::FRI::EClientCommandMode::WRENCH) +
         "' command mode, but robot was in '" +

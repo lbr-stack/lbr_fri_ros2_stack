@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "controller_interface/chainable_controller_interface.hpp"
-#include "controller_interface/controller_interface.hpp"
 #include "geometry_msgs/msg/wrench.hpp"
 #include "hardware_interface/loaned_command_interface.hpp"
 #include "hardware_interface/loaned_state_interface.hpp"
@@ -47,12 +46,12 @@ protected:
   std::vector<hardware_interface::CommandInterface> on_export_reference_interfaces() override;
   bool on_set_chained_mode(bool chained_mode) override;
 
-  // expect full lbr_wrench command in this mode....
+  // expect full lbr_wrench command in this mode
   controller_interface::return_type
   update_reference_from_subscribers(const rclcpp::Time &time,
                                     const rclcpp::Duration &period) override;
 
-  // expect just wrench command in this mode....
+  // expect just wrench command in this mode
   controller_interface::return_type
   update_and_write_commands(const rclcpp::Time &time, const rclcpp::Duration &period) override;
 
@@ -91,7 +90,7 @@ protected:
   lbr_fri_ros2::jnt_array_t joint_position_states_;
   lbr_fri_ros2::jnt_array_t joint_velocity_states_;
 
-  // state interfaces, consider access to external force interface for safety checking....
+  // state interfaces
   std::vector<std::reference_wrapper<hardware_interface::LoanedStateInterface>>
       joint_position_state_interfaces_, joint_velocity_state_interfaces_;
 
@@ -101,12 +100,12 @@ protected:
 
   // in external mode, wrench and joint position are commanded
   realtime_tools::RealtimeBuffer<lbr_fri_idl::msg::LBRWrenchCommand::SharedPtr>
-      rt_lbr_wrench_command_ptr_;
+      lbr_wrench_command_rt_buffer_;
   rclcpp::Subscription<lbr_fri_idl::msg::LBRWrenchCommand>::SharedPtr
       lbr_wrench_command_subscription_ptr_;
 
   // in chained mode, only wrench is commanded
-  realtime_tools::RealtimeBuffer<geometry_msgs::msg::Wrench::SharedPtr> rt_wrench_command_ptr_;
+  realtime_tools::RealtimeBuffer<geometry_msgs::msg::Wrench::SharedPtr> wrench_command_rt_buffer_;
   rclcpp::Subscription<geometry_msgs::msg::Wrench>::SharedPtr wrench_command_subscription_ptr_;
 };
 } // namespace lbr_ros2_control

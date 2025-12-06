@@ -24,7 +24,6 @@
 #include "lbr_fri_ros2/app.hpp"
 #include "lbr_fri_ros2/async_client.hpp"
 #include "lbr_fri_ros2/formatting.hpp"
-#include "lbr_fri_ros2/ft_estimator.hpp"
 #include "lbr_fri_ros2/guards/command_guard.hpp"
 #include "lbr_fri_ros2/guards/state_guard.hpp"
 #include "lbr_fri_ros2/interfaces/state.hpp"
@@ -34,7 +33,7 @@
 namespace lbr_ros2_control {
 class SystemInterface : public hardware_interface::SystemInterface {
 protected:
-  struct SystemInterfaceParameters {
+  struct Parameters {
     uint8_t fri_client_sdk_major_version{1};
     uint8_t fri_client_sdk_minor_version{15};
 #if FRI_CLIENT_VERSION_MAJOR == 1
@@ -54,21 +53,6 @@ protected:
     double external_torque_tau{0.04};
     double measured_torque_tau{0.04};
     bool open_loop{true};
-  };
-
-  struct EstimatedFTSensorParameters {
-    bool enabled{true};
-    std::uint16_t update_rate{100};
-    int32_t rt_prio{30};
-    std::string chain_root{"lbr_link_0"};
-    std::string chain_tip{"lbr_link_ee"};
-    double damping{0.2};
-    double force_x_th{2.0};
-    double force_y_th{2.0};
-    double force_z_th{2.0};
-    double torque_x_th{0.5};
-    double torque_y_th{0.5};
-    double torque_z_th{0.5};
   };
 
   struct CommandKeys {
@@ -99,7 +83,6 @@ protected:
     std::string sample_time, session_state, connection_quality, safety_state, operation_mode,
         drive_state, client_command_mode, overlay_type, control_mode, time_stamp_sec,
         time_stamp_nano_sec, tracking_performance;
-    lbr_fri_ros2::cart_name_array_t estimated_ft;
 
     void populate_keys(const hardware_interface::HardwareInfo &info) {
       for (std::size_t i = 0; i < lbr_fri_ros2::N_JNTS; ++i) {
@@ -127,13 +110,6 @@ protected:
       time_stamp_sec = std::string(HW_IF_AUXILIARY_PREFIX) + "/" + HW_IF_TIME_STAMP_SEC;
       time_stamp_nano_sec = std::string(HW_IF_AUXILIARY_PREFIX) + "/" + HW_IF_TIME_STAMP_NANO_SEC;
       tracking_performance = std::string(HW_IF_AUXILIARY_PREFIX) + "/" + HW_IF_TRACKING_PERFORMANCE;
-
-      estimated_ft[0] = std::string(HW_IF_ESTIMATED_FT_PREFIX) + "/" + HW_IF_FORCE_X;
-      estimated_ft[1] = std::string(HW_IF_ESTIMATED_FT_PREFIX) + "/" + HW_IF_FORCE_Y;
-      estimated_ft[2] = std::string(HW_IF_ESTIMATED_FT_PREFIX) + "/" + HW_IF_FORCE_Z;
-      estimated_ft[3] = std::string(HW_IF_ESTIMATED_FT_PREFIX) + "/" + HW_IF_TORQUE_X;
-      estimated_ft[4] = std::string(HW_IF_ESTIMATED_FT_PREFIX) + "/" + HW_IF_TORQUE_Y;
-      estimated_ft[5] = std::string(HW_IF_ESTIMATED_FT_PREFIX) + "/" + HW_IF_TORQUE_Z;
     }
   };
 
@@ -145,9 +121,8 @@ protected:
   static constexpr uint8_t LBR_FRI_STATE_INTERFACE_SIZE = 6;
 #endif
   static constexpr uint8_t LBR_FRI_COMMAND_INTERFACE_SIZE = 2;
-  static constexpr uint8_t LBR_FRI_SENSORS = 2;
+  static constexpr uint8_t LBR_FRI_SENSORS = 1;
   static constexpr uint8_t AUXILIARY_SENSOR_SIZE = 12;
-  static constexpr uint8_t ESTIMATED_FT_SENSOR_SIZE = 6;
   static constexpr uint8_t GPIO_SIZE = 1;
 
 public:
@@ -178,7 +153,6 @@ public:
 protected:
   // setup
   bool parse_parameters_();
-  bool parse_ft_parameters_();
   void nan_command_interfaces_();
   void nan_state_interfaces_();
   bool verify_number_of_joints_();
@@ -186,7 +160,6 @@ protected:
   bool verify_joint_state_interfaces_();
   bool verify_sensors_();
   bool verify_auxiliary_sensor_();
-  bool verify_estimated_ft_sensor_();
   bool verify_gpios_();
 
   // monitor end of commanding active
@@ -194,8 +167,7 @@ protected:
                                const KUKA::FRI::ESessionState &session_state);
 
   // robot parameters
-  SystemInterfaceParameters parameters_;
-  EstimatedFTSensorParameters ft_parameters_;
+  Parameters parameters_;
 
   // robot driver
   std::shared_ptr<lbr_fri_ros2::AsyncClient> async_client_ptr_;
@@ -212,11 +184,6 @@ protected:
   void nan_last_states_();
   void update_last_states_();
   void compute_velocity_();
-
-  // additional force-torque state interface
-  lbr_fri_ros2::cart_array_t ft_;
-  std::shared_ptr<lbr_fri_ros2::FTEstimatorImpl> ft_estimator_impl_ptr_;
-  std::unique_ptr<lbr_fri_ros2::FTEstimator> ft_estimator_ptr_;
 
   // command and state buffers
   lbr_fri_idl::msg::LBRCommand lbr_command_;

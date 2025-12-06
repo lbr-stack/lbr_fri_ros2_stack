@@ -2,7 +2,7 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>lbr_ros2_control</name>
-  <version>2.3.0</version>
+  <version>2.4.0</version>
   <description>ROS 2 hardware hardware_interface for KUKA LBR through Fast Robot Interface (FRI).</description>
   <maintainer email="m.huber_1994@hotmail.de">mhubii</maintainer>
   <license>Apache-2.0</license>
@@ -12,8 +12,11 @@
 
   <build_depend>eigen</build_depend>
 
+  <depend>controller_interface</depend>
   <depend>fri_client_sdk</depend>
   <depend>geometry_msgs</depend>
+  <depend>hardware_interface</depend>
+  <depend>kinematics_interface</depend>
   <depend>lbr_fri_idl</depend>
   <depend>lbr_fri_ros2</depend>
   <depend>pluginlib</depend>
