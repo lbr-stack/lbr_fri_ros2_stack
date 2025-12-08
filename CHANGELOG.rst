@@ -1,6 +1,10 @@
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Changelog for package LBR FRI ROS 2 Stack
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Jazzy v2.4.1 (2025-12-08)
+--------------------------
+* ``lbr_bringup``: Run a single ``controller_manager`` ``spawner`` for all controllers: https://github.com/lbr-stack/lbr_fri_ros2_stack/issues/329
+
 Jazzy v2.4.0 (2025-12-06)
 --------------------------
 This release removes the asynchronous force-torque estimation from the system interface (introduced in https://github.com/lbr-stack/lbr_fri_ros2_stack/releases/tag/humble-v2.2.0)
