@@ -1,4 +1,4 @@
-from typing import Dict, Optional, Union
+from typing import Dict, List, Optional, Union
 
 from launch.actions import DeclareLaunchArgument
 from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
@@ -31,8 +31,8 @@ class LBRROS2ControlMixin:
             description="Desired default controller. One of specified in ctrl_cfg.",
             choices=[
                 "admittance_controller",
-                "joint_trajectory_controller",
                 "forward_position_controller",
+                "joint_trajectory_controller",
                 "lbr_joint_position_command_controller",
                 "lbr_torque_command_controller",
                 "lbr_wrench_command_controller",
@@ -112,9 +112,9 @@ class LBRROS2ControlMixin:
         robot_name: Optional[Union[LaunchConfiguration, str]] = LaunchConfiguration(
             "robot_name", default="lbr"
         ),
-        controller: Optional[Union[LaunchConfiguration, str]] = LaunchConfiguration(
-            "ctrl"
-        ),
+        controllers: Optional[List[Union[LaunchConfiguration, str]]] = [
+            LaunchConfiguration("ctrl")
+        ],
         **kwargs,
     ) -> Node:
         return Node(
@@ -122,10 +122,10 @@ class LBRROS2ControlMixin:
             executable="spawner",
             output="screen",
             arguments=[
-                controller,
                 "--controller-manager",
                 "controller_manager",
-            ],
+            ]
+            + controllers,
             namespace=robot_name,
             **kwargs,
         )

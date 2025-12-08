@@ -34,14 +34,10 @@ def generate_launch_description() -> LaunchDescription:
         GazeboMixin.node_create()
     )  # spawns robot in Gazebo through robot_description topic of robot_state_publisher
 
-    # controllers
-    joint_state_broadcaster = LBRROS2ControlMixin.node_controller_spawner(
-        controller="joint_state_broadcaster"
-    )
-    ld.add_action(joint_state_broadcaster)
+    # spawn controllers
     ld.add_action(
         LBRROS2ControlMixin.node_controller_spawner(
-            controller=LaunchConfiguration("ctrl")
+            controllers=["joint_state_broadcaster", LaunchConfiguration("ctrl")]
         )
     )
     return ld
