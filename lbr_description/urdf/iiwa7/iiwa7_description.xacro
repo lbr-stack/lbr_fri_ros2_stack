@@ -3,15 +3,13 @@
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
     <!-- robot as extracted via https://github.com/syuntoku14/fusion2urdf -->
     <xacro:macro name="iiwa7"
-        params="robot_name:=^|lbr mode:=^|mock system_config_path:=^|'$(find lbr_description)/ros2_control/lbr_system_config.yaml' initial_joint_positions_path:=^|'$(find lbr_description)/ros2_control/initial_joint_positions.yaml'">
+        params="robot_name:=^|lbr mode:=^|mock system_config_path:=^|'$(find lbr_description)/ros2_control/lbr_system_config.yaml' joint_limits_path:=^|'$(find lbr_description)/urdf/iiwa7/joint_limits.yaml' initial_joint_positions_path:=^|'$(find lbr_description)/ros2_control/initial_joint_positions.yaml'">
 
         <!-- includes -->
         <xacro:include filename="$(find lbr_description)/gazebo/lbr_gazebo.xacro" />
         <xacro:include filename="$(find lbr_description)/ros2_control/lbr_system_interface.xacro" />
 
         <!-- joint limits via yaml -->
-        <xacro:property name="joint_limits_path"
-            value="$(find lbr_description)/urdf/iiwa7/joint_limits.yaml" />
         <xacro:property name="joint_limits" value="${xacro.load_yaml(joint_limits_path)}" />
 
         <!-- constants -->
