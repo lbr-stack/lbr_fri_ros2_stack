@@ -1,6 +1,10 @@
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Changelog for package LBR FRI ROS 2 Stack
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Jazzy v2.4.2 (2025-12-08)
+--------------------------
+* ``lbr_description``: Added ``joint_limits_path`` argument to ``xacro`` files (defaults to KUKA values and user will currently need a custom launch file to configure): https://github.com/lbr-stack/lbr_fri_ros2_stack/issues/333
+
 Jazzy v2.4.1 (2025-12-08)
 --------------------------
 * ``lbr_bringup``: Run a single ``controller_manager`` ``spawner`` for all controllers: https://github.com/lbr-stack/lbr_fri_ros2_stack/issues/329
