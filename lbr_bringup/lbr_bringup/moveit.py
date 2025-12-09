@@ -6,7 +6,7 @@ from launch.actions import DeclareLaunchArgument, ExecuteProcess
 from launch.substitutions import (
     FindExecutable,
     LaunchConfiguration,
-    PathJoinSubstitution,
+    PathSubstitution,
 )
 from launch_ros.actions import Node
 from launch_ros.parameter_descriptions import ParameterValue
@@ -159,7 +159,7 @@ class LBRMoveItServoMixin:
                 FindExecutable(name="ros2"),
                 "service",
                 "call",
-                PathJoinSubstitution([robot_name, "servo_node/start_servo"]),
+                PathSubstitution(robot_name) / "servo_node" / "start_servo",
                 "std_srvs/srv/Trigger",
             ],
             **kwargs,

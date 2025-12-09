@@ -1,8 +1,7 @@
 from typing import List, Optional, Union
 
 from launch.actions import IncludeLaunchDescription
-from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
+from launch.substitutions import LaunchConfiguration, PathSubstitution
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 
@@ -11,15 +10,11 @@ class GazeboMixin:
     @staticmethod
     def include_gazebo(**kwargs) -> IncludeLaunchDescription:
         return IncludeLaunchDescription(
-            PythonLaunchDescriptionSource(
-                PathJoinSubstitution(
-                    [
-                        FindPackageShare("ros_gz_sim"),
-                        "launch",
-                        "gz_sim.launch.py",
-                    ]
-                ),
-            ),
+            PathSubstitution(
+                FindPackageShare("ros_gz_sim"),
+            )
+            / "launch"
+            / "gz_sim.launch.py",
             launch_arguments={"gz_args": "-r empty.sdf"}.items(),
             **kwargs,
         )
