@@ -1,7 +1,7 @@
 from typing import Optional, Union
 
 from launch.actions import DeclareLaunchArgument
-from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
+from launch.substitutions import LaunchConfiguration, PathSubstitution
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 
@@ -51,12 +51,7 @@ class RVizMixin:
             name="rviz2",
             arguments=[
                 "-d",
-                PathJoinSubstitution(
-                    [
-                        FindPackageShare(rviz_cfg_pkg),
-                        rviz_cfg,
-                    ]
-                ),
+                PathSubstitution(FindPackageShare(rviz_cfg_pkg)) / rviz_cfg,
             ],
             **kwargs,
         )
