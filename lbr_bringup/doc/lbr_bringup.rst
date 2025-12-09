@@ -171,5 +171,5 @@ Troubleshooting
 ---------------
 Noisy Execution
 ~~~~~~~~~~~~~~~
-- Frequency: Make sure the ``ros2_control_node`` frequency and the ``FRI send period`` are compatible, consider changing ``update_rate`` in `lbr_controllers.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/rolling/lbr_description/ros2_control/lbr_controllers.yaml>`_:octicon:`link-external`. 
+- Frequency: Make sure the ``ros2_control_node`` frequency and the ``FRI send period`` are compatible, consider changing ``update_rate`` in `hardware_controllers.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/rolling/lbr_description/ros2_control/hardware_controllers.yaml>`_:octicon:`link-external`. 
 - Realtime priority: Set real time priority in ``code /etc/security/limits.conf``, add the line: ``user - rtprio 99``, where user is your username.

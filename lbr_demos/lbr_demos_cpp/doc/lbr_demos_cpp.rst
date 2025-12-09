@@ -15,7 +15,7 @@ This demo uses the :ref:`lbr_fri_ros2::LBRJointPositionCommandController` and ov
 #. Client side configurations:
 
     #. Configure the ``client_command_mode`` to ``position`` in `lbr_system_config.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/rolling/lbr_description/ros2_control/lbr_system_config.yaml>`_:octicon:`link-external`
-    #. Set the ``update_rate`` to ``100`` in `lbr_controllers.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/rolling/lbr_description/ros2_control/lbr_controllers.yaml>`_:octicon:`link-external`
+    #. Set the ``update_rate`` to ``100`` in `hardware_controllers.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/rolling/lbr_description/ros2_control/hardware_controllers.yaml>`_:octicon:`link-external`
 
 #. Remote side configurations:
 
@@ -73,7 +73,7 @@ Hardware
 #. Client side configurations:
 
     #. Configure the ``client_command_mode`` to ``position`` in `lbr_system_config.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/rolling/lbr_description/ros2_control/lbr_system_config.yaml>`_:octicon:`link-external`
-    #. Set the ``update_rate`` to ``100`` in `lbr_controllers.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/rolling/lbr_description/ros2_control/lbr_controllers.yaml>`_:octicon:`link-external`
+    #. Set the ``update_rate`` to ``100`` in `hardware_controllers.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/rolling/lbr_description/ros2_control/hardware_controllers.yaml>`_:octicon:`link-external`
 
 #. Remote side configurations:
 
@@ -97,7 +97,7 @@ This demo uses the :ref:`lbr_fri_ros2::LBRTorqueCommandController` and overlays 
 #. Client side configurations:
 
     #. Configure the ``client_command_mode`` to ``torque`` in `lbr_system_config.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/rolling/lbr_description/ros2_control/lbr_system_config.yaml>`_:octicon:`link-external`
-    #. Set the ``update_rate`` to ``500`` in `lbr_controllers.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/rolling/lbr_description/ros2_control/lbr_controllers.yaml>`_:octicon:`link-external`
+    #. Set the ``update_rate`` to ``500`` in `hardware_controllers.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/rolling/lbr_description/ros2_control/hardware_controllers.yaml>`_:octicon:`link-external`
 
 #. Remote side configurations:
 
@@ -135,7 +135,7 @@ This demo uses the :ref:`lbr_fri_ros2::LBRWrenchCommandController` and overlays 
 #. Client side configurations:
 
     #. Configure the ``client_command_mode`` to ``wrench`` in `lbr_system_config.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/rolling/lbr_description/ros2_control/lbr_system_config.yaml>`_:octicon:`link-external`
-    #. Set the ``update_rate`` to ``500`` in `lbr_controllers.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/rolling/lbr_description/ros2_control/lbr_controllers.yaml>`_:octicon:`link-external`
+    #. Set the ``update_rate`` to ``500`` in `hardware_controllers.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/rolling/lbr_description/ros2_control/hardware_controllers.yaml>`_:octicon:`link-external`
 
 #. Remote side configurations:
 
