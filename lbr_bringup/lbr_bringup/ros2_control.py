@@ -19,7 +19,7 @@ class LBRROS2ControlMixin:
     def arg_ctrl_cfg() -> DeclareLaunchArgument:
         return DeclareLaunchArgument(
             name="ctrl_cfg",
-            default_value="ros2_control/lbr_controllers.yaml",
+            default_value="ros2_control/hardware_controllers.yaml",
             description="Relative path from ctrl_cfg_pkg to the controllers.",
         )
 
@@ -93,7 +93,7 @@ class LBRROS2ControlMixin:
                     )
                 )
                 / LaunchConfiguration(
-                    "ctrl_cfg", default="ros2_control/lbr_controllers.yaml"
+                    "ctrl_cfg", default="ros2_control/hardware_controllers.yaml"
                 ),
             ],
             namespace=robot_name,
