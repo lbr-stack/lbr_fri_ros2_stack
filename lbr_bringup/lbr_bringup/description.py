@@ -5,7 +5,7 @@ from launch.substitutions import (
     Command,
     FindExecutable,
     LaunchConfiguration,
-    PathJoinSubstitution,
+    PathSubstitution,
 )
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
@@ -25,27 +25,21 @@ class LBRDescriptionMixin:
         ),
         system_config_path: Optional[
             Union[LaunchConfiguration, str]
-        ] = PathJoinSubstitution(
-            [
-                FindPackageShare(
-                    LaunchConfiguration("sys_cfg_pkg", default="lbr_description")
-                ),
-                LaunchConfiguration(
-                    "sys_cfg", default="ros2_control/lbr_system_config.yaml"
-                ),
-            ]
-        ),
+        ] = PathSubstitution(
+            FindPackageShare(
+                LaunchConfiguration("sys_cfg_pkg", default="lbr_description")
+            )
+        )
+        / LaunchConfiguration("sys_cfg", default="ros2_control/lbr_system_config.yaml"),
         initial_joint_positions_path: Optional[
             Union[LaunchConfiguration, str]
-        ] = PathJoinSubstitution(
-            [
-                FindPackageShare(
-                    LaunchConfiguration("sys_cfg_pkg", default="lbr_description")
-                ),
-                LaunchConfiguration(
-                    "init_jnt_pos", default="ros2_control/initial_joint_positions.yaml"
-                ),
-            ]
+        ] = PathSubstitution(
+            FindPackageShare(
+                LaunchConfiguration("sys_cfg_pkg", default="lbr_description")
+            )
+        )
+        / LaunchConfiguration(
+            "init_jnt_pos", default="ros2_control/initial_joint_positions.yaml"
         ),
     ) -> Dict[str, str]:
         robot_description = {
@@ -53,14 +47,10 @@ class LBRDescriptionMixin:
                 [
                     FindExecutable(name="xacro"),
                     " ",
-                    PathJoinSubstitution(
-                        [
-                            FindPackageShare("lbr_description"),
-                            "urdf",
-                            model,
-                            model,
-                        ]
-                    ),
+                    PathSubstitution(FindPackageShare("lbr_description"))
+                    / "urdf"
+                    / model
+                    / model,
                     ".xacro",
                     " robot_name:=",
                     robot_name,

@@ -4,7 +4,7 @@ from launch import LaunchContext, LaunchDescription, LaunchDescriptionEntity
 from launch.actions import OpaqueFunction, RegisterEventHandler
 from launch.conditions import IfCondition
 from launch.event_handlers import OnProcessStart
-from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
+from launch.substitutions import LaunchConfiguration, PathSubstitution
 from launch_ros.substitutions import FindPackageShare
 from lbr_bringup.description import LBRDescriptionMixin
 from lbr_bringup.moveit import LBRMoveGroupMixin, LBRMoveItServoMixin
@@ -13,8 +13,8 @@ from lbr_bringup.moveit import LBRMoveGroupMixin, LBRMoveItServoMixin
 def hidden_setup(context: LaunchContext) -> List[LaunchDescriptionEntity]:
     ld = LaunchDescription()
 
-    moveit_servo_config = PathJoinSubstitution(
-        [FindPackageShare("lbr_bringup"), "config/moveit_servo.yaml"]
+    moveit_servo_config = (
+        PathSubstitution(FindPackageShare("lbr_bringup")) / "config/moveit_servo.yaml"
     )
     model = LaunchConfiguration("model").perform(context)
     moveit_configs = LBRMoveGroupMixin.moveit_configs_builder(

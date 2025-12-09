@@ -6,24 +6,18 @@ The ``lbr_bringup`` package hosts some launch files, which can be included via s
 
     from launch import LaunchDescription
     from launch.actions import IncludeLaunchDescription
-    from launch.launch_description_sources import PythonLaunchDescriptionSource
+    from launch.substitutions import PathSubstitution
+    from launch_ros.substitutions import FindPackageShare
+
 
     def generate_launch_description() -> LaunchDescription:
-        ld = LaunchDescription()
-        ld.add_action(
+        return LaunchDescription(
             IncludeLaunchDescription(
-                PythonLaunchDescriptionSource(
-                    PathJoinSubstitution(
-                        [
-                            FindPackageShare("lbr_bringup"),
-                            "launch",
-                            "mock.launch.py",
-                        ]
-                    )
-                ),
+                PathSubstitution(
+                    FindPackageShare("lbr_bringup") / "launch" / "mock.launch.py"
+                )
             )
         )
-        return ld
 
 The launch files can also be run via the command line, as further described below.
 
@@ -153,15 +147,9 @@ The below shows an example of the `rviz.launch.py <https://github.com/lbr-stack/
 
 
     def generate_launch_description() -> LaunchDescription:
-        ld = LaunchDescription()
-
-        # launch arguments
-        ld.add_action(RVizMixin.arg_rviz_cfg())
-        ld.add_action(RVizMixin.arg_rviz_cfg_pkg())
-
-        # rviz
-        ld.add_action(RVizMixin.node_rviz())
-        return ld
+        return LaunchDescription(
+            [RVizMixin.arg_rviz_cfg(), RVizMixin.arg_rviz_cfg_pkg(), RVizMixin.node_rviz()]
+        )
 
 Which is quite compact and easy to read.
 

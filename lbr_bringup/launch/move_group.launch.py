@@ -3,7 +3,7 @@ from typing import List
 from launch import LaunchContext, LaunchDescription, LaunchDescriptionEntity
 from launch.actions import OpaqueFunction
 from launch.conditions import IfCondition
-from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
+from launch.substitutions import LaunchConfiguration, PathSubstitution
 from lbr_bringup.description import LBRDescriptionMixin
 from lbr_bringup.moveit import LBRMoveGroupMixin
 from lbr_bringup.rviz import RVizMixin
@@ -55,29 +55,26 @@ def hidden_setup(context: LaunchContext) -> List[LaunchDescriptionEntity]:
         remappings=[
             (
                 "display_planned_path",
-                PathJoinSubstitution([robot_name, "display_planned_path"]),
+                PathSubstitution(robot_name) / "display_planned_path",
             ),
-            ("joint_states", PathJoinSubstitution([robot_name, "joint_states"])),
+            ("joint_states", PathSubstitution(robot_name) / "joint_states"),
             (
                 "monitored_planning_scene",
-                PathJoinSubstitution([robot_name, "monitored_planning_scene"]),
+                PathSubstitution(robot_name) / "monitored_planning_scene",
             ),
-            ("planning_scene", PathJoinSubstitution([robot_name, "planning_scene"])),
+            ("planning_scene", PathSubstitution(robot_name) / "planning_scene"),
             (
                 "planning_scene_world",
-                PathJoinSubstitution([robot_name, "planning_scene_world"]),
+                PathSubstitution(robot_name) / "planning_scene_world",
             ),
-            (
-                "robot_description",
-                PathJoinSubstitution([robot_name, "robot_description"]),
-            ),
+            ("robot_description", PathSubstitution(robot_name) / "robot_description"),
             (
                 "robot_description_semantic",
-                PathJoinSubstitution([robot_name, "robot_description_semantic"]),
+                PathSubstitution(robot_name) / "robot_description_semantic",
             ),
             (
                 "recognized_object_array",
-                PathJoinSubstitution([robot_name, "recognized_object_array"]),
+                PathSubstitution(robot_name) / "recognized_object_array",
             ),
         ],
         condition=IfCondition(LaunchConfiguration("rviz")),
