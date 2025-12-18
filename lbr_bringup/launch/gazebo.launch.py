@@ -43,6 +43,10 @@ def generate_launch_description() -> LaunchDescription:
                     "joint_trajectory_controller",
                 ],
             ),
+            DeclareLaunchArgument(
+                name="namespace",
+                defaultValue="lbr",
+            ),
             Node(
                 package="robot_state_publisher",
                 executable="robot_state_publisher",
@@ -75,7 +79,7 @@ def generate_launch_description() -> LaunchDescription:
                     },
                     {"use_sim_time": True},
                 ],
-                namespace=LaunchConfiguration("robot_name"),
+                namespace=LaunchConfiguration("namespace"),
             ),
             IncludeLaunchDescription(
                 PathSubstitution(
@@ -114,7 +118,7 @@ def generate_launch_description() -> LaunchDescription:
                     "0.0",
                 ],
                 output="screen",
-                namespace=LaunchConfiguration("robot_name"),
+                namespace=LaunchConfiguration("namespace"),
             ),  # spawns robot in Gazebo through robot_description topic of robot_state_publisher
             Node(
                 package="controller_manager",
@@ -126,7 +130,7 @@ def generate_launch_description() -> LaunchDescription:
                     "joint_state_broadcaster",
                     LaunchConfiguration("ctrl"),
                 ],
-                namespace=LaunchConfiguration("robot_name"),
+                namespace=LaunchConfiguration("namespace"),
             ),
         ]
     )
