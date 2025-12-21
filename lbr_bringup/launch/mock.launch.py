@@ -50,7 +50,8 @@ def generate_launch_description() -> LaunchDescription:
             ),
             DeclareLaunchArgument(
                 name="namespace",
-                default="lbr",
+                default_value="lbr",
+                description="The namespace of the robot.",
             ),
             DeclareLaunchArgument(
                 name="init_jnt_pos",

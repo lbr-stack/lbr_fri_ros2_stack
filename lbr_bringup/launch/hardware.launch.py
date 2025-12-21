@@ -60,7 +60,8 @@ def generate_launch_description() -> LaunchDescription:
             ),
             DeclareLaunchArgument(
                 name="namespace",
-                defaultValue="lbr",
+                default_value="lbr",
+                description="The namespace of the robot.",
             ),
             Node(
                 package="robot_state_publisher",
