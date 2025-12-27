@@ -91,7 +91,7 @@ def generate_launch_description() -> LaunchDescription:
                     },
                     {"use_sim_time": False},
                 ],
-                namespace=LaunchConfiguration("namespaace"),
+                namespace=LaunchConfiguration("namespace"),
             ),
             Node(
                 package="controller_manager",
