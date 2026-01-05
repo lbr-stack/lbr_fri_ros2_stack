@@ -12,11 +12,13 @@ The ``lbr_bringup`` package hosts some launch files, which can be included via s
 
     def generate_launch_description() -> LaunchDescription:
         return LaunchDescription(
-            IncludeLaunchDescription(
-                PathSubstitution(
-                    FindPackageShare("lbr_bringup") / "launch" / "mock.launch.py"
+            [
+                IncludeLaunchDescription(
+                    PathSubstitution(
+                        FindPackageShare("lbr_bringup") / "launch" / "mock.launch.py"
+                    )
                 )
-            )
+            ]
         )
 
 The launch files can also be run via the command line, as further described below.
@@ -133,25 +135,6 @@ Please note that MoveIt configurations are specific and you as a user will need 
 
 .. note::
     Runs ``RViz`` with specific MoveIt configurations.
-
-Mixins
-------
-The ``lbr_bringup`` package makes heavy use of mixins. Mixins are simply state-free classes with static methods. They are a convenient way of writing launch files.
-
-The below shows an example of the `rviz.launch.py <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/rolling/lbr_bringup/launch/rviz.launch.py>`_:octicon:`link-external` file:
-
-.. code:: python
-
-    from launch import LaunchDescription
-    from lbr_bringup.rviz import RVizMixin
-
-
-    def generate_launch_description() -> LaunchDescription:
-        return LaunchDescription(
-            [RVizMixin.arg_rviz_cfg(), RVizMixin.arg_rviz_cfg_pkg(), RVizMixin.node_rviz()]
-        )
-
-Which is quite compact and easy to read.
 
 General Information on the FRI
 ------------------------------
