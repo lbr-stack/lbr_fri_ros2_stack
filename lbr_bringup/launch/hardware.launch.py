@@ -22,7 +22,12 @@ def generate_launch_description() -> LaunchDescription:
             DeclareLaunchArgument(
                 name="robot_name",
                 default_value="lbr",
-                description="The robot's name.",
+                description="The robot's name. Links in the tf tree will be prefixed as <robot_name>_link. Same applies to joints.",
+            ),
+            DeclareLaunchArgument(
+                name="namespace",
+                default_value="lbr",
+                description="Nodes in this launch file will be spawned with this namespace.",
             ),
             DeclareLaunchArgument(
                 name="sys_cfg_pkg",
@@ -57,11 +62,6 @@ def generate_launch_description() -> LaunchDescription:
                     "lbr_wrench_command_controller",
                     "twist_controller",
                 ],
-            ),
-            DeclareLaunchArgument(
-                name="namespace",
-                default_value="lbr",
-                description="The namespace of the robot.",
             ),
             Node(
                 package="robot_state_publisher",
@@ -104,9 +104,6 @@ def generate_launch_description() -> LaunchDescription:
                     / LaunchConfiguration("ctrl_cfg"),
                 ],
                 namespace=LaunchConfiguration("namespace"),
-                remappings=[
-                    ("~/robot_description", "robot_description"),
-                ],
             ),
             Node(
                 package="controller_manager",
