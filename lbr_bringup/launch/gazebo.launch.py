@@ -22,7 +22,12 @@ def generate_launch_description() -> LaunchDescription:
             DeclareLaunchArgument(
                 name="robot_name",
                 default_value="lbr",
-                description="The robot's name.",
+                description="The robot's name. Links in the tf tree will be prefixed as <robot_name>_link. Same applies to joints.",
+            ),
+            DeclareLaunchArgument(
+                name="namespace",
+                default_value="lbr",
+                description="Nodes in this launch file will be spawned with this namespace.",
             ),
             DeclareLaunchArgument(
                 name="init_jnt_pos_pkg",
@@ -42,11 +47,6 @@ def generate_launch_description() -> LaunchDescription:
                     "forward_position_controller",
                     "joint_trajectory_controller",
                 ],
-            ),
-            DeclareLaunchArgument(
-                name="namespace",
-                default_value="lbr",
-                description="The namespace of the robot.",
             ),
             Node(
                 package="robot_state_publisher",

@@ -22,7 +22,12 @@ def generate_launch_description() -> LaunchDescription:
             DeclareLaunchArgument(
                 name="robot_name",
                 default_value="lbr",
-                description="The robot's name.",
+                description="The robot's name. Links in the tf tree will be prefixed as <robot_name>_link. Same applies to joints.",
+            ),
+            DeclareLaunchArgument(
+                name="namespace",
+                default_value="lbr",
+                description="Nodes in this launch file will be spawned with this namespace.",
             ),
             DeclareLaunchArgument(
                 name="ctrl_cfg_pkg",
@@ -47,11 +52,6 @@ def generate_launch_description() -> LaunchDescription:
                 name="init_jnt_pos_pkg",
                 default_value="lbr_description",
                 description="Package containing the initial_joint_positions.yaml file.",
-            ),
-            DeclareLaunchArgument(
-                name="namespace",
-                default_value="lbr",
-                description="The namespace of the robot.",
             ),
             DeclareLaunchArgument(
                 name="init_jnt_pos",
@@ -103,9 +103,6 @@ def generate_launch_description() -> LaunchDescription:
                     / LaunchConfiguration("ctrl_cfg"),
                 ],
                 namespace=LaunchConfiguration("namespace"),
-                remappings=[
-                    ("~/robot_description", "robot_description"),
-                ],
             ),
             Node(
                 package="controller_manager",
