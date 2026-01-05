@@ -58,6 +58,11 @@ def generate_launch_description() -> LaunchDescription:
                     "twist_controller",
                 ],
             ),
+            DeclareLaunchArgument(
+                name="namespace",
+                default_value="lbr",
+                description="The namespace of the robot.",
+            ),
             Node(
                 package="robot_state_publisher",
                 executable="robot_state_publisher",
@@ -86,7 +91,7 @@ def generate_launch_description() -> LaunchDescription:
                     },
                     {"use_sim_time": False},
                 ],
-                namespace=LaunchConfiguration("robot_name"),
+                namespace=LaunchConfiguration("namespace"),
             ),
             Node(
                 package="controller_manager",
@@ -98,7 +103,7 @@ def generate_launch_description() -> LaunchDescription:
                     )
                     / LaunchConfiguration("ctrl_cfg"),
                 ],
-                namespace=LaunchConfiguration("robot_name"),
+                namespace=LaunchConfiguration("namespace"),
                 remappings=[
                     ("~/robot_description", "robot_description"),
                 ],
@@ -116,7 +121,7 @@ def generate_launch_description() -> LaunchDescription:
                     "force_torque_broadcaster",
                     LaunchConfiguration("ctrl"),
                 ],
-                namespace=LaunchConfiguration("robot_name"),
+                namespace=LaunchConfiguration("namespace"),
             ),
         ]
     )

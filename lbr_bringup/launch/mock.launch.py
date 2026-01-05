@@ -49,6 +49,11 @@ def generate_launch_description() -> LaunchDescription:
                 description="Package containing the initial_joint_positions.yaml file.",
             ),
             DeclareLaunchArgument(
+                name="namespace",
+                default_value="lbr",
+                description="The namespace of the robot.",
+            ),
+            DeclareLaunchArgument(
                 name="init_jnt_pos",
                 default_value="ros2_control/initial_joint_positions.yaml",
                 description="The relative path from sys_cfg_pkg to the initial_joint_positions.yaml file.",
@@ -85,7 +90,7 @@ def generate_launch_description() -> LaunchDescription:
                     },
                     {"use_sim_time": False},
                 ],
-                namespace=LaunchConfiguration("robot_name"),
+                namespace=LaunchConfiguration("namespace"),
             ),
             Node(
                 package="controller_manager",
@@ -97,7 +102,7 @@ def generate_launch_description() -> LaunchDescription:
                     )
                     / LaunchConfiguration("ctrl_cfg"),
                 ],
-                namespace=LaunchConfiguration("robot_name"),
+                namespace=LaunchConfiguration("namespace"),
                 remappings=[
                     ("~/robot_description", "robot_description"),
                 ],
@@ -112,7 +117,7 @@ def generate_launch_description() -> LaunchDescription:
                     "joint_state_broadcaster",
                     LaunchConfiguration("ctrl"),
                 ],
-                namespace=LaunchConfiguration("robot_name"),
+                namespace=LaunchConfiguration("namespace"),
             ),
         ]
     )
