@@ -22,12 +22,7 @@ def generate_launch_description() -> LaunchDescription:
             DeclareLaunchArgument(
                 name="robot_name",
                 default_value="lbr",
-                description="The robot's name. Links in the tf tree will be prefixed as <robot_name>_link. Same applies to joints.",
-            ),
-            DeclareLaunchArgument(
-                name="namespace",
-                default_value="lbr",
-                description="Nodes in this launch file will be spawned with this namespace.",
+                description="The robot's name. Links in the tf tree will be prefixed as <robot_name>_link. Same applies to joints. The robot's name will be used as namespace.",
             ),
             DeclareLaunchArgument(
                 name="init_jnt_pos_pkg",
@@ -80,7 +75,7 @@ def generate_launch_description() -> LaunchDescription:
                     },
                     {"use_sim_time": True},
                 ],
-                namespace=LaunchConfiguration("namespace"),
+                namespace=LaunchConfiguration("robot_name"),
             ),
             IncludeLaunchDescription(
                 PathSubstitution(
@@ -119,7 +114,7 @@ def generate_launch_description() -> LaunchDescription:
                     "0.0",
                 ],
                 output="screen",
-                namespace=LaunchConfiguration("namespace"),
+                namespace=LaunchConfiguration("robot_name"),
             ),  # spawns robot in Gazebo through robot_description topic of robot_state_publisher
             Node(
                 package="controller_manager",
@@ -131,7 +126,7 @@ def generate_launch_description() -> LaunchDescription:
                     "joint_state_broadcaster",
                     LaunchConfiguration("ctrl"),
                 ],
-                namespace=LaunchConfiguration("namespace"),
+                namespace=LaunchConfiguration("robot_name"),
             ),
         ]
     )
