@@ -24,13 +24,12 @@ SystemInterface::on_init(const hardware_interface::HardwareComponentInterfacePar
   for (std::size_t idx = 0; idx < info_.joints.size(); ++idx) {
     command_guard_parameters.joint_names[idx] = info_.joints[idx].name;
     command_guard_parameters.max_positions[idx] =
-        std::stod(info_.joints[idx].parameters.at("max_position"));
+        info_.limits.at(info_.joints[idx].name).max_position;
     command_guard_parameters.min_positions[idx] =
-        std::stod(info_.joints[idx].parameters.at("min_position"));
+        info_.limits.at(info_.joints[idx].name).min_position;
     command_guard_parameters.max_velocities[idx] =
-        std::stod(info_.joints[idx].parameters.at("max_velocity"));
-    command_guard_parameters.max_torques[idx] =
-        std::stod(info_.joints[idx].parameters.at("max_torque"));
+        info_.limits.at(info_.joints[idx].name).max_velocity;
+    command_guard_parameters.max_torques[idx] = info_.limits.at(info_.joints[idx].name).max_effort;
 
     // currently, only check external torque limits on enter commanding active with fixed limit, see
     // https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/271#issuecomment-2780642918
@@ -271,7 +270,7 @@ bool SystemInterface::parse_parameters_() {
           lbr_fri_ros2::ColorScheme::ERROR
               << "Expected FRI client SDK version '" << FRI_CLIENT_VERSION_MAJOR << "', got '"
               << std::to_string(parameters_.fri_client_sdk_major_version)
-              << "'. Update lbr_system_parameters.yaml or compile against correct FRI version."
+              << "'. Update lbr_system_config.yaml or compile against correct FRI version."
               << lbr_fri_ros2::ColorScheme::ENDC);
       return false;
     }
