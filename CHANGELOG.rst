@@ -1,6 +1,21 @@
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Changelog for package LBR FRI ROS 2 Stack
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Jazzy v2.4.4 (TBD)
+--------------------------
+* ``lbr_bringup``: Adds a dedicated ``namespace`` argument to mock / hardware launch files.
+* ``lbr_description``:
+
+  * Sets the ``k_velocity`` to fix the safety limits for effort client command modes.
+  * Removes the controller-related parts from the ``*_description.xacro`` files, now named ``*.urdf.xacro``.
+
+* ``lbr_ros2_control``: Uses the joint limits as obtained from the joints inside the URDF, previously redundant in ``<command_interface>`` tags. 
+* Related pull requests:
+
+  * Namespace argument: https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/344, https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/353
+  * Effort limits: https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/357
+  * URDF de-coupling: https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/359
+
 Jazzy v2.4.3 (2025-12-09)
 --------------------------
 * ``lbr_bringup``: Switched to declarative launch files and removed mixins from launch files: https://github.com/lbr-stack/lbr_fri_ros2_stack/issues/338

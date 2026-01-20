@@ -3,13 +3,9 @@
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
     <!-- robot as extracted via https://github.com/syuntoku14/fusion2urdf -->
     <xacro:macro name="iiwa7"
-        params="robot_name:=^|lbr mode:=^|mock system_config_path:=^|'$(find lbr_description)/ros2_control/lbr_system_config.yaml' joint_limits_path:=^|'$(find lbr_description)/urdf/iiwa7/joint_limits.yaml' initial_joint_positions_path:=^|'$(find lbr_description)/ros2_control/initial_joint_positions.yaml'">
+        params="robot_name:=^|lbr joint_limits_path:=^|'$(find lbr_description)/urdf/iiwa7/joint_limits.yaml'">
 
-        <!-- includes -->
-        <xacro:include filename="$(find lbr_description)/gazebo/lbr_gazebo.xacro" />
-        <xacro:include filename="$(find lbr_description)/ros2_control/lbr_system_interface.xacro" />
-
-        <!-- joint limits via yaml -->
+        <!-- load joint limits via yaml -->
         <xacro:property name="joint_limits" value="${xacro.load_yaml(joint_limits_path)}" />
 
         <!-- constants -->
@@ -17,15 +13,7 @@
         <xacro:property name="joint_damping" value="10.0" />
         <xacro:property name="joint_friction" value="0.1" />
 
-        <!-- macros for gazebo / mock / hardware -->
-        <xacro:lbr_gazebo robot_name="${robot_name}" />
-        <xacro:lbr_system_interface
-            robot_name="${robot_name}"
-            mode="${mode}"
-            joint_limits="${joint_limits}"
-            system_config_path="${system_config_path}"
-            initial_joint_positions_path="${initial_joint_positions_path}" />
-
+        <!-- links and joints -->
         <link name="${robot_name}_link_0">
             <inertial>
                 <origin rpy="0 0 0" xyz="-0.012857 0.0 0.069964" />
