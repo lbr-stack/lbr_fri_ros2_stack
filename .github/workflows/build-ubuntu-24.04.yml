@@ -13,7 +13,7 @@ jobs:
   build:
     runs-on: ubuntu-24.04
     container:
-      image: rostooling/setup-ros-docker:ubuntu-noble-ros-rolling-desktop-latest
+      image: rostooling/setup-ros-docker:ubuntu-noble-ros-jazzy-desktop-latest
     steps:
       - uses: ros-tooling/action-ros-ci@v0.4
         with:
