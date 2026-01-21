@@ -9,7 +9,6 @@ on:
 
 jobs:
   build:
-    uses: ./.github/workflows/build.yml
+    uses: ./.github/workflows/build-ubuntu-24.04.yml
     with:
-      os: ubuntu-24.04
       fri_version: 2.7
