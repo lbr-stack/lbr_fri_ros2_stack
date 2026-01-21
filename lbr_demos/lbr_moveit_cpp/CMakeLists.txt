@@ -17,10 +17,12 @@ find_package(rclcpp REQUIRED)
 
 add_executable(hello_moveit src/hello_moveit.cpp)
 
-ament_target_dependencies(hello_moveit
-  geometry_msgs  
-  moveit_ros_planning_interface
-  rclcpp
+target_link_libraries(hello_moveit PUBLIC
+  ${geometry_msgs_TARGETS}
+  moveit_ros_planning_interface::moveit_common_planning_interface_objects
+  moveit_ros_planning_interface::moveit_move_group_interface
+  moveit_ros_planning_interface::moveit_planning_scene_interface
+  rclcpp::rclcpp
 )
 
 install(DIRECTORY launch
