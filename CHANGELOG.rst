@@ -1,8 +1,10 @@
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Changelog for package LBR FRI ROS 2 Stack
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Jazzy v2.4.4 (TBD)
+Jazzy v2.5.0 (TBD)
 --------------------------
+Adds support for digital and analog IOs through FRI. Adds small bug fixes and enhancements.
+
 * ``lbr_bringup``: Adds a dedicated ``namespace`` argument to mock / hardware launch files.
 * ``lbr_description``:
 
