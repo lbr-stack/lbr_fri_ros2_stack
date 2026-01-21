@@ -56,6 +56,7 @@ target_include_directories(
 target_link_libraries(${PROJECT_NAME} PUBLIC
   controller_interface::controller_interface
   Eigen3::Eigen
+  FRIClient::FRIClient
   ${geometry_msgs_TARGETS}
   hardware_interface::hardware_interface
   kinematics_interface::kinematics_interface
@@ -64,7 +65,6 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
   pluginlib::pluginlib
   rclcpp::rclcpp
   realtime_tools::realtime_tools
-  FRIClient::FRIClient
 )
 
 pluginlib_export_plugin_description_file(controller_interface plugin_description_files/controllers.xml)
