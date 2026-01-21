@@ -1,13 +1,21 @@
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Changelog for package LBR FRI ROS 2 Stack
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Jazzy v2.4.4 (TBD)
+Jazzy v2.x (TBD)
 --------------------------
+* ``lbr_demos``: Replace ``ament_target_dependencies`` with ``target_link_libraries``.
+* ``lbr_fri_ros2``:
+
+  * Replace ``ament_target_dependencies`` with ``target_link_libraries``.
+  * Provide default for ``StateInterfaceParameters`` to fix test.
+* ``lbr_ros2_control``: Replace ``ament_target_dependencies`` with ``target_link_libraries``.
+
 * ``lbr_bringup``: Adds a dedicated ``namespace`` argument to mock / hardware launch files.
 * ``lbr_description``:
 
   * Sets the ``k_velocity`` to fix the safety limits for effort client command modes.
   * Removes the controller-related parts from the ``*_description.xacro`` files, now named ``*.urdf.xacro``.
+  * Fix tests.
 
 * ``lbr_ros2_control``: Uses the joint limits as obtained from the joints inside the URDF, previously redundant in ``<command_interface>`` tags. 
 * Related pull requests:
@@ -15,6 +23,8 @@ Jazzy v2.4.4 (TBD)
   * Namespace argument: https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/344, https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/353
   * Effort limits: https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/357
   * URDF de-coupling: https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/359
+  * Ament target dependencies: https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/364
+  * Test fixes: https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/367
 
 Jazzy v2.4.3 (2025-12-09)
 --------------------------
