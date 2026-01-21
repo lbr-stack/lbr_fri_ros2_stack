@@ -17,8 +17,8 @@
 
 namespace lbr_fri_ros2 {
 struct StateInterfaceParameters {
-  double external_torque_tau; /*seconds*/
-  double measured_torque_tau; /*seconds*/
+  double external_torque_tau = 0.01; /*seconds*/
+  double measured_torque_tau = 0.01; /*seconds*/
 };
 
 class StateInterface {
