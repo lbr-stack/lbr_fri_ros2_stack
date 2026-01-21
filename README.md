@@ -58,7 +58,8 @@ Full documentation available on [Read the Docs](https://lbr-stack.readthedocs.io
     source /opt/ros/jazzy/setup.bash
     export FRI_CLIENT_VERSION=1.15
     mkdir -p lbr-stack/src && cd lbr-stack
-    vcs import src --input https://raw.githubusercontent.com/lbr-stack/lbr_fri_ros2_stack/jazzy/lbr_fri_ros2_stack/repos-fri-${FRI_CLIENT_VERSION}.yaml
+    git clone https://github.com/lbr-stack/lbr_fri_ros2_stack.git -b jazzy src/lbr_fri_ros2_stack
+    vcs import src < src/lbr_fri_ros2_stack/lbr_fri_ros2_stack/repos-fri-${FRI_CLIENT_VERSION}.yaml
     rosdep install --from-paths src -i -r -y
     ```
 
