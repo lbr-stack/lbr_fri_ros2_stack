@@ -8,7 +8,6 @@
   <license>Apache-2.0</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
-  <buildtool_depend>ament_cmake_pytest</buildtool_depend>
 
   <exec_depend>gz_ros2_control</exec_depend>
   <exec_depend>joint_state_publisher_gui</exec_depend>
@@ -17,6 +16,7 @@
   <exec_depend>tf2_ros</exec_depend>
   <exec_depend>xacro</exec_depend>
 
+  <test_depend>ament_cmake_pytest</test_depend>
   <test_depend>python3-pytest</test_depend>
 
   <export>
