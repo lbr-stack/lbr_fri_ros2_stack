@@ -16,7 +16,7 @@ Jazzy v2.x (TBD)
   * Sets the ``k_velocity`` to fix the safety limits for effort client command modes.
   * Removes the controller-related parts from the ``*_description.xacro`` files, now named ``*.urdf.xacro``.
   * Fix tests.
-
+  * Depend on ``ament_cmake_pytest`` for tests only.
 * ``lbr_ros2_control``: Uses the joint limits as obtained from the joints inside the URDF, previously redundant in ``<command_interface>`` tags. 
 * Related pull requests:
 
@@ -24,7 +24,7 @@ Jazzy v2.x (TBD)
   * Effort limits: https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/357
   * URDF de-coupling: https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/359
   * Ament target dependencies: https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/364
-  * Test fixes: https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/367
+  * Test fixes: https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/367, https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/373
 
 Jazzy v2.4.3 (2025-12-09)
 --------------------------
