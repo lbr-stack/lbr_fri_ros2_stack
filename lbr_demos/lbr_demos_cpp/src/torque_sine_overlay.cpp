@@ -19,13 +19,13 @@ class TorqueSineOverlay {
 
 public:
   TorqueSineOverlay(const rclcpp::Node::SharedPtr node) : node_(node), phase_(0.) {
-    // create publisher to command/torque
-    lbr_torque_command_pub_ =
-        node_->create_publisher<lbr_fri_idl::msg::LBRTorqueCommand>("command/torque", 1);
+    // create publisher to command/lbr_torque_command
+    lbr_torque_command_pub_ = node_->create_publisher<lbr_fri_idl::msg::LBRTorqueCommand>(
+        "command/lbr_torque_command", 1);
 
     // create subscription to state
     lbr_state_sub_ = node_->create_subscription<lbr_fri_idl::msg::LBRState>(
-        "state", 1, std::bind(&TorqueSineOverlay::on_lbr_state_, this, std::placeholders::_1));
+        "lbr_state", 1, std::bind(&TorqueSineOverlay::on_lbr_state_, this, std::placeholders::_1));
 
     // get control rate from controller_manager
     auto update_rate =

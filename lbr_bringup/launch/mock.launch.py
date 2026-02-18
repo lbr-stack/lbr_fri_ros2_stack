@@ -1,51 +1,120 @@
 from launch import LaunchDescription
-from launch.actions import RegisterEventHandler
-from launch.event_handlers import OnProcessStart
-from launch.substitutions import LaunchConfiguration
-from lbr_bringup.description import LBRDescriptionMixin
-from lbr_bringup.ros2_control import LBRROS2ControlMixin
+from launch.actions import DeclareLaunchArgument
+from launch.substitutions import (
+    Command,
+    FindExecutable,
+    LaunchConfiguration,
+    PathSubstitution,
+)
+from launch_ros.actions import Node
+from launch_ros.substitutions import FindPackageShare
 
 
 def generate_launch_description() -> LaunchDescription:
-    ld = LaunchDescription()
-
-    # launch arguments
-    ld.add_action(LBRDescriptionMixin.arg_model())
-    ld.add_action(LBRDescriptionMixin.arg_robot_name())
-    ld.add_action(LBRROS2ControlMixin.arg_ctrl_cfg_pkg())
-    ld.add_action(LBRROS2ControlMixin.arg_ctrl_cfg())
-    ld.add_action(LBRROS2ControlMixin.arg_ctrl())
-    ld.add_action(LBRROS2ControlMixin.arg_init_jnt_pos())
-
-    # robot description
-    robot_description = LBRDescriptionMixin.param_robot_description(mode="mock")
-
-    # robot state publisher
-    robot_state_publisher = LBRROS2ControlMixin.node_robot_state_publisher(
-        robot_description=robot_description, use_sim_time=False
+    return LaunchDescription(
+        [
+            DeclareLaunchArgument(
+                name="model",
+                default_value="iiwa7",
+                description="The LBR model in use.",
+                choices=["iiwa7", "iiwa14", "med7", "med14"],
+            ),
+            DeclareLaunchArgument(
+                name="robot_name",
+                default_value="lbr",
+                description="The robot's name. Links in the tf tree will be prefixed as <robot_name>_link. Same applies to joints.",
+            ),
+            DeclareLaunchArgument(
+                name="namespace",
+                default_value="lbr",
+                description="Nodes in this launch file will be spawned with this namespace.",
+            ),
+            DeclareLaunchArgument(
+                name="ctrl_cfg_pkg",
+                default_value="lbr_description",
+                description="Controller configuration package. The package containing the ctrl_cfg.",
+            ),
+            DeclareLaunchArgument(
+                name="ctrl_cfg",
+                default_value="ros2_control/mock_controllers.yaml",
+                description="Relative path from ctrl_cfg_pkg to the controllers.",
+            ),
+            DeclareLaunchArgument(
+                name="ctrl",
+                default_value="joint_trajectory_controller",
+                description="Desired default controller. One of specified in ctrl_cfg.",
+                choices=[
+                    "forward_position_controller",
+                    "joint_trajectory_controller",
+                ],
+            ),
+            DeclareLaunchArgument(
+                name="init_jnt_pos_pkg",
+                default_value="lbr_description",
+                description="Package containing the initial_joint_positions.yaml file.",
+            ),
+            DeclareLaunchArgument(
+                name="init_jnt_pos",
+                default_value="ros2_control/initial_joint_positions.yaml",
+                description="The relative path from sys_cfg_pkg to the initial_joint_positions.yaml file.",
+            ),
+            Node(
+                package="robot_state_publisher",
+                executable="robot_state_publisher",
+                output="screen",
+                parameters=[
+                    {
+                        "robot_description": Command(
+                            [
+                                FindExecutable(name="xacro"),
+                                " ",
+                                PathSubstitution(FindPackageShare("lbr_description"))
+                                / "urdf"
+                                / LaunchConfiguration("model")
+                                / LaunchConfiguration("model"),
+                                ".xacro",
+                                " robot_name:=",
+                                LaunchConfiguration("robot_name"),
+                                " mode:=mock",
+                                " initial_joint_positions_path:=",
+                                PathSubstitution(
+                                    FindPackageShare(
+                                        LaunchConfiguration("init_jnt_pos_pkg")
+                                    )
+                                )
+                                / LaunchConfiguration(
+                                    "init_jnt_pos",
+                                ),
+                            ]
+                        )
+                    },
+                    {"use_sim_time": False},
+                ],
+                namespace=LaunchConfiguration("namespace"),
+            ),
+            Node(
+                package="controller_manager",
+                executable="ros2_control_node",
+                parameters=[
+                    {"use_sim_time": False},
+                    PathSubstitution(
+                        FindPackageShare(LaunchConfiguration("ctrl_cfg_pkg"))
+                    )
+                    / LaunchConfiguration("ctrl_cfg"),
+                ],
+                namespace=LaunchConfiguration("namespace"),
+            ),
+            Node(
+                package="controller_manager",
+                executable="spawner",
+                output="screen",
+                arguments=[
+                    "--controller-manager",
+                    "controller_manager",
+                    "joint_state_broadcaster",
+                    LaunchConfiguration("ctrl"),
+                ],
+                namespace=LaunchConfiguration("namespace"),
+            ),
+        ]
     )
-    ld.add_action(robot_state_publisher)
-
-    # ros2 control node
-    ros2_control_node = LBRROS2ControlMixin.node_ros2_control(use_sim_time=False)
-    ld.add_action(ros2_control_node)
-
-    # joint state broad caster and controller on ros2 control node start
-    joint_state_broadcaster = LBRROS2ControlMixin.node_controller_spawner(
-        controller="joint_state_broadcaster"
-    )
-    controller = LBRROS2ControlMixin.node_controller_spawner(
-        controller=LaunchConfiguration("ctrl")
-    )
-
-    controller_event_handler = RegisterEventHandler(
-        OnProcessStart(
-            target_action=ros2_control_node,
-            on_start=[
-                joint_state_broadcaster,
-                controller,
-            ],
-        )
-    )
-    ld.add_action(controller_event_handler)
-    return ld

@@ -18,14 +18,13 @@ Simulation
     .. code-block:: bash
 
         ros2 launch lbr_bringup mock.launch.py \
-            moveit:=true \
             model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
 
 #. Run MoveIt:
 
     .. code-block:: bash
 
-        ros2 launch lbr_moveit_cpp move_group.launch.py \
+        ros2 launch lbr_bringup move_group.launch.py \
             mode:=mock \
             model:=iiwa7 # [iiwa7, iiwa14, med7, med14]
 
@@ -42,7 +41,7 @@ Hardware
 #. Client side configurations:
 
     #. Configure the ``client_command_mode`` to ``position`` in `lbr_system_config.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/rolling/lbr_description/ros2_control/lbr_system_config.yaml>`_:octicon:`link-external`
-    #. Set the ``update_rate`` to ``100`` in `lbr_controllers.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/rolling/lbr_description/ros2_control/lbr_controllers.yaml>`_:octicon:`link-external`
+    #. Set the ``update_rate`` to ``100`` in `hardware_controllers.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/rolling/lbr_description/ros2_control/hardware_controllers.yaml>`_:octicon:`link-external`
 
 #. Remote side configurations:
 

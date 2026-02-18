@@ -16,7 +16,6 @@ find_package(geometry_msgs REQUIRED)
 find_package(kdl_parser REQUIRED)
 find_package(lbr_fri_idl REQUIRED)
 find_package(lbr_fri_ros2 REQUIRED)
-find_package(orocos_kdl_vendor REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_components REQUIRED)
 
@@ -30,10 +29,10 @@ target_include_directories(pose_planning_component
   PRIVATE src
 )
 
-ament_target_dependencies(pose_planning_component
-  geometry_msgs
-  rclcpp
-  rclcpp_components
+target_link_libraries(pose_planning_component PUBLIC
+  ${geometry_msgs_TARGETS}
+  rclcpp::rclcpp
+  rclcpp_components::component
 )
 
 rclcpp_components_register_node(pose_planning_component
@@ -51,17 +50,13 @@ target_include_directories(pose_control_component
   PRIVATE src
 )
 
-ament_target_dependencies(pose_control_component
-  geometry_msgs
-  kdl_parser
-  lbr_fri_idl
-  orocos_kdl_vendor
-  rclcpp
-  rclcpp_components
-)
-
-target_link_libraries(pose_control_component
+target_link_libraries(pose_control_component PUBLIC
   FRIClient::FRIClient
+  ${geometry_msgs_TARGETS}
+  kdl_parser::kdl_parser
+  ${lbr_fri_idl_TARGETS}
+  rclcpp::rclcpp
+  rclcpp_components::component
 )
 
 rclcpp_components_register_node(pose_control_component
@@ -74,11 +69,6 @@ install(
   TARGETS pose_planning_component pose_control_component
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION lib/${PROJECT_NAME}
-)
-
-install(
-  DIRECTORY config
-  DESTINATION share/${PROJECT_NAME}
 )
 
 ament_package()

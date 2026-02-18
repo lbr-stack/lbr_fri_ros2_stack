@@ -21,13 +21,13 @@ class WrenchSineOverlay {
 
 public:
   WrenchSineOverlay(const rclcpp::Node::SharedPtr node) : node_(node), phase_x_(0.), phase_y_(0.) {
-    // create publisher to command/wrench
-    lbr_wrench_command_pub_ =
-        node_->create_publisher<lbr_fri_idl::msg::LBRWrenchCommand>("command/wrench", 1);
+    // create publisher to command/lbr_wrench_command
+    lbr_wrench_command_pub_ = node_->create_publisher<lbr_fri_idl::msg::LBRWrenchCommand>(
+        "command/lbr_wrench_command", 1);
 
     // create subscription to state
     lbr_state_sub_ = node_->create_subscription<lbr_fri_idl::msg::LBRState>(
-        "state", 1, std::bind(&WrenchSineOverlay::on_lbr_state_, this, std::placeholders::_1));
+        "lbr_state", 1, std::bind(&WrenchSineOverlay::on_lbr_state_, this, std::placeholders::_1));
 
     // get control rate from controller_manager
     auto update_rate =

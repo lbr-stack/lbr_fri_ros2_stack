@@ -19,7 +19,9 @@
 #include "friLBRState.h"
 
 #include "lbr_fri_ros2/control.hpp"
+#include "lbr_fri_ros2/formatting.hpp"
 #include "lbr_fri_ros2/kinematics.hpp"
+#include "lbr_fri_ros2/math.hpp"
 #include "lbr_fri_ros2/types.hpp"
 #include "lbr_ros2_control/system_interface_type_values.hpp"
 
@@ -47,11 +49,12 @@ public:
   on_deactivate(const rclcpp_lifecycle::State &previous_state) override;
 
 protected:
-  bool reference_state_interfaces_();
-  void clear_state_interfaces_();
+  bool assign_state_interfaces_();
+  void release_state_interfaces_();
   void reset_command_buffer_();
   void zero_joint_velocity_command_();
   void configure_joint_names_();
+  void configure_joint_limits_();
   void configure_inv_jac_ctrl_impl_();
   void log_info_() const;
 
@@ -61,14 +64,13 @@ protected:
 
   // joint veloctiy computation
   std::unique_ptr<lbr_fri_ros2::InvJacCtrlImpl> inv_jac_ctrl_impl_ptr_;
-  lbr_fri_ros2::jnt_array_t q_, dq_;
+  lbr_fri_ros2::jnt_array_t q_, q_target_, dq_;
 
   // interfaces
   lbr_fri_ros2::jnt_name_array_t joint_names_;
+  lbr_fri_ros2::jnt_array_t lower_joint_limits_, upper_joint_limits_;
   std::vector<std::reference_wrapper<hardware_interface::LoanedStateInterface>>
       joint_position_state_interfaces_;
-  std::unique_ptr<std::reference_wrapper<hardware_interface::LoanedStateInterface>>
-      sample_time_state_interface_ptr_;
   std::unique_ptr<std::reference_wrapper<hardware_interface::LoanedStateInterface>>
       session_state_interface_ptr_;
 

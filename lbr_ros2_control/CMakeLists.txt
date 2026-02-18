@@ -19,6 +19,7 @@ find_package(controller_interface REQUIRED)
 find_package(eigen3_cmake_module REQUIRED)
 find_package(Eigen3)
 find_package(FRIClient REQUIRED)
+find_package(geometry_msgs REQUIRED)
 find_package(hardware_interface REQUIRED)
 find_package(kinematics_interface REQUIRED)
 find_package(lbr_fri_idl REQUIRED)
@@ -32,6 +33,7 @@ add_library(
   ${PROJECT_NAME}
   SHARED
   src/controllers/admittance_controller.cpp
+  src/controllers/estimated_wrench_interface.cpp
   src/controllers/lbr_joint_position_command_controller.cpp
   src/controllers/lbr_torque_command_controller.cpp
   src/controllers/lbr_wrench_command_controller.cpp
@@ -51,24 +53,18 @@ target_include_directories(
 )
 
 # Link against dependencies
-set(AMENT_DEPENDENCIES
-  controller_interface
-  Eigen3
-  hardware_interface
-  kinematics_interface
-  lbr_fri_idl
-  lbr_fri_ros2
-  pluginlib
-  rclcpp
-  realtime_tools
-)
-ament_target_dependencies(
-  ${PROJECT_NAME}
-  ${AMENT_DEPENDENCIES}
-)
-
-target_link_libraries(${PROJECT_NAME}
+target_link_libraries(${PROJECT_NAME} PUBLIC
+  controller_interface::controller_interface
+  Eigen3::Eigen
   FRIClient::FRIClient
+  ${geometry_msgs_TARGETS}
+  hardware_interface::hardware_interface
+  kinematics_interface::kinematics_interface
+  ${lbr_fri_idl_TARGETS}
+  lbr_fri_ros2::lbr_fri_ros2
+  pluginlib::pluginlib
+  rclcpp::rclcpp
+  realtime_tools::realtime_tools
 )
 
 pluginlib_export_plugin_description_file(controller_interface plugin_description_files/controllers.xml)
@@ -80,9 +76,18 @@ ament_export_targets(
 )
 
 ament_export_dependencies(
-  FRIClient
-  ${AMENT_DEPENDENCIES}
+  controller_interface
+  Eigen3
   eigen3_cmake_module
+  FRIClient
+  geometry_msgs
+  hardware_interface
+  kinematics_interface
+  lbr_fri_idl
+  lbr_fri_ros2
+  pluginlib
+  rclcpp
+  realtime_tools
 )
 
 install(

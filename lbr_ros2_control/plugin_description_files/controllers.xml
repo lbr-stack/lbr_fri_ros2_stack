@@ -7,6 +7,14 @@
         <description>A simple admittance controller.</description>
     </class>
 
+    <!-- Estimated wrench interface plugin -->
+    <class name="lbr_ros2_control/EstimatedWrenchInterface"
+        type="lbr_ros2_control::EstimatedWrenchInterface"
+        base_class_type="controller_interface::ChainableControllerInterface">
+        <description>Estimates external wrenches using the external joint torques and exposes them
+            as interface.</description>
+    </class>
+
     <!-- LBR forward position command controller plugin -->
     <class name="lbr_ros2_control/LBRJointPositionCommandController"
         type="lbr_ros2_control::LBRJointPositionCommandController"
@@ -32,7 +40,7 @@
     <!-- LBR forward wrench command controller plugin -->
     <class name="lbr_ros2_control/LBRWrenchCommandController"
         type="lbr_ros2_control::LBRWrenchCommandController"
-        base_class_type="controller_interface::ControllerInterface">
+        base_class_type="controller_interface::ChainableControllerInterface">
         <description>Forward command controller for LBRWrenchCommand message, see
             lbr_fri_idl/msg/LBRWrenchCommand.msg.</description>
     </class>

@@ -5,6 +5,7 @@ StateInterface::StateInterface(const StateInterfaceParameters &state_interface_p
     : state_initialized_(false), parameters_(state_interface_parameters) {}
 
 void StateInterface::set_state(const_fri_state_t_ref state) {
+  std::lock_guard<std::mutex> lock(state_mutex_);
   state_.client_command_mode = state.getClientCommandMode();
 #if FRI_CLIENT_VERSION_MAJOR == 1
   std::memcpy(state_.commanded_joint_position.data(), state.getCommandedJointPosition(),
@@ -45,6 +46,7 @@ void StateInterface::set_state(const_fri_state_t_ref state) {
 
 void StateInterface::set_state_open_loop(const_fri_state_t_ref state,
                                          const_jnt_array_t_ref joint_position) {
+  std::lock_guard<std::mutex> lock(state_mutex_);
   state_.client_command_mode = state.getClientCommandMode();
 #if FRI_CLIENT_VERSION_MAJOR == 1
   std::memcpy(state_.commanded_joint_position.data(), state.getCommandedJointPosition(),

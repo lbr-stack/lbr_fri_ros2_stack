@@ -35,7 +35,7 @@ def setup_xml_and_reference(kuka_id: str) -> Tuple[str, LBRSpecification]:
         f"{lbr_specification.name}.xacro",
     )
 
-    xml = xacro.process(path)
+    xml = xacro.process(path, mappings={"robot_name": lbr_specification.name})
     return xml, lbr_specification
 
 
@@ -60,7 +60,9 @@ def test_mass(
 
 @pytest.mark.parametrize("kuka_id", LBR_SPECIFICATIONS_DICT)
 def test_position_limits(
-    setup_xml_and_reference: Tuple[str, LBRSpecification], abs_tol: float = 1.0e-5
+    setup_xml_and_reference: Tuple[str, LBRSpecification],
+    position_limit_restriction: float = 1.0,
+    abs_tol: float = 1.0e-5,
 ) -> None:
     xml, lbr_specification = setup_xml_and_reference
     urdf = URDF.from_xml_string(xml)
@@ -69,18 +71,36 @@ def test_position_limits(
         if joint.type == "revolute":
             urdf_min_position = joint.limit.lower
             kuka_min_position = math.radians(
-                lbr_specification.joint_limits[joint.name].min_position
+                lbr_specification.joint_limits[
+                    joint.name.replace(f"{lbr_specification.name}_", "")
+                ].min_position
             )
-            if not math.isclose(urdf_min_position, kuka_min_position, abs_tol=abs_tol):
+            if not math.isclose(
+                urdf_min_position
+                - position_limit_restriction
+                / 180
+                * math.pi,  # note that we enforce 1 degree stricter limits to avoid hardware limits
+                kuka_min_position,
+                abs_tol=abs_tol,
+            ):
                 raise ValueError(
                     f"Expected minimum joint position {kuka_min_position} rad, found {urdf_min_position} rad for model {lbr_specification.name} and joint {joint.name}."
                 )
 
             urdf_max_position = joint.limit.upper
             kuka_max_position = math.radians(
-                lbr_specification.joint_limits[joint.name].max_position
+                lbr_specification.joint_limits[
+                    joint.name.replace(f"{lbr_specification.name}_", "")
+                ].max_position
             )
-            if not math.isclose(urdf_max_position, kuka_max_position, abs_tol=abs_tol):
+            if not math.isclose(
+                urdf_max_position
+                + position_limit_restriction
+                / 180
+                * math.pi,  # note that we enforce 1 degree stricter limits to avoid hardware limits
+                kuka_max_position,
+                abs_tol=abs_tol,
+            ):
                 raise ValueError(
                     f"Expected maximum joint position {kuka_max_position} rad, found {urdf_max_position} rad for model {lbr_specification.name} and joint {joint.name}."
                 )
@@ -97,7 +117,9 @@ def test_velocity_limits(
         if joint.type == "revolute":
             urdf_max_velocity = joint.limit.velocity
             kuka_max_velcoity = math.radians(
-                lbr_specification.joint_limits[joint.name].max_velocity
+                lbr_specification.joint_limits[
+                    joint.name.replace(f"{lbr_specification.name}_", "")
+                ].max_velocity
             )
             if not math.isclose(urdf_max_velocity, kuka_max_velcoity, abs_tol=abs_tol):
                 raise ValueError(

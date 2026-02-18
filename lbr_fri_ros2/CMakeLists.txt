@@ -17,7 +17,6 @@ find_package(FRIClient REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(kdl_parser REQUIRED)
 find_package(lbr_fri_idl REQUIRED)
-find_package(orocos_kdl_vendor REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(realtime_tools REQUIRED)
 find_package(urdf REQUIRED)
@@ -25,6 +24,8 @@ find_package(urdf REQUIRED)
 # lbr_fri_ros2
 add_library(lbr_fri_ros2
   SHARED
+    src/guards/command_guard.cpp
+    src/guards/state_guard.cpp
     src/interfaces/base_command.cpp
     src/interfaces/position_command.cpp
     src/interfaces/state.cpp
@@ -33,12 +34,12 @@ add_library(lbr_fri_ros2
     src/interfaces/wrench_command.cpp
     src/app.cpp
     src/async_client.cpp
-    src/command_guard.cpp
     src/control.cpp
     src/filters.cpp
-    src/ft_estimator.cpp
     src/kinematics.cpp
+    src/math.cpp
     src/worker.cpp
+    src/wrench_estimator.cpp
 )
 
 target_include_directories(lbr_fri_ros2
@@ -47,18 +48,14 @@ target_include_directories(lbr_fri_ros2
     $<INSTALL_INTERFACE:include>
 )
 
-ament_target_dependencies(lbr_fri_ros2
-  Eigen3
-  geometry_msgs
-  kdl_parser
-  lbr_fri_idl
-  orocos_kdl_vendor
-  rclcpp
-  realtime_tools
-)
-
-target_link_libraries(lbr_fri_ros2
+target_link_libraries(lbr_fri_ros2 PUBLIC
+  Eigen3::Eigen
   FRIClient::FRIClient
+  ${geometry_msgs_TARGETS}
+  kdl_parser::kdl_parser
+  ${lbr_fri_idl_TARGETS}
+  rclcpp::rclcpp
+  realtime_tools::realtime_tools
 )
 
 ament_export_targets(lbr_fri_ros2_export HAS_LIBRARY_TARGET)
@@ -69,7 +66,6 @@ ament_export_dependencies(
   geometry_msgs
   kdl_parser
   lbr_fri_idl
-  orocos_kdl_vendor
   rclcpp
   realtime_tools
 )

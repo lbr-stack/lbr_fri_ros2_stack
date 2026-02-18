@@ -28,14 +28,11 @@ add_executable(joint_sine_overlay
   src/joint_sine_overlay.cpp
 )
 
-ament_target_dependencies(joint_sine_overlay
-  lbr_fri_idl
-  lbr_fri_ros2
-  rclcpp
-)
-
-target_link_libraries(joint_sine_overlay
+target_link_libraries(joint_sine_overlay PUBLIC
   FRIClient::FRIClient
+  ${lbr_fri_idl_TARGETS}
+  lbr_fri_ros2::lbr_fri_ros2
+  rclcpp::rclcpp
 )
 
 # joint trajectory client
@@ -43,16 +40,13 @@ add_executable(joint_trajectory_client
   src/joint_trajectory_client.cpp
 )
 
-ament_target_dependencies(joint_trajectory_client
-  control_msgs
-  rclcpp
-  rclcpp_action
-  sensor_msgs
-  trajectory_msgs
-)
-
-target_link_libraries(joint_trajectory_client
+target_link_libraries(joint_trajectory_client PUBLIC
+  ${control_msgs_TARGETS}
   FRIClient::FRIClient
+  rclcpp::rclcpp
+  rclcpp_action::rclcpp_action
+  ${sensor_msgs_TARGETS}
+  ${trajectory_msgs_TARGETS}
 )
 
 # torque sine overlay
@@ -60,14 +54,11 @@ add_executable(torque_sine_overlay
   src/torque_sine_overlay.cpp
 )
 
-ament_target_dependencies(torque_sine_overlay
-  lbr_fri_idl
-  lbr_fri_ros2
-  rclcpp
-)
-
-target_link_libraries(torque_sine_overlay
+target_link_libraries(torque_sine_overlay PUBLIC
   FRIClient::FRIClient
+  ${lbr_fri_idl_TARGETS}
+  lbr_fri_ros2::lbr_fri_ros2
+  rclcpp::rclcpp
 )
 
 # wrench sine overlay
@@ -75,14 +66,11 @@ add_executable(wrench_sine_overlay
   src/wrench_sine_overlay.cpp
 )
 
-ament_target_dependencies(wrench_sine_overlay
-  lbr_fri_idl
-  lbr_fri_ros2
-  rclcpp
-)
-
-target_link_libraries(wrench_sine_overlay
+target_link_libraries(wrench_sine_overlay PUBLIC
   FRIClient::FRIClient
+  ${lbr_fri_idl_TARGETS}
+  lbr_fri_ros2::lbr_fri_ros2
+  rclcpp::rclcpp
 )
 
 # effort example controller

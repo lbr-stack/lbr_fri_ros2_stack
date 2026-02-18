@@ -21,8 +21,6 @@ TwistController::state_interface_configuration() const {
     interface_configuration.names.push_back(joint_name + "/" + hardware_interface::HW_IF_POSITION);
   }
   interface_configuration.names.push_back(std::string(HW_IF_AUXILIARY_PREFIX) + "/" +
-                                          HW_IF_SAMPLE_TIME);
-  interface_configuration.names.push_back(std::string(HW_IF_AUXILIARY_PREFIX) + "/" +
                                           HW_IF_SESSION_STATE);
   return interface_configuration;
 }
@@ -47,6 +45,7 @@ controller_interface::CallbackReturn TwistController::on_init() {
                                         std::vector<double>(lbr_fri_ros2::CARTESIAN_DOF, 0.0));
     this->get_node()->declare_parameter("timeout", 0.2);
     configure_joint_names_();
+    configure_joint_limits_();
     configure_inv_jac_ctrl_impl_();
     log_info_();
     timeout_ = this->get_node()->get_parameter("timeout").as_double();
@@ -69,16 +68,31 @@ controller_interface::return_type TwistController::update(const rclcpp::Time & /
     RCLCPP_ERROR(this->get_node()->get_logger(), "Inverse Jacobian controller not initialized.");
     return controller_interface::return_type::ERROR;
   }
-  if (static_cast<int>(session_state_interface_ptr_->get().get_value()) !=
-      KUKA::FRI::ESessionState::COMMANDING_ACTIVE) {
+
+  // check for robot session state
+  auto session_state = session_state_interface_ptr_->get().get_optional();
+  if (!session_state.has_value()) {
+    RCLCPP_WARN_STREAM(this->get_node()->get_logger(), lbr_fri_ros2::ColorScheme::WARNING
+                                                           << "Failed to get session state."
+                                                           << lbr_fri_ros2::ColorScheme::ENDC);
+    return controller_interface::return_type::OK;
+  }
+  if (static_cast<int>(*session_state) != KUKA::FRI::ESessionState::COMMANDING_ACTIVE) {
     return controller_interface::return_type::OK;
   }
 
-  // pass joint positions to q_
-  std::for_each(q_.begin(), q_.end(), [&, i = 0](double &q_i) mutable {
-    q_i = this->state_interfaces_[i].get_value();
-    ++i;
-  });
+  // get joint positions
+  for (std::size_t i = 0; i < lbr_fri_ros2::N_JNTS; ++i) {
+    auto q_i = this->joint_position_state_interfaces_[i].get().get_optional();
+    if (!q_i.has_value()) {
+      RCLCPP_WARN_STREAM(this->get_node()->get_logger(),
+                         lbr_fri_ros2::ColorScheme::WARNING
+                             << "Failed to get joint position for joint '" << joint_names_[i]
+                             << "'." << lbr_fri_ros2::ColorScheme::ENDC);
+      return controller_interface::return_type::OK;
+    }
+    q_[i] = *q_i;
+  }
 
   if (updates_since_last_command_ > static_cast<int>(timeout_ / period.seconds())) {
     zero_joint_velocity_command_();
@@ -88,11 +102,39 @@ controller_interface::return_type TwistController::update(const rclcpp::Time & /
   }
 
   // pass joint positions to hardware
-  std::for_each(q_.begin(), q_.end(), [&, i = 0](const double &q_i) mutable {
-    this->command_interfaces_[i].set_value(
-        q_i + dq_[i] * sample_time_state_interface_ptr_->get().get_value());
-    ++i;
-  });
+  auto update_rate = static_cast<double>(get_update_rate());
+  if (update_rate <= 0.0) {
+    RCLCPP_ERROR(this->get_node()->get_logger(), "Update rate should be greater than zero, got %f.",
+                 update_rate);
+    return controller_interface::return_type::ERROR;
+  }
+  auto dt = 1. / update_rate;
+
+  // compute new target
+  for (std::size_t i = 0; i < lbr_fri_ros2::N_JNTS; ++i) {
+    q_target_[i] = q_[i] + dq_[i] * dt;
+  }
+
+  // check target validity and override otherwise
+  if (!lbr_fri_ros2::all_jnts_in_bounds(q_target_, lower_joint_limits_, upper_joint_limits_)) {
+    RCLCPP_WARN_STREAM_THROTTLE(
+        get_node()->get_logger(), *(get_node()->get_clock()), 500 /*ms*/,
+        lbr_fri_ros2::ColorScheme::WARNING
+            << "Overriding command target to current state since one target beyond joint limits."
+            << lbr_fri_ros2::ColorScheme::ENDC);
+    q_target_ = q_;
+  }
+
+  // set values
+  for (std::size_t i = 0; i < lbr_fri_ros2::N_JNTS; ++i) {
+    if (!this->command_interfaces_[i].set_value(q_target_[i])) {
+      RCLCPP_ERROR_STREAM(this->get_node()->get_logger(),
+                          lbr_fri_ros2::ColorScheme::ERROR
+                              << "Failed to set joint position for joint '" << joint_names_[i]
+                              << "'." << lbr_fri_ros2::ColorScheme::ENDC);
+      return controller_interface::return_type::ERROR;
+    };
+  }
 
   ++updates_since_last_command_;
 
@@ -106,7 +148,8 @@ TwistController::on_configure(const rclcpp_lifecycle::State & /*previous_state*/
 
 controller_interface::CallbackReturn
 TwistController::on_activate(const rclcpp_lifecycle::State & /*previous_state*/) {
-  if (!reference_state_interfaces_()) {
+  if (!assign_state_interfaces_()) {
+    release_state_interfaces_();
     return controller_interface::CallbackReturn::ERROR;
   }
   reset_command_buffer_();
@@ -116,21 +159,16 @@ TwistController::on_activate(const rclcpp_lifecycle::State & /*previous_state*/)
 
 controller_interface::CallbackReturn
 TwistController::on_deactivate(const rclcpp_lifecycle::State & /*previous_state*/) {
-  clear_state_interfaces_();
+  release_state_interfaces_();
   reset_command_buffer_();
   zero_joint_velocity_command_();
   return controller_interface::CallbackReturn::SUCCESS;
 }
 
-bool TwistController::reference_state_interfaces_() {
+bool TwistController::assign_state_interfaces_() {
   for (auto &state_interface : state_interfaces_) {
     if (state_interface.get_interface_name() == hardware_interface::HW_IF_POSITION) {
-      joint_position_state_interfaces_.emplace_back(std::ref(state_interface));
-    }
-    if (state_interface.get_interface_name() == HW_IF_SAMPLE_TIME) {
-      sample_time_state_interface_ptr_ =
-          std::make_unique<std::reference_wrapper<hardware_interface::LoanedStateInterface>>(
-              std::ref(state_interface));
+      joint_position_state_interfaces_.push_back(std::ref(state_interface));
     }
     if (state_interface.get_interface_name() == HW_IF_SESSION_STATE) {
       session_state_interface_ptr_ =
@@ -149,28 +187,41 @@ bool TwistController::reference_state_interfaces_() {
   return true;
 }
 
-void TwistController::clear_state_interfaces_() { joint_position_state_interfaces_.clear(); }
+void TwistController::release_state_interfaces_() {
+  joint_position_state_interfaces_.clear();
+  session_state_interface_ptr_.reset();
+}
 
 void TwistController::reset_command_buffer_() {
   rt_twist_ptr_ =
       realtime_tools::RealtimeBuffer<std::shared_ptr<geometry_msgs::msg::Twist>>(nullptr);
 };
 
-void TwistController::zero_joint_velocity_command_() {
-  std::for_each(dq_.begin(), dq_.end(), [](double &dq_i) { dq_i = 0.0; });
-}
+void TwistController::zero_joint_velocity_command_() { std::fill(dq_.begin(), dq_.end(), 0.0); }
 
 void TwistController::configure_joint_names_() {
   if (joint_names_.size() != lbr_fri_ros2::N_JNTS) {
     RCLCPP_ERROR(
         this->get_node()->get_logger(),
-        "Number of joint names (%ld) does not match the number of joints in the robot (%d).",
+        "Number of joint names '%ld' does not match the number of joints in the robot '%d'.",
         joint_names_.size(), lbr_fri_ros2::N_JNTS);
     throw std::runtime_error("Failed to configure joint names.");
   }
   std::string robot_name = this->get_node()->get_parameter("robot_name").as_string();
-  for (int i = 0; i < lbr_fri_ros2::N_JNTS; ++i) {
+  for (std::size_t i = 0; i < lbr_fri_ros2::N_JNTS; ++i) {
     joint_names_[i] = robot_name + "_A" + std::to_string(i + 1);
+  }
+}
+
+void TwistController::configure_joint_limits_() {
+  auto hard_joint_limits = get_hard_joint_limits();
+  for (std::size_t i = 0; i < lbr_fri_ros2::N_JNTS; ++i) {
+    auto it = hard_joint_limits.find(joint_names_[i]);
+    if (it == hard_joint_limits.end()) {
+      throw std::runtime_error("Could not find joint limits for '" + joint_names_[i] + "'.");
+    }
+    lower_joint_limits_[i] = it->second.min_position;
+    upper_joint_limits_[i] = it->second.max_position;
   }
 }
 
@@ -179,7 +230,7 @@ void TwistController::configure_inv_jac_ctrl_impl_() {
       lbr_fri_ros2::N_JNTS) {
     RCLCPP_ERROR(
         this->get_node()->get_logger(),
-        "Number of joint gains (%ld) does not match the number of joints in the robot (%d).",
+        "Number of joint gains '%ld' does not match the number of joints in the robot '%d'.",
         this->get_node()->get_parameter("inv_jac_ctrl.joint_gains").as_double_array().size(),
         lbr_fri_ros2::N_JNTS);
     throw std::runtime_error("Failed to configure joint gains.");
@@ -188,19 +239,19 @@ void TwistController::configure_inv_jac_ctrl_impl_() {
       lbr_fri_ros2::CARTESIAN_DOF) {
     RCLCPP_ERROR(
         this->get_node()->get_logger(),
-        "Number of cartesian gains (%ld) does not match the number of cartesian degrees of freedom "
-        "(%d).",
+        "Number of cartesian gains '%ld' does not match the number of cartesian degrees of freedom "
+        "'%d'.",
         this->get_node()->get_parameter("inv_jac_ctrl.cartesian_gains").as_double_array().size(),
         lbr_fri_ros2::CARTESIAN_DOF);
     throw std::runtime_error("Failed to configure cartesian gains.");
   }
   lbr_fri_ros2::jnt_array_t joint_gains_array;
-  for (unsigned int i = 0; i < lbr_fri_ros2::N_JNTS; ++i) {
+  for (std::size_t i = 0; i < lbr_fri_ros2::N_JNTS; ++i) {
     joint_gains_array[i] =
         this->get_node()->get_parameter("inv_jac_ctrl.joint_gains").as_double_array()[i];
   }
   lbr_fri_ros2::cart_array_t cartesian_gains_array;
-  for (unsigned int i = 0; i < lbr_fri_ros2::CARTESIAN_DOF; ++i) {
+  for (std::size_t i = 0; i < lbr_fri_ros2::CARTESIAN_DOF; ++i) {
     cartesian_gains_array[i] =
         this->get_node()->get_parameter("inv_jac_ctrl.cartesian_gains").as_double_array()[i];
   }

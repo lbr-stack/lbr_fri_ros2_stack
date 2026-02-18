@@ -8,12 +8,19 @@ WrenchCommandInterface::WrenchCommandInterface(
 
 void WrenchCommandInterface::buffered_command_to_fri(fri_command_t_ref command,
                                                      const_idl_state_t_ref state) {
+  std::lock_guard<std::mutex> lock(command_mutex_);
   if (state.client_command_mode != KUKA::FRI::EClientCommandMode::WRENCH) {
-    std::string err = "Expected robot in '" +
-                      EnumMaps::client_command_mode_map(KUKA::FRI::EClientCommandMode::WRENCH) +
-                      "' command mode got '" +
-                      EnumMaps::client_command_mode_map(state.client_command_mode) + "'";
-    RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME()), err.c_str());
+    std::string err =
+        "Client side (configured via client_command_mode in lbr_system_config.yaml) "
+        "expected robot in '" +
+        EnumMaps::client_command_mode_map(KUKA::FRI::EClientCommandMode::WRENCH) +
+        "' command mode, but robot was in '" +
+        EnumMaps::client_command_mode_map(state.client_command_mode) +
+        "' command mode. Correct the configurations or run the robot in '" +
+        EnumMaps::client_command_mode_map(KUKA::FRI::EClientCommandMode::WRENCH) +
+        "' command mode.";
+    RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME()),
+                        ColorScheme::ERROR << err.c_str() << ColorScheme::ENDC);
     throw std::runtime_error(err);
   }
 
@@ -47,10 +54,10 @@ void WrenchCommandInterface::buffered_command_to_fri(fri_command_t_ref command,
 
   // validate
   if (!command_guard_->is_valid_command(command_, state)) {
-    std::string err = "Invalid command.";
-    RCLCPP_ERROR_STREAM(rclcpp::get_logger(LOGGER_NAME()),
-                        ColorScheme::ERROR << err.c_str() << ColorScheme::ENDC);
-    throw std::runtime_error(err);
+    std::string warn = "Overriding invalid command to neutral command.";
+    RCLCPP_WARN_STREAM(rclcpp::get_logger(LOGGER_NAME()),
+                       ColorScheme::WARNING << warn.c_str() << ColorScheme::ENDC);
+    neutralize_command_(state, command_);
   }
 
   // write joint position and wrench to output

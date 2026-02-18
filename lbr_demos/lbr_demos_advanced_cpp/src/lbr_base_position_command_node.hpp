@@ -21,11 +21,11 @@ public:
     dt_ = 1.0 / static_cast<double>(update_rate_);
 
     // publishers and subscribers
-    lbr_joint_position_command_pub_ =
-        create_publisher<lbr_fri_idl::msg::LBRJointPositionCommand>("command/joint_position", 1);
+    lbr_joint_position_command_pub_ = create_publisher<lbr_fri_idl::msg::LBRJointPositionCommand>(
+        "command/lbr_joint_position_command", 1);
 
     lbr_state_sub_ = create_subscription<lbr_fri_idl::msg::LBRState>(
-        "state", 1,
+        "lbr_state", 1,
         std::bind(&LBRBasePositionCommandNode::on_lbr_state_, this, std::placeholders::_1));
   }
 

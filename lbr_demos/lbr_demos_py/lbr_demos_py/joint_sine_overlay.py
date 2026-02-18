@@ -18,17 +18,17 @@ class JointSineOverlayNode(Node):
         self._phase = 0.0
         self._lbr_joint_position_command = LBRJointPositionCommand()
 
-        # create publisher to command/joint_position
+        # create publisher to command/lbr_joint_position_command
         self._lbr_joint_position_command_pub = self.create_publisher(
             LBRJointPositionCommand,
-            "command/joint_position",
+            "command/lbr_joint_position_command",
             1,
         )
 
         # create subscription to state
         self._lbr_state = None
         self._lbr_state_sub_ = self.create_subscription(
-            LBRState, "state", self._on_lbr_state, 1
+            LBRState, "lbr_state", self._on_lbr_state, 1
         )
 
         # get control rate from controller_manager

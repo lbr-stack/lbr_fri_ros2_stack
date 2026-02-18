@@ -3,9 +3,6 @@ name: Build
 on:
   workflow_call: # https://github.com/orgs/community/discussions/52616#discussioncomment-9364532
     inputs:
-      os:
-        required: true
-        type: string
       fri_version:
         required: true
         type: string
@@ -14,10 +11,11 @@ on:
 # doc: https://ubuntu.com/blog/ros-2-ci-with-github-actions
 jobs:
   build:
-    runs-on: ${{ inputs.os }}
+    runs-on: ubuntu-24.04
+    container:
+      image: rostooling/setup-ros-docker:ubuntu-noble-ros-rolling-desktop-latest
     steps:
-      - uses: ros-tooling/setup-ros@v0.7
-      - uses: ros-tooling/action-ros-ci@v0.2
+      - uses: ros-tooling/action-ros-ci@v0.4
         with:
           package-name: lbr_fri_ros2_stack
           target-ros2-distro: rolling

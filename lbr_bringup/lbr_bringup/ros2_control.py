@@ -1,7 +1,7 @@
-from typing import Dict, Optional, Union
+from typing import Dict, List, Optional, Union
 
 from launch.actions import DeclareLaunchArgument
-from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
+from launch.substitutions import LaunchConfiguration, PathSubstitution
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 
@@ -19,7 +19,7 @@ class LBRROS2ControlMixin:
     def arg_ctrl_cfg() -> DeclareLaunchArgument:
         return DeclareLaunchArgument(
             name="ctrl_cfg",
-            default_value="ros2_control/lbr_controllers.yaml",
+            default_value="ros2_control/hardware_controllers.yaml",
             description="Relative path from ctrl_cfg_pkg to the controllers.",
         )
 
@@ -31,8 +31,8 @@ class LBRROS2ControlMixin:
             description="Desired default controller. One of specified in ctrl_cfg.",
             choices=[
                 "admittance_controller",
-                "joint_trajectory_controller",
                 "forward_position_controller",
+                "joint_trajectory_controller",
                 "lbr_joint_position_command_controller",
                 "lbr_torque_command_controller",
                 "lbr_wrench_command_controller",
@@ -87,17 +87,13 @@ class LBRROS2ControlMixin:
             executable="ros2_control_node",
             parameters=[
                 {"use_sim_time": use_sim_time},
-                PathJoinSubstitution(
-                    [
-                        FindPackageShare(
-                            LaunchConfiguration(
-                                "ctrl_cfg_pkg", default="lbr_description"
-                            )
-                        ),
-                        LaunchConfiguration(
-                            "ctrl_cfg", default="ros2_control/lbr_controllers.yaml"
-                        ),
-                    ]
+                PathSubstitution(
+                    FindPackageShare(
+                        LaunchConfiguration("ctrl_cfg_pkg", default="lbr_description")
+                    )
+                )
+                / LaunchConfiguration(
+                    "ctrl_cfg", default="ros2_control/hardware_controllers.yaml"
                 ),
             ],
             namespace=robot_name,
@@ -112,9 +108,9 @@ class LBRROS2ControlMixin:
         robot_name: Optional[Union[LaunchConfiguration, str]] = LaunchConfiguration(
             "robot_name", default="lbr"
         ),
-        controller: Optional[Union[LaunchConfiguration, str]] = LaunchConfiguration(
-            "ctrl"
-        ),
+        controllers: Optional[List[Union[LaunchConfiguration, str]]] = [
+            LaunchConfiguration("ctrl")
+        ],
         **kwargs,
     ) -> Node:
         return Node(
@@ -122,10 +118,10 @@ class LBRROS2ControlMixin:
             executable="spawner",
             output="screen",
             arguments=[
-                controller,
                 "--controller-manager",
                 "controller_manager",
-            ],
+            ]
+            + controllers,
             namespace=robot_name,
             **kwargs,
         )

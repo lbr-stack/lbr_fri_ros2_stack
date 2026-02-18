@@ -74,20 +74,12 @@ protected:
   void test_simple() {
     // test read only
     auto idl_command = command_interface_->get_command();
-    auto idl_command_target = command_interface_->get_command_target();
 
     // modify and expect unchanged
     idl_command.joint_position[0] += 1.0;
-    idl_command_target.joint_position[0] += 1.0;
 
     EXPECT_FALSE(idl_command.joint_position[0] ==
                  command_interface_->get_command().joint_position[0]);
-    EXPECT_FALSE(idl_command_target.joint_position[0] ==
-                 command_interface_->get_command_target().joint_position[0]);
-
-    // assume user sets random command target
-    idl_command_target = random_idl_command();
-    command_interface_->buffer_command_target(idl_command_target);
 
     // initialize commands to state
     state_interface_->set_state(lbr_client_->robotState());
@@ -95,27 +87,23 @@ protected:
         state_interface_->get_state()); // get state from state interface
 
     // expect command target is state now (zero initialized here)
-    for (std::size_t i = 0; i < idl_command_target.joint_position.size(); ++i) {
+    for (std::size_t i = 0; i < idl_command.joint_position.size(); ++i) {
       // expect joint position is initialized with current robot state
       EXPECT_DOUBLE_EQ(command_interface_->get_command().joint_position[i],
-                       lbr_client_->robotState().getMeasuredJointPosition()[i]);
-      EXPECT_DOUBLE_EQ(command_interface_->get_command_target().joint_position[i],
                        lbr_client_->robotState().getMeasuredJointPosition()[i]);
 
       // expect torques are zero
       EXPECT_DOUBLE_EQ(command_interface_->get_command().torque[i], 0.0);
-      EXPECT_DOUBLE_EQ(command_interface_->get_command_target().torque[i], 0.0);
     }
-    for (std::size_t i = 0; i < idl_command_target.wrench.size(); ++i) {
+    for (std::size_t i = 0; i < idl_command.wrench.size(); ++i) {
       // expect wrenches are zero
       EXPECT_DOUBLE_EQ(command_interface_->get_command().wrench[i], 0.0);
-      EXPECT_DOUBLE_EQ(command_interface_->get_command_target().wrench[i], 0.0);
     }
 
     // buffer a random command and expect invalid client command mode
     bool invalid_mode_triggered = false;
     try {
-      idl_command_target = random_idl_command();
+      auto idl_command_target = random_idl_command();
       command_interface_->buffer_command_target(idl_command_target);
       command_interface_->buffered_command_to_fri(lbr_client_->robotCommand(),
                                                   state_interface_->get_state());

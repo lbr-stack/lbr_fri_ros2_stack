@@ -15,6 +15,7 @@
 #include "friLBRState.h"
 
 #include "lbr_fri_idl/msg/lbr_joint_position_command.hpp"
+#include "lbr_fri_ros2/formatting.hpp"
 #include "lbr_fri_ros2/types.hpp"
 
 namespace lbr_ros2_control {

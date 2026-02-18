@@ -30,7 +30,7 @@ Hardware components and controllers are loaded as plugins (components) by the ``
 The ``controller_manager::ControllerManager`` has a node, the `controller_manager <https://github.com/ros-controls/ros2_control/blob/master/controller_manager/src/ros2_control_node.cpp>`_:octicon:`link-external`. 
 
 - Hardware plugins are read from the ``robot_descritption`` parameter of the ``robot_state_publisher`` node and loaded at runtime.
-- Parameters, such as ``update_rate``, the configured controllers, are simply set as node parameters, see e.g. `lbr_controllers.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/rolling/lbr_description/ros2_control/lbr_controllers.yaml>`_:octicon:`link-external`.
+- Parameters, such as ``update_rate``, the configured controllers, are simply set as node parameters, see e.g. `hardware_controllers.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/rolling/lbr_description/ros2_control/hardware_controllers.yaml>`_:octicon:`link-external`.
 
 Hardware Plugin
 ---------------
@@ -63,14 +63,14 @@ Exposes the robot command in ``POSITION`` client command mode as ``LBRJointPosit
   - ``POSITION_CONTROL``
   - ``JOINT_IMPEDANCE_CONTROL``
   - ``CARTESIAN_IMPEDANCE_CONTROL``
-- Topic: ``command/joint_position``
+- Topic: ``command/lbr_joint_position_command``
 
 lbr_fri_ros2::LBRTorqueCommandController
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Expose the robot command in ``TORQUE`` client command mode as ``LBRTorqueCommand`` message.
 
 - Supported control modes: ``TORQUE_CONTROL`` 
-- Topic: ``command/torque``
+- Topic: ``command/lbr_torque_command``
 
 
 lbr_fri_ros2::LBRWrenchCommandController
@@ -78,7 +78,7 @@ lbr_fri_ros2::LBRWrenchCommandController
 Expose the robot command in ``WRENCH`` client command mode as ``LBRWrenchCommand`` message.
 
 - Supported control modes: ``CARTESIAN_IMPEDANCE_CONTROL`` 
-- Topic: ``command/wrench``
+- Topic: ``command/lbr_wrench_command``
 
 lbr_fri_ros2::LBRStateBroadcaster
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -6,24 +6,20 @@ The ``lbr_bringup`` package hosts some launch files, which can be included via s
 
     from launch import LaunchDescription
     from launch.actions import IncludeLaunchDescription
-    from launch.launch_description_sources import PythonLaunchDescriptionSource
+    from launch.substitutions import PathSubstitution
+    from launch_ros.substitutions import FindPackageShare
+
 
     def generate_launch_description() -> LaunchDescription:
-        ld = LaunchDescription()
-        ld.add_action(
-            IncludeLaunchDescription(
-                PythonLaunchDescriptionSource(
-                    PathJoinSubstitution(
-                        [
-                            FindPackageShare("lbr_bringup"),
-                            "launch",
-                            "mock.launch.py",
-                        ]
+        return LaunchDescription(
+            [
+                IncludeLaunchDescription(
+                    PathSubstitution(
+                        FindPackageShare("lbr_bringup") / "launch" / "mock.launch.py"
                     )
-                ),
-            )
+                )
+            ]
         )
-        return ld
 
 The launch files can also be run via the command line, as further described below.
 
@@ -140,31 +136,6 @@ Please note that MoveIt configurations are specific and you as a user will need 
 .. note::
     Runs ``RViz`` with specific MoveIt configurations.
 
-Mixins
-------
-The ``lbr_bringup`` package makes heavy use of mixins. Mixins are simply state-free classes with static methods. They are a convenient way of writing launch files.
-
-The below shows an example of the `rviz.launch.py <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/rolling/lbr_bringup/launch/rviz.launch.py>`_:octicon:`link-external` file:
-
-.. code:: python
-
-    from launch import LaunchDescription
-    from lbr_bringup.rviz import RVizMixin
-
-
-    def generate_launch_description() -> LaunchDescription:
-        ld = LaunchDescription()
-
-        # launch arguments
-        ld.add_action(RVizMixin.arg_rviz_cfg())
-        ld.add_action(RVizMixin.arg_rviz_cfg_pkg())
-
-        # rviz
-        ld.add_action(RVizMixin.node_rviz())
-        return ld
-
-Which is quite compact and easy to read.
-
 General Information on the FRI
 ------------------------------
 The ``FRI`` lets the user select a ``FRI control mode`` and a ``FRI client command mode``. When running the ``LBRServer``:
@@ -183,5 +154,5 @@ Troubleshooting
 ---------------
 Noisy Execution
 ~~~~~~~~~~~~~~~
-- Frequency: Make sure the ``ros2_control_node`` frequency and the ``FRI send period`` are compatible, consider changing ``update_rate`` in `lbr_controllers.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/rolling/lbr_description/ros2_control/lbr_controllers.yaml>`_:octicon:`link-external`. 
+- Frequency: Make sure the ``ros2_control_node`` frequency and the ``FRI send period`` are compatible, consider changing ``update_rate`` in `hardware_controllers.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/rolling/lbr_description/ros2_control/hardware_controllers.yaml>`_:octicon:`link-external`. 
 - Realtime priority: Set real time priority in ``code /etc/security/limits.conf``, add the line: ``user - rtprio 99``, where user is your username.

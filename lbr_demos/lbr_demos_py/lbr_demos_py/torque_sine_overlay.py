@@ -18,15 +18,15 @@ class TorqueSineOverlayNode(Node):
         self._phase = 0.0
         self._lbr_torque_command = LBRTorqueCommand()
 
-        # create publisher to command/torque
+        # create publisher to command/lbr_torque_command
         self._lbr_torque_command_pub = self.create_publisher(
-            LBRTorqueCommand, "command/torque", 1
+            LBRTorqueCommand, "command/lbr_torque_command", 1
         )
 
         # create subscription to state
         self._lbr_state = None
         self._lbr_state_sub = self.create_subscription(
-            LBRState, "state", self._on_lbr_state, 1
+            LBRState, "lbr_state", self._on_lbr_state, 1
         )
 
         # get control rate from controller_manager

@@ -1,5 +1,5 @@
 #include "geometry_msgs/msg/pose.hpp"
-#include "moveit/move_group_interface/move_group_interface.h"
+#include "moveit/move_group_interface/move_group_interface.hpp"
 #include "rclcpp/rclcpp.hpp"
 
 int main(int argc, char **argv) {
@@ -14,6 +14,9 @@ int main(int argc, char **argv) {
   auto move_group_interface = moveit::planning_interface::MoveGroupInterface(
       node_ptr, moveit::planning_interface::MoveGroupInterface::Options("arm", "robot_description",
                                                                         robot_name));
+
+  // Limite the velocity for this demo
+  move_group_interface.setMaxVelocityScalingFactor(0.02);
 
   // Set a target pose
   geometry_msgs::msg::Pose target_pose;
