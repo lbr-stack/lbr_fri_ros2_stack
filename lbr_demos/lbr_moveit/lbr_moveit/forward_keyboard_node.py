@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 import numpy as np
 import rclpy
@@ -25,8 +25,8 @@ class ForwardKeyboardNode(Node):
             z: float = 0.0
 
         joints: list
-        translation: Translation = Translation()
-        rotation: Rotation = Rotation()
+        translation: Translation = field(default_factory=Translation)
+        rotation: Rotation = field(default_factory=Rotation)
 
     @dataclass
     class KeyboardLayout:
@@ -47,9 +47,9 @@ class ForwardKeyboardNode(Node):
                 increase: str = "q"
                 decrease: str = "e"
 
-            x: X = X()
-            y: Y = Y()
-            z: Z = Z()
+            x: X = field(default_factory=X)
+            y: Y = field(default_factory=Y)
+            z: Z = field(default_factory=Z)
 
         @dataclass
         class Rotation:
@@ -68,13 +68,13 @@ class ForwardKeyboardNode(Node):
                 increase: str = "y"
                 decrease: str = "h"
 
-            x: X = X()
-            y: Y = Y()
-            z: Z = Z()
+            x: X = field(default_factory=X)
+            y: Y = field(default_factory=Y)
+            z: Z = field(default_factory=Z)
 
         joints: list
-        translation: Translation = Translation()
-        rotation: Rotation = Rotation()
+        translation: Translation = field(default_factory=Translation)
+        rotation: Rotation = field(default_factory=Rotation)
         escape: str = "Key.esc"
         pause: str = "p"
         reverse_joints: str = "r"
