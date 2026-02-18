@@ -141,7 +141,7 @@ class LBRMoveItServoMixin:
     ) -> Node:
         return Node(
             package="moveit_servo",
-            executable="servo_node_main",
+            executable="servo_node",
             output="screen",
             namespace=robot_name,
             **kwargs,
