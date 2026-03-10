@@ -8,7 +8,11 @@ Jazzy v2.x (TBD)
 
   * Replace ``ament_target_dependencies`` with ``target_link_libraries``.
   * Provide default for ``StateInterfaceParameters`` to fix test.
-* ``lbr_ros2_control``: Replace ``ament_target_dependencies`` with ``target_link_libraries``.
+* ``lbr_ros2_control``: 
+
+  * Migrates to the new ``ros2_control`` interface handles: https://github.com/ros-controls/ros2_control/pull/2831.
+  * Uses the joint limits as obtained from the joints inside the URDF, previously redundant in ``<command_interface>`` tags. 
+  * Replace ``ament_target_dependencies`` with ``target_link_libraries``.
 
 * ``lbr_bringup``: Adds a dedicated ``namespace`` argument to mock / hardware launch files.
 * ``lbr_description``:
@@ -17,10 +21,7 @@ Jazzy v2.x (TBD)
   * Removes the controller-related parts from the ``*_description.xacro`` files, now named ``*.urdf.xacro``.
   * Fix tests.
   * Depend on ``ament_cmake_pytest`` for tests only.
-* ``lbr_ros2_control``:
 
-  * Migrates to the new ``ros2_control`` interface handles: https://github.com/ros-controls/ros2_control/pull/2831.
-  * Uses the joint limits as obtained from the joints inside the URDF, previously redundant in ``<command_interface>`` tags. 
 * Related pull requests:
 
   * Namespace argument: https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/344, https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/353
