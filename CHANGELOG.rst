@@ -7,7 +7,10 @@ Jazzy v2.x (TBD)
 
   * Adds a dedicated ``namespace`` argument to mock / hardware launch files.
   * Fix the MoveIt servo node name.
-* ``lbr_demos``: Replace ``ament_target_dependencies`` with ``target_link_libraries``.
+* ``lbr_demos``:
+
+  * Replace ``ament_target_dependencies`` with ``target_link_libraries``.
+  * ``lbr_moveit``: Add missing ``pynput`` dependency and fix dataclasses.
 * ``lbr_description``:
 
   * Sets the ``k_velocity`` to fix the safety limits for effort client command modes.

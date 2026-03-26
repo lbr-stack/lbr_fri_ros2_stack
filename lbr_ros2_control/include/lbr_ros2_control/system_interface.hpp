@@ -2,6 +2,7 @@
 #define LBR_ROS2_CONTROL__SYSTEM_INTERFACE_HPP_
 
 #include <algorithm>
+#include <array>
 #include <cstring>
 #include <memory>
 #include <stdexcept>
@@ -55,61 +56,173 @@ protected:
     bool open_loop{true};
   };
 
-  struct CommandKeys {
-    lbr_fri_ros2::jnt_name_array_t joint_position, torque;
-    lbr_fri_ros2::cart_name_array_t wrench;
+  struct CommandInterfaceHandles {
+    std::array<hardware_interface::CommandInterface::SharedPtr, lbr_fri_ros2::N_JNTS>
+        joint_position, torque;
+    std::array<hardware_interface::CommandInterface::SharedPtr, lbr_fri_ros2::CARTESIAN_DOF> wrench;
 
-    void populate_keys(const hardware_interface::HardwareInfo &info) {
+    void populate(const hardware_interface::SystemInterface &si) {
+      const auto &info = si.get_hardware_info();
       for (std::size_t i = 0; i < lbr_fri_ros2::N_JNTS; ++i) {
-        auto joint_name = info.joints[i].name;
-        joint_position[i] = joint_name + "/" + hardware_interface::HW_IF_POSITION;
-        torque[i] = joint_name + "/" + hardware_interface::HW_IF_EFFORT;
+        const auto &joint_name = info.joints[i].name;
+        joint_position[i] =
+            si.get_command_interface_handle(joint_name + "/" + hardware_interface::HW_IF_POSITION);
+        torque[i] =
+            si.get_command_interface_handle(joint_name + "/" + hardware_interface::HW_IF_EFFORT);
       }
-      wrench[0] = std::string(HW_IF_WRENCH_PREFIX) + "/" + HW_IF_FORCE_X;
-      wrench[1] = std::string(HW_IF_WRENCH_PREFIX) + "/" + HW_IF_FORCE_Y;
-      wrench[2] = std::string(HW_IF_WRENCH_PREFIX) + "/" + HW_IF_FORCE_Z;
-      wrench[3] = std::string(HW_IF_WRENCH_PREFIX) + "/" + HW_IF_TORQUE_X;
-      wrench[4] = std::string(HW_IF_WRENCH_PREFIX) + "/" + HW_IF_TORQUE_Y;
-      wrench[5] = std::string(HW_IF_WRENCH_PREFIX) + "/" + HW_IF_TORQUE_Z;
+      wrench[0] =
+          si.get_command_interface_handle(std::string(HW_IF_WRENCH_PREFIX) + "/" + HW_IF_FORCE_X);
+      wrench[1] =
+          si.get_command_interface_handle(std::string(HW_IF_WRENCH_PREFIX) + "/" + HW_IF_FORCE_Y);
+      wrench[2] =
+          si.get_command_interface_handle(std::string(HW_IF_WRENCH_PREFIX) + "/" + HW_IF_FORCE_Z);
+      wrench[3] =
+          si.get_command_interface_handle(std::string(HW_IF_WRENCH_PREFIX) + "/" + HW_IF_TORQUE_X);
+      wrench[4] =
+          si.get_command_interface_handle(std::string(HW_IF_WRENCH_PREFIX) + "/" + HW_IF_TORQUE_Y);
+      wrench[5] =
+          si.get_command_interface_handle(std::string(HW_IF_WRENCH_PREFIX) + "/" + HW_IF_TORQUE_Z);
+    }
+
+    void nan_interfaces() const {
+      for (std::size_t i = 0; i < lbr_fri_ros2::N_JNTS; ++i) {
+        joint_position[i]->set_value(std::numeric_limits<double>::quiet_NaN());
+        torque[i]->set_value(std::numeric_limits<double>::quiet_NaN());
+      }
+      for (std::size_t i = 0; i < lbr_fri_ros2::CARTESIAN_DOF; ++i) {
+        wrench[i]->set_value(std::numeric_limits<double>::quiet_NaN());
+      }
+    }
+
+    void pull(lbr_fri_idl::msg::LBRCommand &lbr_command) const {
+      // populate command message
+      for (std::size_t i = 0; i < lbr_fri_ros2::N_JNTS; ++i) {
+        lbr_command.joint_position[i] = joint_position[i]->get_value();
+        lbr_command.torque[i] = torque[i]->get_value();
+      }
+      for (std::size_t i = 0; i < lbr_fri_ros2::CARTESIAN_DOF; ++i) {
+        lbr_command.wrench[i] = wrench[i]->get_value();
+      }
     }
   };
 
-  struct StateKeys {
+  struct StateInterfaceHandles {
 #if FRI_CLIENT_VERSION_MAJOR == 1
-    lbr_fri_ros2::jnt_name_array_t commanded_joint_position;
+    std::array<hardware_interface::StateInterface::SharedPtr, lbr_fri_ros2::N_JNTS>
+        commanded_joint_position;
 #endif
-    lbr_fri_ros2::jnt_name_array_t commanded_torque, ipo_joint_position, position, external_torque,
-        effort, velocity;
-    std::string sample_time, session_state, connection_quality, safety_state, operation_mode,
-        drive_state, client_command_mode, overlay_type, control_mode, time_stamp_sec,
-        time_stamp_nano_sec, tracking_performance;
+    std::array<hardware_interface::StateInterface::SharedPtr, lbr_fri_ros2::N_JNTS>
+        commanded_torque, ipo_joint_position, position, external_torque, effort, velocity;
+    hardware_interface::StateInterface::SharedPtr sample_time, session_state, connection_quality,
+        safety_state, operation_mode, drive_state, client_command_mode, overlay_type, control_mode,
+        time_stamp_sec, time_stamp_nano_sec, tracking_performance;
 
-    void populate_keys(const hardware_interface::HardwareInfo &info) {
+    void populate(const hardware_interface::SystemInterface &si) {
+      const auto &info = si.get_hardware_info();
       for (std::size_t i = 0; i < lbr_fri_ros2::N_JNTS; ++i) {
-        auto joint_name = info.joints[i].name;
+        const auto &joint_name = info.joints[i].name;
 #if FRI_CLIENT_VERSION_MAJOR == 1
-        commanded_joint_position[i] = joint_name + "/" + HW_IF_COMMANDED_JOINT_POSITION;
+        commanded_joint_position[i] =
+            si.get_state_interface_handle(joint_name + "/" + HW_IF_COMMANDED_JOINT_POSITION);
 #endif
-        commanded_torque[i] = joint_name + "/" + HW_IF_COMMANDED_TORQUE;
-        ipo_joint_position[i] = joint_name + "/" + HW_IF_IPO_JOINT_POSITION;
-        position[i] = joint_name + "/" + hardware_interface::HW_IF_POSITION;
-        external_torque[i] = joint_name + "/" + HW_IF_EXTERNAL_TORQUE;
-        effort[i] = joint_name + "/" + hardware_interface::HW_IF_EFFORT;
-        velocity[i] = joint_name + "/" + hardware_interface::HW_IF_VELOCITY;
+        commanded_torque[i] =
+            si.get_state_interface_handle(joint_name + "/" + HW_IF_COMMANDED_TORQUE);
+        ipo_joint_position[i] =
+            si.get_state_interface_handle(joint_name + "/" + HW_IF_IPO_JOINT_POSITION);
+        position[i] =
+            si.get_state_interface_handle(joint_name + "/" + hardware_interface::HW_IF_POSITION);
+        external_torque[i] =
+            si.get_state_interface_handle(joint_name + "/" + HW_IF_EXTERNAL_TORQUE);
+        effort[i] =
+            si.get_state_interface_handle(joint_name + "/" + hardware_interface::HW_IF_EFFORT);
+        velocity[i] =
+            si.get_state_interface_handle(joint_name + "/" + hardware_interface::HW_IF_VELOCITY);
       }
 
-      sample_time = std::string(HW_IF_AUXILIARY_PREFIX) + "/" + HW_IF_SAMPLE_TIME;
-      session_state = std::string(HW_IF_AUXILIARY_PREFIX) + "/" + HW_IF_SESSION_STATE;
-      connection_quality = std::string(HW_IF_AUXILIARY_PREFIX) + "/" + HW_IF_CONNECTION_QUALITY;
-      safety_state = std::string(HW_IF_AUXILIARY_PREFIX) + "/" + HW_IF_SAFETY_STATE;
-      operation_mode = std::string(HW_IF_AUXILIARY_PREFIX) + "/" + HW_IF_OPERATION_MODE;
-      drive_state = std::string(HW_IF_AUXILIARY_PREFIX) + "/" + HW_IF_DRIVE_STATE;
-      client_command_mode = std::string(HW_IF_AUXILIARY_PREFIX) + "/" + HW_IF_CLIENT_COMMAND_MODE;
-      overlay_type = std::string(HW_IF_AUXILIARY_PREFIX) + "/" + HW_IF_OVERLAY_TYPE;
-      control_mode = std::string(HW_IF_AUXILIARY_PREFIX) + "/" + HW_IF_CONTROL_MODE;
-      time_stamp_sec = std::string(HW_IF_AUXILIARY_PREFIX) + "/" + HW_IF_TIME_STAMP_SEC;
-      time_stamp_nano_sec = std::string(HW_IF_AUXILIARY_PREFIX) + "/" + HW_IF_TIME_STAMP_NANO_SEC;
-      tracking_performance = std::string(HW_IF_AUXILIARY_PREFIX) + "/" + HW_IF_TRACKING_PERFORMANCE;
+      sample_time = si.get_state_interface_handle(std::string(HW_IF_AUXILIARY_PREFIX) + "/" +
+                                                  HW_IF_SAMPLE_TIME);
+      session_state = si.get_state_interface_handle(std::string(HW_IF_AUXILIARY_PREFIX) + "/" +
+                                                    HW_IF_SESSION_STATE);
+      connection_quality = si.get_state_interface_handle(std::string(HW_IF_AUXILIARY_PREFIX) + "/" +
+                                                         HW_IF_CONNECTION_QUALITY);
+      safety_state = si.get_state_interface_handle(std::string(HW_IF_AUXILIARY_PREFIX) + "/" +
+                                                   HW_IF_SAFETY_STATE);
+      operation_mode = si.get_state_interface_handle(std::string(HW_IF_AUXILIARY_PREFIX) + "/" +
+                                                     HW_IF_OPERATION_MODE);
+      drive_state = si.get_state_interface_handle(std::string(HW_IF_AUXILIARY_PREFIX) + "/" +
+                                                  HW_IF_DRIVE_STATE);
+      client_command_mode = si.get_state_interface_handle(std::string(HW_IF_AUXILIARY_PREFIX) +
+                                                          "/" + HW_IF_CLIENT_COMMAND_MODE);
+      overlay_type = si.get_state_interface_handle(std::string(HW_IF_AUXILIARY_PREFIX) + "/" +
+                                                   HW_IF_OVERLAY_TYPE);
+      control_mode = si.get_state_interface_handle(std::string(HW_IF_AUXILIARY_PREFIX) + "/" +
+                                                   HW_IF_CONTROL_MODE);
+      time_stamp_sec = si.get_state_interface_handle(std::string(HW_IF_AUXILIARY_PREFIX) + "/" +
+                                                     HW_IF_TIME_STAMP_SEC);
+      time_stamp_nano_sec = si.get_state_interface_handle(std::string(HW_IF_AUXILIARY_PREFIX) +
+                                                          "/" + HW_IF_TIME_STAMP_NANO_SEC);
+      tracking_performance = si.get_state_interface_handle(std::string(HW_IF_AUXILIARY_PREFIX) +
+                                                           "/" + HW_IF_TRACKING_PERFORMANCE);
+    }
+
+    void nan_interfaces() const {
+      // joint state interfaces
+      for (std::size_t i = 0; i < lbr_fri_ros2::N_JNTS; ++i) {
+        position[i]->set_value(std::numeric_limits<double>::quiet_NaN());
+#if FRI_CLIENT_VERSION_MAJOR == 1
+        commanded_joint_position[i]->set_value(std::numeric_limits<double>::quiet_NaN());
+#endif
+        effort[i]->set_value(std::numeric_limits<double>::quiet_NaN());
+        commanded_torque[i]->set_value(std::numeric_limits<double>::quiet_NaN());
+        external_torque[i]->set_value(std::numeric_limits<double>::quiet_NaN());
+        ipo_joint_position[i]->set_value(std::numeric_limits<double>::quiet_NaN());
+        velocity[i]->set_value(std::numeric_limits<double>::quiet_NaN());
+      }
+      sample_time->set_value(std::numeric_limits<double>::quiet_NaN());
+      tracking_performance->set_value(std::numeric_limits<double>::quiet_NaN());
+      session_state->set_value(std::numeric_limits<double>::quiet_NaN());
+      connection_quality->set_value(std::numeric_limits<double>::quiet_NaN());
+      safety_state->set_value(std::numeric_limits<double>::quiet_NaN());
+      operation_mode->set_value(std::numeric_limits<double>::quiet_NaN());
+      drive_state->set_value(std::numeric_limits<double>::quiet_NaN());
+      client_command_mode->set_value(std::numeric_limits<double>::quiet_NaN());
+      overlay_type->set_value(std::numeric_limits<double>::quiet_NaN());
+      control_mode->set_value(std::numeric_limits<double>::quiet_NaN());
+      time_stamp_sec->set_value(std::numeric_limits<double>::quiet_NaN());
+      time_stamp_nano_sec->set_value(std::numeric_limits<double>::quiet_NaN());
+    }
+
+    void
+    push(const lbr_fri_idl::msg::LBRState &lbr_state,
+         const lbr_fri_idl::msg::LBRState::_measured_joint_position_type &velocity_estimate) const {
+      // set the joint state interfaces
+      for (std::size_t i = 0; i < lbr_fri_ros2::N_JNTS; ++i) {
+#if FRI_CLIENT_VERSION_MAJOR == 1
+        commanded_joint_position[i]->set_value(lbr_state.commanded_joint_position[i]);
+#endif
+        commanded_torque[i]->set_value(lbr_state.commanded_torque[i]);
+        ipo_joint_position[i]->set_value(lbr_state.ipo_joint_position[i]);
+        position[i]->set_value(lbr_state.measured_joint_position[i]);
+        external_torque[i]->set_value(lbr_state.external_torque[i]);
+        effort[i]->set_value(lbr_state.measured_torque[i]);
+        velocity[i]->set_value(velocity_estimate[i]);
+      }
+
+      // state interfaces without cast
+      sample_time->set_value(lbr_state.sample_time);
+      tracking_performance->set_value(lbr_state.tracking_performance);
+
+      // state interfaces with cast
+      session_state->set_value(static_cast<double>(lbr_state.session_state));
+      connection_quality->set_value(static_cast<double>(lbr_state.connection_quality));
+      safety_state->set_value(static_cast<double>(lbr_state.safety_state));
+      operation_mode->set_value(static_cast<double>(lbr_state.operation_mode));
+      drive_state->set_value(static_cast<double>(lbr_state.drive_state));
+      client_command_mode->set_value(static_cast<double>(lbr_state.client_command_mode));
+      overlay_type->set_value(static_cast<double>(lbr_state.overlay_type));
+      control_mode->set_value(static_cast<double>(lbr_state.control_mode));
+      time_stamp_sec->set_value(static_cast<double>(lbr_state.time_stamp_sec));
+      time_stamp_nano_sec->set_value(static_cast<double>(lbr_state.time_stamp_nano_sec));
     }
   };
 
@@ -189,9 +302,9 @@ protected:
   lbr_fri_idl::msg::LBRCommand lbr_command_;
   lbr_fri_idl::msg::LBRState lbr_state_;
 
-  // keys for command / state interfaces
-  CommandKeys command_keys_;
-  StateKeys state_keys_;
+  // interface handles for commands / states
+  CommandInterfaceHandles command_if_handles_;
+  StateInterfaceHandles state_if_handles_;
 };
 } // namespace lbr_ros2_control
 #endif // LBR_ROS2_CONTROL__SYSTEM_INTERFACE_HPP_
