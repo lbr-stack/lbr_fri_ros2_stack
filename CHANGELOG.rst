@@ -3,7 +3,17 @@ Changelog for package LBR FRI ROS 2 Stack
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Jazzy v2.x (TBD)
 --------------------------
+* ``lbr_bringup``:
+
+  * Adds a dedicated ``namespace`` argument to mock / hardware launch files.
+  * Fix the MoveIt servo node name.
 * ``lbr_demos``: Replace ``ament_target_dependencies`` with ``target_link_libraries``.
+* ``lbr_description``:
+
+  * Sets the ``k_velocity`` to fix the safety limits for effort client command modes.
+  * Removes the controller-related parts from the ``*_description.xacro`` files, now named ``*.urdf.xacro``.
+  * Fix tests.
+  * Depend on ``ament_cmake_pytest`` for tests only.
 * ``lbr_fri_ros2``:
 
   * Replace ``ament_target_dependencies`` with ``target_link_libraries``.
@@ -13,17 +23,9 @@ Jazzy v2.x (TBD)
   * Migrates to the new ``ros2_control`` interface handles: https://github.com/ros-controls/ros2_control/pull/2831.
   * Uses the joint limits as obtained from the joints inside the URDF, previously redundant in ``<command_interface>`` tags. 
   * Replace ``ament_target_dependencies`` with ``target_link_libraries``.
-
-* ``lbr_bringup``: Adds a dedicated ``namespace`` argument to mock / hardware launch files.
-* ``lbr_description``:
-
-  * Sets the ``k_velocity`` to fix the safety limits for effort client command modes.
-  * Removes the controller-related parts from the ``*_description.xacro`` files, now named ``*.urdf.xacro``.
-  * Fix tests.
-  * Depend on ``ament_cmake_pytest`` for tests only.
-
 * Related pull requests:
 
+  * MoveIt fix: https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/379
   * Namespace argument: https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/344, https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/353
   * Effort limits: https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/357
   * URDF de-coupling: https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/359
