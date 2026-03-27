@@ -55,10 +55,6 @@ SystemInterface::on_init(const hardware_interface::HardwareComponentInterfacePar
     return controller_interface::CallbackReturn::ERROR;
   }
 
-  // populate the keys
-  command_keys_.populate_keys(info_);
-  state_keys_.populate_keys(info_);
-
   // perform verifications
   if (!verify_number_of_joints_()) {
     return controller_interface::CallbackReturn::ERROR;
@@ -104,6 +100,10 @@ SystemInterface::on_configure(const rclcpp_lifecycle::State &) {
 }
 
 controller_interface::CallbackReturn SystemInterface::on_activate(const rclcpp_lifecycle::State &) {
+  // populate the interface handles
+  command_if_handles_.populate(*this);
+  state_if_handles_.populate(*this);
+
   // nan all command and state interfaces (this might be removed in the future with ros2_control
   // handling them now)
   nan_command_interfaces_();
@@ -160,6 +160,8 @@ controller_interface::CallbackReturn SystemInterface::on_activate(const rclcpp_l
     }
     std::this_thread::sleep_for(std::chrono::seconds(1));
   }
+  // initialize the previous session state
+  previous_session_state_ = static_cast<KUKA::FRI::ESessionState>(state.session_state);
   return controller_interface::CallbackReturn::SUCCESS;
 }
 
@@ -191,9 +193,8 @@ hardware_interface::return_type SystemInterface::read(const rclcpp::Time & /*tim
   }
 
   // exit once robot exits COMMANDING_ACTIVE (for safety)
-  if (exit_commanding_active_(
-          static_cast<KUKA::FRI::ESessionState>(get_state(state_keys_.session_state)),
-          static_cast<KUKA::FRI::ESessionState>(lbr_state_.session_state))) {
+  auto current_session_state = static_cast<KUKA::FRI::ESessionState>(lbr_state_.session_state);
+  if (exit_commanding_active_(previous_session_state_, current_session_state)) {
     RCLCPP_ERROR_STREAM(get_node()->get_logger(),
                         lbr_fri_ros2::ColorScheme::ERROR
                             << "LBR left COMMANDING_ACTIVE. Please re-run lbr_bringup"
@@ -202,58 +203,28 @@ hardware_interface::return_type SystemInterface::read(const rclcpp::Time & /*tim
     app_ptr_->close_udp_socket();
     return hardware_interface::return_type::ERROR;
   }
+  previous_session_state_ = current_session_state;
+
+  // compute velocity
+  compute_velocity_();
 
   // set the joint state interfaces
-  for (std::size_t i = 0; i < lbr_fri_ros2::N_JNTS; ++i) {
-#if FRI_CLIENT_VERSION_MAJOR == 1
-    set_state(state_keys_.commanded_joint_position[i], lbr_state_.commanded_joint_position[i]);
-#endif
-    set_state(state_keys_.commanded_torque[i], lbr_state_.commanded_torque[i]);
-    set_state(state_keys_.ipo_joint_position[i], lbr_state_.ipo_joint_position[i]);
-    set_state(state_keys_.position[i], lbr_state_.measured_joint_position[i]);
-    set_state(state_keys_.external_torque[i], lbr_state_.external_torque[i]);
-    set_state(state_keys_.effort[i], lbr_state_.measured_torque[i]);
-    set_state(state_keys_.velocity[i], velocity_[i]);
-  }
+  state_if_handles_.push(lbr_state_, velocity_);
 
-  // state interfaces without
-  set_state(state_keys_.sample_time, lbr_state_.sample_time);
-  set_state(state_keys_.tracking_performance, lbr_state_.tracking_performance);
-
-  // state interfaces with cast
-  set_state(state_keys_.session_state, static_cast<double>(lbr_state_.session_state));
-  set_state(state_keys_.connection_quality, static_cast<double>(lbr_state_.connection_quality));
-  set_state(state_keys_.safety_state, static_cast<double>(lbr_state_.safety_state));
-  set_state(state_keys_.operation_mode, static_cast<double>(lbr_state_.operation_mode));
-  set_state(state_keys_.drive_state, static_cast<double>(lbr_state_.drive_state));
-  set_state(state_keys_.client_command_mode, static_cast<double>(lbr_state_.client_command_mode));
-  set_state(state_keys_.overlay_type, static_cast<double>(lbr_state_.overlay_type));
-  set_state(state_keys_.control_mode, static_cast<double>(lbr_state_.control_mode));
-  set_state(state_keys_.time_stamp_sec, static_cast<double>(lbr_state_.time_stamp_sec));
-  set_state(state_keys_.time_stamp_nano_sec, static_cast<double>(lbr_state_.time_stamp_nano_sec));
-
-  // additional velocity state interface
-  compute_velocity_();
   update_last_states_();
   return hardware_interface::return_type::OK;
 }
 
 hardware_interface::return_type SystemInterface::write(const rclcpp::Time & /*time*/,
                                                        const rclcpp::Duration & /*period*/) {
-  if (static_cast<KUKA::FRI::ESessionState>(get_state(state_keys_.session_state)) !=
-      KUKA::FRI::COMMANDING_ACTIVE) {
+  if (lbr_state_.session_state != KUKA::FRI::COMMANDING_ACTIVE) {
     return hardware_interface::return_type::OK;
   }
 
   // populate command message
-  for (std::size_t i = 0; i < lbr_fri_ros2::N_JNTS; ++i) {
-    lbr_command_.joint_position[i] = get_command(command_keys_.joint_position[i]);
-    lbr_command_.torque[i] = get_command(command_keys_.torque[i]);
-  }
-  for (std::size_t i = 0; i < lbr_fri_ros2::CARTESIAN_DOF; ++i) {
-    lbr_command_.wrench[i] = get_command(command_keys_.wrench[i]);
-  }
+  command_if_handles_.pull(lbr_command_);
 
+  // forward message to fri
   async_client_ptr_->get_command_interface()->buffer_command_target(lbr_command_);
   return hardware_interface::return_type::OK;
 }
@@ -337,49 +308,9 @@ bool SystemInterface::parse_parameters_() {
   return true;
 }
 
-void SystemInterface::nan_command_interfaces_() {
-  for (std::size_t i = 0; i < lbr_fri_ros2::N_JNTS; ++i) {
-    set_command(command_keys_.joint_position[i], std::numeric_limits<double>::quiet_NaN());
-    set_command(command_keys_.torque[i], std::numeric_limits<double>::quiet_NaN());
-  }
-  for (std::size_t i = 0; i < lbr_fri_ros2::CARTESIAN_DOF; ++i) {
-    set_command(command_keys_.wrench[i], std::numeric_limits<double>::quiet_NaN());
-  }
-}
+void SystemInterface::nan_command_interfaces_() { command_if_handles_.nan_interfaces(); }
 
-void SystemInterface::nan_state_interfaces_() {
-  // joint state interfaces
-  for (std::size_t i = 0; i < lbr_fri_ros2::N_JNTS; ++i) {
-    set_state(state_keys_.position[i], std::numeric_limits<double>::quiet_NaN());
-#if FRI_CLIENT_VERSION_MAJOR == 1
-    set_state(state_keys_.commanded_joint_position[i], std::numeric_limits<double>::quiet_NaN());
-#endif
-    set_state(state_keys_.effort[i], std::numeric_limits<double>::quiet_NaN());
-    set_state(state_keys_.commanded_torque[i], std::numeric_limits<double>::quiet_NaN());
-    set_state(state_keys_.external_torque[i], std::numeric_limits<double>::quiet_NaN());
-    set_state(state_keys_.ipo_joint_position[i], std::numeric_limits<double>::quiet_NaN());
-    set_state(state_keys_.velocity[i], std::numeric_limits<double>::quiet_NaN());
-  }
-
-  // state interface without cast
-  set_state(state_keys_.sample_time, std::numeric_limits<double>::quiet_NaN());
-  set_state(state_keys_.tracking_performance, std::numeric_limits<double>::quiet_NaN());
-
-  // state interfaces with cast
-  set_state(state_keys_.session_state, std::numeric_limits<double>::quiet_NaN());
-  set_state(state_keys_.connection_quality, std::numeric_limits<double>::quiet_NaN());
-  set_state(state_keys_.safety_state, std::numeric_limits<double>::quiet_NaN());
-  set_state(state_keys_.operation_mode, std::numeric_limits<double>::quiet_NaN());
-  set_state(state_keys_.drive_state, std::numeric_limits<double>::quiet_NaN());
-  set_state(state_keys_.client_command_mode, std::numeric_limits<double>::quiet_NaN());
-  set_state(state_keys_.overlay_type, std::numeric_limits<double>::quiet_NaN());
-  set_state(state_keys_.control_mode, std::numeric_limits<double>::quiet_NaN());
-  set_state(state_keys_.time_stamp_sec, std::numeric_limits<double>::quiet_NaN());
-  set_state(state_keys_.time_stamp_nano_sec, std::numeric_limits<double>::quiet_NaN());
-
-  // additional velocity state interface
-  velocity_.fill(std::numeric_limits<double>::quiet_NaN());
-}
+void SystemInterface::nan_state_interfaces_() { state_if_handles_.nan_interfaces(); }
 
 bool SystemInterface::verify_number_of_joints_() {
   if (info_.joints.size() != lbr_fri_ros2::N_JNTS) {
@@ -567,10 +498,10 @@ void SystemInterface::nan_last_states_() {
 
 void SystemInterface::update_last_states_() {
   for (std::size_t i = 0; i < lbr_fri_ros2::N_JNTS; ++i) {
-    last_measured_joint_position_[i] = get_state(state_keys_.position[i]);
+    last_measured_joint_position_[i] = lbr_state_.measured_joint_position[i];
   }
-  last_time_stamp_sec_ = get_state(state_keys_.time_stamp_sec);
-  last_time_stamp_nano_sec_ = get_state(state_keys_.time_stamp_nano_sec);
+  last_time_stamp_sec_ = lbr_state_.time_stamp_sec;
+  last_time_stamp_nano_sec_ = lbr_state_.time_stamp_nano_sec;
 }
 
 void SystemInterface::compute_velocity_() {
@@ -579,8 +510,8 @@ void SystemInterface::compute_velocity_() {
     return;
   }
 
-  auto time_stamp_sec = get_state(state_keys_.time_stamp_sec);
-  auto time_stamp_nano_sec = get_state(state_keys_.time_stamp_nano_sec);
+  const double time_stamp_sec = lbr_state_.time_stamp_sec;
+  const double time_stamp_nano_sec = lbr_state_.time_stamp_nano_sec;
 
   // state wasn't updated
   if (last_time_stamp_sec_ == time_stamp_sec && last_time_stamp_nano_sec_ == time_stamp_nano_sec) {
@@ -589,8 +520,11 @@ void SystemInterface::compute_velocity_() {
 
   double dt = time_stamps_to_sec_(time_stamp_sec, time_stamp_nano_sec) -
               time_stamps_to_sec_(last_time_stamp_sec_, last_time_stamp_nano_sec_);
+  if (dt <= 0) {
+    return;
+  }
   for (std::size_t i = 0; i < lbr_fri_ros2::N_JNTS; ++i) {
-    velocity_[i] = (get_state(state_keys_.position[i]) - last_measured_joint_position_[i]) / dt;
+    velocity_[i] = (lbr_state_.measured_joint_position[i] - last_measured_joint_position_[i]) / dt;
   }
 }
 
