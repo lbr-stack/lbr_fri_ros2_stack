@@ -3,28 +3,38 @@ Changelog for package LBR FRI ROS 2 Stack
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Jazzy v2.x (TBD)
 --------------------------
-* ``lbr_demos``: Replace ``ament_target_dependencies`` with ``target_link_libraries``.
-* ``lbr_fri_ros2``:
+* ``lbr_bringup``:
+
+  * Adds a dedicated ``namespace`` argument to mock / hardware launch files.
+  * Fix the MoveIt servo node name.
+* ``lbr_demos``:
 
   * Replace ``ament_target_dependencies`` with ``target_link_libraries``.
-  * Provide default for ``StateInterfaceParameters`` to fix test.
-* ``lbr_ros2_control``: Replace ``ament_target_dependencies`` with ``target_link_libraries``.
-
-* ``lbr_bringup``: Adds a dedicated ``namespace`` argument to mock / hardware launch files.
+  * ``lbr_moveit``: Add missing ``pynput`` dependency and fix dataclasses.
 * ``lbr_description``:
 
   * Sets the ``k_velocity`` to fix the safety limits for effort client command modes.
   * Removes the controller-related parts from the ``*_description.xacro`` files, now named ``*.urdf.xacro``.
   * Fix tests.
   * Depend on ``ament_cmake_pytest`` for tests only.
-* ``lbr_ros2_control``: Uses the joint limits as obtained from the joints inside the URDF, previously redundant in ``<command_interface>`` tags. 
+* ``lbr_fri_ros2``:
+
+  * Replace ``ament_target_dependencies`` with ``target_link_libraries``.
+  * Provide default for ``StateInterfaceParameters`` to fix test.
+* ``lbr_ros2_control``: 
+
+  * Migrates to the new ``ros2_control`` interface handles: https://github.com/ros-controls/ros2_control/pull/2831.
+  * Uses the joint limits as obtained from the joints inside the URDF, previously redundant in ``<command_interface>`` tags. 
+  * Replace ``ament_target_dependencies`` with ``target_link_libraries``.
 * Related pull requests:
 
+  * MoveIt fix: https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/379
   * Namespace argument: https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/344, https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/353
   * Effort limits: https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/357
   * URDF de-coupling: https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/359
   * Ament target dependencies: https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/364
   * Test fixes: https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/367, https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/373
+  * Interface migration: https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/378
 
 Jazzy v2.4.3 (2025-12-09)
 --------------------------
