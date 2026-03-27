@@ -86,22 +86,22 @@ protected:
 
     void nan_interfaces() const {
       for (std::size_t i = 0; i < lbr_fri_ros2::N_JNTS; ++i) {
-        joint_position[i]->set_value(std::numeric_limits<double>::quiet_NaN());
-        torque[i]->set_value(std::numeric_limits<double>::quiet_NaN());
+        std::ignore = joint_position[i]->set_value(std::numeric_limits<double>::quiet_NaN());
+        std::ignore = torque[i]->set_value(std::numeric_limits<double>::quiet_NaN());
       }
       for (std::size_t i = 0; i < lbr_fri_ros2::CARTESIAN_DOF; ++i) {
-        wrench[i]->set_value(std::numeric_limits<double>::quiet_NaN());
+        std::ignore = wrench[i]->set_value(std::numeric_limits<double>::quiet_NaN());
       }
     }
 
     void pull(lbr_fri_idl::msg::LBRCommand &lbr_command) const {
       // populate command message
       for (std::size_t i = 0; i < lbr_fri_ros2::N_JNTS; ++i) {
-        lbr_command.joint_position[i] = joint_position[i]->get_value();
-        lbr_command.torque[i] = torque[i]->get_value();
+        lbr_command.joint_position[i] = joint_position[i]->get_optional().value();
+        lbr_command.torque[i] = torque[i]->get_optional().value();
       }
       for (std::size_t i = 0; i < lbr_fri_ros2::CARTESIAN_DOF; ++i) {
-        lbr_command.wrench[i] = wrench[i]->get_value();
+        lbr_command.wrench[i] = wrench[i]->get_optional().value();
       }
     }
   };
@@ -168,28 +168,29 @@ protected:
     void nan_interfaces() const {
       // joint state interfaces
       for (std::size_t i = 0; i < lbr_fri_ros2::N_JNTS; ++i) {
-        position[i]->set_value(std::numeric_limits<double>::quiet_NaN());
+        std::ignore = position[i]->set_value(std::numeric_limits<double>::quiet_NaN());
 #if FRI_CLIENT_VERSION_MAJOR == 1
-        commanded_joint_position[i]->set_value(std::numeric_limits<double>::quiet_NaN());
+        std::ignore =
+            commanded_joint_position[i]->set_value(std::numeric_limits<double>::quiet_NaN());
 #endif
-        effort[i]->set_value(std::numeric_limits<double>::quiet_NaN());
-        commanded_torque[i]->set_value(std::numeric_limits<double>::quiet_NaN());
-        external_torque[i]->set_value(std::numeric_limits<double>::quiet_NaN());
-        ipo_joint_position[i]->set_value(std::numeric_limits<double>::quiet_NaN());
-        velocity[i]->set_value(std::numeric_limits<double>::quiet_NaN());
+        std::ignore = effort[i]->set_value(std::numeric_limits<double>::quiet_NaN());
+        std::ignore = commanded_torque[i]->set_value(std::numeric_limits<double>::quiet_NaN());
+        std::ignore = external_torque[i]->set_value(std::numeric_limits<double>::quiet_NaN());
+        std::ignore = ipo_joint_position[i]->set_value(std::numeric_limits<double>::quiet_NaN());
+        std::ignore = velocity[i]->set_value(std::numeric_limits<double>::quiet_NaN());
       }
-      sample_time->set_value(std::numeric_limits<double>::quiet_NaN());
-      tracking_performance->set_value(std::numeric_limits<double>::quiet_NaN());
-      session_state->set_value(std::numeric_limits<double>::quiet_NaN());
-      connection_quality->set_value(std::numeric_limits<double>::quiet_NaN());
-      safety_state->set_value(std::numeric_limits<double>::quiet_NaN());
-      operation_mode->set_value(std::numeric_limits<double>::quiet_NaN());
-      drive_state->set_value(std::numeric_limits<double>::quiet_NaN());
-      client_command_mode->set_value(std::numeric_limits<double>::quiet_NaN());
-      overlay_type->set_value(std::numeric_limits<double>::quiet_NaN());
-      control_mode->set_value(std::numeric_limits<double>::quiet_NaN());
-      time_stamp_sec->set_value(std::numeric_limits<double>::quiet_NaN());
-      time_stamp_nano_sec->set_value(std::numeric_limits<double>::quiet_NaN());
+      std::ignore = sample_time->set_value(std::numeric_limits<double>::quiet_NaN());
+      std::ignore = tracking_performance->set_value(std::numeric_limits<double>::quiet_NaN());
+      std::ignore = session_state->set_value(std::numeric_limits<double>::quiet_NaN());
+      std::ignore = connection_quality->set_value(std::numeric_limits<double>::quiet_NaN());
+      std::ignore = safety_state->set_value(std::numeric_limits<double>::quiet_NaN());
+      std::ignore = operation_mode->set_value(std::numeric_limits<double>::quiet_NaN());
+      std::ignore = drive_state->set_value(std::numeric_limits<double>::quiet_NaN());
+      std::ignore = client_command_mode->set_value(std::numeric_limits<double>::quiet_NaN());
+      std::ignore = overlay_type->set_value(std::numeric_limits<double>::quiet_NaN());
+      std::ignore = control_mode->set_value(std::numeric_limits<double>::quiet_NaN());
+      std::ignore = time_stamp_sec->set_value(std::numeric_limits<double>::quiet_NaN());
+      std::ignore = time_stamp_nano_sec->set_value(std::numeric_limits<double>::quiet_NaN());
     }
 
     void
@@ -198,31 +199,34 @@ protected:
       // set the joint state interfaces
       for (std::size_t i = 0; i < lbr_fri_ros2::N_JNTS; ++i) {
 #if FRI_CLIENT_VERSION_MAJOR == 1
-        commanded_joint_position[i]->set_value(lbr_state.commanded_joint_position[i]);
+        std::ignore = commanded_joint_position[i]->set_value(lbr_state.commanded_joint_position[i]);
 #endif
-        commanded_torque[i]->set_value(lbr_state.commanded_torque[i]);
-        ipo_joint_position[i]->set_value(lbr_state.ipo_joint_position[i]);
-        position[i]->set_value(lbr_state.measured_joint_position[i]);
-        external_torque[i]->set_value(lbr_state.external_torque[i]);
-        effort[i]->set_value(lbr_state.measured_torque[i]);
-        velocity[i]->set_value(velocity_estimate[i]);
+        std::ignore = commanded_torque[i]->set_value(lbr_state.commanded_torque[i]);
+        std::ignore = ipo_joint_position[i]->set_value(lbr_state.ipo_joint_position[i]);
+        std::ignore = position[i]->set_value(lbr_state.measured_joint_position[i]);
+        std::ignore = external_torque[i]->set_value(lbr_state.external_torque[i]);
+        std::ignore = effort[i]->set_value(lbr_state.measured_torque[i]);
+        std::ignore = velocity[i]->set_value(velocity_estimate[i]);
       }
 
       // state interfaces without cast
-      sample_time->set_value(lbr_state.sample_time);
-      tracking_performance->set_value(lbr_state.tracking_performance);
+      std::ignore = sample_time->set_value(lbr_state.sample_time);
+      std::ignore = tracking_performance->set_value(lbr_state.tracking_performance);
 
       // state interfaces with cast
-      session_state->set_value(static_cast<double>(lbr_state.session_state));
-      connection_quality->set_value(static_cast<double>(lbr_state.connection_quality));
-      safety_state->set_value(static_cast<double>(lbr_state.safety_state));
-      operation_mode->set_value(static_cast<double>(lbr_state.operation_mode));
-      drive_state->set_value(static_cast<double>(lbr_state.drive_state));
-      client_command_mode->set_value(static_cast<double>(lbr_state.client_command_mode));
-      overlay_type->set_value(static_cast<double>(lbr_state.overlay_type));
-      control_mode->set_value(static_cast<double>(lbr_state.control_mode));
-      time_stamp_sec->set_value(static_cast<double>(lbr_state.time_stamp_sec));
-      time_stamp_nano_sec->set_value(static_cast<double>(lbr_state.time_stamp_nano_sec));
+      std::ignore = session_state->set_value(static_cast<double>(lbr_state.session_state));
+      std::ignore =
+          connection_quality->set_value(static_cast<double>(lbr_state.connection_quality));
+      std::ignore = safety_state->set_value(static_cast<double>(lbr_state.safety_state));
+      std::ignore = operation_mode->set_value(static_cast<double>(lbr_state.operation_mode));
+      std::ignore = drive_state->set_value(static_cast<double>(lbr_state.drive_state));
+      std::ignore =
+          client_command_mode->set_value(static_cast<double>(lbr_state.client_command_mode));
+      std::ignore = overlay_type->set_value(static_cast<double>(lbr_state.overlay_type));
+      std::ignore = control_mode->set_value(static_cast<double>(lbr_state.control_mode));
+      std::ignore = time_stamp_sec->set_value(static_cast<double>(lbr_state.time_stamp_sec));
+      std::ignore =
+          time_stamp_nano_sec->set_value(static_cast<double>(lbr_state.time_stamp_nano_sec));
     }
   };
 
@@ -285,6 +289,9 @@ protected:
   // robot driver
   std::shared_ptr<lbr_fri_ros2::AsyncClient> async_client_ptr_;
   std::unique_ptr<lbr_fri_ros2::App> app_ptr_;
+
+  // session state tracking
+  KUKA::FRI::ESessionState previous_session_state_;
 
   // velocity computation
   lbr_fri_idl::msg::LBRState::_measured_joint_position_type last_measured_joint_position_,

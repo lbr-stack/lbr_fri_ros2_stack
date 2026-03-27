@@ -160,6 +160,8 @@ controller_interface::CallbackReturn SystemInterface::on_activate(const rclcpp_l
     }
     std::this_thread::sleep_for(std::chrono::seconds(1));
   }
+  // initialize the previous session state
+  previous_session_state_ = static_cast<KUKA::FRI::ESessionState>(state.session_state);
   return controller_interface::CallbackReturn::SUCCESS;
 }
 
@@ -191,9 +193,8 @@ hardware_interface::return_type SystemInterface::read(const rclcpp::Time & /*tim
   }
 
   // exit once robot exits COMMANDING_ACTIVE (for safety)
-  if (exit_commanding_active_(
-          static_cast<KUKA::FRI::ESessionState>(state_if_handles_.session_state->get_value()),
-          static_cast<KUKA::FRI::ESessionState>(lbr_state_.session_state))) {
+  auto current_session_state = static_cast<KUKA::FRI::ESessionState>(lbr_state_.session_state);
+  if (exit_commanding_active_(previous_session_state_, current_session_state)) {
     RCLCPP_ERROR_STREAM(get_node()->get_logger(),
                         lbr_fri_ros2::ColorScheme::ERROR
                             << "LBR left COMMANDING_ACTIVE. Please re-run lbr_bringup"
@@ -202,20 +203,21 @@ hardware_interface::return_type SystemInterface::read(const rclcpp::Time & /*tim
     app_ptr_->close_udp_socket();
     return hardware_interface::return_type::ERROR;
   }
+  previous_session_state_ = current_session_state;
+
+  // compute velocity
+  compute_velocity_();
 
   // set the joint state interfaces
   state_if_handles_.push(lbr_state_, velocity_);
 
-  // additional velocity state interface
-  compute_velocity_();
   update_last_states_();
   return hardware_interface::return_type::OK;
 }
 
 hardware_interface::return_type SystemInterface::write(const rclcpp::Time & /*time*/,
                                                        const rclcpp::Duration & /*period*/) {
-  if (static_cast<KUKA::FRI::ESessionState>(state_if_handles_.session_state->get_value()) !=
-      KUKA::FRI::COMMANDING_ACTIVE) {
+  if (lbr_state_.session_state != KUKA::FRI::COMMANDING_ACTIVE) {
     return hardware_interface::return_type::OK;
   }
 
@@ -496,10 +498,10 @@ void SystemInterface::nan_last_states_() {
 
 void SystemInterface::update_last_states_() {
   for (std::size_t i = 0; i < lbr_fri_ros2::N_JNTS; ++i) {
-    last_measured_joint_position_[i] = state_if_handles_.position[i]->get_value();
+    last_measured_joint_position_[i] = lbr_state_.measured_joint_position[i];
   }
-  last_time_stamp_sec_ = state_if_handles_.time_stamp_sec->get_value();
-  last_time_stamp_nano_sec_ = state_if_handles_.time_stamp_nano_sec->get_value();
+  last_time_stamp_sec_ = lbr_state_.time_stamp_sec;
+  last_time_stamp_nano_sec_ = lbr_state_.time_stamp_nano_sec;
 }
 
 void SystemInterface::compute_velocity_() {
@@ -508,8 +510,8 @@ void SystemInterface::compute_velocity_() {
     return;
   }
 
-  auto time_stamp_sec = state_if_handles_.time_stamp_sec->get_value();
-  auto time_stamp_nano_sec = state_if_handles_.time_stamp_nano_sec->get_value();
+  const double time_stamp_sec = lbr_state_.time_stamp_sec;
+  const double time_stamp_nano_sec = lbr_state_.time_stamp_nano_sec;
 
   // state wasn't updated
   if (last_time_stamp_sec_ == time_stamp_sec && last_time_stamp_nano_sec_ == time_stamp_nano_sec) {
@@ -518,9 +520,11 @@ void SystemInterface::compute_velocity_() {
 
   double dt = time_stamps_to_sec_(time_stamp_sec, time_stamp_nano_sec) -
               time_stamps_to_sec_(last_time_stamp_sec_, last_time_stamp_nano_sec_);
+  if (dt <= 0) {
+    return;
+  }
   for (std::size_t i = 0; i < lbr_fri_ros2::N_JNTS; ++i) {
-    velocity_[i] =
-        (state_if_handles_.position[i]->get_value() - last_measured_joint_position_[i]) / dt;
+    velocity_[i] = (lbr_state_.measured_joint_position[i] - last_measured_joint_position_[i]) / dt;
   }
 }
 
