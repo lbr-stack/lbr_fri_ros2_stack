@@ -12,11 +12,13 @@
 
     <!-- add joints that connect the robots -->
     <joint name="lbr_one_base_joint" type="fixed">
+        <origin xyz="0 0.5 0" rpy="0 0 0" />
         <parent link="base_link" />
         <child link="lbr_one_link_0" />
     </joint>
 
     <joint name="lbr_two_base_joint" type="fixed">
+        <origin xyz="0 -0.5 0" rpy="0 0 0" />
         <parent link="base_link" />
         <child link="lbr_two_link_0" />
     </joint>
