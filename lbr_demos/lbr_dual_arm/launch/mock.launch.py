@@ -2,6 +2,7 @@ from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, RegisterEventHandler
 from launch.event_handlers import OnProcessStart
 from launch.substitutions import Command, FindExecutable, LaunchConfiguration, PathJoinSubstitution
+from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 from lbr_bringup.ros2_control import LBRROS2ControlMixin
 
@@ -37,24 +38,35 @@ def generate_launch_description() -> LaunchDescription:
                         "lbr_dual_arm.xacro",
                     ]
                 ),
-                " mode:=hardware",
+                " mode:=mock",
             ]
         )
     }
 
-    robot_state_publisher = LBRROS2ControlMixin.node_robot_state_publisher(
-        robot_description=robot_description,
-        robot_name=LaunchConfiguration("robot_name"),
-        use_sim_time=False,
+    ld.add_action(
+        LBRROS2ControlMixin.node_robot_state_publisher(
+            robot_description=robot_description,
+            robot_name=LaunchConfiguration("robot_name"),
+            use_sim_time=False,
+        )
     )
-    ld.add_action(robot_state_publisher)
 
-    ros2_control_node = LBRROS2ControlMixin.node_ros2_control(
-        robot_name=LaunchConfiguration("robot_name"),
-        use_sim_time=False,
-        robot_description=robot_description,
-        ctrl_cfg_pkg="lbr_dual_arm_description",
-        ctrl_cfg="ros2_control/dual_arm_controllers.yaml",
+    ros2_control_node = Node(
+        package="controller_manager",
+        executable="ros2_control_node",
+        parameters=[
+            {"use_sim_time": False},
+            PathJoinSubstitution(
+                [
+                    FindPackageShare("lbr_dual_arm_description"),
+                    "ros2_control",
+                    "dual_arm_controllers.yaml",
+                ]
+            ),
+            robot_description,
+        ],
+        namespace=LaunchConfiguration("robot_name"),
+        remappings=[("~/robot_description", "robot_description")],
     )
     ld.add_action(ros2_control_node)
 
@@ -67,11 +79,12 @@ def generate_launch_description() -> LaunchDescription:
         controller=LaunchConfiguration("ctrl"),
     )
 
-    controller_event_handler = RegisterEventHandler(
-        OnProcessStart(
-            target_action=ros2_control_node,
-            on_start=[joint_state_broadcaster, controller],
+    ld.add_action(
+        RegisterEventHandler(
+            OnProcessStart(
+                target_action=ros2_control_node,
+                on_start=[joint_state_broadcaster, controller],
+            )
         )
     )
-    ld.add_action(controller_event_handler)
     return ld
