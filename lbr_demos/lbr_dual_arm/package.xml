@@ -1,32 +1,25 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>lbr_bringup</name>
+  <name>lbr_dual_arm</name>
   <version>2.2.2</version>
-  <description>LBR launch files.</description>
+  <description>Dual-arm demo bringup and MoveIt launch package.</description>
   <maintainer email="m.huber_1994@hotmail.de">mhubii</maintainer>
   <license>Apache-2.0</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
-  <buildtool_depend>ament_cmake_python</buildtool_depend>
 
   <exec_depend>controller_manager</exec_depend>
-  <exec_depend>gz_ros2_control</exec_depend>
   <exec_depend>joint_state_broadcaster</exec_depend>
   <exec_depend>joint_trajectory_controller</exec_depend>
-  <exec_depend>lbr_description</exec_depend>
-  <exec_depend>lbr_fri_ros2</exec_depend>
-  <exec_depend>lbr_ros2_control</exec_depend>
-  <exec_depend>moveit_planners_chomp</exec_depend>
-  <exec_depend>moveit_planners_ompl</exec_depend>
-  <exec_depend>moveit_ros_move_group</exec_depend>
-  <exec_depend>moveit_servo</exec_depend>
-  <exec_depend>rclpy</exec_depend>
+  <exec_depend>lbr_bringup</exec_depend>
+  <exec_depend>lbr_dual_arm_description</exec_depend>
+  <exec_depend>lbr_dual_arm_moveit_config</exec_depend>
   <exec_depend>robot_state_publisher</exec_depend>
-  <exec_depend>ros_gz_sim</exec_depend>
-  <exec_depend>ros_gz_bridge</exec_depend>
-  <exec_depend>rviz2</exec_depend>
   <exec_depend>xacro</exec_depend>
+
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
 
   <export>
     <build_type>ament_cmake</build_type>

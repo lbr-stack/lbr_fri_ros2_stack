@@ -80,12 +80,6 @@ class LBRROS2ControlMixin:
         use_sim_time: Optional[Union[LaunchConfiguration, bool]] = LaunchConfiguration(
             "use_sim_time", default="false"
         ),
-        ctrl_cfg_pkg: Optional[Union[LaunchConfiguration, str]] = LaunchConfiguration(
-            "ctrl_cfg_pkg", default="lbr_description"
-        ),
-        ctrl_cfg: Optional[Union[LaunchConfiguration, str]] = LaunchConfiguration(
-            "ctrl_cfg", default="ros2_control/lbr_controllers.yaml"
-        ),
         robot_description: Optional[
             Dict[str, str]
         ] = {},  # required for certain ROS 2 controllers in Humble
@@ -98,8 +92,14 @@ class LBRROS2ControlMixin:
                 {"use_sim_time": use_sim_time},
                 PathJoinSubstitution(
                     [
-                        FindPackageShare(ctrl_cfg_pkg),
-                        ctrl_cfg,
+                        FindPackageShare(
+                            LaunchConfiguration(
+                                "ctrl_cfg_pkg", default="lbr_description"
+                            )
+                        ),
+                        LaunchConfiguration(
+                            "ctrl_cfg", default="ros2_control/lbr_controllers.yaml"
+                        ),
                     ]
                 ),
                 robot_description,
