@@ -62,7 +62,10 @@ def hidden_setup(context: LaunchContext) -> List[LaunchDescriptionEntity]:
                     "monitored_planning_scene",
                     PathJoinSubstitution([robot_name, "monitored_planning_scene"]),
                 ),
-                ("planning_scene", PathJoinSubstitution([robot_name, "planning_scene"])),
+                (
+                    "planning_scene",
+                    PathJoinSubstitution([robot_name, "planning_scene"]),
+                ),
                 (
                     "planning_scene_world",
                     PathJoinSubstitution([robot_name, "planning_scene_world"]),
