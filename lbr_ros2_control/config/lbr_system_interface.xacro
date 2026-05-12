@@ -48,7 +48,7 @@
             <!-- define lbr specific state interfaces as sensor, see
             https://github.com/ros-controls/roadmap/blob/master/design_drafts/components_architecture_and_urdf_examples.md -->
             <xacro:if value="${mode == 'hardware'}">
-                <sensor name="auxiliary_sensor">
+                <sensor name="${robot_name}_auxiliary_sensor">
                     <!-- see KUKA::FRI::LBRState -->
                     <state_interface name="sample_time" />
                     <state_interface name="session_state" />
@@ -66,7 +66,7 @@
 
                 <!-- FRI Cartesian impedance control mode -->
                 <gpio
-                    name="wrench">
+                    name="${robot_name}_wrench">
                     <command_interface name="force.x" />
                     <command_interface name="force.y" />
                     <command_interface name="force.z" />

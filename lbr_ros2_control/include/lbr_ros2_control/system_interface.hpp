@@ -71,17 +71,17 @@ protected:
             si.get_command_interface_handle(joint_name + "/" + hardware_interface::HW_IF_EFFORT);
       }
       wrench[0] =
-          si.get_command_interface_handle(std::string(HW_IF_WRENCH_PREFIX) + "/" + HW_IF_FORCE_X);
+          si.get_command_interface_handle(info.gpios[0].name + "/" + HW_IF_FORCE_X);
       wrench[1] =
-          si.get_command_interface_handle(std::string(HW_IF_WRENCH_PREFIX) + "/" + HW_IF_FORCE_Y);
+          si.get_command_interface_handle(info.gpios[0].name + "/" + HW_IF_FORCE_Y);
       wrench[2] =
-          si.get_command_interface_handle(std::string(HW_IF_WRENCH_PREFIX) + "/" + HW_IF_FORCE_Z);
+          si.get_command_interface_handle(info.gpios[0].name + "/" + HW_IF_FORCE_Z);
       wrench[3] =
-          si.get_command_interface_handle(std::string(HW_IF_WRENCH_PREFIX) + "/" + HW_IF_TORQUE_X);
+          si.get_command_interface_handle(info.gpios[0].name + "/" + HW_IF_TORQUE_X);
       wrench[4] =
-          si.get_command_interface_handle(std::string(HW_IF_WRENCH_PREFIX) + "/" + HW_IF_TORQUE_Y);
+          si.get_command_interface_handle(info.gpios[0].name + "/" + HW_IF_TORQUE_Y);
       wrench[5] =
-          si.get_command_interface_handle(std::string(HW_IF_WRENCH_PREFIX) + "/" + HW_IF_TORQUE_Z);
+          si.get_command_interface_handle(info.gpios[0].name + "/" + HW_IF_TORQUE_Z);
     }
 
     void nan_interfaces() const {
@@ -139,29 +139,29 @@ protected:
             si.get_state_interface_handle(joint_name + "/" + hardware_interface::HW_IF_VELOCITY);
       }
 
-      sample_time = si.get_state_interface_handle(std::string(HW_IF_AUXILIARY_PREFIX) + "/" +
+      sample_time = si.get_state_interface_handle(info.sensors[0].name + "/" +
                                                   HW_IF_SAMPLE_TIME);
-      session_state = si.get_state_interface_handle(std::string(HW_IF_AUXILIARY_PREFIX) + "/" +
+      session_state = si.get_state_interface_handle(info.sensors[0].name + "/" +
                                                     HW_IF_SESSION_STATE);
-      connection_quality = si.get_state_interface_handle(std::string(HW_IF_AUXILIARY_PREFIX) + "/" +
+      connection_quality = si.get_state_interface_handle(info.sensors[0].name + "/" +
                                                          HW_IF_CONNECTION_QUALITY);
-      safety_state = si.get_state_interface_handle(std::string(HW_IF_AUXILIARY_PREFIX) + "/" +
+      safety_state = si.get_state_interface_handle(info.sensors[0].name + "/" +
                                                    HW_IF_SAFETY_STATE);
-      operation_mode = si.get_state_interface_handle(std::string(HW_IF_AUXILIARY_PREFIX) + "/" +
+      operation_mode = si.get_state_interface_handle(info.sensors[0].name + "/" +
                                                      HW_IF_OPERATION_MODE);
-      drive_state = si.get_state_interface_handle(std::string(HW_IF_AUXILIARY_PREFIX) + "/" +
+      drive_state = si.get_state_interface_handle(info.sensors[0].name + "/" +
                                                   HW_IF_DRIVE_STATE);
-      client_command_mode = si.get_state_interface_handle(std::string(HW_IF_AUXILIARY_PREFIX) +
+      client_command_mode = si.get_state_interface_handle(info.sensors[0].name +
                                                           "/" + HW_IF_CLIENT_COMMAND_MODE);
-      overlay_type = si.get_state_interface_handle(std::string(HW_IF_AUXILIARY_PREFIX) + "/" +
+      overlay_type = si.get_state_interface_handle(info.sensors[0].name + "/" +
                                                    HW_IF_OVERLAY_TYPE);
-      control_mode = si.get_state_interface_handle(std::string(HW_IF_AUXILIARY_PREFIX) + "/" +
+      control_mode = si.get_state_interface_handle(info.sensors[0].name + "/" +
                                                    HW_IF_CONTROL_MODE);
-      time_stamp_sec = si.get_state_interface_handle(std::string(HW_IF_AUXILIARY_PREFIX) + "/" +
+      time_stamp_sec = si.get_state_interface_handle(info.sensors[0].name + "/" +
                                                      HW_IF_TIME_STAMP_SEC);
-      time_stamp_nano_sec = si.get_state_interface_handle(std::string(HW_IF_AUXILIARY_PREFIX) +
+      time_stamp_nano_sec = si.get_state_interface_handle(info.sensors[0].name +
                                                           "/" + HW_IF_TIME_STAMP_NANO_SEC);
-      tracking_performance = si.get_state_interface_handle(std::string(HW_IF_AUXILIARY_PREFIX) +
+      tracking_performance = si.get_state_interface_handle(info.sensors[0].name +
                                                            "/" + HW_IF_TRACKING_PERFORMANCE);
     }
 
@@ -239,7 +239,8 @@ protected:
 #endif
   static constexpr uint8_t LBR_FRI_COMMAND_INTERFACE_SIZE = 2;
   static constexpr uint8_t LBR_FRI_SENSORS = 1;
-  static constexpr uint8_t AUXILIARY_SENSOR_SIZE = 12;
+  static constexpr uint8_t AUXILIARY_SENSOR_SIZE = 1;
+  static constexpr uint8_t AUXILIARY_SENSOR_INTERFACE_SIZE = 12;
   static constexpr uint8_t GPIO_SIZE = 1;
 
 public:
