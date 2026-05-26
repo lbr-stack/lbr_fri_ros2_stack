@@ -29,7 +29,8 @@ AdmittanceController::state_interface_configuration() const {
   }
 
   // additional state interfaces
-  interface_configuration.names.push_back(std::string(HW_IF_AUXILIARY_PREFIX) + "/" +
+  interface_configuration.names.push_back(this->get_node()->get_parameter("robot_name").as_string() + "_" +
+                                          std::string(HW_IF_AUXILIARY_PREFIX) + "/" +
                                           HW_IF_SESSION_STATE);
   return interface_configuration;
 }
