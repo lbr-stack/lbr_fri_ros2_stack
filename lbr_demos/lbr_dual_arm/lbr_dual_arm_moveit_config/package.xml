@@ -6,6 +6,7 @@
   <description>
      MoveIt configuration for the humble dual-arm LBR demo
   </description>
+  <maintainer email="kenichi.maeda121@gmail.com">kenichi-maeda</maintainer>
   <maintainer email="m.huber_1994@hotmail.de">mhubii</maintainer>
 
   <license>BSD-3-Clause</license>
@@ -14,7 +15,7 @@
   <url type="bugtracker">https://github.com/moveit/moveit2/issues</url>
   <url type="repository">https://github.com/moveit/moveit2</url>
 
-  <author email="m.huber_1994@hotmail.de">mhubii</author>
+  <author email="kenichi.maeda121@gmail.com">kenichi-maeda</author>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 

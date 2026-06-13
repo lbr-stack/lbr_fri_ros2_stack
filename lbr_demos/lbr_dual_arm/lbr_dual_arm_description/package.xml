@@ -4,6 +4,7 @@
   <name>lbr_dual_arm_description</name>
   <version>2.2.2</version>
   <description>Dual-arm LBR description demo package.</description>
+  <maintainer email="kenichi.maeda121@gmail.com">kenichi-maeda</maintainer>
   <maintainer email="m.huber_1994@hotmail.de">mhubii</maintainer>
   <license>Apache-2.0</license>
 
