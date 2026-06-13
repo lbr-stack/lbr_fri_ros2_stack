@@ -1,6 +1,17 @@
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Changelog for package LBR FRI ROS 2 Stack
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Humble v2.2.3 (2026-06-13)
+--------------------------
+Adds a dual arm setup. Fixes https://github.com/lbr-stack/lbr_fri_ros2_stack/issues/189.
+Contributed by kenichi-maeda in https://github.com/lbr-stack/lbr_fri_ros2_stack/pulls.
+
+* ``lbr_demos``:
+
+  * ``lbr_dual_arm_bringup``: Dual arm bringup package. 
+  * ``lbr_dual_arm_description``:  Dual arm description package.
+  * ``lbr_dual_arm_moveit_config``: Dual arm moveit configuration package.
+
 Humble v2.2.2 (2025-11-30)
 --------------------------
 * ``lbr_fri_ros2``: Fix the twist clipping bug: https://github.com/lbr-stack/lbr_fri_ros2_stack/issues/313
