@@ -1,5 +1,5 @@
-lbr_dual_arm
-============
+lbr_dual_arm_bringup
+====================
 Launch package for the dual-arm ``iiwa7`` demo on ``humble``.
 
 .. contents:: Table of Contents
@@ -13,13 +13,13 @@ Terminal 1:
 
 .. code-block:: bash
 
-    ros2 launch lbr_dual_arm mock.launch.py
+    ros2 launch lbr_dual_arm_bringup mock.launch.py
 
 Terminal 2:
 
 .. code-block:: bash
 
-    ros2 launch lbr_dual_arm move_group.launch.py \
+    ros2 launch lbr_dual_arm_bringup move_group.launch.py \
         rviz:=true
 
 Hardware Bringup
@@ -28,12 +28,12 @@ Terminal 1:
 
 .. code-block:: bash
 
-    ros2 launch lbr_dual_arm hardware.launch.py
+    ros2 launch lbr_dual_arm_bringup hardware.launch.py
 
 Terminal 2:
 
 .. code-block:: bash
 
-    ros2 launch lbr_dual_arm move_group.launch.py \
+    ros2 launch lbr_dual_arm_bringup move_group.launch.py \
         mode:=hardware \
         rviz:=true
