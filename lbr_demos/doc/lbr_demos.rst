@@ -32,6 +32,14 @@ MoveIt
     lbr_moveit <../lbr_moveit/doc/lbr_moveit.rst>
     lbr_moveit_cpp <../lbr_moveit_cpp/doc/lbr_moveit_cpp.rst>
 
+Dual Arm
+--------
+.. toctree::
+    :titlesonly:
+
+    lbr_dual_arm <../lbr_dual_arm/doc/lbr_dual_arm.rst>
+    lbr_dual_arm_description <../lbr_dual_arm_description/doc/lbr_dual_arm_description.rst>
+
 Integration
 -----------
 TODO system integration demos
