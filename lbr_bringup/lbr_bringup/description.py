@@ -27,7 +27,7 @@ class LBRDescriptionMixin:
             Union[LaunchConfiguration, str]
         ] = PathSubstitution(
             FindPackageShare(
-                LaunchConfiguration("sys_cfg_pkg", default="lbr_description")
+                LaunchConfiguration("sys_cfg_pkg", default="lbr_ros2_control")
             )
         )
         / LaunchConfiguration("sys_cfg", default="config/lbr_system_config.yaml"),
@@ -35,7 +35,7 @@ class LBRDescriptionMixin:
             Union[LaunchConfiguration, str]
         ] = PathSubstitution(
             FindPackageShare(
-                LaunchConfiguration("sys_cfg_pkg", default="lbr_description")
+                LaunchConfiguration("sys_cfg_pkg", default="lbr_ros2_control")
             )
         )
         / LaunchConfiguration(
