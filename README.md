@@ -58,7 +58,7 @@ Full documentation available on [Read the Docs](https://lbr-stack.readthedocs.io
     source /opt/ros/rolling/setup.bash
     export FRI_CLIENT_VERSION=1.15
     mkdir -p lbr-stack/src && cd lbr-stack
-    git clone https://github.com/lbr-stack/lbr_fri_ros2_stack.git -b rolling src/lbr_fri_ros2_stack
+    git clone https://github.com/lbr-stack/lbr_fri_ros2_stack.git -b rolling src/lbr_fri_ros2_stack --depth 1
     vcs import src < src/lbr_fri_ros2_stack/lbr_fri_ros2_stack/repos-fri-${FRI_CLIENT_VERSION}.yaml
     rosdep install --from-paths src -i -r -y
     ```
