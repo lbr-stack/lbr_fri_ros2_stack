@@ -89,7 +89,7 @@ class LBRROS2ControlMixin:
                 {"use_sim_time": use_sim_time},
                 PathSubstitution(
                     FindPackageShare(
-                        LaunchConfiguration("ctrl_cfg_pkg", default="lbr_description")
+                        LaunchConfiguration("ctrl_cfg_pkg", default="lbr_ros2_control")
                     )
                 )
                 / LaunchConfiguration(

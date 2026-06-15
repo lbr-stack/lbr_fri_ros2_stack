@@ -4,7 +4,7 @@
 <robot name="med7" xmlns:xacro="http://www.ros.org/wiki/xacro">
 
     <!-- include the med macro and controller -->
-    <xacro:include filename="$(find lbr_med7_r800_description)/lbr_med7_r800_macro.xacro" />
+    <xacro:include filename="$(find lbr_med7_r800_description)/urdf/lbr_med7_r800_macro.xacro" />
     <xacro:include filename="$(find lbr_ros2_control)/config/lbr_gazebo.xacro" />
     <xacro:include filename="$(find lbr_ros2_control)/config/lbr_system_interface.xacro" />
 
