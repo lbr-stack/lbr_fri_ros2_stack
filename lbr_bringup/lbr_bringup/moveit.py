@@ -64,7 +64,7 @@ class LBRMoveGroupMixin:
             .robot_description(
                 os.path.join(
                     get_package_share_directory("lbr_ros2_control"),
-                    f"system_integration_examples/{robot_name}/{robot_name}.xacro",
+                    f"system_integration/{robot_name}/{robot_name}.xacro",
                 ),
             )
             .planning_pipelines(

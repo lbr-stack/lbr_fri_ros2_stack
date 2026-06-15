@@ -11,7 +11,7 @@ def generate_launch_description():
         .robot_description(
             os.path.join(
                 get_package_share_directory("lbr_ros2_control"),
-                "system_integration_examples/med7/med7.xacro",
+                "system_integration/med7/med7.xacro",
             )
         )
         .to_moveit_configs()

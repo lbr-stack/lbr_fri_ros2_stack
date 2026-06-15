@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 
 <!-- top level -->
-<robot name="med7" xmlns:xacro="http://www.ros.org/wiki/xacro">
+<robot name="iiwa7" xmlns:xacro="http://www.ros.org/wiki/xacro">
 
-    <!-- include the med macro and controller -->
-    <xacro:include filename="$(find lbr_med7_r800_description)/urdf/lbr_med7_r800_macro.xacro" />
+    <!-- include macros -->
+    <xacro:include filename="$(find lbr_iiwa7_r800_description)/urdf/lbr_iiwa7_r800_macro.xacro" />
     <xacro:include filename="$(find lbr_ros2_control)/config/lbr_gazebo.xacro" />
     <xacro:include filename="$(find lbr_ros2_control)/config/lbr_system_interface.xacro" />
 
@@ -19,7 +19,7 @@
         default="$(find lbr_ros2_control)/config/initial_joint_positions.yaml" />
     <xacro:arg
         name="joint_limits_path"
-        default="$(find lbr_ros2_control)/system_integration_examples/med7/joint_limits.yaml" />
+        default="$(find lbr_ros2_control)/system_integration/iiwa7/joint_limits.yaml" />
 
     <!-- KDL requires a link without inertia / Gazebo requires a connection to world link or robot
     will tipple https://github.com/lbr-stack/lbr_fri_ros2_stack/issues/230 -->
@@ -40,8 +40,8 @@
         system_config_path="$(arg system_config_path)"
         initial_joint_positions_path="$(arg initial_joint_positions_path)" />
 
-    <!-- lbr_med7_r800 description -->
-    <xacro:lbr_med7_r800
+    <!-- lbr_iiwa7_r800 description -->
+    <xacro:lbr_iiwa7_r800
         robot_name="$(arg robot_name)"
         joint_limits_path="$(arg joint_limits_path)" />
 </robot>
