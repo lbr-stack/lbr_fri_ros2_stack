@@ -48,7 +48,7 @@ class LBRDescriptionMixin:
                     FindExecutable(name="xacro"),
                     " ",
                     PathSubstitution(FindPackageShare("lbr_ros2_control"))
-                    / "system_integration_examples"
+                    / "system_integration"
                     / model
                     / model,
                     ".xacro",

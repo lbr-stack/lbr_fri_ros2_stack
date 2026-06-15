@@ -96,7 +96,7 @@ install(
 )
 
 install(
-  DIRECTORY config system_integration_examples
+  DIRECTORY config system_integration
   DESTINATION share/${PROJECT_NAME}
 )
 

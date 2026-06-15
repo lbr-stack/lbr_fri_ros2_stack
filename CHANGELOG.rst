@@ -31,7 +31,7 @@ Jazzy v2.x (TBD)
 * ``lbr_ros2_control``: 
 
   * Adds configurations (previously part of ``lbr_description``).
-  * Adds ``system_integration_examples`` that builds ``.xacro`` files using robot descriptions and plugin specifications of ``lbr_ros2_control``.
+  * Adds ``system_integration`` that builds ``.xacro`` files using robot descriptions and plugin specifications of ``lbr_ros2_control``.
   * Migrates to the new ``ros2_control`` interface handles: https://github.com/ros-controls/ros2_control/pull/2831.
   * Uses the joint limits as obtained from the joints inside the URDF, previously redundant in ``<command_interface>`` tags. 
   * Replace ``ament_target_dependencies`` with ``target_link_libraries``.
