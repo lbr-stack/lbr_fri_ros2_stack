@@ -10,8 +10,8 @@ def generate_launch_description():
         MoveItConfigsBuilder("iiwa14", package_name="iiwa14_moveit_config")
         .robot_description(
             os.path.join(
-                get_package_share_directory("lbr_description"),
-                "urdf/iiwa14/iiwa14.xacro",
+                get_package_share_directory("lbr_ros2_control"),
+                "system_integration/iiwa14/iiwa14.xacro",
             )
         )
         .to_moveit_configs()

@@ -8,7 +8,6 @@
   <maintainer email="mower.chris@gmail.com">cmower</maintainer>
   <license>Apache-2.0</license>
 
-  <exec_depend>lbr_description</exec_depend>
   <exec_depend>lbr_fri_idl</exec_depend>
   <exec_depend>lbr_fri_ros2</exec_depend>
   <exec_depend>rclpy</exec_depend>
