@@ -96,6 +96,11 @@ install(
 )
 
 install(
+  DIRECTORY config system_integration
+  DESTINATION share/${PROJECT_NAME}
+)
+
+install(
     TARGETS ${PROJECT_NAME}
     EXPORT ${PROJECT_NAME}_export
     LIBRARY DESTINATION lib/${PROJECT_NAME}

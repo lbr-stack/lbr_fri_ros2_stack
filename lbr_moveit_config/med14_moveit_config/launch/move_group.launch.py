@@ -10,8 +10,8 @@ def generate_launch_description():
         MoveItConfigsBuilder("med14", package_name="med14_moveit_config")
         .robot_description(
             os.path.join(
-                get_package_share_directory("lbr_description"),
-                "urdf/med14/med14.xacro",
+                get_package_share_directory("lbr_ros2_control"),
+                "system_integration/med14/med14.xacro",
             )
         )
         .to_moveit_configs()

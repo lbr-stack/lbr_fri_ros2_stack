@@ -31,12 +31,12 @@ def generate_launch_description() -> LaunchDescription:
             ),
             DeclareLaunchArgument(
                 name="ctrl_cfg_pkg",
-                default_value="lbr_description",
+                default_value="lbr_ros2_control",
                 description="Controller configuration package. The package containing the ctrl_cfg.",
             ),
             DeclareLaunchArgument(
                 name="ctrl_cfg",
-                default_value="ros2_control/mock_controllers.yaml",
+                default_value="config/controllers/mock.yaml",
                 description="Relative path from ctrl_cfg_pkg to the controllers.",
             ),
             DeclareLaunchArgument(
@@ -50,12 +50,12 @@ def generate_launch_description() -> LaunchDescription:
             ),
             DeclareLaunchArgument(
                 name="init_jnt_pos_pkg",
-                default_value="lbr_description",
+                default_value="lbr_ros2_control",
                 description="Package containing the initial_joint_positions.yaml file.",
             ),
             DeclareLaunchArgument(
                 name="init_jnt_pos",
-                default_value="ros2_control/initial_joint_positions.yaml",
+                default_value="config/initial_joint_positions.yaml",
                 description="The relative path from sys_cfg_pkg to the initial_joint_positions.yaml file.",
             ),
             Node(
@@ -68,8 +68,8 @@ def generate_launch_description() -> LaunchDescription:
                             [
                                 FindExecutable(name="xacro"),
                                 " ",
-                                PathSubstitution(FindPackageShare("lbr_description"))
-                                / "urdf"
+                                PathSubstitution(FindPackageShare("lbr_ros2_control"))
+                                / "system_integration"
                                 / LaunchConfiguration("model")
                                 / LaunchConfiguration("model"),
                                 ".xacro",
