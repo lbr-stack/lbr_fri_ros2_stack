@@ -79,8 +79,8 @@ kinematics to move the robot's end-effector along the z-axis in Cartesian space.
 
 #. Client side configurations:
 
-    #. Configure the ``client_command_mode`` to ``position`` in `lbr_system_config.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/rolling/lbr_description/ros2_control/lbr_system_config.yaml>`_:octicon:`link-external`
-    #. Set the ``update_rate`` to ``100`` in `hardware_controllers.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/rolling/lbr_description/ros2_control/hardware_controllers.yaml>`_:octicon:`link-external`
+    #. Configure the ``client_command_mode`` to ``position`` in `lbr_system_config.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/rolling/lbr_ros2_control/config/lbr_system_config.yaml>`_:octicon:`link-external`
+    #. Set the ``update_rate`` to ``100`` in `hardware.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/rolling/lbr_ros2_control/config/controllers/hardware.yaml>`_:octicon:`link-external`
 
 #. Remote side configurations:
 

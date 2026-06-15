@@ -14,7 +14,10 @@
   <exec_depend>gz_ros2_control</exec_depend>
   <exec_depend>joint_state_broadcaster</exec_depend>
   <exec_depend>joint_trajectory_controller</exec_depend>
-  <exec_depend>lbr_description</exec_depend>
+  <exec_depend>lbr_iiwa7_r800_description</exec_depend>
+  <exec_depend>lbr_iiwa14_r820_description</exec_depend>
+  <exec_depend>lbr_med7_r800_description</exec_depend>
+  <exec_depend>lbr_med14_r820_description</exec_depend>
   <exec_depend>lbr_fri_ros2</exec_depend>
   <exec_depend>lbr_ros2_control</exec_depend>
   <exec_depend>moveit_planners_chomp</exec_depend>

@@ -26,18 +26,18 @@ def generate_launch_description() -> LaunchDescription:
             ),
             DeclareLaunchArgument(
                 name="init_jnt_pos_pkg",
-                default_value="lbr_description",
+                default_value="lbr_ros2_control",
                 description="Package containing the initial_joint_positions.yaml file.",
             ),
             DeclareLaunchArgument(
                 name="init_jnt_pos",
-                default_value="ros2_control/initial_joint_positions.yaml",
+                default_value="config/initial_joint_positions.yaml",
                 description="The relative path from sys_cfg_pkg to the initial_joint_positions.yaml file.",
             ),
             DeclareLaunchArgument(
                 name="ctrl",
                 default_value="joint_trajectory_controller",
-                description="Desired default controller. Gazebo loads controller configuration through lbr_description/gazebo/*.xacro from lbr_description/ros2_control/gazebo_controllers.yaml.",
+                description="Desired default controller. Gazebo loads controller configuration through lbr_ros2_control/config/lbr_gazebo.xacro from lbr_ros2_control/config/controllers/gazebo.yaml.",
                 choices=[
                     "forward_position_controller",
                     "joint_trajectory_controller",
@@ -53,8 +53,8 @@ def generate_launch_description() -> LaunchDescription:
                             [
                                 FindExecutable(name="xacro"),
                                 " ",
-                                PathSubstitution(FindPackageShare("lbr_description"))
-                                / "urdf"
+                                PathSubstitution(FindPackageShare("lbr_ros2_control"))
+                                / "system_integration_examples"
                                 / LaunchConfiguration("model")
                                 / LaunchConfiguration("model"),
                                 ".xacro",

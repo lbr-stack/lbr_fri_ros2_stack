@@ -9,8 +9,6 @@
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
-  <exec_depend>lbr_description</exec_depend>
-
   <depend>fri_client_sdk</depend>
   <depend>geometry_msgs</depend>
   <depend>kdl_parser</depend>

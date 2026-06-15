@@ -13,6 +13,12 @@ Jazzy v2.x (TBD)
   * ``lbr_moveit``: Add missing ``pynput`` dependency and fix dataclasses.
 * ``lbr_description``:
 
+  * Removes ``lbr_description`` from this folder in favor of external descriptions:
+
+    * ``iiwa7``: https://github.com/lbr-stack/lbr_iiwa7_r800_description
+    * ``iiwa14``: https://github.com/lbr-stack/lbr_iiwa14_r820_description
+    * ``med7``: https://github.com/lbr-stack/lbr_med7_r800_description
+    * ``med14``: https://github.com/lbr-stack/lbr_med14_r820_description
   * Sets the ``k_velocity`` to fix the safety limits for effort client command modes.
   * Removes the controller-related parts from the ``*_description.xacro`` files, now named ``*.urdf.xacro``.
   * Fix tests.
@@ -21,8 +27,11 @@ Jazzy v2.x (TBD)
 
   * Replace ``ament_target_dependencies`` with ``target_link_libraries``.
   * Provide default for ``StateInterfaceParameters`` to fix test.
+* ``lbr_fri_ros2_stack``: Adds external robot description files to ``repos-fri-*.yaml`` files.
 * ``lbr_ros2_control``: 
 
+  * Adds configurations (previously part of ``lbr_description``).
+  * Adds ``system_integration_examples`` that builds ``.xacro`` files using robot descriptions and plugin specifications of ``lbr_ros2_control``.
   * Migrates to the new ``ros2_control`` interface handles: https://github.com/ros-controls/ros2_control/pull/2831.
   * Uses the joint limits as obtained from the joints inside the URDF, previously redundant in ``<command_interface>`` tags. 
   * Replace ``ament_target_dependencies`` with ``target_link_libraries``.
@@ -31,7 +40,7 @@ Jazzy v2.x (TBD)
   * MoveIt fix: https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/379
   * Namespace argument: https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/344, https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/353
   * Effort limits: https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/357
-  * URDF de-coupling: https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/359
+  * URDF de-coupling: https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/359, https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/389
   * Ament target dependencies: https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/364
   * Test fixes: https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/367, https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/373
   * Interface migration: https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/378
