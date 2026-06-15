@@ -1,0 +1,32 @@
+# these parameters are read by the lbr_system_interface.xacro and configure the lbr_ros2_control::SystemInterface
+fri_client_sdk: # the fri_client_sdk version is used to create the correct state interfaces lbr_system_interface.xacro
+  major_version: 1
+  minor_version: 15
+client_command_mode: position # the command mode specifies the user-sent commands. Available: [position, torque, wrench]
+port_id: 30200 # port id for the UDP communication. Useful in multi-robot setups
+remote_host: INADDR_ANY # the expected robot IP address. INADDR_ANY will accept any incoming connection
+rt_prio: 80 # real-time priority for the control loop
+# exponential moving average time constant for joint position commands [s]:
+#   set tau > robot sample time for more smoothing on the commands
+#   set tau << robot sample time for no smoothing on the commands
+joint_position_tau: 0.04
+command_guard:
+  # if requested position / velocities beyond limits, CommandGuard will be triggered and the command will be overriden with the current state instead
+  # available: [default, safe_stop]
+  variant: default
+state_guard:
+  # enable / disable the load data safety check in compliant control modes [CARTESIAN_IMPEDANCE, IMPEDANCE]
+  # in POSITION control mode, safety check is not performed
+  external_torque_safety_check: true
+  external_torque_limit: 2.0 # maximum allowed external joint torque on activation of compliant control modes [Nm]
+# exponential moving average time constant for external joint torque measurements [s]:
+#   set tau > robot sample time for more smoothing on the external torque measurements
+#   set tau << robot sample time for no smoothing on the external torque measurements
+external_torque_tau: 0.01
+# exponential moving average time constant for joint torque measurements [s]:
+#   set tau > robot sample time for more smoothing on the raw torque measurements
+#   set tau << robot sample time for no smoothing on the raw torque measurements
+measured_torque_tau: 0.01
+# for position control, LBR works best in open_loop control mode
+# note that open_loop is overridden to false if LBR is in impedance or Cartesian impedance control mode
+open_loop: true

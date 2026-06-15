@@ -30,7 +30,7 @@ class LBRDescriptionMixin:
                 LaunchConfiguration("sys_cfg_pkg", default="lbr_description")
             )
         )
-        / LaunchConfiguration("sys_cfg", default="ros2_control/lbr_system_config.yaml"),
+        / LaunchConfiguration("sys_cfg", default="config/lbr_system_config.yaml"),
         initial_joint_positions_path: Optional[
             Union[LaunchConfiguration, str]
         ] = PathSubstitution(
@@ -39,7 +39,7 @@ class LBRDescriptionMixin:
             )
         )
         / LaunchConfiguration(
-            "init_jnt_pos", default="ros2_control/initial_joint_positions.yaml"
+            "init_jnt_pos", default="config/initial_joint_positions.yaml"
         ),
     ) -> Dict[str, str]:
         robot_description = {
@@ -47,8 +47,8 @@ class LBRDescriptionMixin:
                 [
                     FindExecutable(name="xacro"),
                     " ",
-                    PathSubstitution(FindPackageShare("lbr_description"))
-                    / "urdf"
+                    PathSubstitution(FindPackageShare("lbr_ros2_control"))
+                    / "system_integration_examples"
                     / model
                     / model,
                     ".xacro",

@@ -7,3 +7,21 @@ repositories:
     type: git
     url: https://github.com/lbr-stack/lbr_fri_idl
     version: fri-2
+  
+  # robot descriptions (optionally only use yours)
+  lbr_iiwa7_r800_description:
+    type: git
+    url: https://github.com/lbr-stack/lbr_iiwa7_r800_description.git
+    version: v2.5.0
+  lbr_iiwa14_r820_description:
+    type: git
+    url: https://github.com/lbr-stack/lbr_iiwa14_r820_description.git
+    version: v2.5.0
+  lbr_med7_r800_description:
+    type: git
+    url: https://github.com/lbr-stack/lbr_med7_r800_description.git
+    version: v2.5.0
+  lbr_med14_r820_description:
+    type: git
+    url: https://github.com/lbr-stack/lbr_med14_r820_description.git
+    version: v2.5.0
