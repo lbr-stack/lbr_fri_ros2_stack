@@ -3,7 +3,7 @@
 <!-- top level -->
 <robot name="iiwa14" xmlns:xacro="http://www.ros.org/wiki/xacro">
 
-    <!-- include the iiwa macro and controller -->
+    <!-- include macros -->
     <xacro:include filename="$(find lbr_iiwa14_r820_description)/urdf/lbr_iiwa14_r820_macro.xacro" />
     <xacro:include filename="$(find lbr_ros2_control)/config/lbr_gazebo.xacro" />
     <xacro:include filename="$(find lbr_ros2_control)/config/lbr_system_interface.xacro" />
