@@ -1,4 +1,4 @@
-import os
+from pathlib import Path
 
 from ament_index_python import get_package_share_directory
 from launch import LaunchDescription
@@ -18,10 +18,9 @@ def generate_launch_description():
             package_name="lbr_dual_arm_moveit_config",
         )
         .robot_description(
-            os.path.join(
-                get_package_share_directory("lbr_dual_arm_description"),
-                "urdf/lbr_dual_arm.xacro",
-            ),
+            Path(get_package_share_directory("lbr_dual_arm"))
+            / "urdf"
+            / "lbr_dual_arm.xacro",
             mappings={"mode": LaunchConfiguration("mode")},
         )
         .to_moveit_configs()

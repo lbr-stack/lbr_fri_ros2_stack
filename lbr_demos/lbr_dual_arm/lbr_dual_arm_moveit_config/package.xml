@@ -3,9 +3,7 @@
 <package format="3">
   <name>lbr_dual_arm_moveit_config</name>
   <version>0.3.0</version>
-  <description>
-     MoveIt configuration for the dual-arm LBR demo
-  </description>
+  <description>MoveIt configuration for the dual-arm LBR demo </description>
   <maintainer email="kenichi.maeda121@gmail.com">kenichi-maeda</maintainer>
   <maintainer email="m.huber_1994@hotmail.de">mhubii</maintainer>
 
@@ -21,7 +19,7 @@
 
   <exec_depend>joint_state_publisher</exec_depend>
   <exec_depend>joint_state_publisher_gui</exec_depend>
-  <exec_depend>lbr_dual_arm_description</exec_depend>
+  <exec_depend>lbr_iiwa7_r800_description</exec_depend>
   <exec_depend>moveit_configs_utils</exec_depend>
   <exec_depend>moveit_kinematics</exec_depend>
   <exec_depend>moveit_planners</exec_depend>
@@ -36,6 +34,6 @@
   <exec_depend>xacro</exec_depend>
 
   <export>
-      <build_type>ament_cmake</build_type>
+    <build_type>ament_cmake</build_type>
   </export>
 </package>
