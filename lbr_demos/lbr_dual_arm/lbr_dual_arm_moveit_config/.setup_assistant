@@ -1,12 +1,12 @@
 moveit_setup_assistant_config:
   urdf:
-    package: lbr_dual_arm_description
+    package: lbr_dual_arm
     relative_path: urdf/lbr_dual_arm.xacro
   srdf:
     relative_path: config/lbr_dual_arm.srdf
   package_settings:
-    author_name: mhubii
-    author_email: m.huber_1994@hotmail.de
+    author_name: kenichi-maeda
+    author_email: kenichi.maeda121@gmail.com
     generated_timestamp: 1774816000
   control_xacro:
     command:

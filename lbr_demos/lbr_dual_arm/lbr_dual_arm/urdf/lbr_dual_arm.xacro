@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+
+<robot name="lbr_dual_arm" xmlns:xacro="http://www.ros.org/wiki/xacro">
+    <!-- include macros -->
+    <xacro:include filename="$(find lbr_iiwa7_r800_description)/urdf/lbr_iiwa7_r800_macro.xacro" />
+    <xacro:include filename="$(find lbr_ros2_control)/config/lbr_system_interface.xacro" />
+
+    <!-- arguments -->
+    <xacro:arg name="mode" default="mock" />
+    <xacro:arg name="lbr_one_x" default="0" />
+    <xacro:arg name="lbr_one_y" default="0.5" />
+    <xacro:arg name="lbr_one_z" default="0" />
+    <xacro:arg name="lbr_one_roll" default="0" />
+    <xacro:arg name="lbr_one_pitch" default="0.0" />
+    <xacro:arg name="lbr_one_yaw" default="0" />
+    <xacro:arg name="lbr_two_x" default="0" />
+    <xacro:arg name="lbr_two_y" default="-0.5" />
+    <xacro:arg name="lbr_two_z" default="0" />
+    <xacro:arg name="lbr_two_roll" default="0" />
+    <xacro:arg name="lbr_two_pitch" default="0.0" />
+    <xacro:arg name="lbr_two_yaw" default="0" />
+
+    <!-- add a base / floating link -->
+    <link name="world" />
+
+    <!-- add joints that connect the robots -->
+    <joint name="lbr_one_base_joint" type="fixed">
+        <origin xyz="$(arg lbr_one_x) $(arg lbr_one_y) $(arg lbr_one_z)"
+            rpy="$(arg lbr_one_roll) $(arg lbr_one_pitch) $(arg lbr_one_yaw)" />
+        <parent link="world" />
+        <child link="lbr_one_link_0" />
+    </joint>
+
+    <joint name="lbr_two_base_joint" type="fixed">
+        <origin xyz="$(arg lbr_two_x) $(arg lbr_two_y) $(arg lbr_two_z)"
+            rpy="$(arg lbr_two_roll) $(arg lbr_two_pitch) $(arg lbr_two_yaw)" />
+        <parent link="world" />
+        <child link="lbr_two_link_0" />
+    </joint>
+
+    <!-- add robot 1 via macros -->
+    <!-- note: for hardware, different system configurations are used to configure port IDs -->
+    <xacro:lbr_system_interface
+        robot_name="lbr_one"
+        mode="$(arg mode)"
+        system_config_path="$(find lbr_dual_arm)/config/lbr_one_system_config.yaml"
+        initial_joint_positions_path="$(find lbr_dual_arm)/config/initial_joint_positions.yaml" />
+    <xacro:lbr_iiwa7_r800
+        robot_name="lbr_one"
+        joint_limits_path="$(find lbr_dual_arm)/config/joint_limits.yaml" />
+
+    <!-- add robot 2 via macros -->
+    <xacro:lbr_system_interface
+        robot_name="lbr_two"
+        mode="$(arg mode)"
+        system_config_path="$(find lbr_dual_arm)/config/lbr_two_system_config.yaml"
+        initial_joint_positions_path="$(find lbr_dual_arm)/config/initial_joint_positions.yaml" />
+    <xacro:lbr_iiwa7_r800
+        robot_name="lbr_two"
+        joint_limits_path="$(find lbr_dual_arm)/config/joint_limits.yaml" />
+</robot>
