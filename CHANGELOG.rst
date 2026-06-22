@@ -11,6 +11,8 @@ Jazzy v2.x (TBD)
 
   * Replace ``ament_target_dependencies`` with ``target_link_libraries``.
   * ``lbr_moveit``: Add missing ``pynput`` dependency and fix dataclasses.
+  * ``lbr_dual_arm``: Adds dual-arm integration demo package.
+  * ``lbr_dual_arm_moveit_config``: Adds dual-arm moveit configuration package.
 * ``lbr_description``:
 
   * Removes ``lbr_description`` from this folder in favor of external descriptions:
@@ -38,6 +40,7 @@ Jazzy v2.x (TBD)
 * Related pull requests:
 
   * MoveIt fix: https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/379
+  * Dual-arm: https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/393 (kenichi-maeda)
   * Namespace argument: https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/344, https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/353
   * Effort limits: https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/357
   * URDF de-coupling: https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/359, https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/389
