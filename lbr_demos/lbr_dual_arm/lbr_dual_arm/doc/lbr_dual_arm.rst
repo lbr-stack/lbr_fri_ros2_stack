@@ -24,7 +24,7 @@ Open a terminal, then run:
 
 Description File
 ----------------
-Custom description files can be generated via ``xacro``, see  `lbr_dual_arm.xacro <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/rolling/lbr_demos/lbr_dual_arm/lbr_dual_arm/urdf/lbr_dual_arm.xacro>`_:octicon:`link-external`.
+Custom description files can be generated via ``xacro``, see  `lbr_dual_arm.xacro <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/jazzy/lbr_demos/lbr_dual_arm/lbr_dual_arm/urdf/lbr_dual_arm.xacro>`_:octicon:`link-external`.
 
 #. Include macros:
 
@@ -44,7 +44,7 @@ Done! The controller manager will load appropriate plugins when reading the robo
 
 Customize Hardware Network Settings
 -----------------------------------
-#. Open `lbr_one_system_config.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/rolling/lbr_demos/lbr_dual_arm/lbr_dual_arm/config/lbr_one_system_config.yaml>`_:octicon:`link-external` and `lbr_two_system_config.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/rolling/lbr_demos/lbr_dual_arm/lbr_dual_arm/config/lbr_two_system_config.yaml>`_:octicon:`link-external`.
+#. Open `lbr_one_system_config.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/jazzy/lbr_demos/lbr_dual_arm/lbr_dual_arm/config/lbr_one_system_config.yaml>`_:octicon:`link-external` and `lbr_two_system_config.yaml <https://github.com/lbr-stack/lbr_fri_ros2_stack/blob/jazzy/lbr_demos/lbr_dual_arm/lbr_dual_arm/config/lbr_two_system_config.yaml>`_:octicon:`link-external`.
 #. Set unique ``port_id`` values for each arm.
 #. Set ``remote_host`` per arm according to your network setup.
 
