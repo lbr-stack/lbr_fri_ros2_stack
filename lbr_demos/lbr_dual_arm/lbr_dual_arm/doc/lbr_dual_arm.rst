@@ -9,29 +9,18 @@ Dual-arm ``iiwa7`` integration demo, including: launch files, description file, 
 
 Quick Start
 -----------
-Terminal 1:
+Open a terminal, then run:
 
 .. code-block:: bash
 
-    ros2 launch lbr_dual_arm mock.launch.py
+    ros2 launch lbr_dual_arm mock.launch.py \
+        moveit:=true
 
 .. note::
     For hardware, run ``hardware.launch.py`` (follow :doc:`Hardware Setup <../../../../lbr_fri_ros2_stack/doc/hardware_setup>` first).
 
 .. note::
     To configure position / orientation, launch with ``lbr_one_x:=<value>`` etc. (list all arguments via ``ros2 launch lbr_dual_arm mock.launch.py -s``)
-
-Terminal 2:
-
-.. code-block:: bash
-
-    ros2 launch lbr_dual_arm_moveit_config move_group.launch.py
-
-Terminal 3 (optional):
-
-.. code-block:: bash
-
-    ros2 launch lbr_dual_arm_moveit_config moveit_rviz.launch.py
 
 Description File
 ----------------
