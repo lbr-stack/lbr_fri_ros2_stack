@@ -410,12 +410,12 @@ bool SystemInterface::verify_auxiliary_sensor_() {
   const auto &auxiliary_sensor = info_.sensors[0];
   if (info_.sensors.size() != AUXILIARY_SENSOR_SIZE) {
     RCLCPP_ERROR_STREAM(get_node()->get_logger(), lbr_fri_ros2::ColorScheme::ERROR
-                                                      << "Expected '" << static_cast<int>(AUXILIARY_SENSOR_SIZE)
+                                                      << "Expected '"
+                                                      << static_cast<int>(AUXILIARY_SENSOR_SIZE)
                                                       << "' sensors, got '" << info_.sensors.size()
                                                       << "'" << lbr_fri_ros2::ColorScheme::ENDC);
     return false;
   }
-  const auto &auxiliary_sensor = info_.sensors[0];
   if (auxiliary_sensor.state_interfaces.size() != AUXILIARY_SENSOR_INTERFACE_SIZE) {
     RCLCPP_ERROR_STREAM(get_node()->get_logger(),
                         lbr_fri_ros2::ColorScheme::ERROR
