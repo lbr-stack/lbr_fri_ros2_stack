@@ -133,9 +133,15 @@ void LBRTorqueCommandController::configure_joint_names_() {
                             << "Number of joint names '" << joint_names_.size()
                             << "' does not match the number of joints in the robot '"
                             << lbr_fri_ros2::N_JNTS << "'." << lbr_fri_ros2::ColorScheme::ENDC);
-    throw std::runtime_error("Failed to configure joint names.");
+    throw std::runtime_error("Invalid number of joint names.");
   }
   std::string robot_name = this->get_node()->get_parameter("robot_name").as_string();
+  if (robot_name.empty()) {
+    RCLCPP_ERROR_STREAM(get_node()->get_logger(), lbr_fri_ros2::ColorScheme::ERROR
+                                                      << "Robot name parameter is empty."
+                                                      << lbr_fri_ros2::ColorScheme::ENDC);
+    throw std::runtime_error("Invalid robot name.");
+  }
   for (int i = 0; i < lbr_fri_ros2::N_JNTS; ++i) {
     joint_names_[i] = robot_name + "_A" + std::to_string(i + 1);
   }
