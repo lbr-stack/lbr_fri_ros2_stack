@@ -32,6 +32,7 @@ Jazzy v2.x (TBD)
 * ``lbr_fri_ros2_stack``: Adds external robot description files to ``repos-fri-*.yaml`` files.
 * ``lbr_ros2_control``: 
 
+  * Prefix custom state interfaces with robot name for multi-robot support, i.e. ``<robot_name>_auxiliary_sensor`` and ``<robot_name>_wrench``.
   * Adds configurations (previously part of ``lbr_description``).
   * Adds ``system_integration`` that builds ``.xacro`` files using robot descriptions and plugin specifications of ``lbr_ros2_control``.
   * Migrates to the new ``ros2_control`` interface handles: https://github.com/ros-controls/ros2_control/pull/2831.
@@ -39,13 +40,25 @@ Jazzy v2.x (TBD)
   * Replace ``ament_target_dependencies`` with ``target_link_libraries``.
 * Related pull requests:
 
-  * MoveIt fix: https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/379
-  * Dual-arm: https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/393 (kenichi-maeda)
-  * Namespace argument: https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/344, https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/353
+  * MoveIt fix: https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/379 (liborw)
+  * Dual-arm:
+  
+    * https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/393 (kenichi-maeda)
+    * https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/396 (miguelprada)
+  * Namespace argument:
+  
+    * https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/344 (thomaskroi1996)
+    * https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/353 (thomaskroi1996)
   * Effort limits: https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/357
-  * URDF de-coupling: https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/359, https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/389
+  * URDF de-coupling:
+  
+    * https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/359
+    * https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/389
   * Ament target dependencies: https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/364
-  * Test fixes: https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/367, https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/373
+  * Test fixes:
+
+    * https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/367
+    * https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/373
   * Interface migration: https://github.com/lbr-stack/lbr_fri_ros2_stack/pull/378
 
 Jazzy v2.4.3 (2025-12-09)
