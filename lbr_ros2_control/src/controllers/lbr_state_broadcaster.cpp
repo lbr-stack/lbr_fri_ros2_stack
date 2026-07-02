@@ -55,13 +55,6 @@ controller_interface::return_type LBRStateBroadcaster::update(const rclcpp::Time
     return controller_interface::return_type::OK;
   }
 
-  if (auxiliary_sensor_name_.empty()) {
-    RCLCPP_ERROR_STREAM(this->get_node()->get_logger(), lbr_fri_ros2::ColorScheme::ERROR
-                                                            << "Auxiliary sensor name is empty."
-                                                            << lbr_fri_ros2::ColorScheme::ENDC);
-    return controller_interface::return_type::ERROR;
-  }
-
   // FRI related states
   lbr_state_.client_command_mode =
       static_cast<int8_t>(state_interface_map_[auxiliary_sensor_name_][HW_IF_CLIENT_COMMAND_MODE]);

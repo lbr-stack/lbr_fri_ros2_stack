@@ -301,7 +301,7 @@ bool LBRWrenchCommandController::assign_command_interfaces_() {
     if (command_interface.get_interface_name() == hardware_interface::HW_IF_POSITION) {
       joint_position_command_interfaces_.push_back(std::ref(command_interface));
     }
-    if (command_interface.get_prefix_name() == HW_IF_WRENCH_PREFIX) {
+    if (command_interface.get_prefix_name() == wrench_sensor_name_) {
       wrench_command_interfaces_.push_back(std::ref(command_interface));
     }
   }
