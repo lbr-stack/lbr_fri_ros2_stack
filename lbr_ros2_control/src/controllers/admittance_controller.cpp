@@ -29,9 +29,13 @@ AdmittanceController::state_interface_configuration() const {
   }
 
   // additional state interfaces
-  interface_configuration.names.push_back(
-      this->get_node()->get_parameter("robot_name").as_string() + "_" +
-      std::string(HW_IF_AUXILIARY_PREFIX) + "/" + HW_IF_SESSION_STATE);
+  if (auxiliary_sensor_name_.empty()) {
+    RCLCPP_ERROR_STREAM(this->get_node()->get_logger(), lbr_fri_ros2::ColorScheme::ERROR
+                                                            << "Auxiliary sensor name is empty."
+                                                            << lbr_fri_ros2::ColorScheme::ENDC);
+    throw std::runtime_error("Invalid auxiliary sensor name.");
+  }
+  interface_configuration.names.push_back(auxiliary_sensor_name_ + "/" + HW_IF_SESSION_STATE);
   return interface_configuration;
 }
 
@@ -57,6 +61,7 @@ controller_interface::CallbackReturn AdmittanceController::on_init() {
     this->get_node()->declare_parameter("filter.f_ext_tau", 0.4);
     this->get_node()->declare_parameter("on_activate.max_external_force", 0.0);
     this->get_node()->declare_parameter("on_activate.max_external_torque", 0.0);
+    configure_names_();
     configure_joint_names_();
     configure_admittance_impl_();
     configure_inv_jac_ctrl_impl_();
@@ -258,17 +263,34 @@ void AdmittanceController::release_state_interfaces_() {
   estimated_ft_sensor_ptr_->release_interfaces();
 }
 
+void AdmittanceController::configure_names_() {
+  robot_name_ = this->get_node()->get_parameter("robot_name").as_string();
+  if (robot_name_.empty()) {
+    RCLCPP_ERROR_STREAM(this->get_node()->get_logger(), lbr_fri_ros2::ColorScheme::ERROR
+                                                            << "Robot name parameter is empty."
+                                                            << lbr_fri_ros2::ColorScheme::ENDC);
+    throw std::runtime_error("Failed to configure names.");
+  }
+  auxiliary_sensor_name_ = robot_name_ + "_" + std::string(HW_IF_AUXILIARY_PREFIX);
+}
+
 void AdmittanceController::configure_joint_names_() {
   if (joint_names_.size() != lbr_fri_ros2::N_JNTS) {
-    RCLCPP_ERROR(
-        this->get_node()->get_logger(),
-        "Number of joint names '%ld' does not match the number of joints in the robot '%d'.",
-        joint_names_.size(), lbr_fri_ros2::N_JNTS);
-    throw std::runtime_error("Failed to configure joint names.");
+    RCLCPP_ERROR_STREAM(this->get_node()->get_logger(),
+                        lbr_fri_ros2::ColorScheme::ERROR
+                            << "Number of joint names '" << joint_names_.size()
+                            << "' does not match the number of joints in the robot '"
+                            << lbr_fri_ros2::N_JNTS << "'." << lbr_fri_ros2::ColorScheme::ENDC);
+    throw std::runtime_error("Invalid number of joint names.");
   }
-  std::string robot_name = this->get_node()->get_parameter("robot_name").as_string();
+  if (robot_name_.empty()) {
+    RCLCPP_ERROR_STREAM(this->get_node()->get_logger(), lbr_fri_ros2::ColorScheme::ERROR
+                                                            << "Robot name parameter is empty."
+                                                            << lbr_fri_ros2::ColorScheme::ENDC);
+    throw std::runtime_error("Invalid robot name.");
+  }
   for (std::size_t i = 0; i < lbr_fri_ros2::N_JNTS; ++i) {
-    joint_names_[i] = robot_name + "_A" + std::to_string(i + 1);
+    joint_names_[i] = robot_name_ + "_A" + std::to_string(i + 1);
   }
 }
 

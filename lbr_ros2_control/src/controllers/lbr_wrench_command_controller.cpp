@@ -12,12 +12,18 @@ LBRWrenchCommandController::command_interface_configuration() const {
   for (const auto &joint_name : joint_names_) {
     interface_configuration.names.push_back(joint_name + "/" + hardware_interface::HW_IF_POSITION);
   }
-  interface_configuration.names.push_back(std::string(HW_IF_WRENCH_PREFIX) + "/" + HW_IF_FORCE_X);
-  interface_configuration.names.push_back(std::string(HW_IF_WRENCH_PREFIX) + "/" + HW_IF_FORCE_Y);
-  interface_configuration.names.push_back(std::string(HW_IF_WRENCH_PREFIX) + "/" + HW_IF_FORCE_Z);
-  interface_configuration.names.push_back(std::string(HW_IF_WRENCH_PREFIX) + "/" + HW_IF_TORQUE_X);
-  interface_configuration.names.push_back(std::string(HW_IF_WRENCH_PREFIX) + "/" + HW_IF_TORQUE_Y);
-  interface_configuration.names.push_back(std::string(HW_IF_WRENCH_PREFIX) + "/" + HW_IF_TORQUE_Z);
+  if (wrench_sensor_name_.empty()) {
+    RCLCPP_ERROR_STREAM(this->get_node()->get_logger(), lbr_fri_ros2::ColorScheme::ERROR
+                                                            << "Wrench sensor name is empty."
+                                                            << lbr_fri_ros2::ColorScheme::ENDC);
+    throw std::runtime_error("Invalid wrench sensor name.");
+  }
+  interface_configuration.names.push_back(wrench_sensor_name_ + "/" + HW_IF_FORCE_X);
+  interface_configuration.names.push_back(wrench_sensor_name_ + "/" + HW_IF_FORCE_Y);
+  interface_configuration.names.push_back(wrench_sensor_name_ + "/" + HW_IF_FORCE_Z);
+  interface_configuration.names.push_back(wrench_sensor_name_ + "/" + HW_IF_TORQUE_X);
+  interface_configuration.names.push_back(wrench_sensor_name_ + "/" + HW_IF_TORQUE_Y);
+  interface_configuration.names.push_back(wrench_sensor_name_ + "/" + HW_IF_TORQUE_Z);
   return interface_configuration;
 }
 
@@ -39,6 +45,7 @@ controller_interface::CallbackReturn LBRWrenchCommandController::on_init() {
     this->get_node()->declare_parameter("robot_name", "lbr");
     this->get_node()->declare_parameter("max_force_command_norm", 10.0);
     this->get_node()->declare_parameter("max_torque_command_norm", 10.0);
+    configure_names_();
     configure_joint_names_();
     configure_parameters_();
   } catch (const std::exception &e) {
@@ -330,6 +337,17 @@ void LBRWrenchCommandController::release_command_interfaces_() {
   wrench_command_interfaces_.clear();
 }
 
+void LBRWrenchCommandController::configure_names_() {
+  robot_name_ = this->get_node()->get_parameter("robot_name").as_string();
+  if (robot_name_.empty()) {
+    RCLCPP_ERROR_STREAM(this->get_node()->get_logger(), lbr_fri_ros2::ColorScheme::ERROR
+                                                            << "Robot name parameter is empty."
+                                                            << lbr_fri_ros2::ColorScheme::ENDC);
+    throw std::runtime_error("Failed to configure names.");
+  }
+  wrench_sensor_name_ = robot_name_ + "_" + std::string(HW_IF_WRENCH_PREFIX);
+}
+
 void LBRWrenchCommandController::configure_joint_names_() {
   if (joint_names_.size() != lbr_fri_ros2::N_JNTS) {
     RCLCPP_ERROR_STREAM(this->get_node()->get_logger(),
@@ -337,11 +355,16 @@ void LBRWrenchCommandController::configure_joint_names_() {
                             << "Number of joint names '" << joint_names_.size()
                             << "' does not match the number of joints in the robot '"
                             << lbr_fri_ros2::N_JNTS << "'." << lbr_fri_ros2::ColorScheme::ENDC);
-    throw std::runtime_error("Failed to configure joint names.");
+    throw std::runtime_error("Invalid number of joint names.");
   }
-  std::string robot_name = this->get_node()->get_parameter("robot_name").as_string();
-  for (int i = 0; i < lbr_fri_ros2::N_JNTS; ++i) {
-    joint_names_[i] = robot_name + "_A" + std::to_string(i + 1);
+  if (robot_name_.empty()) {
+    RCLCPP_ERROR_STREAM(this->get_node()->get_logger(), lbr_fri_ros2::ColorScheme::ERROR
+                                                            << "Robot name parameter is empty."
+                                                            << lbr_fri_ros2::ColorScheme::ENDC);
+    throw std::runtime_error("Invalid robot name.");
+  }
+  for (std::size_t i = 0; i < lbr_fri_ros2::N_JNTS; ++i) {
+    joint_names_[i] = robot_name_ + "_A" + std::to_string(i + 1);
   }
 }
 
