@@ -14,7 +14,6 @@
   <depend>lbr_ros2_control</depend>
 
   <exec_depend>lbr_bringup</exec_depend>
-  <exec_depend>lbr_demos</exec_depend>
   <exec_depend>lbr_iiwa7_r800_description</exec_depend>
   <exec_depend>lbr_iiwa14_r820_description</exec_depend>
   <exec_depend>lbr_med7_r800_description</exec_depend>
