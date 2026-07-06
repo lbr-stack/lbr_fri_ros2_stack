@@ -96,7 +96,7 @@ install(
 )
 
 install(
-  DIRECTORY config system_integration
+  DIRECTORY config system_integration urdf
   DESTINATION share/${PROJECT_NAME}
 )
 

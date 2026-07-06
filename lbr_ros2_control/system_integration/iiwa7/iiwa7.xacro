@@ -5,8 +5,8 @@
 
     <!-- include macros -->
     <xacro:include filename="$(find lbr_iiwa7_r800_description)/urdf/lbr_iiwa7_r800_macro.xacro" />
-    <xacro:include filename="$(find lbr_ros2_control)/config/lbr_gazebo.xacro" />
-    <xacro:include filename="$(find lbr_ros2_control)/config/lbr_system_interface.xacro" />
+    <xacro:include filename="$(find lbr_ros2_control)/urdf/lbr_gazebo.xacro" />
+    <xacro:include filename="$(find lbr_ros2_control)/urdf/lbr_system_interface.xacro" />
 
     <!-- arguments -->
     <xacro:arg name="robot_name" default="lbr" />
