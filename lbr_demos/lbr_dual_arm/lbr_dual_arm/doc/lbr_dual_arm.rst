@@ -31,7 +31,7 @@ Custom description files can be generated via ``xacro``, see  `lbr_dual_arm.xacr
     .. code-block:: xml
 
         <xacro:include filename="$(find lbr_iiwa7_r800_description)/urdf/lbr_iiwa7_r800_macro.xacro" />
-        <xacro:include filename="$(find lbr_ros2_control)/config/lbr_system_interface.xacro" />
+        <xacro:include filename="$(find lbr_ros2_control)/urdf/lbr_system_interface.xacro" />
 
 #. Instantiate macros (``ros2_control`` plugin and robot description)
 

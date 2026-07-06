@@ -37,7 +37,7 @@ def generate_launch_description() -> LaunchDescription:
             DeclareLaunchArgument(
                 name="ctrl",
                 default_value="joint_trajectory_controller",
-                description="Desired default controller. Gazebo loads controller configuration through lbr_ros2_control/config/lbr_gazebo.xacro from lbr_ros2_control/config/controllers/gazebo.yaml.",
+                description="Desired default controller. Gazebo loads controller configuration through lbr_ros2_control/urdf/lbr_gazebo.xacro from lbr_ros2_control/config/controllers/gazebo.yaml.",
                 choices=[
                     "forward_position_controller",
                     "joint_trajectory_controller",
