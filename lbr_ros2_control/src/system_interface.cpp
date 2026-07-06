@@ -11,7 +11,7 @@ SystemInterface::on_init(const hardware_interface::HardwareComponentInterfacePar
     return ret;
   }
 
-  // parameters_ from lbr_system_interface.xacro via lbr_system_config.yaml (default configurations
+  // parameters_ via lbr_system_interface.xacro from lbr_system_config.yaml (default configurations
   // located in lbr_ros2_control/config/lbr_system_config.yaml)
   if (!parse_parameters_()) {
     return controller_interface::CallbackReturn::ERROR;
@@ -407,7 +407,6 @@ bool SystemInterface::verify_sensors_() {
 bool SystemInterface::verify_auxiliary_sensor_() {
   // check all interfaces are defined in lbr_system_interface.xacro (located in
   // lbr_ros2_control/config/lbr_system_interface.xacro)
-  const auto &auxiliary_sensor = info_.sensors[0];
   if (info_.sensors.size() != AUXILIARY_SENSOR_SIZE) {
     RCLCPP_ERROR_STREAM(get_node()->get_logger(), lbr_fri_ros2::ColorScheme::ERROR
                                                       << "Expected '"
@@ -416,6 +415,21 @@ bool SystemInterface::verify_auxiliary_sensor_() {
                                                       << "'" << lbr_fri_ros2::ColorScheme::ENDC);
     return false;
   }
+  const auto &auxiliary_sensor = info_.sensors[0];
+  // check naming ends with HW_IF_AUXILIARY_PREFIX
+  const std::string suffix = HW_IF_AUXILIARY_PREFIX;
+  if (auxiliary_sensor.name.size() < suffix.size() ||
+      auxiliary_sensor.name.compare(auxiliary_sensor.name.size() - suffix.size(), suffix.size(),
+                                    suffix) != 0) {
+    RCLCPP_ERROR_STREAM(get_node()->get_logger(),
+                        lbr_fri_ros2::ColorScheme::ERROR
+                            << "Sensor '" << auxiliary_sensor.name
+                            << "' received invalid name (fix lbr_system_interface.xacro). Expected "
+                               "name to end with '"
+                            << HW_IF_AUXILIARY_PREFIX << "'" << lbr_fri_ros2::ColorScheme::ENDC);
+    return false;
+  }
+  // check interface size
   if (auxiliary_sensor.state_interfaces.size() != AUXILIARY_SENSOR_INTERFACE_SIZE) {
     RCLCPP_ERROR_STREAM(get_node()->get_logger(),
                         lbr_fri_ros2::ColorScheme::ERROR
@@ -455,12 +469,27 @@ bool SystemInterface::verify_gpios_() {
                                                       << "'" << lbr_fri_ros2::ColorScheme::ENDC);
     return false;
   }
-  if (info_.gpios[0].command_interfaces.size() != lbr_fri_ros2::CARTESIAN_DOF) {
+  const auto &wrench_gpio = info_.gpios[0];
+  // check naming ends with HW_IF_WRENCH_PREFIX
+  const std::string suffix = HW_IF_WRENCH_PREFIX;
+  if (wrench_gpio.name.size() < suffix.size() ||
+      wrench_gpio.name.compare(wrench_gpio.name.size() - suffix.size(), suffix.size(), suffix) !=
+          0) {
     RCLCPP_ERROR_STREAM(get_node()->get_logger(),
                         lbr_fri_ros2::ColorScheme::ERROR
-                            << "GPIO '" << info_.gpios[0].name.c_str()
+                            << "GPIO '" << wrench_gpio.name
+                            << "' received invalid name (fix lbr_system_interface.xacro). Expected "
+                               "name to end with '"
+                            << HW_IF_WRENCH_PREFIX << "'" << lbr_fri_ros2::ColorScheme::ENDC);
+    return false;
+  }
+  // check interface size
+  if (wrench_gpio.command_interfaces.size() != lbr_fri_ros2::CARTESIAN_DOF) {
+    RCLCPP_ERROR_STREAM(get_node()->get_logger(),
+                        lbr_fri_ros2::ColorScheme::ERROR
+                            << "GPIO '" << wrench_gpio.name.c_str()
                             << "' received invalid number of command interfaces. Received '"
-                            << info_.gpios[0].command_interfaces.size() << "', expected '"
+                            << wrench_gpio.command_interfaces.size() << "', expected '"
                             << lbr_fri_ros2::CARTESIAN_DOF << "'"
                             << lbr_fri_ros2::ColorScheme::ENDC);
     return false;

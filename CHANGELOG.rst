@@ -32,7 +32,7 @@ Jazzy v2.x (TBD)
 * ``lbr_fri_ros2_stack``: Adds external robot description files to ``repos-fri-*.yaml`` files.
 * ``lbr_ros2_control``: 
 
-  * Prefix custom state interfaces with robot name for multi-robot support, i.e. ``<robot_name>_auxiliary_sensor`` and ``<robot_name>_wrench``.
+  * Prefix custom interfaces with robot name for multi-robot support, i.e. ``<robot_name>_auxiliary_sensor`` and ``<robot_name>_wrench``.
   * Adds configurations (previously part of ``lbr_description``).
   * Adds ``system_integration`` that builds ``.xacro`` files using robot descriptions and plugin specifications of ``lbr_ros2_control``.
   * Migrates to the new ``ros2_control`` interface handles: https://github.com/ros-controls/ros2_control/pull/2831.
