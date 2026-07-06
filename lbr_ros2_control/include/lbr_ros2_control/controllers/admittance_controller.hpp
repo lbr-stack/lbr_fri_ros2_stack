@@ -51,6 +51,7 @@ public:
 protected:
   bool assign_state_interfaces_();
   void release_state_interfaces_();
+  void configure_names_();
   void configure_joint_names_();
   void configure_admittance_impl_();
   void configure_inv_jac_ctrl_impl_();
@@ -78,6 +79,10 @@ protected:
   // external force smoothing
   std::unique_ptr<lbr_fri_ros2::ExponentialFilterArray<lbr_fri_ros2::CARTESIAN_DOF>>
       f_ext_filter_ptr_;
+
+  // name parameters
+  std::string robot_name_;
+  std::string auxiliary_sensor_name_;
 
   // joint veloctiy computation
   std::unique_ptr<lbr_fri_ros2::InvJacCtrlImpl> inv_jac_ctrl_impl_ptr_;

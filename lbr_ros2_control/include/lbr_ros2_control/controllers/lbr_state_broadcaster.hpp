@@ -49,8 +49,11 @@ public:
 protected:
   void init_state_interface_map_();
   void init_state_msg_();
+  void configure_names_();
   void configure_joint_names_();
 
+  std::string robot_name_;
+  std::string auxiliary_sensor_name_;
   lbr_fri_ros2::jnt_name_array_t joint_names_;
   std::unordered_map<std::string, std::unordered_map<std::string, double>> state_interface_map_;
 
