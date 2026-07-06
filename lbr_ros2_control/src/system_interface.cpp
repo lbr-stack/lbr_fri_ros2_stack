@@ -406,7 +406,7 @@ bool SystemInterface::verify_sensors_() {
 
 bool SystemInterface::verify_auxiliary_sensor_() {
   // check all interfaces are defined in lbr_system_interface.xacro (located in
-  // lbr_ros2_control/config/lbr_system_interface.xacro)
+  // lbr_ros2_control/urdf/lbr_system_interface.xacro)
   if (info_.sensors.size() != AUXILIARY_SENSOR_SIZE) {
     RCLCPP_ERROR_STREAM(get_node()->get_logger(), lbr_fri_ros2::ColorScheme::ERROR
                                                       << "Expected '"
