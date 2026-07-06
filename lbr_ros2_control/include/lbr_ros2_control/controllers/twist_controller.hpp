@@ -53,6 +53,7 @@ protected:
   void release_state_interfaces_();
   void reset_command_buffer_();
   void zero_joint_velocity_command_();
+  void configure_names_();
   void configure_joint_names_();
   void configure_joint_limits_();
   void configure_inv_jac_ctrl_impl_();
@@ -65,6 +66,10 @@ protected:
   // joint veloctiy computation
   std::unique_ptr<lbr_fri_ros2::InvJacCtrlImpl> inv_jac_ctrl_impl_ptr_;
   lbr_fri_ros2::jnt_array_t q_, q_target_, dq_;
+
+  // name parameters
+  std::string robot_name_;
+  std::string auxiliary_sensor_name_;
 
   // interfaces
   lbr_fri_ros2::jnt_name_array_t joint_names_;

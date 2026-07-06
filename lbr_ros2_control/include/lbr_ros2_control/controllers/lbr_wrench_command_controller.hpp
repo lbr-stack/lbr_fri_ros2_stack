@@ -69,6 +69,7 @@ protected:
   bool assign_command_interfaces_();
   void release_state_interfaces_();
   void release_command_interfaces_();
+  void configure_names_();
   void configure_joint_names_();
   void configure_parameters_();
   bool zero_wrench_commands_();
@@ -84,6 +85,8 @@ protected:
 
   LBRWrenchCommandControllerParameters parameters_;
 
+  std::string robot_name_;
+  std::string wrench_sensor_name_;
   lbr_fri_ros2::jnt_name_array_t joint_names_;
 
   // referenced by state interfaces

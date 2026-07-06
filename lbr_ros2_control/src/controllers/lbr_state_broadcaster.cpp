@@ -22,6 +22,7 @@ controller_interface::CallbackReturn LBRStateBroadcaster::on_init() {
         std::make_shared<realtime_tools::RealtimePublisher<lbr_fri_idl::msg::LBRState>>(
             state_publisher_ptr_);
     this->get_node()->declare_parameter("robot_name", "lbr");
+    configure_names_();
     configure_joint_names_();
   } catch (const std::exception &e) {
     RCLCPP_ERROR_STREAM(this->get_node()->get_logger(),
@@ -56,28 +57,28 @@ controller_interface::return_type LBRStateBroadcaster::update(const rclcpp::Time
 
   // FRI related states
   lbr_state_.client_command_mode =
-      static_cast<int8_t>(state_interface_map_[HW_IF_AUXILIARY_PREFIX][HW_IF_CLIENT_COMMAND_MODE]);
+      static_cast<int8_t>(state_interface_map_[auxiliary_sensor_name_][HW_IF_CLIENT_COMMAND_MODE]);
   lbr_state_.connection_quality =
-      static_cast<int8_t>(state_interface_map_[HW_IF_AUXILIARY_PREFIX][HW_IF_CONNECTION_QUALITY]);
+      static_cast<int8_t>(state_interface_map_[auxiliary_sensor_name_][HW_IF_CONNECTION_QUALITY]);
   lbr_state_.control_mode =
-      static_cast<int8_t>(state_interface_map_[HW_IF_AUXILIARY_PREFIX][HW_IF_CONTROL_MODE]);
+      static_cast<int8_t>(state_interface_map_[auxiliary_sensor_name_][HW_IF_CONTROL_MODE]);
   lbr_state_.drive_state =
-      static_cast<int8_t>(state_interface_map_[HW_IF_AUXILIARY_PREFIX][HW_IF_DRIVE_STATE]);
+      static_cast<int8_t>(state_interface_map_[auxiliary_sensor_name_][HW_IF_DRIVE_STATE]);
   lbr_state_.operation_mode =
-      static_cast<int8_t>(state_interface_map_[HW_IF_AUXILIARY_PREFIX][HW_IF_OPERATION_MODE]);
+      static_cast<int8_t>(state_interface_map_[auxiliary_sensor_name_][HW_IF_OPERATION_MODE]);
   lbr_state_.overlay_type =
-      static_cast<int8_t>(state_interface_map_[HW_IF_AUXILIARY_PREFIX][HW_IF_OVERLAY_TYPE]);
+      static_cast<int8_t>(state_interface_map_[auxiliary_sensor_name_][HW_IF_OVERLAY_TYPE]);
   lbr_state_.safety_state =
-      static_cast<int8_t>(state_interface_map_[HW_IF_AUXILIARY_PREFIX][HW_IF_SAFETY_STATE]);
-  lbr_state_.sample_time = state_interface_map_[HW_IF_AUXILIARY_PREFIX][HW_IF_SAMPLE_TIME];
+      static_cast<int8_t>(state_interface_map_[auxiliary_sensor_name_][HW_IF_SAFETY_STATE]);
+  lbr_state_.sample_time = state_interface_map_[auxiliary_sensor_name_][HW_IF_SAMPLE_TIME];
   lbr_state_.session_state =
-      static_cast<int8_t>(state_interface_map_[HW_IF_AUXILIARY_PREFIX][HW_IF_SESSION_STATE]);
+      static_cast<int8_t>(state_interface_map_[auxiliary_sensor_name_][HW_IF_SESSION_STATE]);
   lbr_state_.time_stamp_nano_sec = static_cast<uint32_t>(
-      state_interface_map_[HW_IF_AUXILIARY_PREFIX][HW_IF_TIME_STAMP_NANO_SEC]);
+      state_interface_map_[auxiliary_sensor_name_][HW_IF_TIME_STAMP_NANO_SEC]);
   lbr_state_.time_stamp_sec =
-      static_cast<uint32_t>(state_interface_map_[HW_IF_AUXILIARY_PREFIX][HW_IF_TIME_STAMP_SEC]);
+      static_cast<uint32_t>(state_interface_map_[auxiliary_sensor_name_][HW_IF_TIME_STAMP_SEC]);
   lbr_state_.tracking_performance =
-      state_interface_map_[HW_IF_AUXILIARY_PREFIX][HW_IF_TRACKING_PERFORMANCE];
+      state_interface_map_[auxiliary_sensor_name_][HW_IF_TRACKING_PERFORMANCE];
 
   // joint related states
   std::for_each(joint_names_.begin(), joint_names_.end(),
@@ -153,6 +154,17 @@ void LBRStateBroadcaster::init_state_msg_() {
   lbr_state_.tracking_performance = std::numeric_limits<double>::quiet_NaN();
 }
 
+void LBRStateBroadcaster::configure_names_() {
+  robot_name_ = this->get_node()->get_parameter("robot_name").as_string();
+  if (robot_name_.empty()) {
+    RCLCPP_ERROR_STREAM(this->get_node()->get_logger(), lbr_fri_ros2::ColorScheme::ERROR
+                                                            << "Robot name parameter is empty."
+                                                            << lbr_fri_ros2::ColorScheme::ENDC);
+    throw std::runtime_error("Failed to configure names.");
+  }
+  auxiliary_sensor_name_ = robot_name_ + "_" + std::string(HW_IF_AUXILIARY_PREFIX);
+}
+
 void LBRStateBroadcaster::configure_joint_names_() {
   if (joint_names_.size() != lbr_fri_ros2::N_JNTS) {
     RCLCPP_ERROR_STREAM(this->get_node()->get_logger(),
@@ -160,11 +172,16 @@ void LBRStateBroadcaster::configure_joint_names_() {
                             << "Number of joint names '" << joint_names_.size()
                             << "' does not match the number of joints in the robot '"
                             << lbr_fri_ros2::N_JNTS << "'." << lbr_fri_ros2::ColorScheme::ENDC);
-    throw std::runtime_error("Failed to configure joint names.");
+    throw std::runtime_error("Invalid number of joint names.");
   }
-  std::string robot_name = this->get_node()->get_parameter("robot_name").as_string();
+  if (robot_name_.empty()) {
+    RCLCPP_ERROR_STREAM(this->get_node()->get_logger(), lbr_fri_ros2::ColorScheme::ERROR
+                                                            << "Robot name parameter is empty."
+                                                            << lbr_fri_ros2::ColorScheme::ENDC);
+    throw std::runtime_error("Invalid robot name.");
+  }
   for (std::size_t i = 0; i < lbr_fri_ros2::N_JNTS; ++i) {
-    joint_names_[i] = robot_name + "_A" + std::to_string(i + 1);
+    joint_names_[i] = robot_name_ + "_A" + std::to_string(i + 1);
   }
 }
 } // namespace lbr_ros2_control
