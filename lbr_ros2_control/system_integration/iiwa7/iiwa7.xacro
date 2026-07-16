@@ -26,7 +26,7 @@
     <link name="world" />
 
     <!--joint
-        between <robot_name>_world_link and robot_name_link_0-->
+        between world and <robot_name>_link_0 -->
     <joint name="$(arg robot_name)_world_joint" type="fixed">
         <parent link="world" />
         <child link="$(arg robot_name)_link_0" />
