@@ -14,6 +14,7 @@ To run the ``lbr_fri_ros2_stack`` in a Docker container, follow the instructions
 
     export FRI_CLIENT_VERSION=1.15 # replace by your FRI client version
     mkdir -p lbr-stack/src && cd lbr-stack
+    git clone https://github.com/lbr-stack/lbr_fri_ros2_stack.git -b jazzy src/lbr_fri_ros2_stack --depth 1
     vcs import src --input https://raw.githubusercontent.com/lbr-stack/lbr_fri_ros2_stack/jazzy/lbr_fri_ros2_stack/repos-fri-${FRI_CLIENT_VERSION}.yaml
 
 #. Install `Docker <https://docs.docker.com/engine/install/>`_:octicon:`link-external`.
