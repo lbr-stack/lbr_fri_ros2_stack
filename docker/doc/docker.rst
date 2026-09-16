@@ -19,12 +19,12 @@ To run the ``lbr_fri_ros2_stack`` in a Docker container, follow the instructions
 
 #. Install `Docker <https://docs.docker.com/engine/install/>`_:octicon:`link-external`.
 
-#. Copy the Dockerfile and the container scripts to the ``lbr-stack`` directory. Build and start the container
+#. Copy the Dockerfile and the container scripts to the ``lbr-stack`` directory. Build and start the container (make sure Docker is configured to run as non-root user: `linux-postinstall <https://docs.docker.com/engine/install/linux-postinstall>`_:octicon:`link-external`).
 
    .. code-block:: bash
 
     cp -r src/lbr_fri_ros2_stack/docker/* .
-    sudo ./container_build.sh # this will run the container once finished
+    ./container_build.sh # this will run the container once finished
 
 #. Once inside the container, launch e.g. the mock setup via
 
