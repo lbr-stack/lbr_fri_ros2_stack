@@ -1,4 +1,4 @@
-name: ubuntu-24.04-fri-2.5
+name: ubuntu-26.04-fri-1.15
 on:
   pull_request:
     branches:
@@ -9,6 +9,6 @@ on:
 
 jobs:
   build:
-    uses: ./.github/workflows/build-ubuntu-24.04.yml
+    uses: ./.github/workflows/build-ubuntu-26.04.yml
     with:
-      fri_version: 2.5
+      fri_version: 1.15
