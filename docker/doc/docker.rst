@@ -14,16 +14,17 @@ To run the ``lbr_fri_ros2_stack`` in a Docker container, follow the instructions
 
     export FRI_CLIENT_VERSION=1.15 # replace by your FRI client version
     mkdir -p lbr-stack/src && cd lbr-stack
+    git clone https://github.com/lbr-stack/lbr_fri_ros2_stack.git -b rolling src/lbr_fri_ros2_stack --depth 1
     vcs import src --input https://raw.githubusercontent.com/lbr-stack/lbr_fri_ros2_stack/rolling/lbr_fri_ros2_stack/repos-fri-${FRI_CLIENT_VERSION}.yaml
 
 #. Install `Docker <https://docs.docker.com/engine/install/>`_:octicon:`link-external`.
 
-#. Copy the Dockerfile and the container scripts to the ``lbr-stack`` directory. Build and start the container
+#. Copy the Dockerfile and the container scripts to the ``lbr-stack`` directory. Build and start the container (make sure Docker is configured to run as non-root user: `linux-postinstall <https://docs.docker.com/engine/install/linux-postinstall>`_:octicon:`link-external`).
 
    .. code-block:: bash
 
     cp -r src/lbr_fri_ros2_stack/docker/* .
-    sudo ./container_build.sh # this will run the container once finished
+    ./container_build.sh # this will run the container once finished
 
 #. Once inside the container, launch e.g. the mock setup via
 
