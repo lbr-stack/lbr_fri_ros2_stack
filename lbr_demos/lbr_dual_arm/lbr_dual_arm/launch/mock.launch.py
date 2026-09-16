@@ -138,10 +138,12 @@ def generate_launch_description() -> LaunchDescription:
                 executable="spawner",
                 output="screen",
                 arguments=[
-                    "--controller-manager",
-                    "controller_manager",
                     "joint_state_broadcaster",
                     "joint_trajectory_controller",
+                    "--param-file",
+                    PathSubstitution(FindPackageShare("lbr_dual_arm"))
+                    / "config"
+                    / "dual_arm_controllers.yaml",
                 ],
             ),
             IncludeLaunchDescription(
