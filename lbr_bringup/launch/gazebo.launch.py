@@ -35,6 +35,16 @@ def generate_launch_description() -> LaunchDescription:
                 description="The relative path from sys_cfg_pkg to the initial_joint_positions.yaml file.",
             ),
             DeclareLaunchArgument(
+                name="ctrl_cfg_pkg",
+                default_value="lbr_ros2_control",
+                description="Controller configuration package. The package containing the ctrl_cfg.",
+            ),
+            DeclareLaunchArgument(
+                name="ctrl_cfg",
+                default_value="config/controllers/gazebo.yaml",
+                description="Relative path from ctrl_cfg_pkg to the controllers.",
+            ),
+            DeclareLaunchArgument(
                 name="ctrl",
                 default_value="joint_trajectory_controller",
                 description="Desired default controller. Gazebo loads controller configuration through lbr_ros2_control/urdf/lbr_gazebo.xacro from lbr_ros2_control/config/controllers/gazebo.yaml.",
@@ -121,10 +131,13 @@ def generate_launch_description() -> LaunchDescription:
                 executable="spawner",
                 output="screen",
                 arguments=[
-                    "--controller-manager",
-                    "controller_manager",
                     "joint_state_broadcaster",
                     LaunchConfiguration("ctrl"),
+                    "--param-file",
+                    PathSubstitution(
+                        FindPackageShare(LaunchConfiguration("ctrl_cfg_pkg"))
+                    )
+                    / LaunchConfiguration("ctrl_cfg"),
                 ],
                 namespace=LaunchConfiguration("robot_name"),
             ),

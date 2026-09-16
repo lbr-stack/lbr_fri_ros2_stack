@@ -109,10 +109,13 @@ def generate_launch_description() -> LaunchDescription:
                 executable="spawner",
                 output="screen",
                 arguments=[
-                    "--controller-manager",
-                    "controller_manager",
                     "joint_state_broadcaster",
                     LaunchConfiguration("ctrl"),
+                    "--param-file",
+                    PathSubstitution(
+                        FindPackageShare(LaunchConfiguration("ctrl_cfg_pkg"))
+                    )
+                    / LaunchConfiguration("ctrl_cfg"),
                 ],
                 namespace=LaunchConfiguration("namespace"),
             ),
