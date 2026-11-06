@@ -8,7 +8,6 @@ PositionCommandInterface::PositionCommandInterface(
 
 void PositionCommandInterface::buffered_command_to_fri(fri_command_t_ref command,
                                                        const_idl_state_t_ref state) {
-  std::lock_guard<std::mutex> lock(command_mutex_);
 #if FRI_CLIENT_VERSION_MAJOR == 1
   if (state.client_command_mode != KUKA::FRI::EClientCommandMode::POSITION) {
     std::string err =
@@ -51,6 +50,8 @@ void PositionCommandInterface::buffered_command_to_fri(fri_command_t_ref command
                         ColorScheme::ERROR << err.c_str() << ColorScheme::ENDC);
     throw std::runtime_error(err);
   }
+
+  pull_command_target_();
 
   if (!std::any_of(command_target_.joint_position.cbegin(), command_target_.joint_position.cend(),
                    [](const double &v) { return std::isnan(v); })) {

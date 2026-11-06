@@ -8,7 +8,6 @@ WrenchCommandInterface::WrenchCommandInterface(
 
 void WrenchCommandInterface::buffered_command_to_fri(fri_command_t_ref command,
                                                      const_idl_state_t_ref state) {
-  std::lock_guard<std::mutex> lock(command_mutex_);
   if (state.client_command_mode != KUKA::FRI::EClientCommandMode::WRENCH) {
     std::string err =
         "Client side (configured via client_command_mode in lbr_system_config.yaml) "
@@ -34,6 +33,8 @@ void WrenchCommandInterface::buffered_command_to_fri(fri_command_t_ref command,
                         ColorScheme::ERROR << err.c_str() << ColorScheme::ENDC);
     throw std::runtime_error(err);
   }
+
+  pull_command_target_();
 
   if (!std::any_of(command_target_.joint_position.cbegin(), command_target_.joint_position.cend(),
                    [](const double &v) { return std::isnan(v); }) &&

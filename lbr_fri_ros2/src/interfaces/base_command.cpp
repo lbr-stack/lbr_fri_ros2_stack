@@ -20,6 +20,12 @@ void BaseCommandInterface::log_info() const {
   joint_position_filter_.log_info();
 }
 
+void BaseCommandInterface::pull_command_target_() {
+  if (command_target_buffer_.update()) {
+    command_target_ = command_target_buffer_.read();
+  }
+}
+
 void BaseCommandInterface::neutralize_command_(const_idl_state_t_ref state,
                                                idl_command_t_ref command) {
   command.joint_position = state.measured_joint_position;

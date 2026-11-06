@@ -68,7 +68,7 @@ void AsyncClient::onStateChange(KUKA::FRI::ESessionState old_state,
 
   // initialize command
   state_interface_ptr_->set_state(robotState());
-  command_interface_ptr_->init_command(state_interface_ptr_->get_state());
+  command_interface_ptr_->init_command(state_interface_ptr_->get_state_in_fri_thread());
 
   // state entry handles (safety checks)
   switch (new_state) {
@@ -85,9 +85,9 @@ void AsyncClient::monitor() { state_interface_ptr_->set_state(robotState()); };
 void AsyncClient::waitForCommand() {
   KUKA::FRI::LBRClient::waitForCommand();
   state_interface_ptr_->set_state(robotState());
-  command_interface_ptr_->init_command(state_interface_ptr_->get_state());
+  command_interface_ptr_->init_command(state_interface_ptr_->get_state_in_fri_thread());
   command_interface_ptr_->buffered_command_to_fri(robotCommand(),
-                                                  state_interface_ptr_->get_state());
+                                                  state_interface_ptr_->get_state_in_fri_thread());
 }
 
 void AsyncClient::command() {
@@ -99,8 +99,9 @@ void AsyncClient::command() {
   }
   command_interface_ptr_->buffered_command_to_fri(
       robotCommand(),
-      state_interface_ptr_->get_state()); // current state accessed via state interface (allows for
-                                          // open loop and is statically sized)
+      state_interface_ptr_->get_state_in_fri_thread()); // current state accessed via state
+                                                        // interface (allows for open loop and is
+                                                        // statically sized)
 }
 
 void AsyncClient::on_enter_commanding_active_() {
@@ -127,7 +128,7 @@ void AsyncClient::on_enter_commanding_active_() {
     RCLCPP_INFO_STREAM(rclcpp::get_logger(LOGGER_NAME),
                        "Checking external torques on activation of compliant control mode...");
     if (!on_enter_commanding_active_state_guard_.is_valid_state(
-            state_interface_ptr_->get_state())) {
+            state_interface_ptr_->get_state_in_fri_thread())) {
       std::string err =
           "External torque limits exceeded. Perform load data calibration! Alternatively, disable "
           "the check in lbr_system_config.yaml. Please be careful when disabling the check!";
