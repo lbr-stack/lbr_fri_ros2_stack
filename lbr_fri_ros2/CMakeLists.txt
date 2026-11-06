@@ -86,6 +86,9 @@ if(BUILD_TESTING)
   ament_add_gtest(test_command_interfaces test/test_command_interfaces.cpp)
   target_link_libraries(test_command_interfaces lbr_fri_ros2)
 
+  ament_add_gtest(test_triple_buffer test/test_triple_buffer.cpp)
+  target_include_directories(test_triple_buffer PRIVATE include)
+
   # # some examples of how to use the interfaces
   # add_executable(test_position_command test/test_position_command.cpp)
   # target_link_libraries(test_position_command lbr_fri_ros2)
